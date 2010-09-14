@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * TimeZynk intellitime integration tests.
+ */
+
+class TimeZynkIntellitimeTestCase extends DrupalUnitTestCase {
+
+    public static function getInfo() {
+	return array(
+		     'name' => 'TimeZynk intellitime test suite',
+		     'description' => '',
+		     'group' => 'TimeZynk',
+		     );
+    }
+
+  /**
+   * setUp() performs any pre-requisite tasks that need to happen. 
+   */
+  public function setUp() {
+    // Enable any modules required for the test.
+    parent::setUp('tzintellitime');
+  }
+
+    public function testInvalidLogin() {
+	$this->assertTrue(tzintellitime_login("http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d", "monkey", "monkey"));
+    }
+
+}
