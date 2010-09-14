@@ -10,7 +10,7 @@
 function tzstats_menu() {
   $items['reports/invoice'] = array(
     'title' => 'Invoice',
-    'title callback' => t,
+    'title callback' => 't',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('tzstats_invoice'),
     'access arguments' => array('view tzstats invoice'),
