@@ -1,0 +1,118 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright 2010 TimeZynk AB <dev@timezynk.com>
+# Generated from files:
+#  excelexport.inc: n/a
+#  excelexport.module: n/a
+#  excelexport.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-07-07 13:45+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: excelexport.inc:17
+msgid "Id"
+msgstr ""
+
+#: excelexport.inc:17
+msgid "Subject"
+msgstr ""
+
+#: excelexport.inc:17
+msgid "Description"
+msgstr ""
+
+#: excelexport.inc:17
+msgid "Assignment"
+msgstr ""
+
+#: excelexport.inc:17
+msgid "Assignment description"
+msgstr ""
+
+#: excelexport.inc:18
+msgid "Start time"
+msgstr ""
+
+#: excelexport.inc:18
+msgid "End time"
+msgstr ""
+
+#: excelexport.inc:18
+msgid "Break duration"
+msgstr ""
+
+#: excelexport.inc:18
+msgid "Total"
+msgstr ""
+
+#: excelexport.inc:18
+msgid "State"
+msgstr ""
+
+#: excelexport.inc:18
+msgid "Assigned to"
+msgstr ""
+
+#: excelexport.inc:124
+msgid "New"
+msgstr ""
+
+#: excelexport.inc:127
+msgid "Signed in"
+msgstr ""
+
+#: excelexport.inc:130
+msgid "Reported"
+msgstr ""
+
+#: excelexport.inc:133
+msgid "Approved"
+msgstr ""
+
+#: excelexport.inc:136
+msgid "Locked"
+msgstr ""
+
+#: excelexport.inc:138
+msgid "Unknown"
+msgstr ""
+
+#: excelexport.inc:78
+msgid "Excel export"
+msgstr ""
+
+#: excelexport.inc:78
+msgid "Could not autosize columns, no such instance of PHPExcel"
+msgstr ""
+
+#: excelexport.module:12
+msgid "Provides excel export functionality for time reports. Requires tzbase.module."
+msgstr ""
+
+#: excelexport.module:22
+msgid "Export time reports to excel"
+msgstr ""
+
+#: excelexport.info:0
+msgid "TimeZynk Excel Exporter"
+msgstr ""
+
+#: excelexport.info:0
+msgid "Exports time reports to excel"
+msgstr ""
+
+#: excelexport.info:0
+msgid "TimeZynk"
+msgstr ""
+

@@ -1,0 +1,86 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  tzstats.invoice.inc: n/a
+#  tzstats.module: n/a
+#  tzstats.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-07-16 13:53+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: tzstats.invoice.inc:28
+msgid "Summary for @job @startdate - @enddate"
+msgstr ""
+
+#: tzstats.invoice.inc:64
+msgid "No reports for the selected date span"
+msgstr ""
+
+#: tzstats.invoice.inc:92
+msgid "Select job..."
+msgstr ""
+
+#: tzstats.invoice.inc:116
+msgid "Select options"
+msgstr ""
+
+#: tzstats.invoice.inc:123
+msgid "Job to invoice"
+msgstr ""
+
+#: tzstats.invoice.inc:125
+msgid "Select which job to list time reports for"
+msgstr ""
+
+#: tzstats.invoice.inc:131
+msgid "Start date"
+msgstr ""
+
+#: tzstats.invoice.inc:140
+msgid "End date"
+msgstr ""
+
+#: tzstats.invoice.inc:150
+msgid "Apply"
+msgstr ""
+
+#: tzstats.invoice.inc:158
+msgid "Please select a job to invoice"
+msgstr ""
+
+#: tzstats.invoice.inc:165
+msgid "End date must be after start date"
+msgstr ""
+
+#: tzstats.module:12
+msgid "Invoice"
+msgstr ""
+
+#: tzstats.module:26
+msgid "view tzstats invoice"
+msgstr ""
+
+#: tzstats.info:0
+msgid "TimeZynk Statistics"
+msgstr ""
+
+#: tzstats.info:0
+msgid "Provides TimeZynk statistics and reports"
+msgstr ""
+
+#: tzstats.info:0
+msgid "TimeZynk"
+msgstr ""
+

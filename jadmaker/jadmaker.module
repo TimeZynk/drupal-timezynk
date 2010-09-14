@@ -1,0 +1,46 @@
+<?php
+/**
+ * @file Service for generating proper jad files
+ */
+
+/**
+ * Implementation of hook_help().
+ */
+function jadmaker_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#jadmaker':
+    case 'admin/modules#description':
+      return t('Generates jad files while taking the visiting mobile phone to account. Requires browscap.');
+  }
+}
+
+/**
+ * Implementation of hook_menu
+ */
+function jadmaker_menu() {
+
+  $items = array();
+
+  //this is added for this current tutorial.
+  $items['tz.jad'] = array(
+    'title' => 'Jad Maker',
+    'page callback' => 'jadmaker_create_jad',
+    'access callback' => TRUE,
+    'file' => 'jadmaker.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_init
+ * Disables caching for this page
+ * @return unknown_type
+ */
+function jadmaker_init() {
+  // We don't want caching for this module
+  if (drupal_match_path($_GET['q'],'tz.jad')) {
+    $GLOBALS['conf']['cache'] = FALSE;
+  }
+}

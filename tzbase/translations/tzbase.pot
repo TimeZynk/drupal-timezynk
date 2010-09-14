@@ -1,0 +1,294 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  tzbase.admin.inc: n/a
+#  tzbase.import.inc: n/a
+#  tzbase.views.inc: n/a
+#  tzbase.module: n/a
+#  tzbase_handler_argument_begintime.inc: n/a
+#  tzbase.info: n/a
+#  tzbase.install: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-07-16 13:54+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: tzbase.admin.inc:14
+msgid "Import legacy nodes"
+msgstr ""
+
+#: tzbase.admin.inc:19
+msgid "Delete all TimeZynk content"
+msgstr ""
+
+#: tzbase.admin.inc:24
+msgid "Save configuration"
+msgstr ""
+
+#: tzbase.admin.inc:41
+msgid "Processed @current of @total"
+msgstr ""
+
+#: tzbase.admin.inc:42
+msgid "Error while importing nodes"
+msgstr ""
+
+#: tzbase.import.inc:31;75
+msgid "Importing !type !count of !max"
+msgstr ""
+
+#: tzbase.import.inc:95
+msgid "Legacy import complete. Created !jobs jobs and !reports reports"
+msgstr ""
+
+#: tzbase.import.inc:105
+msgid "An error occurred during import and has been recorded in the system log"
+msgstr ""
+
+#: tzbase.import.inc:21;104
+msgid "tzbase"
+msgstr ""
+
+#: tzbase.import.inc:21
+msgid "importing assignments %d to %d"
+msgstr ""
+
+#: tzbase.import.inc:104
+msgid "Error when calling operation '%s'('%s')"
+msgstr ""
+
+#: tzbase.views.inc:14 tzbase.module:45
+msgid "Time Report"
+msgstr ""
+
+#: tzbase.views.inc:30
+msgid "The ID of the linked Job"
+msgstr ""
+
+#: tzbase.views.inc:48
+msgid "Assigned user"
+msgstr ""
+
+#: tzbase.views.inc:49
+msgid "The user assigned to this report"
+msgstr ""
+
+#: tzbase.views.inc:67 tzbase.module:132
+msgid "Start time"
+msgstr ""
+
+#: tzbase.views.inc:68
+msgid "Time Report start time"
+msgstr ""
+
+#: tzbase.views.inc:87 tzbase.module:139
+msgid "End time"
+msgstr ""
+
+#: tzbase.views.inc:88
+msgid "Time Report end time"
+msgstr ""
+
+#: tzbase.views.inc:98
+msgid "Break duration"
+msgstr ""
+
+#: tzbase.views.inc:99
+msgid "Time Report break duration"
+msgstr ""
+
+#: tzbase.views.inc:109
+msgid "Total duration"
+msgstr ""
+
+#: tzbase.views.inc:110
+msgid "Time Report total duration"
+msgstr ""
+
+#: tzbase.views.inc:122 tzbase.module:54
+msgid "Job"
+msgstr ""
+
+#: tzbase_handler_argument_begintime.inc:22
+msgid "Select comparison"
+msgstr ""
+
+#: tzbase_handler_argument_begintime.inc:23
+msgid "Controls whether to filter for reports filed before or after the argument date"
+msgstr ""
+
+#: tzbase_handler_argument_begintime.inc:25
+msgid "Get reports that start after the argument"
+msgstr ""
+
+#: tzbase_handler_argument_begintime.inc:26
+msgid "Get reports that start before the argument"
+msgstr ""
+
+#: tzbase.module:17;19 tzbase.info:0
+msgid "Provides TimeZynk data types and relations"
+msgstr ""
+
+#: tzbase.module:47
+msgid "A time report for a specific project"
+msgstr ""
+
+#: tzbase.module:49;58
+msgid "Subject"
+msgstr ""
+
+#: tzbase.module:51
+msgid "Instructions"
+msgstr ""
+
+#: tzbase.module:56
+msgid "A job that you can report time on"
+msgstr ""
+
+#: tzbase.module:60
+msgid "Description"
+msgstr ""
+
+#: tzbase.module:118
+msgid "Select job"
+msgstr ""
+
+#: tzbase.module:125
+msgid "Assigned to user"
+msgstr ""
+
+#: tzbase.module:146
+msgid "Break length"
+msgstr ""
+
+#: tzbase.module:153
+msgid "Travel time"
+msgstr ""
+
+#: tzbase.module:160
+msgid "Travel length (km)"
+msgstr ""
+
+#: tzbase.module:167
+msgid "Signature"
+msgstr ""
+
+#: tzbase.module:184;227
+msgid "Flags"
+msgstr ""
+
+#: tzbase.module:201
+msgid "Job code"
+msgstr ""
+
+#: tzbase.module:209
+msgid "Parent job"
+msgstr ""
+
+#: tzbase.module:69
+msgid "create tzreport content"
+msgstr ""
+
+#: tzbase.module:69
+msgid "edit any tzreport content"
+msgstr ""
+
+#: tzbase.module:69
+msgid "edit own tzreport content"
+msgstr ""
+
+#: tzbase.module:69
+msgid "create tzjob content"
+msgstr ""
+
+#: tzbase.module:69
+msgid "edit any tzjob content"
+msgstr ""
+
+#: tzbase.module:69
+msgid "edit own tzjob content"
+msgstr ""
+
+#: tzbase.module:28
+msgid "TimeZynk content"
+msgstr ""
+
+#: tzbase.module:29
+msgid "Handle TimeZynk content"
+msgstr ""
+
+#: tzbase.install:42;79
+msgid "The {user}.uid that is assigned to this report"
+msgstr ""
+
+#: tzbase.install:53;136
+msgid "Stores a TimeZynk time report connected to a specific assignment"
+msgstr ""
+
+#: tzbase.install:60;143
+msgid "The {node}.nid"
+msgstr ""
+
+#: tzbase.install:67;150
+msgid "The {node_revision}.vid"
+msgstr ""
+
+#: tzbase.install:73
+msgid "The {tzjob}.nid"
+msgstr ""
+
+#: tzbase.install:86
+msgid "Timestamp for the beginning"
+msgstr ""
+
+#: tzbase.install:93
+msgid "Timestamp for the end"
+msgstr ""
+
+#: tzbase.install:100
+msgid "Total break time in seconds"
+msgstr ""
+
+#: tzbase.install:107
+msgid "Total travel time in seconds"
+msgstr ""
+
+#: tzbase.install:114
+msgid "Total travel length in kilometers"
+msgstr ""
+
+#: tzbase.install:120
+msgid "Signature text"
+msgstr ""
+
+#: tzbase.install:127;169
+msgid "Bit-combined flags"
+msgstr ""
+
+#: tzbase.install:156
+msgid "Account code for this job"
+msgstr ""
+
+#: tzbase.install:162
+msgid "The {tzjob}.nid of the parent job"
+msgstr ""
+
+#: tzbase.info:0
+msgid "TimeZynk Base"
+msgstr ""
+
+#: tzbase.info:0
+msgid "TimeZynk"
+msgstr ""
+

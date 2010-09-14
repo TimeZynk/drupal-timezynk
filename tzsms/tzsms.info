@@ -1,0 +1,6 @@
+name = TimeZynk SMS
+description = Provides TimeZynk SMS services
+package = TimeZynk
+core = 6.x
+dependencies[] = sms
+dependencies[] = genpass

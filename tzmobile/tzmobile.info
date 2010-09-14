@@ -1,0 +1,7 @@
+name = TimeZynk Mobile
+description = Provides mobile web application for TimeZynk
+package = TimeZynk
+dependencies[] = tzbase
+dependencies[] = jquery_ui
+dependencies[] = sms
+core = 6.x

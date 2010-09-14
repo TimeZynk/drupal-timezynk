@@ -1,0 +1,93 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  tzsms.module: n/a
+#  tzsms.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-09-13 11:14+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: tzsms.module:12
+msgid "Send TimeZynk installation SMS"
+msgstr ""
+
+#: tzsms.module:27
+msgid "TimeZynk SMS settings"
+msgstr ""
+
+#: tzsms.module:28
+msgid "TimeZynk sends out installation instructions via SMS, configure the settings here!"
+msgstr ""
+
+#: tzsms.module:32
+msgid "Default country code for this site"
+msgstr ""
+
+#: tzsms.module:34
+msgid "The country code will be used to send installation SMS to the users registered on this site"
+msgstr ""
+
+#: tzsms.module:38
+msgid "The content of the SMS"
+msgstr ""
+
+#: tzsms.module:40
+msgid "The available variables are: !url, !username and !password"
+msgstr ""
+
+#: tzsms.module:58
+msgid "You must enter a numeric country code (e.g. 46 for Sweden)!"
+msgstr ""
+
+#: tzsms.module:94
+msgid "Your mobile phone number or e-mail address"
+msgstr ""
+
+#: tzsms.module:95
+msgid "Send new password over SMS"
+msgstr ""
+
+#: tzsms.module:106
+msgid "New password has been sent to you over SMS"
+msgstr ""
+
+#: tzsms.module:153
+msgid "Welcome to TimeZynk! Visit !url to install, then login using !username as username and \"!password\" as password."
+msgstr ""
+
+#: tzsms.module:105;134
+msgid "tzsms"
+msgstr ""
+
+#: tzsms.module:105
+msgid "User %name requested new password over SMS"
+msgstr ""
+
+#: tzsms.module:134
+msgid "Sending install SMS to !nbr"
+msgstr ""
+
+#: tzsms.info:0
+msgid "TimeZynk SMS"
+msgstr ""
+
+#: tzsms.info:0
+msgid "Provides TimeZynk SMS services"
+msgstr ""
+
+#: tzsms.info:0
+msgid "TimeZynk"
+msgstr ""
+

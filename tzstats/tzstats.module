@@ -1,0 +1,51 @@
+<?php
+/**
+ * @file
+ * Provides TimeZynk statistics and reports
+ */
+
+/**
+ * Implementation of hook_menu()
+ */
+function tzstats_menu() {
+  $items['reports/invoice'] = array(
+    'title' => 'Invoice',
+    'title callback' => t,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzstats_invoice'),
+    'access arguments' => array('view tzstats invoice'),
+    'file' => 'tzstats.invoice.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm()
+ */
+function tzstats_perm() {
+  return array('view tzstats invoice');
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function tzstats_theme() {
+  return array(
+    'invoice_legend' => array(
+      'arguments' => array('trail' => NULL),
+    ),
+  );
+}
+
+function theme_invoice_legend($trail) {
+  return implode(' &raquo; ', $trail);
+}
+
+function theme_invoice_block($trail, $view_content) {
+  if(false !== strpos($view_content, 'view-content')) {
+    return '<div class="invoice-sub-block"><fieldset>' .
+      theme('invoice_subheading', $trail) . 
+      $view_content . '</fieldset></div>';
+  }
+}

@@ -1,0 +1,4 @@
+name = TimeZynk Base
+description = Provides TimeZynk data types and relations
+package = TimeZynk
+core = 6.x

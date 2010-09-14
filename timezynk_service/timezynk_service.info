@@ -1,0 +1,5 @@
+name = TimeZynk Service
+description = Provides TimeZynk services.
+package = TimeZynk
+dependencies[] = services
+core = 6.x

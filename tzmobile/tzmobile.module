@@ -1,0 +1,81 @@
+<?php
+/**
+ * Provides mobile web application for TimeZynk
+ */
+
+/**
+ * Implementation of hook_menu
+ */
+function tzmobile_menu() {
+  $items['tzmobile/reminder'] = array(
+    'page callback' => 'tzmobile_send_reminder',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_block
+ */
+function tzmobile_block($op = 'list', $delta = 0, $edit = array()) {
+  switch($op) {
+    case 'list':
+      return array(
+        array(
+          'info' => t('TimeZynk Mobile'),
+          'cache' => BLOCK_NO_CACHE /* BLOCK_CACHE_PER_ROLE */,
+          'custom' => FALSE,
+          'region' => 'content',
+        )
+      );
+
+    case 'view':
+      if(user_access('create tzreport content')) {
+        global $user;
+
+        $module_path = drupal_get_path('module', 'tzmobile');
+        $jssettings = array(
+          'base_path' => $module_path,
+          'blockid' => 'tzmobile-0',
+        );
+
+        /* Load jQuery UI datepicker */
+        jquery_ui_add(array('ui.datepicker'));
+        drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/iwebkit/ui.core.css');
+        drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/iwebkit/ui.datepicker.css');
+        drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/iwebkit/ui.theme.css');
+
+        drupal_add_js($module_path . '/ptTimeSelect/src/jquery.ptTimeSelect.js');
+        drupal_add_css($module_path . '/ptTimeSelect/src/jquery.ptTimeSelect.css');
+
+        drupal_add_js(array('tzmobile' => $jssettings), 'setting');
+        drupal_add_js($module_path . '/tzmobile.js');
+        $block['content'] = '<p>' . t('Please enable javascript') . '</p>';
+        $block['subject'] = t('No javascript');
+      }
+      return $block;
+  }
+}
+
+/**
+ * Send an SMS reminder to any user
+ */
+function tzmobile_send_reminder($username) {
+  // validate user
+  $uid = db_result(db_query("SELECT uid FROM {users} WHERE name = '%s'", $username));
+  if(!$uid) {
+    drupal_set_header('HTTP/1.1 404 Not Found');
+    watchdog('page not found', check_plain($_GET['q']), NULL, WATCHDOG_WARNING);
+    return;
+  }
+
+  $msg = t('Please remember to send your time report today. Best Regards / TimeZynk');
+  sms_send($username, $msg, array('country' => 46));
+
+  drupal_json(array(
+    'username' => $username,
+    'success' => TRUE
+  ));
+  exit();
+}

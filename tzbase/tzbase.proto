@@ -1,0 +1,173 @@
+// Protobuf specification for TimeZynk RPC.
+// All timestamps and dates are transferred as seconds since the epoch.
+
+option java_package = "com.timezynk.tzproto";
+option optimize_for = LITE_RUNTIME;
+
+package TZBase;
+
+// Basic types
+
+enum TZFlags {
+  CREATED = 0;
+  SIGNED_IN = 1;
+  REPORTED = 2;
+  APPROVED = 3;
+  LOCKED = 4;
+  DELETED = 255;
+}
+
+message TZReport {
+  optional int32 id = 1 [default = 0];
+  optional int32 vid = 2 [default = 0];
+  optional int32 job_id = 3 [default = 0];
+  optional string title = 4;
+  optional string description = 5;
+  optional int32 assigned_to = 6;
+  optional int32 begin_time = 7;
+  optional int32 end_time = 8;
+  optional int32 break_duration = 9;
+  optional int32 flags = 10;
+  optional int32 changed = 11;
+  optional string signature = 16;
+  optional string comments = 17;
+  optional int32 travel_duration = 18;
+  optional int32 travel_km = 19;
+}
+
+message TZJob {
+  optional int32 id = 1 [default = 0];
+  optional int32 parent_id = 2;
+  optional int32 flags = 3;
+  optional string job_code = 4;
+  optional string title = 5;
+  optional string description = 6;
+  optional int32 changed = 7;
+}
+
+message TZUser {
+  optional int32 id = 1 [default = 0];
+  optional string username = 2;
+  optional string realname = 3;
+  optional string email = 4;
+}
+
+// RPC messages
+
+message TZGetUserCmd {
+  optional int32 unused = 1 [default = 0];
+}
+
+message TZSyncCmd {
+  optional int32 last_sync = 1;
+  repeated TZJob new_job = 2;
+  repeated TZReport new_report = 3;
+}
+
+message TZGetReportCmd {
+  // Exact report id to fetch
+  optional int32 report_id = 1;
+  
+  // Fetch reports that have changed since timestamp
+  optional int32 changed_after = 2;
+  
+  // Maximum number of elements to fetch, 0 for no limit
+  optional int32 limit = 3;
+  
+  // Offset into dataset to fetch from
+  optional int32 offset = 4;
+}
+message TZGetReportResult {
+  optional int32 total_report_count = 1;
+  optional int32 offset = 2;
+  repeated TZReport report = 3;
+}
+
+message TZCreateReportCmd {
+  optional TZReport new_report = 2;
+}
+message TZCreateReportResult {
+  optional int32 id = 1;
+}
+
+
+message TZGetJobCmd {
+  // Exact job id to fetch
+  optional int32 job_id = 1;
+  
+  // Fetch jobs that have changed since timestamp
+  optional int32 changed_after = 2;
+  
+  // Maximum number of elements to fetch, 0 for no limit
+  optional int32 limit = 3;
+  
+  // Offset into dataset to fetch from
+  optional int32 offset = 4;
+}
+message TZGetJobResult {
+  optional int32 total_job_count = 1;
+  optional int32 offset = 2;
+  repeated TZJob job = 3;
+}
+
+message TZCreateJobCmd {
+  optional TZJob new_job = 1;
+}
+message TZCreateJobResult {
+  optional int32 id = 1;
+}
+
+
+
+
+// Generic single RPC command, must be wrapped in a TZRequest
+message TZCommand {
+  optional int32 client_handle = 1 [default = 0]; // request id from client for tracking
+  
+  // Commands
+  optional TZGetUserCmd get_user_cmd = 2;
+  optional TZSyncCmd sync_cmd = 3;
+  
+  optional TZGetReportCmd get_report_cmd = 4;
+  optional TZCreateReportCmd create_report_cmd = 5;
+  
+  optional TZGetJobCmd get_job_cmd = 6;
+  optional TZCreateJobCmd create_job_cmd = 7;
+}
+
+// Generic single RPC result, must be wrapped in a TZResponse
+message TZResult {
+  optional int32 client_handle = 1 [default = 0]; // same as for TZCommand
+  optional int32 error_code = 2;
+  optional string error_msg = 3;
+  
+  // Response for TZGetUserCmd
+  optional TZUser user = 4;
+  
+  // Response for TZSyncCmd
+  repeated TZReport report = 5;
+  repeated TZJob job = 6;
+
+  optional TZGetReportResult get_report_result = 7;
+  optional TZCreateReportResult create_report_result = 8;
+  
+  optional TZGetJobResult get_job_result = 9;
+  optional TZCreateJobResult create_job_result = 10;
+}
+
+//
+// RPC wrappers
+//
+
+// Generic pipe-lined RPC command
+message TZRequest {
+  optional string username = 1;
+  optional string password = 2;
+  repeated TZCommand command = 3;
+}
+
+// Generic pipe-lined RPC result
+message TZResponse {
+  repeated TZResult result = 1;
+  optional int32 timestamp = 2;
+}

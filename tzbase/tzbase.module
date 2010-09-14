@@ -1,0 +1,317 @@
+<?php
+/**
+ * Provides TimeZynk data types
+ */
+
+/**
+ * Flag marking that a time report for this job needs a signature at every submission
+ */
+define('TZJOB_SIGNATURE_EVERY_POST', 1);
+
+/**
+ * Implementation of hook_help().
+ */
+function tzbase_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#tzbase':
+      return '<p>' . t('Provides TimeZynk data types and relations') . '</p>';
+    case 'admin/modules#description':
+      return '<p>' . t('Provides TimeZynk data types and relations') . '</p>';
+  }
+}
+
+/**
+ * Implementation of hook_menu()
+ */
+function tzbase_menu() {
+  $items['admin/content/timezynk'] = array(
+    'title' => 'TimeZynk content',
+    'description' => 'Handle TimeZynk content',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzbase_admin_content'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'tzbase.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_node_info()
+ */
+function tzbase_node_info() {
+  return array(
+    'tzreport' => array(
+      'name' => t('Time Report'),
+      'module' => 'tzbase',
+      'description' => t('A time report for a specific project'),
+      'has_title' => TRUE,
+      'title_label' => t('Subject'),
+      'has_body' => TRUE,
+      'body_label' => t('Instructions'),
+    ),
+    'tzjob' => array(
+      'name' => t('Job'),
+      'module' => 'tzbase',
+      'description' => t('A job that you can report time on'),
+      'has_title' => TRUE,
+      'title_label' => t('Subject'),
+      'has_body' => TRUE,
+      'body_label' => t('Description'),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_perm()
+ */
+function tzbase_perm() {
+  return array(
+    'create tzreport content',
+    'view any tzreport content',
+    'view own tzreport content',
+    'edit any tzreport content',
+    'edit own tzreport content',
+
+    'create tzjob content',
+    'view any tzjob content',
+    'view own tzjob content',
+    'edit any tzjob content',
+    'edit own tzjob content');
+}
+
+/**
+ * Implementation of hook_access()
+ */
+function tzbase_access($op, $node, $account) {
+  $is_author = $account->uid == $node->uid;
+  switch($op) {
+    case 'create':
+      return user_access('create ' . $node . ' content', $account);
+
+    case 'view':
+      if(user_access('view any ' . $node->type . ' content', $account)) {
+        return true;
+      }
+      else if($is_author) {
+        return user_access('view own ' . $node->type . ' content', $account);
+      }
+      else {
+        return false;
+      }
+
+    case 'update':
+      if(user_access('edit any ' . $node->type . ' content', $account)) {
+        return true;
+      }
+      else if($is_author) {
+        return user_access('edit own ' . $node->type . ' content', $account);
+      }
+      else {
+        return false;
+      }
+
+    case 'delete':
+      /* Only super-user can delete reports and jobs */
+      return FALSE;
+  }
+}
+
+/**
+ * Implementation of hook_views_api.
+ * The rest of the hooks are in tzbase.views.inc
+ */
+function tzbase_views_api() {
+  return array(
+    'api' => 2.0,
+  );
+}
+
+function tzbase_form($node) {
+  $type = node_get_types('type', $node);
+  if($type->type == 'tzreport') {
+    $form['title'] = array(
+      '#type' => 'textfield',
+      '#title' => check_plain($type->title_label),
+      '#required' => TRUE,
+      '#default_value' => $node->title,
+      '#weight' => -17,
+      '#maxlength' => 255,
+    );
+    $form['jobid'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Select job'),
+      '#default_value' => $node->jobid,
+      '#required' => FALSE,
+      '#weight' => -16,
+    );
+    $form['assignedto'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Assigned to user'),
+      '#default_value' => $node->assignedto,
+      '#required' => FALSE,
+      '#weight' => -15,
+    );
+    $form['begintime'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Start time'),
+      '#default_value' => $node->begintime,
+      '#required' => TRUE,
+      '#weight' => -14,
+    );
+    $form['endtime'] = array(
+      '#type' => 'textfield',
+      '#title' => t('End time'),
+      '#default_value' => $node->endtime,
+      '#required' => TRUE,
+      '#weight' => -13,
+    );
+    $form['breakduration'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Break length'),
+      '#default_value' => $node->breakduration,
+      '#required' => FALSE,
+      '#weight' => -12,
+    );
+    $form['travelduration'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Travel time'),
+      '#default_value' => $node->travelduration,
+      '#required' => FALSE,
+      '#weight' => -11,
+    );
+    $form['travelkm'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Travel length (km)'),
+      '#default_value' => $node->travelkm,
+      '#required' => FALSE,
+      '#weight' => -10,
+    );
+    $form['signature'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Signature'),
+      '#default_value' => $node->signature,
+      '#required' => FALSE,
+      '#weight' => -9,
+      '#maxlength' => 255,
+    );
+    $form['body_filter']['body'] = array(
+      '#type' => 'textarea',
+      '#title' => check_plain($type->body_label),
+      '#default_value' => $node->body,
+      '#rows' => 7,
+      '#reziable' => TRUE,
+      '#required' => FALSE,
+    );
+    $form['body_filter']['filter'] = filter_form($node->format);
+    $form['flags'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Flags'),
+      '#default_value' => $node->flags,
+      '#required' => FALSE,
+    );
+    return $form;
+  }
+  else if($type->type == 'tzjob') {
+    $form['title'] = array(
+      '#type' => 'textfield',
+      '#title' => check_plain($type->title_label),
+      '#required' => TRUE,
+      '#default_value' => $node->title,
+      '#weight' => -5,
+      '#maxlength' => 255,
+    );
+    $form['jobcode'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Job code'),
+      '#required' => FALSE,
+      '#default_value' => $node->jobcode,
+      '#weight' => -4,
+      '#maxlength' => 60,
+    );
+    $form['parentid'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Parent job'),
+      '#required' => FALSE,
+      '#default_value' => $node->parentid,
+      '#weight' => -3,
+      '#maxlength' => 60,
+    );
+    $form['body_filter']['#weight'] = -2;
+    $form['body_filter']['body'] = array(
+      '#type' => 'textarea',
+      '#title' => check_plain($type->body_label),
+      '#default_value' => $node->body,
+      '#rows' => 7,
+      '#reziable' => TRUE,
+      '#required' => FALSE,
+    );
+    $form['body_filter']['filter'] = filter_form($node->format);
+    $form['flags'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Flags'),
+      '#default_value' => $node->flags,
+      '#required' => FALSE,
+    );
+    return $form;
+  }
+}
+
+/**
+ * Implementation of hook_insert()
+ */
+function tzbase_insert($node) {
+  if($node->type == 'tzreport') {
+    db_query("INSERT INTO {tzreport} (nid, vid, jobid, assignedto, begintime, endtime, breakduration, travelduration, travelkm, signature, flags) VALUES (%d, %d, %d, %d, %d, %d, %d, %d, %d, '%s', %d)",
+      $node->nid, $node->vid, $node->jobid, $node->assignedto, $node->begintime, $node->endtime, $node->breakduration,
+      $node->travelduration, $node->travelkm, $node->signature, $node->flags);
+  }
+  else if($node->type == 'tzjob') {
+    db_query("INSERT INTO {tzjob} (nid, vid, jobcode, parentid, flags) VALUES (%d, %d, '%s', %d, %d)",
+      $node->nid, $node->vid, $node->jobcode, $node->parentid, $node->flags);
+  }
+}
+
+/**
+ * Implementation of hook_update()
+ */
+function tzbase_update($node) {
+  if($node->revision) {
+    tzbase_insert($node);
+  }
+  else {
+    if($node->type == 'tzreport') {
+      db_query("UPDATE {tzreport} SET jobid = %d, assignedto = %d, begintime = %d, endtime = %d, breakduration = %d, travelduration = %d, travelkm = %d, signature = '%s', flags = %d WHERE vid = %d",
+      $node->jobid, $node->assignedto, $node->begintime, $node->endtime, $node->breakduration,
+      $node->travelduration, $node->travelkm, $node->signature, $node->flags, $node->vid);
+    }
+    else if($node->type == 'tzjob') {
+      db_query("UPDATE {tzjob} SET jobcode = '%s', parentid = %d, flags = %d WHERE vid = %d",
+      $node->jobcode, $node->parentid, $node->flags, $node->vid);
+    }
+  }
+}
+
+/**
+ * Implementation of hook_delete()
+ */
+function tzbase_delete($node) {
+  if($node->type == 'tzreport') {
+    db_query("DELETE FROM {tzreport} WHERE nid = %d", $node->nid);
+  }
+  else if($node->type == 'tzjob') {
+    db_query("DELETE FROM {tzjob} WHERE nid = %d", $node->nid);
+  }
+}
+
+/**
+ * Implementation of hook_load()
+ */
+function tzbase_load($node) {
+  if($node->type == 'tzreport') {
+    return db_fetch_object(db_query("SELECT * FROM {tzreport} WHERE vid = %d", $node->vid));
+  }
+  else if($node->type == 'tzjob') {
+    return db_fetch_object(db_query("SELECT * FROM {tzjob} WHERE vid = %d", $node->vid));
+  }
+}

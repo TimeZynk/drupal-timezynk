@@ -1,0 +1,178 @@
+<?php
+/**
+ * @file Installation file for TimeZynk data types
+ */
+
+/**
+ * Implementation of hook_install()
+ */
+function tzbase_install() {
+  drupal_install_schema('tzbase');
+
+  // Set up both content types as group posts if OG is installed
+  if(module_exists('og')) {
+  	variable_set('og_content_type_usage_'. 'tzreport', 'group_post_standard');
+  	variable_set('og_content_type_usage_'. 'tzjob', 'group_post_standard');
+  }
+}
+
+/**
+ * Implementation of hook_uninstall()
+ */
+function tzbase_uninstall() {
+  // remove group post settings
+  foreach(array('tzreport', 'tzjob') as $type) {
+    if('group_post_standard' == variable_get('og_content_type_usage_'. $type, 'omitted')) {
+      variable_del('og_content_type_usage_'. $type);
+    }
+  }
+
+  drupal_uninstall_schema('tzbase');
+}
+
+/**
+ * Implementation of hook_update_N()
+ */
+function tzbase_update_6001() {
+  $ret = array();
+  db_add_field($ret, 'tzreport', 'assignedto', array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => t('The {user}.uid that is assigned to this report'),
+      ));
+
+  return $ret;
+}
+
+/**
+ * Implementation of hook_schema()
+ */
+function tzbase_schema() {
+  $schema['tzreport'] = array(
+    'description' => t('Stores a TimeZynk time report connected to a specific assignment'),
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {node}.nid'),
+      ),
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {node_revision}.vid'),
+      ),
+      'jobid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => t('The {tzjob}.nid'),
+      ),
+      'assignedto' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => t('The {user}.uid that is assigned to this report'),
+      ),
+      'begintime' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Timestamp for the beginning'),
+      ),
+      'endtime' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Timestamp for the end'),
+      ),
+      'breakduration' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Total break time in seconds'),
+      ),
+      'travelduration' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Total travel time in seconds'),
+      ),
+      'travelkm' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Total travel length in kilometers'),
+      ),
+      'signature' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'description' => t('Signature text'),
+      ),
+      'flags' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Bit-combined flags'),
+      ),
+    ),
+    'primary key' => array('nid', 'vid'),
+    'unique keys' => array('vid' => array('vid')),
+    'indexes' => array('nid' => array('nid')),
+  );
+
+  $schema['tzjob'] = array(
+    'description' => t('Stores a TimeZynk time report connected to a specific assignment'),
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {node}.nid'),
+      ),
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {node_revision}.vid'),
+      ),
+      'jobcode' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'description' => t('Account code for this job'),
+      ),
+      'parentid' => array(
+      	'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => t('The {tzjob}.nid of the parent job'),
+      ),
+      'flags' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Bit-combined flags'),
+      ),
+    ),
+    'primary key' => array('nid', 'vid'),
+    'unique keys' => array('vid' => array('vid')),
+    'indexes' => array('nid' => array('nid')),
+  );
+
+  return $schema;
+}

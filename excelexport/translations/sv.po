@@ -1,0 +1,118 @@
+# Swedish translation of TimeZynk ExcelExport
+# Copyright 2010 TimeZynk AB <dev@timezynk.com>
+# Generated from files:
+#  excelexport.inc: n/a
+#  excelexport.module: n/a
+#  excelexport.info: n/a
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Drupal 6.x\n"
+"POT-Creation-Date: 2010-07-07 13:45+0200\n"
+"PO-Revision-Date: 2010-07-08 16:41+0100\n"
+"Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
+"Language-Team: TimeZynk AB <dev@timezynk.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Language: Swedish\n"
+"X-Poedit-Country: SWEDEN\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: excelexport.inc:17
+msgid "Id"
+msgstr "Id"
+
+#: excelexport.inc:17
+msgid "Subject"
+msgstr "Ämne"
+
+#: excelexport.inc:17
+msgid "Description"
+msgstr "Beskrivning"
+
+#: excelexport.inc:17
+msgid "Assignment"
+msgstr "Arbetsuppgift"
+
+#: excelexport.inc:17
+msgid "Assignment description"
+msgstr "Uppgiftsbeskrivning"
+
+#: excelexport.inc:18
+msgid "Start time"
+msgstr "Starttid"
+
+#: excelexport.inc:18
+msgid "End time"
+msgstr "Sluttid"
+
+#: excelexport.inc:18
+msgid "Break duration"
+msgstr "Rastlängd"
+
+#: excelexport.inc:18
+msgid "Total"
+msgstr "Totalt"
+
+#: excelexport.inc:18
+msgid "State"
+msgstr "Tillstånd"
+
+#: excelexport.inc:18
+msgid "Assigned to"
+msgstr "Utförs av"
+
+#: excelexport.inc:124
+msgid "New"
+msgstr "Ny"
+
+#: excelexport.inc:127
+msgid "Signed in"
+msgstr "Instämplad"
+
+#: excelexport.inc:130
+msgid "Reported"
+msgstr "Rapporterad"
+
+#: excelexport.inc:133
+msgid "Approved"
+msgstr "Attesterad"
+
+#: excelexport.inc:136
+msgid "Locked"
+msgstr "Låst"
+
+#: excelexport.inc:138
+msgid "Unknown"
+msgstr "Okänd"
+
+#: excelexport.inc:78
+msgid "Excel export"
+msgstr "Excelexport"
+
+#: excelexport.inc:78
+msgid "Could not autosize columns, no such instance of PHPExcel"
+msgstr "Kunde inte skala om kolumner, felaktig PHPExcel-instans"
+
+#: excelexport.module:12
+msgid "Provides excel export functionality for time reports. Requires tzbase.module."
+msgstr "Tillhandahåller Excelexport för tidrapporter. Kräver tzbase.module."
+
+#: excelexport.module:22
+msgid "Export time reports to excel"
+msgstr "Exportera till Excel"
+
+#: excelexport.info:0
+msgid "TimeZynk Excel Exporter"
+msgstr "Excel-exportör för TimeZynk"
+
+#: excelexport.info:0
+msgid "Exports time reports to excel"
+msgstr "Exporterar till Excel"
+
+#: excelexport.info:0
+msgid "TimeZynk"
+msgstr "TimeZynk"
+

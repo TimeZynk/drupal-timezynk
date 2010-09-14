@@ -1,0 +1,16 @@
+<?php
+/**
+ * @file implementation of protocol buffer server
+ */
+
+function tzproto_menu() {
+  $items['tzproto'] = array(
+    'title' => 'TimeZynk RPC',
+    'page callback' => 'tzproto_request',
+    'access callback' => TRUE,
+    'file' => 'tzproto.request.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}

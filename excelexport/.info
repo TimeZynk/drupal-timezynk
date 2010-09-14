@@ -1,0 +1,5 @@
+name = TimeZynk Excel Exporter
+description = Exports time reports to excel 
+core = 6.x
+dependencies[] = tzbase
+package = TimeZynk

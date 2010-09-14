@@ -1,0 +1,4 @@
+name = JAD Maker
+description = Generates and serves jad files
+package = TimeZynk
+core = 6.x
