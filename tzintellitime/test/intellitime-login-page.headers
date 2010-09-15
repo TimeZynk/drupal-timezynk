@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Date: Wed, 15 Sep 2010 12:42:30 GMT
+Server: Microsoft-IIS/6.0
+X-Powered-By: ASP.NET
+X-AspNet-Version: 1.1.4322
+p3p: CP="IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT"
+Set-Cookie: CustomerId=4094; path=/
+Set-Cookie: .ASPXAUTH=; expires=Mon, 11-Oct-1999 22:00:00 GMT; path=/
+Cache-Control: private
+Expires: Tue, 14 Sep 2010 12:42:30 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 7476
+

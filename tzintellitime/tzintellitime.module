@@ -1,5 +1,202 @@
 <?php
 
-    function tzintellitime_login($url, $username, $password) {
-    return NULL;
+/**
+ * Logs in to the intellitime web service at $url
+ * @param string $url the customer specific login URL.
+ * @param string $username the user to login as
+ * @param string $password the password to login with
+ * @return a CurlBean if successful, otherwise FALSE.
+ */
+function tzintellitime_login($url, $username, $password) {
+  $handle = curl_init($url);
+  if (!$handle) {
+    return FALSE;
+  }
+  $curl_bean = new CurlBean();
+  $curl_bean->handle = $handle;
+  $curl_bean->cookiejar = tempnam(file_directory_temp(), 'tzintellitime');
+
+  // Set standard curl options
+  $curl_opt = array(
+    CURLOPT_USERAGENT => "TimeZynk/1.0",
+    CURLOPT_COOKIEFILE => $curl_bean->cookiejar,
+    CURLOPT_COOKIEJAR => $curl_bean->cookiejar,
+  );
+  curl_setopt_array($curl_bean->handle, $curl_opt);
+
+  $doc = _tzintellitime_fetch_url($curl_bean->handle);
+  if (!$doc) {
+    return FALSE;
+  }
+  // TODO: handle FALSE/NULL
+  $post = _tzintellitime_build_login_post($doc, $username, $password);
+  $post_url = _tzintellitime_build_action_url(curl_getinfo($curl_bean->handle, CURLINFO_EFFECTIVE_URL), $post['action']);
+
+  $result = _tzintellitime_post($curl_bean->handle, $post_url, $post['data']);
+  if (_tzintellitime_is_valid_login($result)) {
+    return $curl_bean;
+  }
+  return FALSE;
+}
+
+/**
+ * Closes our connection to the intellitime web service and cleans up after us.
+ * @param CurlBean $curl_bean the bean returned by tzintellitime_open
+ */
+function tzintellitime_close($curl_bean) {
+  if (!$curl_bean) {
+    return;
+  }
+  if($curl_bean->handle !== NULL) {
+    curl_close($curl_bean->handle);
+  }
+  if ($curl_bean->cookiejar !== NULL) {
+    unlink($curl_bean->cookiejar);
+  }
+}
+
+/**
+ * Fetches the URL pointed out by the curl handle passed.
+ * @param resource $handle a curl handle returned by curl_init.
+ * @return DOMDocument the page pointed to the URL, FALSE if not successful.
+ */
+function _tzintellitime_fetch_url($handle) {
+  $curl_opts = array(
+    CURLOPT_RETURNTRANSFER => TRUE,
+    CURLOPT_FAILONERROR => TRUE,
+    CURLOPT_FOLLOWLOCATION => TRUE,
+  );
+  curl_setopt_array($handle, $curl_opts);
+
+  // $output contains the output string
+  $output = curl_exec($handle);
+  $doc = FALSE;
+  if ($output !== FALSE) {
+    $doc = new DOMDocument();
+    // Supress any warnings from malformed HTML soup
+    @$doc->loadHTML($output);
+  }
+  return $doc;
+}
+
+/**
+ * Parses the login form and constructs an array containing all that is
+ * needed to submit a login post to intellitime.
+ * @param DOMDocument $doc the document containing the login page.
+ * @param string $username the username as a string
+ * @param string $password the password as a string
+ * @return Array All that is needed by _tzintellitime_build_action_url and _tzintellitime_post
+ */
+function _tzintellitime_build_login_post($doc, $username, $password) {
+  $result = array();
+
+  $xpath = new DOMXPath($doc);
+  // TODO: handle FALSE/NULL
+  $result['action'] = _tzintellitime_parse_form_action($xpath);
+  $result['data'] = _tzintellitime_parse_form_hidden($xpath);
+  $result['data']['TextBoxUserName'] = $username;
+  $result['data']['TextBoxPassword'] = $password;
+
+  return $result;
+}
+
+/**
+ * Returns the value of the "action" attribute in the login form.
+ * @param DOMXPath $xpath An xpath object initialised from a DOMDocument containing the login page.
+ * @return the value of the "action" attribute in the login form if successful, else NULL.
+ */
+function _tzintellitime_parse_form_action($xpath) {
+  // Extract form action
+  $actionlist = $xpath->query("*/form/@action");
+  if($actionlist->length === 1) {
+    $action = $actionlist->item(0);
+    return $action->nodeValue;
+  }
+  return NULL;
+}
+
+/**
+ * Fetches the ASP specific "name" and "value" attributes of the input types "hidden" and
+ * "submit". They are needed for login.
+ * @param DOMXPath $xpath An xpath object initialised from a DOMDocument containing the login page.
+ * @return Array all fields found, as an array of "name" => "value" if any are found.
+ */
+function _tzintellitime_parse_form_hidden($xpath) {
+  $hiddenlist = $xpath->query('//input[@type="hidden"] | //input[@type="submit"]');
+  foreach($hiddenlist as $hidden) {
+    $name = $hidden->attributes->getNamedItem('name');
+    $value = $hidden->attributes->getNamedItem('value');
+    if($name && $value) {
+      $result[check_plain($name->nodeValue)] = $value->nodeValue;
     }
+  }
+  return $result;
+}
+
+/**
+ * Just strips the URL to the base intellitime URL of everything
+ * after "/Portal/" and adds the action part.
+ * @param string $url the URL as a string
+ * @param string $action the action as a string
+ * @return the newly constructed URL
+ */
+function _tzintellitime_build_action_url($url, $action) {
+  return preg_replace('/^(.*Portal\/).*$/', '$1', $url) . $action;
+}
+
+/**
+ * Sends a login post to intellitime.
+ * @param resource $handle a curl handle to the login page.
+ * @param string $url the post URL
+ * @param Array $post_data the post data as generated by _tzintellitime_build_login_post
+ * @return the contents of the page generated by executing the post, as a string.
+ */
+function _tzintellitime_post($handle, $url, $post_data) {
+  $curl_opts = array(
+    CURLOPT_RETURNTRANSFER => TRUE,
+    CURLOPT_FAILONERROR => TRUE,
+    CURLOPT_URL => $url,
+    CURLOPT_POSTFIELDS => http_build_query($post_data, '', '&'),
+    CURLOPT_POST => TRUE,
+    CURLOPT_FOLLOWLOCATION => TRUE,
+  );
+  curl_setopt_array($handle, $curl_opts);
+  return curl_exec($handle);
+}
+
+/**
+ * Just checks that if we have managed to login or not.
+ * @param bool $result TRUE if successful, else FALSE.
+ */
+function _tzintellitime_is_valid_login($result) {
+  if (!$result) {
+    return FALSE;
+  }
+
+  $doc = new DOMDocument();
+  // Supress any warnings from malformed HTML soup
+  @$doc->loadHTML($result);
+  $xpath = new DOMXPath($doc);
+
+  $list = $xpath->query('//a[@href="LogOut.aspx?MId=LogOut"]');
+  if ($list->length === 0) {
+    return FALSE;
+  }
+  return TRUE;
+}
+
+/**
+ * Small utility class that just holds a cURL handle and the location of the cookiejar file that cURL uses.
+ */
+class CurlBean {
+  /**
+   * The cookiejar file location.
+   * @var string or NULL
+   */
+  public $cookiejar = NULL;
+  /**
+   * the cURL handle used for login.
+   * @var a handle or NULL
+   */
+  public $handle = NULL;
+}
