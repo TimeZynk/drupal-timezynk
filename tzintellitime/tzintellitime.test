@@ -5,13 +5,13 @@
  * TimeZynk intellitime integration tests.
  */
 
-class TimeZynkIntellitimeTestCase extends DrupalWebTestCase {
+class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   private $intelli_url = "http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d";
   private $login_view_state = "dDwyNDA3MjczMzc7dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw1PjtpPDE1PjtpPDE5Pjs+O2w8dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9DdXN0b21lcnMvaW50ZWxsaXBsYW5fbG9nby5naWY7Pj47Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDx+L0ltYWdlcy9JbWdfSW50ZWxsaXBsYW5Mb2dvV2hpdGUuZ2lmOz4+Oz47Oz47Pj47Pj47dDxwPHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxMb2dnYSBpbjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8R2zDtm10IGzDtnNlbm9yZGV0Pzs+Pjs+Ozs+Oz4+Oz4+Oz5ngNWIe5WIW3O3prUuG7wbptC3jg==";
 
   public static function getInfo() {
     return array(
-      'name' => 'TimeZynk intellitime test suite',
+      'name' => 'TZIntellitimeBot test suite',
       'description' => '',
       'group' => 'TimeZynk',
     );
@@ -23,6 +23,12 @@ class TimeZynkIntellitimeTestCase extends DrupalWebTestCase {
   public function setUp() {
     // Enable any modules required for the test.
     parent::setUp('tzintellitime');
+    $this->bot = new TZIntellitimeBot($this->intelli_url);
+  }
+
+  public function tearDown() {
+    parent::tearDown();
+    $this->bot = NULL;
   }
 
   private function url($path = '') {
@@ -31,88 +37,101 @@ class TimeZynkIntellitimeTestCase extends DrupalWebTestCase {
   }
 
   public function testInvalidLogin() {
-    $curl_bean = tzintellitime_login($this->intelli_url, "monkey", "monkey");
-    $this->assertFalse($curl_bean);
-    tzintellitime_close($curl_bean);
+    $ok = $this->bot->login("monkey", "monkey");
+    $this->assertFalse($ok);
   }
 
   public function testValidUsernameInvalidPass() {
-    $curl_bean = tzintellitime_login($this->intelli_url, "Johan Heander", "monkey");
-    $this->assertFalse($curl_bean);
-    tzintellitime_close($curl_bean);
+    $ok = $this->bot->login("Johan Heander", "monkey");
+    $this->assertFalse($ok);
   }
-
 
   public function testValidLogin() {
-    $curl_bean = tzintellitime_login($this->intelli_url, "Johan Heander", "0733623516");
-    $this->assertTrue($curl_bean);
-    tzintellitime_close($curl_bean);
+    $ok = $this->bot->login("Johan Heander", "0733623516");
+    $this->assertTrue($ok);
   }
-
-  public function testValidLoginGeneratesCookiejarAndCurlHandle() {
-    $curl_bean = tzintellitime_login($this->intelli_url, "Johan Heander", "0733623516");
-    $this->assertTrue($curl_bean);
-    $this->assertNotNull($curl_bean->handle);
-    $this->assertNotNull($curl_bean->cookiejar);
-    tzintellitime_close($curl_bean);
-  }
-
 
   public function testFetchingLocalUrl() {
-    $handle = curl_init($this->url());
-    $this->assertTrue(_tzintellitime_fetch_url($handle), "Should not be FALSE");
-    curl_close($handle);
+    $this->assertTrue($this->bot->request($this->url()), "Should not be FALSE");
   }
 
   public function testFetchingInvalidUrl() {
-    $handle = curl_init($this->url("/my_monkeys")); // If this exists, your server is upset..
-    $this->assertFalse(_tzintellitime_fetch_url($handle), "Should be FALSE");
-    curl_close($handle);
+    $this->assertFalse($this->bot->request($this->url("/my_monkeys")), "Should be FALSE");
+  }
+}
+
+class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
+  private $intelli_url = "http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d";
+  private $login_view_state = "dDwyNDA3MjczMzc7dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw1PjtpPDE1PjtpPDE5Pjs+O2w8dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9DdXN0b21lcnMvaW50ZWxsaXBsYW5fbG9nby5naWY7Pj47Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDx+L0ltYWdlcy9JbWdfSW50ZWxsaXBsYW5Mb2dvV2hpdGUuZ2lmOz4+Oz47Oz47Pj47Pj47dDxwPHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxMb2dnYSBpbjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8R2zDtm10IGzDtnNlbm9yZGV0Pzs+Pjs+Ozs+Oz4+Oz4+Oz5ngNWIe5WIW3O3prUuG7wbptC3jg==";
+
+  public static function getInfo() {
+    return array(
+      'name' => 'TZIntellitimeParser test suite',
+      'description' => '',
+      'group' => 'TimeZynk',
+    );
   }
 
-  public function testLoadLoginPage() {
-    $handle = curl_init($this->intelli_url);
-    $doc = _tzintellitime_fetch_url($handle);
-    $xpath = new DOMXPath($doc);
-    $elements = $xpath->query("*/form");
-    $this->assertNotNull($elements);
-    $this->assertEqual(1, $elements->length);
-    curl_close($handle);
+  private function loadHTMLFile($filename) {
+    $full_name = dirname(__FILE__) . "/test/$filename";
+    $handle = fopen($full_name, "r");
+    $contents = fread($handle, filesize($full_name));
+    fclose($handle);
+    return new TZIntellitimeParser($contents);
   }
 
   public function testBuildLoginPost() {
-    $mockdoc = new DOMDocument();
-    $mockdoc->loadHTMLFile(dirname(__FILE__) . '/test/intellitime-login-page.html');
-    $post = _tzintellitime_build_login_post($mockdoc, "monkeyname", "monkeypass");
-    $this->assertEqual('Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d', $post['action']);
-    $this->assertEqual($this->login_view_state, $post['data']['__VIEWSTATE']);
-    $this->assertEqual("monkeyname", $post['data']['TextBoxUserName']);
-    $this->assertEqual("monkeypass", $post['data']['TextBoxPassword']);
-    $this->assertEqual("Logga in", $post['data']['ButtonLogin']);
-  }
-
-  public function testBuildLoginPostUrl() {
-    $login_url = "http://my2.intelliplan.se/IntelliplanWeb/v2005/(zercof5533snfaux0nedmt55)/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d";
-    $post_action = "UNIQUE_STRING";
-    $post_url = _tzintellitime_build_action_url($login_url, $post_action);
-    $this->assertEqual("http://my2.intelliplan.se/IntelliplanWeb/v2005/(zercof5533snfaux0nedmt55)/Portal/UNIQUE_STRING", $post_url);
+    $parser = $this->loadHTMLFile("intellitime-login-page.html");
+    $post = $parser->build_login_post("monkeyname", "monkeypass");
+    $this->assertEqual('Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d', $post['action'], "correct action parsed");
+    $this->assertEqual($this->login_view_state, $post['data']['__VIEWSTATE'], "Found viewstate");
+    $this->assertEqual("monkeyname", $post['data']['TextBoxUserName'], "username correct");
+    $this->assertEqual("monkeypass", $post['data']['TextBoxPassword'], "password correct");
+    $this->assertEqual("Logga in", $post['data']['ButtonLogin'], "parsed submit button");
   }
 
   public function testLoginCheckerCatchesFailedLogin() {
-    $filename = dirname(__FILE__) . '/test/intellitime-login-page.html';
-    $handle = fopen($filename, "r");
-    $contents = fread($handle, filesize($filename));
-    fclose($handle);
-    $this->assertFalse(_tzintellitime_is_valid_login($contents));
+    $parser = $this->loadHTMLFile('intellitime-login-page.html');
+    $this->assertFalse($parser->is_valid_login(), "detected failed login");
   }
 
   public function testLoginCheckerCatchesSuccessfulLogin() {
-    $filename = dirname(__FILE__) . '/test/intellitime-main-page.html';
-    $handle = fopen($filename, "r");
-    $contents = fread($handle, filesize($filename));
-    fclose($handle);
-    $this->assertTrue(_tzintellitime_is_valid_login($contents));
+    $parser = $this->loadHTMLFile('intellitime-main-page.html');
+    $this->assertTrue($parser->is_valid_login(), "detected successful login");
+  }
+
+  public function testParseAssignments() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
+    $assignments = $parser->parse_assignments();
+    $this->assertEqual(1, count($assignments), "only one assignment");
+    $this->assertEqual("5983", key($assignments), "assignment code 5983");
+  }
+
+  public function testParseAssignmentsUTF8Encoding() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
+    $assignments = $parser->parse_assignments();
+    $this->assertEqual("Testföretaget Effekt, Lagerarbetare", current($assignments), "expect UTF-8 encoding");
   }
 
 
+  public function testParseReportsCorrectCount() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
+    $reports = $parser->parse_reports();
+    $this->assertEqual(7, count($reports), "expect seven reports");
+  }
+
+  public function testParseReportsOnlyUniqueIDs() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
+    $reports = $parser->parse_reports();
+    foreach($reports as $report) {
+      $id[$report['id']] = TRUE;
+    }
+    $this->assertEqual(count($reports), count($id), "all IDs unique");
+  }
+
+  public function testParseReportsUTF8Encoding() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
+    $reports = $parser->parse_reports();
+    $this->assertEqual("Testföretaget Effekt, Lagerarbetare", $reports[3]['title'], "expect UTF-8 encoding");
+  }
 }

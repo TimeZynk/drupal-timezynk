@@ -1,202 +1,317 @@
 <?php
 
-/**
- * Logs in to the intellitime web service at $url
- * @param string $url the customer specific login URL.
- * @param string $username the user to login as
- * @param string $password the password to login with
- * @return a CurlBean if successful, otherwise FALSE.
- */
-function tzintellitime_login($url, $username, $password) {
-  $handle = curl_init($url);
-  if (!$handle) {
-    return FALSE;
-  }
-  $curl_bean = new CurlBean();
-  $curl_bean->handle = $handle;
-  $curl_bean->cookiejar = tempnam(file_directory_temp(), 'tzintellitime');
+class TZIntellitimeBot {
 
-  // Set standard curl options
-  $curl_opt = array(
-    CURLOPT_USERAGENT => "TimeZynk/1.0",
-    CURLOPT_COOKIEFILE => $curl_bean->cookiejar,
-    CURLOPT_COOKIEJAR => $curl_bean->cookiejar,
-  );
-  curl_setopt_array($curl_bean->handle, $curl_opt);
-
-  $doc = _tzintellitime_fetch_url($curl_bean->handle);
-  if (!$doc) {
-    return FALSE;
-  }
-  // TODO: handle FALSE/NULL
-  $post = _tzintellitime_build_login_post($doc, $username, $password);
-  $post_url = _tzintellitime_build_action_url(curl_getinfo($curl_bean->handle, CURLINFO_EFFECTIVE_URL), $post['action']);
-
-  $result = _tzintellitime_post($curl_bean->handle, $post_url, $post['data']);
-  if (_tzintellitime_is_valid_login($result)) {
-    return $curl_bean;
-  }
-  return FALSE;
-}
-
-/**
- * Closes our connection to the intellitime web service and cleans up after us.
- * @param CurlBean $curl_bean the bean returned by tzintellitime_open
- */
-function tzintellitime_close($curl_bean) {
-  if (!$curl_bean) {
-    return;
-  }
-  if($curl_bean->handle !== NULL) {
-    curl_close($curl_bean->handle);
-  }
-  if ($curl_bean->cookiejar !== NULL) {
-    unlink($curl_bean->cookiejar);
-  }
-}
-
-/**
- * Fetches the URL pointed out by the curl handle passed.
- * @param resource $handle a curl handle returned by curl_init.
- * @return DOMDocument the page pointed to the URL, FALSE if not successful.
- */
-function _tzintellitime_fetch_url($handle) {
-  $curl_opts = array(
-    CURLOPT_RETURNTRANSFER => TRUE,
-    CURLOPT_FAILONERROR => TRUE,
-    CURLOPT_FOLLOWLOCATION => TRUE,
-  );
-  curl_setopt_array($handle, $curl_opts);
-
-  // $output contains the output string
-  $output = curl_exec($handle);
-  $doc = FALSE;
-  if ($output !== FALSE) {
-    $doc = new DOMDocument();
-    // Supress any warnings from malformed HTML soup
-    @$doc->loadHTML($output);
-  }
-  return $doc;
-}
-
-/**
- * Parses the login form and constructs an array containing all that is
- * needed to submit a login post to intellitime.
- * @param DOMDocument $doc the document containing the login page.
- * @param string $username the username as a string
- * @param string $password the password as a string
- * @return Array All that is needed by _tzintellitime_build_action_url and _tzintellitime_post
- */
-function _tzintellitime_build_login_post($doc, $username, $password) {
-  $result = array();
-
-  $xpath = new DOMXPath($doc);
-  // TODO: handle FALSE/NULL
-  $result['action'] = _tzintellitime_parse_form_action($xpath);
-  $result['data'] = _tzintellitime_parse_form_hidden($xpath);
-  $result['data']['TextBoxUserName'] = $username;
-  $result['data']['TextBoxPassword'] = $password;
-
-  return $result;
-}
-
-/**
- * Returns the value of the "action" attribute in the login form.
- * @param DOMXPath $xpath An xpath object initialised from a DOMDocument containing the login page.
- * @return the value of the "action" attribute in the login form if successful, else NULL.
- */
-function _tzintellitime_parse_form_action($xpath) {
-  // Extract form action
-  $actionlist = $xpath->query("*/form/@action");
-  if($actionlist->length === 1) {
-    $action = $actionlist->item(0);
-    return $action->nodeValue;
-  }
-  return NULL;
-}
-
-/**
- * Fetches the ASP specific "name" and "value" attributes of the input types "hidden" and
- * "submit". They are needed for login.
- * @param DOMXPath $xpath An xpath object initialised from a DOMDocument containing the login page.
- * @return Array all fields found, as an array of "name" => "value" if any are found.
- */
-function _tzintellitime_parse_form_hidden($xpath) {
-  $hiddenlist = $xpath->query('//input[@type="hidden"] | //input[@type="submit"]');
-  foreach($hiddenlist as $hidden) {
-    $name = $hidden->attributes->getNamedItem('name');
-    $value = $hidden->attributes->getNamedItem('value');
-    if($name && $value) {
-      $result[check_plain($name->nodeValue)] = $value->nodeValue;
-    }
-  }
-  return $result;
-}
-
-/**
- * Just strips the URL to the base intellitime URL of everything
- * after "/Portal/" and adds the action part.
- * @param string $url the URL as a string
- * @param string $action the action as a string
- * @return the newly constructed URL
- */
-function _tzintellitime_build_action_url($url, $action) {
-  return preg_replace('/^(.*Portal\/).*$/', '$1', $url) . $action;
-}
-
-/**
- * Sends a login post to intellitime.
- * @param resource $handle a curl handle to the login page.
- * @param string $url the post URL
- * @param Array $post_data the post data as generated by _tzintellitime_build_login_post
- * @return the contents of the page generated by executing the post, as a string.
- */
-function _tzintellitime_post($handle, $url, $post_data) {
-  $curl_opts = array(
-    CURLOPT_RETURNTRANSFER => TRUE,
-    CURLOPT_FAILONERROR => TRUE,
-    CURLOPT_URL => $url,
-    CURLOPT_POSTFIELDS => http_build_query($post_data, '', '&'),
-    CURLOPT_POST => TRUE,
-    CURLOPT_FOLLOWLOCATION => TRUE,
-  );
-  curl_setopt_array($handle, $curl_opts);
-  return curl_exec($handle);
-}
-
-/**
- * Just checks that if we have managed to login or not.
- * @param bool $result TRUE if successful, else FALSE.
- */
-function _tzintellitime_is_valid_login($result) {
-  if (!$result) {
-    return FALSE;
-  }
-
-  $doc = new DOMDocument();
-  // Supress any warnings from malformed HTML soup
-  @$doc->loadHTML($result);
-  $xpath = new DOMXPath($doc);
-
-  $list = $xpath->query('//a[@href="LogOut.aspx?MId=LogOut"]');
-  if ($list->length === 0) {
-    return FALSE;
-  }
-  return TRUE;
-}
-
-/**
- * Small utility class that just holds a cURL handle and the location of the cookiejar file that cURL uses.
- */
-class CurlBean {
   /**
    * The cookiejar file location.
    * @var string or NULL
    */
-  public $cookiejar = NULL;
+  private $cookiejar = NULL;
   /**
    * the cURL handle used for login.
    * @var a handle or NULL
    */
-  public $handle = NULL;
+  private $handle = NULL;
+
+  /**
+   * The intellitime login URL, unique per customer.
+   * @var string
+   */
+  private $login_url = NULL;
+
+  /**
+   * Creates a new TZIntellitimeBot
+   * @param string $url the customer login URL for intellitime.
+   */
+  function __construct($url) {
+    $handle = curl_init();
+    $this->handle = $handle;
+    $this->cookiejar = tempnam(file_directory_temp(), 'tzintellitime');
+    $this->login_url = $url;
+
+    // Set standard curl options
+    $curl_opt = array(
+    CURLOPT_USERAGENT => "TimeZynk/1.0",
+    CURLOPT_COOKIEFILE => $this->cookiejar,
+    CURLOPT_COOKIEJAR => $this->cookiejar,
+    );
+    curl_setopt_array($this->handle, $curl_opt);
+  }
+
+  /**
+   * Destroys us!
+   * Evil androids hate robots!
+   */
+  function __destruct() {
+    if($this->handle !== NULL) {
+      curl_close($this->handle);
+    }
+    if ($this->cookiejar !== NULL) {
+      unlink($this->cookiejar);
+    }
+  }
+
+  /**
+   * Logs in to the intellitime web service at $url
+   * @param string $url the customer specific login URL.
+   * @param string $username the user to login as
+   * @param string $password the password to login with
+   * @return bool TRUE if successful, otherwise FALSE.
+   */
+  public function login($username, $password) {
+    $parser = $this->request($this->login_url);
+    if (!$parser) {
+      return FALSE;
+    }
+    // TODO: handle FALSE/NULL
+    $post = $parser->build_login_post($username, $password);
+    $post_url = $this->build_action_url("Portal/" . $post['action']);
+    $parser = $this->request($post_url, $post['data']);
+    if ($parser && $parser->is_valid_login()) {
+      return TRUE;
+    }
+    return FALSE;
+  }
+
+  public function load_assignments($date = 0) {
+    // Use today as default date
+    if($date === 0) {
+      $date = time();
+    }
+
+    $datestr = date("Y-m-d", $date);
+    $dateaction = "TimeReport/TimeReport.aspx?DateInWeek=$datestr";
+
+    $url = $this->build_action_url($dateaction);
+    $parser = $this->request($url);
+    if(!$parser) {
+      return NULL;
+    }
+
+    $result['assignments'] = $parser->parse_assignments();
+    $result['reports'] = $parser->parse_reports();
+    return $result;
+  }
+
+  /**
+   * Logout from the Intellitime Website
+   */
+  public function logout() {
+    $this->request($this->build_action_url('Portal/LogOut.aspx?MId=LogOut'));
+  }
+
+  /**
+   * Lowlevel HTTP request. Issues a GET or POST request depending on the value of $post_data
+   * @param string $url URL to request
+   * @param array $post_data optional key => value array of POST parameters
+   * @return TZIntellitimeParser Parser on success, otherwise FALSE
+   */
+  public function request($url, $post_data = NULL) {
+    $curl_opts = array(
+    CURLOPT_RETURNTRANSFER => TRUE,
+    CURLOPT_BINARYTRANSFER => TRUE,
+    CURLOPT_FAILONERROR => TRUE,
+    CURLOPT_URL => $url,
+    CURLOPT_FOLLOWLOCATION => TRUE,
+    );
+
+    if($post_data) {
+      $curl_opts[CURLOPT_POSTFIELDS] = http_build_query($post_data, '', '&');
+      $curl_opts[CURLOPT_POST] = TRUE;
+    } else {
+      $curl_opts[CURLOPT_POSTFIELDS] = NULL;
+      $curl_opts[CURLOPT_POST] = FALSE;
+    }
+    curl_setopt_array($this->handle, $curl_opts);
+
+    $output = curl_exec($this->handle);
+    if($output) {
+      return new TZIntellitimeParser($output);
+    }
+    return FALSE;
+  }
+
+  /**
+   *  Strip away <Dirname>/<File>.aspx?<query> from current effective URL and append $action instead
+   * @param string $url the URL as a string
+   * @param string $action the action as a string
+   * @return the newly constructed URL
+   */
+  private function build_action_url($action) {
+    $effective_url = curl_getinfo($this->handle, CURLINFO_EFFECTIVE_URL);
+    $base_url = preg_replace("/[^\/]+\/[^\/]+\.aspx.*$/", "", $effective_url);
+    return $base_url . $action;
+  }
 }
+
+class TZIntellitimeParser {
+  /**
+   * @var SimpleXMLElement document to parse
+   */
+  private $doc = NULL;
+
+  /**
+   * Create a new TZIntellitimeParser for the given HTML string
+   * @param string $html_string Raw HTML string in UTF-8 encoding
+   */
+  public function __construct($html_string) {
+    $doc = new DOMDocument();
+    /* Supress any warnings from malformed HTML soup.
+     * The intellitime docs are declared as ISO-8859-1, but are in fact UTF-8.
+     * In order to get rid of the horrible misencodings, we force UTF-8.
+     */
+    @$doc->loadHTML('<?xml encoding="UTF-8">' . $html_string);
+    $this->doc = simplexml_import_dom($doc);
+  }
+
+  /**
+   * Just checks that if we have managed to login or not.
+   * @return bool TRUE if successful, else FALSE.
+   */
+  public function is_valid_login() {
+    if (!$this->doc) {
+      return FALSE;
+    }
+
+    $list = $this->doc->xpath('//a[@href="LogOut.aspx?MId=LogOut"]');
+    if (count($list) === 0) {
+      return FALSE;
+    }
+    return TRUE;
+  }
+
+  /**
+   * Parses the login form and constructs an array containing all that is
+   * needed to submit a login post to intellitime.
+   * @param string $username the username as a string
+   * @param string $password the password as a string
+   * @return Array All that is needed by TZIntellitimeUtility::build_action_url and $this->post
+   */
+  public function build_login_post($username, $password) {
+    if(!$this->doc) {
+      return NULL;
+    }
+
+    $result['action'] = $this->parse_form_action();
+    $result['data'] = $this->parse_form_input_data();
+    $result['data']['TextBoxUserName'] = $username;
+    $result['data']['TextBoxPassword'] = $password;
+    return $result;
+  }
+
+  /**
+   * Returns the value of the "action" attribute in the login form.
+   * @return the value of the "action" attribute in the login form if successful, else NULL.
+   */
+  public function parse_form_action() {
+    // Extract form action
+    $actionlist = $this->doc->xpath("*/form/@action");
+    if(count($actionlist) === 1) {
+      return $actionlist[0]['action'];
+    }
+  }
+
+  /**
+   * Fetches the ASP specific "name" and "value" attributes of the input types "hidden" and
+   * "submit". They are needed for login.
+   * @return Array all fields found, as an array of "name" => "value" if any are found.
+   */
+  public function parse_form_input_data() {
+    $hiddenlist = $this->doc->xpath('//input[@type="hidden"] | //input[@type="submit"]');
+    foreach($hiddenlist as $hidden) {
+      $name = $hidden['name'];
+      $value = $hidden['value'];
+      if($name && $value) {
+        $result[strval($name)] = strval($value);
+      }
+    }
+    return $result;
+  }
+
+  /**
+   * Parse assignment titles and codes from the given document
+   * @return Array Map of "<jobcode>" => "<jobtitle>"
+   */
+  public function parse_assignments() {
+    //TODO: make more general?
+    $elems = $this->doc->xpath('//select[@id="CustOrdersDropDown"]');
+    foreach($elems as $elem) {
+      foreach($elem->option as $option) {
+        $jobcode = (string)$option['value'];
+        if($jobcode != '0') {
+          $result[$jobcode] = trim((string)$option);
+        }
+      }
+    }
+    return $result;
+  }
+
+  /**
+   * Gets all reports from the document.
+   * @return Array List of all reports as an array
+   */
+  public function parse_reports() {
+    $table_rows = $this->doc->xpath('//select[@id="SelectExpenses"]/../..');
+    $reports = array();
+    foreach($table_rows as $row) {
+      $reports[] = $this->parse_report_row($row);
+    }
+    return $reports;
+  }
+
+  /**
+   * Parses a HTML table row containing a time report and populates an array with 'id', 'day', 'month'
+   * 'title', 'start_hour', 'start_minute', 'end_hour', 'end_minute', 'break_duration_minutes', 'overtime_hours'
+   * @param SimpleXMLElement $row a SimpleXML element containing a table row plus children, containing report data.
+   * @return the populated array or NULL if parsing failed.
+   */
+  private function parse_report_row($row) {
+    // Find this rows unique id..
+    $report = array();
+    $onclick_handlers = $row->xpath('td/select/@onclick');
+    $id = preg_replace("/^.*Expense.aspx\?(.*)\'.*$/", "$1", (string)$onclick_handlers[0]['onclick']);
+    $report['id'] = $id;
+
+    //Fourth element has the span with a date label.
+    $td = $row->td[3];
+    $report['date'] = NULL;
+    $date_matches = array();
+    if ($td && preg_match("/(\d{2}).(\d{2})/", strval($td->span), $date_matches)) {
+      $report['date'] = array(
+        'month' => intval($date_matches[2], 10),
+        'day' => intval($date_matches[1], 10)
+      );
+    };
+
+    $td = $row->td[5];
+    $report['title'] = $td ? trim((string)$td->span) : NULL;
+
+    // indices 7, 9, 11 => start time, end time, break duration
+    $report['start'] = $this->parse_time_field($row->td[7]);
+    $report['end'] = $this->parse_time_field($row->td[9]);
+    $report['break_duration_minutes'] = intval($row->td[11]->input[0]['value'],10);
+    // TODO: find out if overtime is float or int..
+    // 15 is overtime. In hours...
+    $report['overtime_hours'] = intval($row->td[15]->input[0]['value'], 10);
+    return $report;
+  }
+
+  /**
+   * Matches dd:dd and returns matches as 'hour' and 'minute'
+   * @param SimpleXMLElement $td <td> element containing the <input> fields
+   */
+  private function parse_time_field($td) {
+    if (!$td) {
+      return NULL;
+    }
+    $matches = array();
+    if (!preg_match("/(\d{2}):(\d{2})/", strval($td->input[0]['value']), $matches)) {
+      return NULL;
+    }
+    $result = array();
+    $result['hour'] = intval($matches[1], 10);
+    $result['minute'] = intval($matches[2], 10);
+    return $result;
+  }
+}
+
