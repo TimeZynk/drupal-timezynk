@@ -2,4 +2,5 @@ name = TimeZynk intellitime integration
 description = Provides TimeZynk intellitime integration
 core = 6.x
 package = TimeZynk
-
+files[] = tzintellitime.module
+files[] = tzintellitime.test

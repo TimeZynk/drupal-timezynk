@@ -60,6 +60,7 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   }
 }
 
+
 class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
   private $intelli_url = "http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d";
   private $login_view_state = "dDwyNDA3MjczMzc7dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw1PjtpPDE1PjtpPDE5Pjs+O2w8dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9DdXN0b21lcnMvaW50ZWxsaXBsYW5fbG9nby5naWY7Pj47Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDx+L0ltYWdlcy9JbWdfSW50ZWxsaXBsYW5Mb2dvV2hpdGUuZ2lmOz4+Oz47Oz47Pj47Pj47dDxwPHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxMb2dnYSBpbjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8R2zDtm10IGzDtnNlbm9yZGV0Pzs+Pjs+Ozs+Oz4+Oz4+Oz5ngNWIe5WIW3O3prUuG7wbptC3jg==";
@@ -70,6 +71,15 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
       'description' => '',
       'group' => 'TimeZynk',
     );
+  }
+
+  public function setUp() {
+    // Enable any modules required for the test.
+    parent::setUp('tzintellitime');
+  }
+
+  public function tearDown() {
+    parent::tearDown();
   }
 
   private function loadHTMLFile($filename) {
@@ -124,7 +134,7 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
     $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
     $reports = $parser->parse_reports();
     foreach($reports as $report) {
-      $id[$report['id']] = TRUE;
+      $id[$report->id] = TRUE;
     }
     $this->assertEqual(count($reports), count($id), "all IDs unique");
   }
@@ -132,6 +142,157 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
   public function testParseReportsUTF8Encoding() {
     $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
     $reports = $parser->parse_reports();
-    $this->assertEqual("Testföretaget Effekt, Lagerarbetare", $reports[3]['title'], "expect UTF-8 encoding");
+    $this->assertEqual("Testföretaget Effekt, Lagerarbetare", $reports[3]->title, "expect UTF-8 encoding");
   }
+
+  public function testFindRowById() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
+    $row = $parser->find_row_by_id('mhbLP96iqH1DQyNUuxAbvM4hbku5Eii3');
+    $this->assertEqual('OldRowsRepeater__ctl5_td1', (string) $row->td[0]['id'], "expect OldRowsRepeater__ctl5_td1");
+  }
+  public function testFindRowByIdShouldNotFindThis() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
+    $row = $parser->find_row_by_id('Expense.aspx?');
+    $this->assertFalse($row, "expect FALSE caused by illegal ID.");
+  }
+
+  public function testBuildSelects() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
+    $selects = $parser->build_selects();
+    $expected_array["CustOrdersDropDown"] = 0;
+    $this->assertEqual($expected_array, $selects, "Expect CustOrdersDropDown = 0");
+  }
+
 }
+
+class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
+
+  private $report = NULL;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'TZIntellitimeReport test suite',
+      'description' => '',
+      'group' => 'TimeZynk',
+    );
+  }
+
+  public function setUp() {
+    // Enable any modules required for the test.
+    parent::setUp('tzintellitime');
+    $this->report = new TZIntellitimeReport();
+  }
+
+  public function tearDown() {
+    parent::tearDown();
+    $this->report = NULL;
+  }
+
+  public function testSetYearForReportWithNoMonth() {
+    $years[0] = 2009;
+    $this->assertFalse($this->report->set_year($years), "expected FALSE from ::set_year");
+    $this->assertNull($this->report->year, 'Expected $report->year to be NULL');
+  }
+
+  public function testSetYearForReportWithMonthNotDecOrJan() {
+    $this->report->month=11;
+    $years[0] = 2009;
+    $years[1] = 2010;
+    $this->assertFalse($this->report->set_year($years), "expected FALSE from ::set_year");
+    $this->assertNull($this->report->year, 'Expected $report->year to be NULL');
+  }
+
+  public function testSetYearWithTooFewYears() {
+    $this->report->month = 1;
+    $years = array();
+    $this->assertFalse($this->report->set_year($years), 'Expected FALSE from::set_year called with empty $years');
+    $this->assertNull($this->report->year, 'Expected $report->year to be NULL');
+  }
+
+  public function testSetYearWithTooManyYears() {
+    $this->report->month = 1;
+    $years[] = 2009;
+    $years[] = 2010;
+    $years[] = 2011;
+    $this->assertFalse($this->report->set_year($years), 'Expected FALSE from::set_year called with too large $years');
+    $this->assertNull($this->report->year, 'Expected $report->year to be NULL');
+  }
+
+  public function testSetYear() {
+    $this->report->month = 1;
+    $years[] = 2009;
+    $this->assertTrue($this->report->set_year($years), 'Expected true');
+    $this->assertEqual($years[0], $this->report->year, 'Expected year to be 2009, it was ' . $this->report->year);
+  }
+
+  public function testSetYearForFirstMonth() {
+    $this->report->month = 1;
+    $years[] = 2009;
+    $years[] = 2010;
+    $this->assertTrue($this->report->set_year($years), 'Expected true');
+    $this->assertEqual($years[1], $this->report->year, 'Expected year to be 2010, it was ' . $this->report->year);
+  }
+
+  public function testSetYearForLastMonth() {
+    $this->report->month = 12;
+    $years[] = 2009;
+    $years[] = 2010;
+    $this->assertTrue($this->report->set_year($years), 'Expected true');
+    $this->assertEqual($years[0], $this->report->year, 'Expected year to be 2009, it was ' . $this->report->year);
+  }
+
+  public function testComparisonIdentical() {
+    $other_report = new TZIntellitimeReport();
+    $this->report->id = 'mhbLP96iqH2Zr7CDtWyWb84hbku5Eii3';
+    $other_report->id = 'mhbLP96iqH2Zr7CDtWyWb84hbku5Eii3';
+    $this->report->done = FALSE;
+    $other_report->done = FALSE;
+    $this->report->year = 2010;
+    $other_report->year = 2010;
+    $this->report->month = 9;
+    $other_report->month = 9;
+    $this->report->day = 15;
+    $other_report->day = 15;
+    $this->report->title = "En dag i livet för en apa.";
+    $other_report->title = "En dag i livet för en apa.";
+    $this->report->begin = "08:00";
+    $other_report->begin = "08:00";
+    $this->report->end = "18:00";
+    $other_report->end = "18:00";
+    $this->report->break_duration_minutes = 24;
+    $other_report->break_duration_minutes = 24;
+    $this->report->overtime_hours = 4;
+    $other_report->overtime_hours = 4;
+
+    $this->assertEqual($this->report, $other_report, 'Expected the two reports to be considered equal.');
+  }
+
+  public function testComparisonDifferent() {
+    $other_report = new TZIntellitimeReport();
+    $this->report->id = 'mhbLP96iqH2Zr7CDtWyWb84hbku5Eii3';
+    $other_report->id = 'mhbLP96iqH2Zr7cDtWyWb84hbku5Eii3';
+    $this->report->done = FALSE;
+    $other_report->done = FALSE;
+    $this->report->year = 2010;
+    $other_report->year = 2010;
+    $this->report->month = 9;
+    $other_report->month = 9;
+    $this->report->day = 15;
+    $other_report->day = 15;
+    $this->report->title = "En dag i livet för en apa.";
+    $other_report->title = "En dag i livet för en apa.";
+    $this->report->begin = "08:00";
+    $other_report->begin = "08:00";
+    $this->report->end = "18:00";
+    $other_report->end = "18:00";
+    $this->report->break_duration_minutes = 24;
+    $other_report->break_duration_minutes = 24;
+    $this->report->overtime_hours = 4;
+    $other_report->overtime_hours = 4;
+
+    $this->assertNotEqual($this->report, $other_report, 'Expected the two reports to not be considered equal.');
+
+  }
+
+}
+
