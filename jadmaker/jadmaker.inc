@@ -9,8 +9,22 @@
 function jadmaker_create_jad() {
   $ua = $_SERVER['HTTP_USER_AGENT'];
 
-  if(false !== strpos($ua, 'Android')  ||
-     false !== strpos($ua, 'iPhone')) {
+  // Try to serve up APK-file if available
+  if(false !== strpos($ua, 'Android')) {
+    $apkfile = 'tz-Generic-android-sv.apk';
+    $apkpath = file_create_path($apkfile);
+    if(file_exists($apkpath)) {
+      file_transfer($apkfile, array(
+        'Content-Type: application/vnd.android.package-archive',
+        'Content-Disposition: attachment; filename="' . $apkfile . '";',
+        'Content-Length: ' . filesize(file_create_path($apkfile)),
+      ));
+    } else {
+      drupal_goto('/mobile');
+    }
+  }
+
+  if(false !== strpos($ua, 'iPhone')) {
     drupal_goto('/mobile');
   }
 
