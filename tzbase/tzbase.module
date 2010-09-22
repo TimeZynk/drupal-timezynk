@@ -26,15 +26,24 @@ function tzbase_help($path, $arg) {
 function tzbase_menu() {
   $items['admin/content/timezynk'] = array(
     'title' => 'TimeZynk content',
-    'description' => 'Handle TimeZynk content',
+    'description' => 'Handle TimeZynk content.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('tzbase_admin_content'),
     'access arguments' => array('administer site configuration'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'tzbase.admin.inc',
   );
+  $items['admin/settings/timezynk'] = array(
+    'title' => 'TimeZynk',
+    'description' => 'Configure TimeZynk modules.',
+    'page callback' => 'tzbase_admin_settings_block',
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'tzbase.admin.inc',
+  );
   return $items;
 }
+
 
 /**
  * Implementation of hook_node_info()
@@ -315,3 +324,5 @@ function tzbase_load($node) {
     return db_fetch_object(db_query("SELECT * FROM {tzjob} WHERE vid = %d", $node->vid));
   }
 }
+
+// TODO: add a field to login-form containing phone-number?

@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function tzintellitime_uninstall() {
+  // Remove tables.
+//  drupal_uninstall_schema('tzintellitime');
+
+  // Remove variables
+  variable_del('tzintellitime_base_url');
+}

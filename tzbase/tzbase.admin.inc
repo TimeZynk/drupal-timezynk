@@ -3,6 +3,12 @@
  * @file Settings for the administration page
  */
 
+/**
+ * Page callback for tzbase admin/settings page
+ */
+function tzbase_admin_settings_block() {
+  return theme('admin_block_content', system_admin_menu_block(menu_get_item()));
+}
 
 
 /**

@@ -9,7 +9,10 @@ if(!$ok) {
   echo "Login failed!\n";
   exit();
 }
-
+$start_time = microtime(TRUE);
 $assignments = $bot->load_assignments();
+$stop_time = microtime(TRUE);
 print_r($assignments);
 echo "\n";
+
+echo ($stop_time - $start_time) . "\n";

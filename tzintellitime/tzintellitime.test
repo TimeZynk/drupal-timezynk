@@ -8,6 +8,7 @@
 class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   private $intelli_url = "http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d";
   private $login_view_state = "dDwyNDA3MjczMzc7dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw1PjtpPDE1PjtpPDE5Pjs+O2w8dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9DdXN0b21lcnMvaW50ZWxsaXBsYW5fbG9nby5naWY7Pj47Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDx+L0ltYWdlcy9JbWdfSW50ZWxsaXBsYW5Mb2dvV2hpdGUuZ2lmOz4+Oz47Oz47Pj47Pj47dDxwPHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxMb2dnYSBpbjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8R2zDtm10IGzDtnNlbm9yZGV0Pzs+Pjs+Ozs+Oz4+Oz4+Oz5ngNWIe5WIW3O3prUuG7wbptC3jg==";
+  private $cookiejar;
 
   public static function getInfo() {
     return array(
@@ -23,17 +24,15 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   public function setUp() {
     // Enable any modules required for the test.
     parent::setUp('tzintellitime');
-    $this->bot = new TZIntellitimeBot($this->intelli_url);
+    require_once dirname(__FILE__) . '/tzintellitime.class.inc';
+    $this->cookiejar = tempnam(file_directory_temp(), 'tzintellitime');
+    $this->bot = new TZIntellitimeBot($this->intelli_url, $this->cookiejar);
   }
 
   public function tearDown() {
     parent::tearDown();
-    $this->bot = NULL;
-  }
-
-  private function url($path = '') {
-    $url = "http://localhost/user" . $path;
-    return $url;
+    unset($this->bot);
+    unlink($this->cookiejar);
   }
 
   public function testInvalidLogin() {
@@ -51,12 +50,20 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
     $this->assertTrue($ok);
   }
 
+  public function testDestructorDoesNotRemoveCookiejar() {
+     $ok = $this->bot->login("Johan Heander", "0733623516");
+     $this->assertTrue($ok);
+     unset($this->bot);
+     $this->assertTrue(file_exists($this->cookiejar), "Expected cookiejar file to still exist after destruction of bot.");
+  }
+
   public function testFetchingLocalUrl() {
-    $this->assertTrue($this->bot->request($this->url()), "Should not be FALSE");
+    $this->assertTrue($this->bot->request(url('user', array('absolute' => TRUE))), "Should not be FALSE");
   }
 
   public function testFetchingInvalidUrl() {
-    $this->assertFalse($this->bot->request($this->url("/my_monkeys")), "Should be FALSE");
+    global $base_url;
+    $this->assertFalse($this->bot->request(url('user', array('absolute' => TRUE)) . '/my_monkeys'), "Should be FALSE");
   }
 }
 
@@ -76,6 +83,7 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
   public function setUp() {
     // Enable any modules required for the test.
     parent::setUp('tzintellitime');
+    require_once dirname(__FILE__) . '/tzintellitime.class.inc';
   }
 
   public function tearDown() {
@@ -180,6 +188,7 @@ class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
   public function setUp() {
     // Enable any modules required for the test.
     parent::setUp('tzintellitime');
+    require_once dirname(__FILE__) . '/tzintellitime.class.inc';
     $this->report = new TZIntellitimeReport();
   }
 
@@ -296,3 +305,51 @@ class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
 
 }
 
+class TZIntellitimeAdminPageTests extends DrupalWebTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Intellitime Admin page test suite',
+      'description' => '',
+      'group' => 'TimeZynk',
+    );
+  }
+
+  public function setUp() {
+    // Enable any modules required for the test.
+   parent::setUp('tzintellitime');
+   // Create and login user
+   $admin_user = $this->drupalCreateUser(array('administer site configuration'));
+   $this->drupalLogin($admin_user);
+  }
+
+  public function testSetHTTPSBaseUrl() {
+    $edit = array();
+    $edit['tzintellitime_base_url'] = 'https://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d';
+    $this->drupalPost('admin/settings/timezynk/tzintellitime', $edit, t('Save configuration'));
+    $this->assertText(t('The configuration options have been saved.'));
+    $this->assertEqual($edit['tzintellitime_base_url'], variable_get('tzintellitime_base_url', ''),
+      'Expected ' . $edit['tzintellitime_base_url'] . ', got ' . variable_get('tzintellitime_base_url', ''));
+  }
+
+  public function testSetHTTPBaseUrl() {
+    $edit = array();
+    // We should not accept HTTP connections
+    $edit['tzintellitime_base_url'] = 'http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d';
+    $this->drupalPost('admin/settings/timezynk/tzintellitime', $edit, t('Save configuration'));
+    $this->assertText(t('We only allow HTTPS (SSL) connections to intelliplan for security reasons.'));
+    $this->assertNotEqual($edit['tzintellitime_base_url'], variable_get('tzintellitime_base_url', ''),
+      'Did not expect ' . $edit['tzintellitime_base_url'] . ', got ' . variable_get('tzintellitime_base_url', ''));
+  }
+
+  public function testSetInvalidBaseUrl() {
+    $edit = array();
+    // We should not accept HTTP connections
+    $edit['tzintellitime_base_url'] = 'monkey';
+    $this->drupalPost('admin/settings/timezynk/tzintellitime', $edit, t('Save configuration'));
+    $this->assertText(t('Invalid URL, please enter a correct intelliplan login URL.'));
+    $this->assertNotEqual($edit['tzintellitime_base_url'], variable_get('tzintellitime_base_url', ''),
+      'Did not expect ' . $edit['tzintellitime_base_url'] . ', got ' . variable_get('tzintellitime_base_url', ''));
+  }
+
+}

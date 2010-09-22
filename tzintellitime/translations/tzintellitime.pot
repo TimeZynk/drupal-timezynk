@@ -1,0 +1,54 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  tzintellitime.admin.inc: n/a
+#  tzintellitime.module: n/a
+#  tzintellitime.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-09-23 13:05+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: tzintellitime.admin.inc:6
+msgid "Intellitime base URL"
+msgstr ""
+
+#: tzintellitime.admin.inc:7
+msgid "Customer specific HTTPS URL for the portal login page"
+msgstr ""
+
+#: tzintellitime.admin.inc:23
+msgid "Invalid URL, please enter a correct intelliplan login URL."
+msgstr ""
+
+#: tzintellitime.module:9
+msgid "Intellitime"
+msgstr ""
+
+#: tzintellitime.module:10
+msgid "Sitewide settings for the TimeZynk Intellitime bridge."
+msgstr ""
+
+#: tzintellitime.info:0
+msgid "TimeZynk intellitime integration"
+msgstr ""
+
+#: tzintellitime.info:0
+msgid "Provides TimeZynk intellitime integration"
+msgstr ""
+
+#: tzintellitime.info:0
+msgid "TimeZynk"
+msgstr ""
+
