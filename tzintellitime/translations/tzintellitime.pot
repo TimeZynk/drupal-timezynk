@@ -4,6 +4,7 @@
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
 #  tzintellitime.admin.inc: n/a
+#  tzintellitime.class.inc: n/a
 #  tzintellitime.module: n/a
 #  tzintellitime.info: n/a
 #
@@ -11,7 +12,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-09-23 13:05+0200\n"
+"POT-Creation-Date: 2010-09-23 18:50+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -30,6 +31,22 @@ msgstr ""
 
 #: tzintellitime.admin.inc:23
 msgid "Invalid URL, please enter a correct intelliplan login URL."
+msgstr ""
+
+#: tzintellitime.class.inc:547
+msgid "Intellitime time report with id: @id"
+msgstr ""
+
+#: tzintellitime.module:112;144
+msgid "tzintellitime"
+msgstr ""
+
+#: tzintellitime.module:112
+msgid "Inserted report !nid"
+msgstr ""
+
+#: tzintellitime.module:144
+msgid "Inserted job !nid"
 msgstr ""
 
 #: tzintellitime.module:9

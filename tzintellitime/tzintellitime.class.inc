@@ -15,20 +15,38 @@ class TZIntellitimeBot {
   private $login_url = NULL;
 
   /**
+   * An array containing the cookiejar file path and
+   * the last known effective URL.
+   * Fields are referenced as $session_data['cookiejar']
+   * and $session_data['last_effective_url']
+   * @var Array
+   */
+  private $session_data = NULL;
+
+  /**
    * Creates a new TZIntellitimeBot
    * @param string $url the customer login URL for intellitime.
-   * @param string $cookiejar the path to a temporary file used to store our login-cookies.
+   * @param Array $session_data Optional session data from a previous session
    */
-  function __construct($url, $cookiejar) {
+  function __construct($url, $session_data = NULL) {
     $handle = curl_init();
     $this->handle = $handle;
     $this->login_url = $url;
 
+    // Resume session if session data is available, otherwise initialize new
+    if($session_data) {
+      $this->session_data = $session_data;
+    } else {
+      $this->session_data = array(
+        'cookiejar' => tempnam(file_directory_temp(), 'tzintellitimebot'),
+      );
+    }
+
     // Set standard curl options
     $curl_opt = array(
-    CURLOPT_USERAGENT => "TimeZynk/1.0",
-    CURLOPT_COOKIEFILE => $cookiejar,
-    CURLOPT_COOKIEJAR => $cookiejar,
+      CURLOPT_USERAGENT => "TimeZynk/1.0",
+      CURLOPT_COOKIEFILE => $this->session_data['cookiejar'],
+      CURLOPT_COOKIEJAR => $this->session_data['cookiejar'],
     );
     curl_setopt_array($this->handle, $curl_opt);
   }
@@ -117,6 +135,7 @@ class TZIntellitimeBot {
 
     $output = curl_exec($this->handle);
     if($output) {
+      $this->session_data['last_effective_url'] = curl_getinfo($this->handle, CURLINFO_EFFECTIVE_URL);
       return new TZIntellitimeParser($output);
     }
     return FALSE;
@@ -129,8 +148,7 @@ class TZIntellitimeBot {
    * @return the newly constructed URL
    */
   private function build_action_url($action) {
-    $effective_url = curl_getinfo($this->handle, CURLINFO_EFFECTIVE_URL);
-    $base_url = preg_replace("/[^\/]+\/[^\/]+\.aspx.*$/", "", $effective_url);
+    $base_url = preg_replace("/[^\/]+\/[^\/]+\.aspx.*$/", "", $this->session_data['last_effective_url']);
     return $base_url . $action;
   }
 
@@ -180,6 +198,36 @@ class TZIntellitimeBot {
     return $this->request($post_url, $post['data']);
   }
 
+  /**
+   * Fetches persistable session data that can be used to resume
+   * this session with a different TZIntellitimeBot object.
+   * @return Array session_data
+   */
+  public function get_session_data() {
+    return $this->session_data;
+  }
+
+  /**
+   * Check if session data could describe a valid session
+   * @param Array $session_data
+   * @return TRUE if session data could be valid, else FALSE
+   */
+  public static function is_valid_session_data($session_data) {
+    return isset($session_data['cookiejar']) &&
+      file_exists($session_data['cookiejar']) &&
+      isset($session_data['last_effective_url']) &&
+      strlen($session_data['last_effective_url']);
+  }
+
+  /**
+   * Destroy session data and free associated resources
+   * @param Array $session_data
+   */
+  public static function destroy_session_data(&$session_data) {
+    unlink($session_data['cookiejar']);
+    unset($session_data['cookiejar']);
+    unset($session_data['last_effective_url']);
+  }
 }
 
 class TZIntellitimeParser {
@@ -353,7 +401,7 @@ class TZIntellitimeParser {
       foreach($elem->option as $option) {
         $jobcode = (string)$option['value'];
         if($jobcode != '0') {
-          $result[$jobcode] = trim((string)$option);
+          $result[] = array('id' => $jobcode, 'title' => trim((string)$option));
         }
       }
     }
@@ -508,6 +556,51 @@ class TZIntellitimeReport {
 
   public function get_date_string() {
     return sprintf("%04d-%02d-%02d", $this->year, $this->month, $this->day);
+  }
+
+  /**
+   * Convert this TZIntellitimeReport to a tzreport node. If a previous
+   * node is available, it is updated instead.
+   * @param array $tzreport optional tzreport node to update
+   * @return array new or updated tzreport node
+   */
+  public function convert_to_tzreport($tzreport = NULL) {
+    tzbase_include_proto_classes();
+
+    if(!$tzreport) {
+      $tzreport = new stdClass();
+      $tzreport->type = 'tzreport';
+    }
+
+    $tzreport->title = $this->title;
+    $tzreport->intellitime_id = $this->id;
+
+    // Convert begin and end to epoch timestamps
+    $tzreport->begintime = $this->get_in_epoch($this->begin);
+    $tzreport->endtime = $this->get_in_epoch($this->end);
+    if ($tzreport->endtime < $tzreport->begintime) {
+      // endtime can only be smaller if we have passed midnight.
+      $tzreport->endtime += 24*60*60; // add 24h.
+    }
+    $tzreport->breakduration = $this->break_duration_minutes*60;
+
+    $tzreport->travelduration = 0;
+    $tzreport->travelkm = 0;
+    $tzreport->signature = "";
+
+    $tzreport->flags = $this->done ? TZFlags::REPORTED : TZFlags::CREATED;
+    $tzreport->changed = time();
+
+    return $tzreport;
+  }
+
+  /**
+   * Gets an epoch time stamp based on the reports year and month, day attributes
+   * and the passed time string.
+   * @param string $time_string e.g "07:00"
+   */
+  private function get_in_epoch($time_string) {
+    return strtotime($this->get_date_string() . "T" . $time_string);
   }
 }
 

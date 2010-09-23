@@ -93,7 +93,10 @@ function tzbase_perm() {
  * Implementation of hook_access()
  */
 function tzbase_access($op, $node, $account) {
-  $is_author = $account->uid == $node->uid;
+  $is_author = FALSE;
+  if (is_object($node)) {
+    $is_author = $account->uid === $node->uid;
+  }
   switch($op) {
     case 'create':
       return user_access('create ' . $node . ' content', $account);
@@ -285,7 +288,7 @@ function tzbase_insert($node) {
  * Implementation of hook_update()
  */
 function tzbase_update($node) {
-  if($node->revision) {
+  if(isset($node->revision) && $node->revision) {
     tzbase_insert($node);
   }
   else {
@@ -323,6 +326,15 @@ function tzbase_load($node) {
   else if($node->type == 'tzjob') {
     return db_fetch_object(db_query("SELECT * FROM {tzjob} WHERE vid = %d", $node->vid));
   }
+}
+
+function tzbase_job_by_jobcode($jobcode) {
+  return node_load(db_result(db_query("SELECT nid FROM {tzjob} WHERE jobcode = '%s'", $jobcode)));
+}
+
+function tzbase_include_proto_classes() {
+  require_once dirname(__FILE__) . '/pb4php-read-only/message/pb_message.php';
+  require_once dirname(__FILE__) . '/pb_proto_tzbase.php';
 }
 
 // TODO: add a field to login-form containing phone-number?

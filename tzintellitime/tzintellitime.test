@@ -8,7 +8,7 @@
 class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   private $intelli_url = "http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d";
   private $login_view_state = "dDwyNDA3MjczMzc7dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw1PjtpPDE1PjtpPDE5Pjs+O2w8dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9DdXN0b21lcnMvaW50ZWxsaXBsYW5fbG9nby5naWY7Pj47Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDx+L0ltYWdlcy9JbWdfSW50ZWxsaXBsYW5Mb2dvV2hpdGUuZ2lmOz4+Oz47Oz47Pj47Pj47dDxwPHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxMb2dnYSBpbjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8R2zDtm10IGzDtnNlbm9yZGV0Pzs+Pjs+Ozs+Oz4+Oz4+Oz5ngNWIe5WIW3O3prUuG7wbptC3jg==";
-  private $cookiejar;
+  private $bot = NULL;
 
   public static function getInfo() {
     return array(
@@ -25,14 +25,15 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
     // Enable any modules required for the test.
     parent::setUp('tzintellitime');
     require_once dirname(__FILE__) . '/tzintellitime.class.inc';
-    $this->cookiejar = tempnam(file_directory_temp(), 'tzintellitime');
-    $this->bot = new TZIntellitimeBot($this->intelli_url, $this->cookiejar);
+    $this->bot = new TZIntellitimeBot($this->intelli_url);
   }
 
   public function tearDown() {
     parent::tearDown();
-    unset($this->bot);
-    unlink($this->cookiejar);
+    if(isset($this->bot)) {
+      TZIntellitimeBot::destroy_session_data($this->bot->get_session_data());
+      unset($this->bot);
+    }
   }
 
   public function testInvalidLogin() {
@@ -53,8 +54,21 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   public function testDestructorDoesNotRemoveCookiejar() {
      $ok = $this->bot->login("Johan Heander", "0733623516");
      $this->assertTrue($ok);
+     $session_data = $this->bot->get_session_data();
      unset($this->bot);
-     $this->assertTrue(file_exists($this->cookiejar), "Expected cookiejar file to still exist after destruction of bot.");
+     $this->assertTrue(TZIntellitimeBot::is_valid_session_data($session_data), "Expected valid session data.");
+  }
+
+  public function testResumeSession() {
+    $ok = $this->bot->login("Johan Heander", "0733623516");
+    $this->assertTrue($ok);
+    $session_data = $this->bot->get_session_data();
+    unset($this->bot);
+    $this->bot = new TZIntellitimeBot($this->intelli_url, $session_data);
+    $results = $this->bot->load_assignments();
+    $this->assertNotNull($results, 'Expected $results NOT NULL.');
+    $this->assertNotNull($results['assignments'], 'Expected $results["assignments"] NOT NULL.');
+    $this->assertNotNull($results['reports'], 'Expected $results["reports"] NOT NULL.');
   }
 
   public function testFetchingLocalUrl() {
@@ -122,13 +136,13 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
     $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
     $assignments = $parser->parse_assignments();
     $this->assertEqual(1, count($assignments), "only one assignment");
-    $this->assertEqual("5983", key($assignments), "assignment code 5983");
+    $this->assertEqual("5983", $assignments[0]['id'], "assignment code 5983");
   }
 
   public function testParseAssignmentsUTF8Encoding() {
     $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
     $assignments = $parser->parse_assignments();
-    $this->assertEqual("Testföretaget Effekt, Lagerarbetare", current($assignments), "expect UTF-8 encoding");
+    $this->assertEqual("Testföretaget Effekt, Lagerarbetare", $assignments[0]['title'], "expect UTF-8 encoding");
   }
 
 
@@ -252,55 +266,46 @@ class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
 
   public function testComparisonIdentical() {
     $other_report = new TZIntellitimeReport();
-    $this->report->id = 'mhbLP96iqH2Zr7CDtWyWb84hbku5Eii3';
-    $other_report->id = 'mhbLP96iqH2Zr7CDtWyWb84hbku5Eii3';
-    $this->report->done = FALSE;
-    $other_report->done = FALSE;
-    $this->report->year = 2010;
-    $other_report->year = 2010;
-    $this->report->month = 9;
-    $other_report->month = 9;
-    $this->report->day = 15;
-    $other_report->day = 15;
-    $this->report->title = "En dag i livet för en apa.";
-    $other_report->title = "En dag i livet för en apa.";
-    $this->report->begin = "08:00";
-    $other_report->begin = "08:00";
-    $this->report->end = "18:00";
-    $other_report->end = "18:00";
-    $this->report->break_duration_minutes = 24;
-    $other_report->break_duration_minutes = 24;
-    $this->report->overtime_hours = 4;
-    $other_report->overtime_hours = 4;
+    _tzintellitime_populate_report($this->report);
+    _tzintellitime_populate_report($other_report);
 
     $this->assertEqual($this->report, $other_report, 'Expected the two reports to be considered equal.');
   }
 
   public function testComparisonDifferent() {
     $other_report = new TZIntellitimeReport();
-    $this->report->id = 'mhbLP96iqH2Zr7CDtWyWb84hbku5Eii3';
-    $other_report->id = 'mhbLP96iqH2Zr7cDtWyWb84hbku5Eii3';
-    $this->report->done = FALSE;
-    $other_report->done = FALSE;
-    $this->report->year = 2010;
-    $other_report->year = 2010;
-    $this->report->month = 9;
-    $other_report->month = 9;
-    $this->report->day = 15;
-    $other_report->day = 15;
-    $this->report->title = "En dag i livet för en apa.";
-    $other_report->title = "En dag i livet för en apa.";
-    $this->report->begin = "08:00";
-    $other_report->begin = "08:00";
-    $this->report->end = "18:00";
-    $other_report->end = "18:00";
-    $this->report->break_duration_minutes = 24;
-    $other_report->break_duration_minutes = 24;
-    $this->report->overtime_hours = 4;
-    $other_report->overtime_hours = 4;
+    _tzintellitime_populate_report($this->report);
+    _tzintellitime_populate_report($other_report);
+    $other_report->overtime_hours = 6;
 
     $this->assertNotEqual($this->report, $other_report, 'Expected the two reports to not be considered equal.');
 
+  }
+
+  public function testConvertToTZReport() {
+    _tzintellitime_populate_report($this->report);
+    $tzreport = $this->report->convert_to_tzreport();
+    $this->assertNotNull($tzreport, 'Expected $tzreport not NULL.');
+    $this->assertEqual($this->report->title, $tzreport->title, "Expected equal titles");
+    $this->assertEqual(1284530400, $tzreport->begintime, 'Expected 1284530400 as begintime, got ' . $tzreport->begintime);
+    $this->assertEqual(1284566400, $tzreport->endtime, 'Expected 1284566400 as endtime, got ' . $tzreport->endtime);
+    $this->assertEqual($this->report->break_duration_minutes*60, $tzreport->breakduration, "Expected break durations to match");
+    $this->assertTrue($tzreport->changed > 0, 'Expected changed value to be greater than 0, got ' . $tzreport->changed);
+  }
+
+  public function testUpdateTZReport() {
+    _tzintellitime_populate_report($this->report);
+    $tzreport = $this->report->convert_to_tzreport();
+    $tzreport->nid = 12345;
+    $this->report->break_duration_minutes = 35;
+    $tzreport = $this->report->convert_to_tzreport($tzreport);
+    $this->assertNotNull($tzreport, 'Expected $tzreport not NULL.');
+    $this->assertEqual(12345, $tzreport->nid);
+    $this->assertEqual($this->report->title, $tzreport->title, "Expected equal titles");
+    $this->assertEqual(1284530400, $tzreport->begintime, 'Expected 1284530400 as begintime, got ' . $tzreport->begintime);
+    $this->assertEqual(1284566400, $tzreport->endtime, 'Expected 1284566400 as endtime, got ' . $tzreport->endtime);
+    $this->assertEqual($this->report->break_duration_minutes*60, $tzreport->breakduration, "Expected break durations to match");
+    $this->assertTrue($tzreport->changed > 0, 'Expected changed value to be greater than 0, got ' . $tzreport->changed);
   }
 
 }
@@ -337,9 +342,9 @@ class TZIntellitimeAdminPageTests extends DrupalWebTestCase {
     // We should not accept HTTP connections
     $edit['tzintellitime_base_url'] = 'http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d';
     $this->drupalPost('admin/settings/timezynk/tzintellitime', $edit, t('Save configuration'));
-    $this->assertText(t('We only allow HTTPS (SSL) connections to intelliplan for security reasons.'));
-    $this->assertNotEqual($edit['tzintellitime_base_url'], variable_get('tzintellitime_base_url', ''),
-      'Did not expect ' . $edit['tzintellitime_base_url'] . ', got ' . variable_get('tzintellitime_base_url', ''));
+    $this->assertText(t('The configuration options have been saved.'));
+    $this->assertEqual($edit['tzintellitime_base_url'], variable_get('tzintellitime_base_url', ''),
+      'Expected ' . $edit['tzintellitime_base_url'] . ', got ' . variable_get('tzintellitime_base_url', ''));
   }
 
   public function testSetInvalidBaseUrl() {
@@ -352,4 +357,90 @@ class TZIntellitimeAdminPageTests extends DrupalWebTestCase {
       'Did not expect ' . $edit['tzintellitime_base_url'] . ', got ' . variable_get('tzintellitime_base_url', ''));
   }
 
+}
+
+class TZIntellitimeLoginSyncTests extends DrupalWebTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Intellitime login sync test suite',
+      'description' => '',
+      'group' => 'TimeZynk',
+    );
+  }
+
+  public function setUp() {
+    // Enable any modules required for the test.
+   parent::setUp('tzintellitime', 'tzbase');
+   require_once dirname(__FILE__) . '/tzintellitime.class.inc';
+   // Create and login user
+   $admin_user = $this->drupalCreateUser(array('access content'));
+   $this->drupalLogin($admin_user);
+  }
+
+  public function testCreatingJob() {
+    $expected_id = "5983";
+    $expected_title = "A very nice job..";
+    $job = _tzintellitime_create_job(array('id' => $expected_id, 'title' => $expected_title));
+    $this->assertNotNull($job);
+    $this->assertTrue($job->nid, "Expected valid drupal ID.");
+    $this->assertEqual($expected_id, $job->intellitime_id, 'Expected same intellitime id.');
+    $this->assertEqual($expected_title, $job->title, 'Expected equal titles');
+  }
+
+  public function testUpdatingExistingJob() {
+    $expected_id = "5983";
+    $expected_title = "A very nice job..";
+    $job1 = _tzintellitime_create_job(array('id' => $expected_id, 'title' => $expected_title));
+    $job2 = _tzintellitime_create_job(array('id' => $expected_id, 'title' => $expected_title . "2"));
+    $this->assertEqual($job1->nid, $job2->nid, 'Expected same node-id');
+    $this->assertEqual($expected_title . "2", $job2->title, 'Expected equal titles');
+  }
+
+  public function testCreatingReport() {
+    $report = new TZIntellitimeReport();
+    _tzintellitime_populate_report($report);
+    $expected_id = "5983";
+    $expected_title = $report->title;
+    $job = _tzintellitime_create_job(array('id' => $expected_id, 'title' => $expected_title));
+    $report_node = _tzintellitime_create_report($report, array($expected_title => $job->nid));
+    $this->assertNotNull($report_node);
+    $this->assertTrue($report_node->nid);
+  }
+
+  public function testUpdatingExistingReport() {
+    $report = new TZIntellitimeReport();
+    _tzintellitime_populate_report($report);
+    $expected_id = "5983";
+    $expected_title = $report->title;
+    $job = _tzintellitime_create_job(array('id' => $expected_id, 'title' => $expected_title));
+    $report_node = _tzintellitime_create_report($report, array($expected_title => $job->nid));
+
+    // Update report and create again
+    $report->break_duration_minutes = 35;
+    $report_node2 = _tzintellitime_create_report($report, array($expected_title => $job->nid));
+
+    $this->assertEqual($report_node->nid, $report_node2->nid, 'Expected equal NID after update');
+    $this->assertEqual($report->break_duration_minutes*60, $report_node2->breakduration, 'Expected updated breakduration');
+  }
+
+  public function testCreatingReportWithoutJobShallFail() {
+    $report = new TZIntellitimeReport();
+    _tzintellitime_populate_report($report);
+    $report_node = _tzintellitime_create_report($report);
+    $this->assertNull($report_node);
+  }
+}
+
+function _tzintellitime_populate_report(&$report) {
+    $report->id = 'mhbLP96iqH2Zr7CDtWyWb84hbku5Eii3';
+    $report->done = FALSE;
+    $report->year = 2010;
+    $report->month = 9;
+    $report->day = 15;
+    $report->title = "En dag i livet för en apa.";
+    $report->begin = "08:00";
+    $report->end = "18:00";
+    $report->break_duration_minutes = 24;
+    $report->overtime_hours = 4;
 }

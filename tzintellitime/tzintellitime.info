@@ -4,3 +4,4 @@ core = 6.x
 package = TimeZynk
 files[] = tzintellitime.module
 files[] = tzintellitime.test
+dependencies[] = tzbase

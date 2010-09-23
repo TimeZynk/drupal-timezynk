@@ -10,12 +10,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TZIntellitime\n"
-"POT-Creation-Date: 2010-09-23 13:05+0200\n"
-"PO-Revision-Date: 2010-09-23 13:13+0100\n"
+"POT-Creation-Date: 2010-09-23 18:50+0200\n"
+"PO-Revision-Date: 2010-09-23 18:54+0100\n"
 "Last-Translator: TimeZynk <dev@timezynk.com>\n"
 "Language-Team: sv <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Language: Swedish\n"
@@ -33,6 +33,22 @@ msgstr "Kundspecifik HTTPS-URL, för inloggningsportalen"
 #: tzintellitime.admin.inc:23
 msgid "Invalid URL, please enter a correct intelliplan login URL."
 msgstr "Ogiltig URL, vänligen mata in en korrekt inloggnings-URL för intelliplan."
+
+#: tzintellitime.class.inc:547
+msgid "Intellitime time report with id: @id"
+msgstr "Intellitime-tidrapport med id: @id"
+
+#: tzintellitime.module:112;144
+msgid "tzintellitime"
+msgstr "tzintellitime"
+
+#: tzintellitime.module:112
+msgid "Inserted report !nid"
+msgstr "Lade till rapport !nid"
+
+#: tzintellitime.module:144
+msgid "Inserted job !nid"
+msgstr "Lade till jobb !nid"
 
 #: tzintellitime.module:9
 msgid "Intellitime"

@@ -1,12 +1,50 @@
 <?php
 
 /**
+ * Implementation of hook_install()
+ */
+function tzintellitime_install() {
+  drupal_install_schema('tzintellitime');
+}
+
+/**
  * Implementation of hook_uninstall().
  */
 function tzintellitime_uninstall() {
   // Remove tables.
-//  drupal_uninstall_schema('tzintellitime');
+  drupal_uninstall_schema('tzintellitime');
 
   // Remove variables
   variable_del('tzintellitime_base_url');
+}
+
+function tzintellitime_update_6000() {
+  drupal_install_schema('tzintellitime');
+}
+
+/**
+ * Implementation of hook_schema()
+ */
+function tzintellitime_schema() {
+  $schema['tzintellitime'] = array(
+    'description' => t('Stores extra tzintellitime fields for tzjob and tzreport nodes'),
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {node}.nid'),
+      ),
+      'intellitime_id' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => t('Node ID in intellitime'),
+      ),
+    ),
+    'primary key' => array('nid'),
+    'unique keys' => array('intellitime_id' => array('intellitime_id')),
+  );
+  return $schema;
 }
