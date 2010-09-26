@@ -2,7 +2,7 @@
 
 /**
  * @file
- * TimeZynk intellitime integration tests.
+ * TimeZynk protobuf tests
  */
 class TZProtoTestCase extends DrupalWebTestCase {
   private $test_user = NULL;

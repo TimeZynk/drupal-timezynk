@@ -8,6 +8,11 @@ class TZFlags extends PBEnum
   const LOCKED  = 4;
   const DELETED  = 255;
 }
+class TZJobFlags extends PBEnum
+{
+  const ACTIVE  = 0;
+  const INACTIVE  = 255;
+}
 class TZReport extends PBMessage
 {
   var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;

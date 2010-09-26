@@ -17,6 +17,11 @@ enum TZFlags {
   DELETED = 255;
 }
 
+enum TZJobFlags {
+  ACTIVE = 0;
+  INACTIVE = 255;
+}
+
 message TZReport {
   optional int32 id = 1 [default = 0];
   optional int32 vid = 2 [default = 0];

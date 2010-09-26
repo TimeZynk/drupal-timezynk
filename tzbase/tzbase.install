@@ -31,7 +31,7 @@ function tzbase_uninstall() {
 }
 
 /**
- * Implementation of hook_update_N()
+ * First update, adds assignedto field pointing to assigned User UID.
  */
 function tzbase_update_6001() {
   $ret = array();
@@ -42,6 +42,22 @@ function tzbase_update_6001() {
         'description' => t('The {user}.uid that is assigned to this report'),
       ));
 
+  return $ret;
+}
+
+/**
+ * Second update, adds totalduration field with computed duration.
+ * It is stored in the database to support views integration.
+ */
+function tzbase_update_6002() {
+  $ret = array();
+  db_add_field($ret, 'tzreport', 'totalduration', array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Total duration in seconds'),
+      ));
   return $ret;
 }
 
@@ -98,6 +114,13 @@ function tzbase_schema() {
         'not null' => TRUE,
         'default' => 0,
         'description' => t('Total break time in seconds'),
+      ),
+      'totalduration' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Total duration in seconds'),
       ),
       'travelduration' => array(
         'type' => 'int',

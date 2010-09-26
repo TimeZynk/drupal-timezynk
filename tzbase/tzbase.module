@@ -31,7 +31,7 @@ function tzbase_menu() {
     'page arguments' => array('tzbase_admin_content'),
     'access arguments' => array('administer site configuration'),
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'tzbase.admin.inc',
+    'file' => 'includes/tzbase.admin.inc',
   );
   $items['admin/settings/timezynk'] = array(
     'title' => 'TimeZynk',
@@ -39,7 +39,7 @@ function tzbase_menu() {
     'page callback' => 'tzbase_admin_settings_block',
     'access arguments' => array('administer site configuration'),
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'tzbase.admin.inc',
+    'file' => 'includes/tzbase.admin.inc',
   );
   return $items;
 }
@@ -55,9 +55,9 @@ function tzbase_node_info() {
       'module' => 'tzbase',
       'description' => t('A time report for a specific project'),
       'has_title' => TRUE,
-      'title_label' => t('Subject'),
+      'title_label' => t('Description'),
       'has_body' => TRUE,
-      'body_label' => t('Instructions'),
+      'body_label' => t('Comments'),
     ),
     'tzjob' => array(
       'name' => t('Job'),
@@ -95,7 +95,11 @@ function tzbase_perm() {
 function tzbase_access($op, $node, $account) {
   $is_author = FALSE;
   if (is_object($node)) {
-    $is_author = $account->uid === $node->uid;
+    if($node->type == 'tzreport') {
+      $is_author = $account->uid === $node->assignedto;
+    } else {
+      $is_author = $account->uid === $node->uid;
+    }
   }
   switch($op) {
     case 'create':
@@ -135,93 +139,170 @@ function tzbase_access($op, $node, $account) {
  */
 function tzbase_views_api() {
   return array(
-    'api' => 2.0,
+    'api' => 2,
+    'path' => drupal_get_path('module', 'tzbase') . '/includes/views',
   );
 }
 
 function tzbase_form($node) {
+  tzbase_include_proto_classes();
   $type = node_get_types('type', $node);
+
+  $joboptions = _tzbase_list_jobs();
+  if(!$joboptions) {
+    $joboptions[0] = t('-- No jobs available --');
+  }
+
   if($type->type == 'tzreport') {
+    $date = getdate(isset($node->begintime) ? $node->begintime : time());
+    $form['workdate'] = array(
+      '#type' => 'date',
+      '#title' => t('Date'),
+      '#default_value' => array(
+        'year' => $date['year'],
+        'month' => $date['mon'],
+        'day' => $date['mday'],
+      ),
+      '#weight' => -7,
+    );
+
     $form['title'] = array(
       '#type' => 'textfield',
       '#title' => check_plain($type->title_label),
       '#required' => TRUE,
-      '#default_value' => $node->title,
-      '#weight' => -17,
+      '#default_value' => isset($node->title) ? $node->title : '',
+      '#weight' => -5,
       '#maxlength' => 255,
     );
+
+    // Find current jobid
+    $default_jobid = isset($node->jobid) ? $node->jobid : 0;
+    foreach($joboptions as $key => $value) {
+      $trail = explode(':', $key);
+      if(end($trail) == $default_jobid) {
+        $default_jobid = $key;
+      }
+    }
     $form['jobid'] = array(
-      '#type' => 'textfield',
+      '#type' => 'select',
       '#title' => t('Select job'),
-      '#default_value' => $node->jobid,
+      '#default_value' => $default_jobid,
+      '#options' => $joboptions,
+      '#description' => t('Select the job that this time report concerns'),
       '#required' => FALSE,
-      '#weight' => -16,
+      '#weight' => -6,
     );
-    $form['assignedto'] = array(
+
+    $assignedto_name = '';
+    if(isset($node->assignedto)) {
+      $assignedto = user_load(array('uid' => $node->assignedto));
+      $assignedto_name = $assignedto->name;
+    } else {
+      global $user;
+      $assignedto_name = $user->name;
+    }
+
+    $form['assignedto_name'] = array(
       '#type' => 'textfield',
+      '#access' => user_access('edit any tzreport content'),
       '#title' => t('Assigned to user'),
-      '#default_value' => $node->assignedto,
+      '#default_value' => $assignedto_name,
+      '#autocomplete_path' => 'user/autocomplete',
+      '#maxlength' => 60,
       '#required' => FALSE,
-      '#weight' => -15,
+      '#weight' => -4,
     );
-    $form['begintime'] = array(
+
+    $form['time'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Time'),
+      '#weight' => -3,
+      '#collapsible' => TRUE,
+      '#tree' => TRUE,
+    );
+    $form['time']['begintime'] = array(
       '#type' => 'textfield',
       '#title' => t('Start time'),
-      '#default_value' => $node->begintime,
+      '#default_value' => isset($node->begintime) ? date('H:i', $node->begintime) : '00:00',
       '#required' => TRUE,
-      '#weight' => -14,
+      '#maxlength' => 5,
+      '#size' => 5,
+      '#weight' => 0,
     );
-    $form['endtime'] = array(
+    $form['time']['endtime'] = array(
       '#type' => 'textfield',
       '#title' => t('End time'),
-      '#default_value' => $node->endtime,
+      '#default_value' => isset($node->endtime) ? date('H:i', $node->endtime) : '00:00',
+      '#size' => 5,
+      '#maxlength' => 5,
       '#required' => TRUE,
-      '#weight' => -13,
+      '#weight' => 1,
     );
-    $form['breakduration'] = array(
+    $form['time']['breakduration'] = array(
       '#type' => 'textfield',
-      '#title' => t('Break length'),
-      '#default_value' => $node->breakduration,
+      '#title' => t('Break duration'),
+      '#default_value' => isset($node->breakduration) ? tzbase_format_duration($node->breakduration) : '00:00',
+      '#size' => 5,
+      '#maxlength' => 5,
       '#required' => FALSE,
-      '#weight' => -12,
+      '#weight' => 2,
     );
-    $form['travelduration'] = array(
+
+    $form['travel'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Travel information'),
+      '#weight' => -3,
+      '#tree' => TRUE,
+      '#collapsible' => TRUE,
+    );
+    $form['travel']['travelduration'] = array(
       '#type' => 'textfield',
       '#title' => t('Travel time'),
-      '#default_value' => $node->travelduration,
+      '#default_value' => isset($node->travelduration) ? tzbase_format_duration($node->travelduration) : '00:00',
+      '#size' => 5,
+      '#maxlength' => 5,
       '#required' => FALSE,
-      '#weight' => -11,
+      '#weight' => 0,
     );
-    $form['travelkm'] = array(
+    $form['travel']['travelkm'] = array(
       '#type' => 'textfield',
       '#title' => t('Travel length (km)'),
-      '#default_value' => $node->travelkm,
+      '#default_value' => isset($node->travelkm) ? $node->travelkm : 0,
+      '#size' => 5,
       '#required' => FALSE,
-      '#weight' => -10,
+      '#weight' => 1,
     );
+
+    $flag_options = tzbase_tzreport_list_flags();
+    $form['flags'] = array(
+      '#type' => 'select',
+      '#title' => t('Report status'),
+      '#default_value' => isset($node->flags) ? $node->flags : TZFlags::CREATED,
+      '#options' => $flag_options,
+      '#required' => FALSE,
+      '#weight' => -4,
+    );
+
     $form['signature'] = array(
       '#type' => 'textfield',
       '#title' => t('Signature'),
-      '#default_value' => $node->signature,
+      '#default_value' => isset($node->signature) ? $node->signature : '',
       '#required' => FALSE,
-      '#weight' => -9,
+      '#weight' => -1,
       '#maxlength' => 255,
     );
     $form['body_filter']['body'] = array(
       '#type' => 'textarea',
       '#title' => check_plain($type->body_label),
-      '#default_value' => $node->body,
-      '#rows' => 7,
-      '#reziable' => TRUE,
+      '#default_value' => isset($node->body) ? $node->body : '',
+      '#rows' => 2,
+      '#resizable' => TRUE,
       '#required' => FALSE,
     );
     $form['body_filter']['filter'] = filter_form($node->format);
-    $form['flags'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Flags'),
-      '#default_value' => $node->flags,
-      '#required' => FALSE,
-    );
+
+    $form['#submit'][] = 'tzbase_tzreport_submit';
+
     return $form;
   }
   else if($type->type == 'tzjob') {
@@ -235,17 +316,31 @@ function tzbase_form($node) {
     );
     $form['jobcode'] = array(
       '#type' => 'textfield',
-      '#title' => t('Job code'),
+      '#title' => t('Administrative assignment code'),
       '#required' => FALSE,
-      '#default_value' => $node->jobcode,
+      '#default_value' => isset($node->jobcode) ? $node->jobcode : '',
       '#weight' => -4,
       '#maxlength' => 60,
     );
+
+    array_unshift($joboptions, '<' . t('Top level assignment') . '>');
+    $default_parentid = isset($node->parentid) ? $node->parentid : 0;
+    if(isset($node->nid)) {
+      foreach($joboptions as $key => $value) {
+        $trail = explode(':', $key);
+        if(array_search($node->nid, $trail)) {
+          unset($joboptions[$key]);
+        } elseif(end($trail) == $default_parentid) {
+          $default_parentid = $key;
+        }
+      }
+    }
     $form['parentid'] = array(
-      '#type' => 'textfield',
+      '#type' => 'select',
       '#title' => t('Parent job'),
       '#required' => FALSE,
-      '#default_value' => $node->parentid,
+      '#default_value' => $default_parentid,
+      '#options' => $joboptions,
       '#weight' => -3,
       '#maxlength' => 60,
     );
@@ -254,15 +349,17 @@ function tzbase_form($node) {
       '#type' => 'textarea',
       '#title' => check_plain($type->body_label),
       '#default_value' => $node->body,
-      '#rows' => 7,
-      '#reziable' => TRUE,
+      '#rows' => 2,
+      '#resizeable' => TRUE,
       '#required' => FALSE,
     );
     $form['body_filter']['filter'] = filter_form($node->format);
-    $form['flags'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Flags'),
-      '#default_value' => $node->flags,
+
+    $form['active'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Assignment active'),
+      '#description' => t('Check if this assignment is active and can be used for time reporting'),
+      '#default_value' => isset($node->flags) ? ($node->flags != TZJobFlags::INACTIVE) : TRUE,
       '#required' => FALSE,
     );
     return $form;
@@ -270,18 +367,93 @@ function tzbase_form($node) {
 }
 
 /**
+ * Handle validation of tzbase node form
+ * @param Array $form
+ * @param Array $form_state
+ */
+function tzbase_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if($node->type === 'tzreport') {
+    if($op === 'presave') {
+      watchdog('tzreport', 'presave: ' . print_r($node, TRUE));
+      if($node->jobid) {
+        $jobid = explode(':', $node->jobid);
+        $node->jobid = intval(end($jobid));
+      }
+
+      if(isset($node->workdate) && is_array($node->workdate) && isset($node->time) && is_array($node->time)) {
+        $date = $node->workdate;
+        foreach(array('begintime', 'endtime') as $field) {
+          $time = explode(':', $node->time[$field]);
+          $node->$field = mktime(
+            /* hour */ intval($time[0]),
+            /* minute */ intval($time[1]),
+            /* second */ 0,
+            /* month */$date['month'],
+            /* day */ $date['day'],
+            /* year */ $date['year']
+          );
+        }
+
+        // move endtime forward one day if we are working past midnight
+        // Cannot just add a number of seconds since it might pass DST
+        if($node->endtime < $node->begintime) {
+          $time = explode(':', $node->time['endtime']);
+          $node->endtime = mktime(
+            /* hour */ intval($time[0]),
+            /* minute */ intval($time[1]),
+            /* second */ 0,
+            /* month */$date['month'],
+            /* day */ $date['day'] + 1,
+            /* year */ $date['year']
+          );
+        }
+
+        $node->breakduration = tzbase_parse_duration($node->time['breakduration']);
+      }
+
+      if(isset($node->travel) && is_array($node->travel)) {
+        $node->travelduration = tzbase_parse_duration($node->travel['travelduration']);
+        $node->travelkm = intval($node->travel['travelkm']);
+      }
+
+      if(isset($node->assignedto_name)) {
+        $assignedto = user_load(array('name' => $node->assignedto_name));
+        $node->assignedto = $assignedto->uid;
+      }
+    }
+  } elseif($node->type === 'tzjob') {
+    if($op === 'presave') {
+      tzbase_include_proto_classes();
+
+      if($node->parentid) {
+        $jobid = explode(':', $node->parentid);
+        $node->parentid = intval(end($jobid));
+      }
+
+      if(isset($node->active)) {
+        if($node->active) {
+          $node->flags = TZJobFlags::ACTIVE;
+        } else {
+          $node->flags = TZJobFlags::INACTIVE;
+        }
+      }
+      if(!isset($node->flags)) {
+        $node->flags = TZJobFlags::ACTIVE;
+      }
+    }
+  }
+
+
+}
+
+/**
  * Implementation of hook_insert()
  */
 function tzbase_insert($node) {
   if($node->type == 'tzreport') {
-    db_query("INSERT INTO {tzreport} (nid, vid, jobid, assignedto, begintime, endtime, breakduration, travelduration, travelkm, signature, flags) VALUES (%d, %d, %d, %d, %d, %d, %d, %d, %d, '%s', %d)",
-      $node->nid, $node->vid, $node->jobid, $node->assignedto, $node->begintime, $node->endtime, $node->breakduration,
-      $node->travelduration, $node->travelkm, $node->signature, $node->flags);
+    $node->totalduration = tzbase_compute_total_duration($node);
   }
-  else if($node->type == 'tzjob') {
-    db_query("INSERT INTO {tzjob} (nid, vid, jobcode, parentid, flags) VALUES (%d, %d, '%s', %d, %d)",
-      $node->nid, $node->vid, $node->jobcode, $node->parentid, $node->flags);
-  }
+  drupal_write_record($node->type, $node);
 }
 
 /**
@@ -293,14 +465,9 @@ function tzbase_update($node) {
   }
   else {
     if($node->type == 'tzreport') {
-      db_query("UPDATE {tzreport} SET jobid = %d, assignedto = %d, begintime = %d, endtime = %d, breakduration = %d, travelduration = %d, travelkm = %d, signature = '%s', flags = %d WHERE vid = %d",
-      $node->jobid, $node->assignedto, $node->begintime, $node->endtime, $node->breakduration,
-      $node->travelduration, $node->travelkm, $node->signature, $node->flags, $node->vid);
+      $node->totalduration = tzbase_compute_total_duration($node);
     }
-    else if($node->type == 'tzjob') {
-      db_query("UPDATE {tzjob} SET jobcode = '%s', parentid = %d, flags = %d WHERE vid = %d",
-      $node->jobcode, $node->parentid, $node->flags, $node->vid);
-    }
+    drupal_write_record($node->type, $node, 'vid');
   }
 }
 
@@ -335,6 +502,88 @@ function tzbase_job_by_jobcode($jobcode) {
 function tzbase_include_proto_classes() {
   require_once dirname(__FILE__) . '/pb4php-read-only/message/pb_message.php';
   require_once dirname(__FILE__) . '/pb_proto_tzbase.php';
+}
+
+function tzbase_compute_total_duration($node) {
+  $begintime = $endtime = $breakduration = 0;
+  if(isset($node->begintime) && $node->begintime) {
+    $begintime = $node->begintime;
+  }
+  if(isset($node->endtime) && $node->endtime) {
+    $endtime = $node->endtime;
+  }
+  if(isset($node->breakduration) && $node->breakduration) {
+    $breakduration = $node->breakduration;
+  }
+  return $endtime - $begintime - $breakduration;
+}
+
+/**
+ * Prints a duration as HH:MM
+ * @param int $duration number of seconds in duration
+ */
+function tzbase_format_duration($duration) {
+  if(!$duration) {
+    $duration = 0;
+  }
+  $hours = (int)($duration/3600);
+  $minutes = (int)(($duration - $hours*3600)/60);
+  return sprintf("%02d:%02d", $hours, $minutes);
+}
+
+/**
+ * Parse a time duration on the format 'HH:MM' into number of seconds
+ */
+function tzbase_parse_duration($hhmm) {
+  $seconds = 0;
+  $match = array();
+  if(preg_match('/^(\d+):(\d+)$/', $hhmm, $match)) {
+    $seconds += intval($match[1]) * 3600;
+    $seconds += intval($match[2]) * 60;
+  }
+  return $seconds;
+}
+
+
+/**
+ * List all tzreport flags in a value => flag array
+ */
+function tzbase_tzreport_list_flags() {
+  tzbase_include_proto_classes();
+  $flags = array();
+  $flagClass = new ReflectionClass('TZFlags');
+  $parentClass = $flagClass->getParentClass();
+  foreach($flagClass->getConstants() as $flag => $value) {
+    if(!$parentClass->hasConstant($flag)) {
+      $flags[$value] = t($flag);
+    }
+  }
+  return $flags;
+}
+
+/**
+ * Format tzreport flags as a string
+ * @param int $flags
+ */
+function tzbase_format_tzreport_flags($flags) {
+  $flaglist = tzbase_tzreport_list_flags();
+  watchdog('tzbase', 'format ' . $flags . ' from ' . print_r($flaglist, TRUE));
+  return $flaglist[$flags];
+}
+
+function _tzbase_list_jobs($parentjobid = 0, $prefix = '', $trail = 'nid:') {
+  $list = array();
+  $trail = $trail . $parentjobid . ':';
+  $sql = db_rewrite_sql("SELECT n.nid, title FROM {node} n INNER JOIN {tzjob} t ON n.vid = t.vid WHERE t.parentid = %d ORDER BY title");
+  $result = db_query($sql, $parentjobid);
+  while($data = db_fetch_object($result)) {
+    $list[$trail . $data->nid] = $prefix . $data->title;
+    $children = _tzbase_list_jobs($data->nid, $prefix . '--', $trail);
+    if($children) {
+      $list = array_merge($list, $children);
+    }
+  }
+  return $list;
 }
 
 // TODO: add a field to login-form containing phone-number?

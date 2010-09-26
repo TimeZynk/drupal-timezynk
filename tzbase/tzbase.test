@@ -1,0 +1,245 @@
+<?php
+
+/**
+ * @file
+ * tzbase tests.
+ */
+class TZBaseTestCase extends DrupalWebTestCase {
+  private $test_user = NULL;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'TZBase Test Suite',
+      'description' => '',
+      'group' => 'TZBase',
+    );
+  }
+
+  public function setUp() {
+    // Enable any modules required for the test.
+   parent::setUp('tzbase');
+
+   // Create and test user
+   $this->test_user = $this->drupalCreateUser(array(
+     'create tzjob content', 'create tzreport content', 'edit any tzjob content', 'edit any tzreport content', 'edit own tzjob content', 'edit own tzreport content', 'view any tzjob content', 'view any tzreport content', 'view own tzjob content', 'view own tzreport content'
+   ));
+   $this->drupalLogin($this->test_user);
+  }
+
+  public function tearDown() {
+    parent::tearDown();
+    $this->test_user = NULL;
+  }
+
+  public function testPostTimeZynkData() {
+    $jobid = $this->doTestPostSimpleJob();
+    $this->assertTrue($jobid, 'Expected valid id, got ' . $jobid);
+
+    $reportid = $this->doTestPostSimpleReport($jobid);
+    $this->assertTrue($reportid, 'Expected valid id, got ' . $reportid);
+
+    $reportid = $this->doTestPostMidnightReport($jobid);
+    $this->assertTrue($reportid, 'Expected valid id, got ' . $reportid);
+
+    $reportid = $this->doTestPostDSTSpringReport($jobid);
+    $this->assertTrue($reportid, 'Expected valid id, got ' . $reportid);
+
+    $reportid = $this->doTestPostDSTAutumnReport($jobid);
+    $this->assertTrue($reportid, 'Expected valid id, got ' . $reportid);
+  }
+
+  private function doTestPostSimpleJob() {
+    $edit['title'] = 'Simple Job';
+    $edit['jobcode'] = 'abcde';
+    $edit['parentid'] = '0';
+    return $this->addNode('tzjob', $edit);
+  }
+
+  private function doTestPostSimpleReport($jobid) {
+    $now = getdate();
+    $edit['title'] = 'Simple Report';
+    $edit['workdate[month]'] = $now['mon'];
+    $edit['workdate[day]'] = $now['mday'];
+    $edit['workdate[year]'] = $now['year'];
+    $edit['jobid'] = 'nid:0:' . $jobid;
+    $edit['assignedto_name'] = $this->test_user->name;
+    $edit['flags'] = 0;
+    $edit['time[begintime]'] = '9:15';
+    $edit['time[endtime]'] = '18:00';
+    $edit['time[breakduration]'] = '03:45';
+    $edit['travel[travelduration]'] = '01:25';
+    $edit['travel[travelkm]'] = '152';
+    $edit['signature'] = 'abcdef';
+    $edit['body'] = "test text in\ncomments field";
+    $nid = $this->addNode('tzreport', $edit);
+
+    $node = node_load($nid);
+    $begintime = getdate($node->begintime);
+    $endtime = getdate($node->endtime);
+    foreach(array('month', 'mday', 'year') as $field) {
+      $this->assertEqual($now[$field], $begintime[$field], "Expect begintime $field = $now[$field], got $begintime[$field]");
+      $this->assertEqual($now[$field], $endtime[$field], "Expect endtime $field = $now[$field], got $endtime[$field]");
+    }
+    $this->assertEqual(9, $begintime['hours']);
+    $this->assertEqual(15, $begintime['minutes']);
+    $this->assertEqual(0, $begintime['seconds']);
+    $this->assertEqual(18, $endtime['hours']);
+    $this->assertEqual(0, $endtime['minutes']);
+    $this->assertEqual(0, $endtime['seconds']);
+
+    $this->assertEqual(3*3600+45*60, $node->breakduration);
+    $this->assertEqual(5*3600, $node->totalduration, 'Expect 5 hours duration, got ' . $node->totalduration/3600);
+    $this->assertEqual(3600+25*60, $node->travelduration, 'Expect ' . (3600+25*60) . ' seconds travelduration, got ' . $node->travelduration);
+    $this->assertEqual(152, $node->travelkm);
+
+    $this->assertEqual($edit['signature'], $node->signature);
+    $this->assertEqual($edit['body'], $node->body);
+
+    return $nid;
+  }
+
+  private function doTestPostMidnightReport($jobid) {
+    $now = getdate();
+    $edit['title'] = 'Midnight Report';
+    $edit['workdate[month]'] = $now['mon'];
+    $edit['workdate[day]'] = $now['mday'];
+    $edit['workdate[year]'] = $now['year'];
+    $edit['jobid'] = 'nid:0:' . $jobid;
+    $edit['assignedto_name'] = $this->test_user->name;
+    $edit['flags'] = 0;
+    $edit['time[begintime]'] = '22:15';
+    $edit['time[endtime]'] = '02:30';
+    $edit['time[breakduration]'] = '01:15';
+    $edit['travel[travelduration]'] = '';
+    $edit['travel[travelkm]'] = '';
+    $edit['signature'] = '';
+    $edit['body'] = '';
+    $nid = $this->addNode('tzreport', $edit);
+
+    $node = node_load($nid);
+    $begintime = getdate($node->begintime);
+    $endtime = getdate($node->endtime);
+    $tomorrow = getdate(mktime(0, 0, 0, $now['mon'], $now['mday'] + 1, $now['year']));
+    foreach(array('mon', 'mday', 'year') as $field) {
+      $this->assertEqual($now[$field], $begintime[$field], "Expect begintime $field = $now[$field], got $begintime[$field]");
+      $this->assertEqual($tomorrow[$field], $endtime[$field], "Expect endtime $field = $tomorrow[$field], got $endtime[$field]");
+    }
+    $this->assertEqual(22, $begintime['hours']);
+    $this->assertEqual(15, $begintime['minutes']);
+    $this->assertEqual(0, $begintime['seconds']);
+    $this->assertEqual(2, $endtime['hours']);
+    $this->assertEqual(30, $endtime['minutes']);
+    $this->assertEqual(0, $endtime['seconds']);
+
+    $this->assertEqual(3600+15*60, $node->breakduration);
+    $this->assertEqual(3*3600, $node->totalduration);
+    $this->assertEqual(0, $node->travelduration);
+    $this->assertEqual(0, $node->travelkm);
+
+    return $nid;
+  }
+
+  private function doTestPostDSTSpringReport($jobid) {
+    // Spring DST started 02:00 2010-03-28
+    $now = getdate(mktime(12,0,0,3,27,2010));
+    $edit['title'] = 'DST Spring Report';
+    $edit['workdate[month]'] = $now['mon'];
+    $edit['workdate[day]'] = $now['mday'];
+    $edit['workdate[year]'] = $now['year'];
+    $edit['jobid'] = 'nid:0:' . $jobid;
+    $edit['assignedto_name'] = $this->test_user->name;
+    $edit['flags'] = 0;
+    $edit['time[begintime]'] = '22:15';
+    $edit['time[endtime]'] = '03:30';
+    $edit['time[breakduration]'] = '01:15';
+    $edit['travel[travelduration]'] = '';
+    $edit['travel[travelkm]'] = '';
+    $edit['signature'] = '';
+    $edit['body'] = '';
+    $nid = $this->addNode('tzreport', $edit);
+
+    $node = node_load($nid);
+    $begintime = getdate($node->begintime);
+    $endtime = getdate($node->endtime);
+    $tomorrow = getdate(mktime(0, 0, 0, $now['mon'], $now['mday'] + 1, $now['year']));
+    foreach(array('mon', 'mday', 'year') as $field) {
+      $this->assertEqual($now[$field], $begintime[$field], "Expect begintime $field = $now[$field], got $begintime[$field]");
+      $this->assertEqual($tomorrow[$field], $endtime[$field], "Expect endtime $field = $tomorrow[$field], got $endtime[$field]");
+    }
+    $this->assertEqual(22, $begintime['hours']);
+    $this->assertEqual(15, $begintime['minutes']);
+    $this->assertEqual(0, $begintime['seconds']);
+    $this->assertEqual(3, $endtime['hours']);
+    $this->assertEqual(30, $endtime['minutes']);
+    $this->assertEqual(0, $endtime['seconds']);
+
+    $this->assertEqual(3600+15*60, $node->breakduration);
+    $this->assertEqual(3*3600, $node->totalduration);
+    $this->assertEqual(0, $node->travelduration);
+    $this->assertEqual(0, $node->travelkm);
+
+    return $nid;
+  }
+
+  private function doTestPostDSTAutumnReport($jobid) {
+    // Autumn DST ends 03:00 2010-10-31
+    $now = getdate(mktime(12,0,0,10,30,2010));
+    $edit['title'] = 'DST Autumn Report';
+    $edit['workdate[month]'] = $now['mon'];
+    $edit['workdate[day]'] = $now['mday'];
+    $edit['workdate[year]'] = $now['year'];
+    $edit['jobid'] = 'nid:0:' . $jobid;
+    $edit['assignedto_name'] = $this->test_user->name;
+    $edit['flags'] = 0;
+    $edit['time[begintime]'] = '22:15';
+    $edit['time[endtime]'] = '03:30';
+    $edit['time[breakduration]'] = '01:15';
+    $edit['travel[travelduration]'] = '';
+    $edit['travel[travelkm]'] = '';
+    $edit['signature'] = '';
+    $edit['body'] = '';
+    $nid = $this->addNode('tzreport', $edit);
+
+    $node = node_load($nid);
+    $begintime = getdate($node->begintime);
+    $endtime = getdate($node->endtime);
+    $tomorrow = getdate(mktime(0, 0, 0, $now['mon'], $now['mday'] + 1, $now['year']));
+    foreach(array('mon', 'mday', 'year') as $field) {
+      $this->assertEqual($now[$field], $begintime[$field], "Expect begintime $field = $now[$field], got $begintime[$field]");
+      $this->assertEqual($tomorrow[$field], $endtime[$field], "Expect endtime $field = $tomorrow[$field], got $endtime[$field]");
+    }
+    $this->assertEqual(22, $begintime['hours']);
+    $this->assertEqual(15, $begintime['minutes']);
+    $this->assertEqual(0, $begintime['seconds']);
+    $this->assertEqual(3, $endtime['hours']);
+    $this->assertEqual(30, $endtime['minutes']);
+    $this->assertEqual(0, $endtime['seconds']);
+
+    $this->assertEqual(3600+15*60, $node->breakduration);
+    $this->assertEqual(5*3600, $node->totalduration);
+    $this->assertEqual(0, $node->travelduration);
+    $this->assertEqual(0, $node->travelkm);
+
+    return $nid;
+  }
+
+  private function addNode($type, $form) {
+    $this->drupalPost("node/add/$type", $form, t('Save'));
+    $this->assertResponse(200);
+    $this->assertText($form['title']);
+    $this->assertText('has been created');
+
+    $url = parse_url(curl_getinfo($this->curlHandle, CURLINFO_EFFECTIVE_URL));
+    $match = array();
+    $this->assertTrue(preg_match('/node\/(\d+)/', $url['path'], $match), 'Expected node id in URL');
+    return $match[1];
+  }
+
+  /** Override assertEqual to get nice log prints by default */
+  protected function assertEqual($first, $second, $message = '', $group = 'Other') {
+    if(!$message) {
+      $message = 'Expected "' . $first . '", got "' . $second . '"';
+    }
+    parent::assertEqual($first, $second, $message, $group);
+  }
+}
