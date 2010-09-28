@@ -149,9 +149,14 @@ function tzproto_handle_get_user(&$cmd, &$result) {
   // Load basic data
   $tzuser->set_id($user->uid);
   $tzuser->set_username($user->name);
+
   if(module_exists('realname')) {
     $tzuser->set_realname($user->realname);
+  } else {
+    $tzuser->set_realname($user->name);
   }
+
+  $tzuser->set_may_create_job(user_access('create tzjob content', $user));
 
   $result->set_user($tzuser);
 }
@@ -170,12 +175,20 @@ function tzproto_handle_sync_cmd(&$cmd, &$result) {
   }
 
   for($i = 0; $i < $sync_cmd->new_job_size(); $i++) {
-      $job = tzproto_create_tzjob_from_protobuf($sync_cmd->new_job($i));
+      $job = tzproto_create_tzjob_from_protobuf($sync_cmd->new_job($i), $result);
+      if($result->error_code()) {
+        // Break if we hit an error
+        return;
+      }
   }
 
   // Store new reports
   for($i = 0; $i < $sync_cmd->new_report_size(); $i++) {
-      $report = tzproto_create_tzreport_from_protobuf($sync_cmd->new_report($i));
+      $report = tzproto_create_tzreport_from_protobuf($sync_cmd->new_report($i), $result);
+      if($result->error_code()) {
+        // Break if we hit an error
+        return;
+      }
   }
 
   // Load jobs
@@ -299,7 +312,10 @@ function tzproto_handle_create_job_cmd(&$cmd, &$result) {
 
   // Store new job
   if($jobcmd->new_job()) {
-      $job = tzproto_create_tzjob_from_protobuf($jobcmd->new_job());
+      $job = tzproto_create_tzjob_from_protobuf($jobcmd->new_job(), $result);
+      if($result->error_code()) {
+        return;
+      }
       $jobresult->set_id($job->nid);
   }
   $result->set_create_job_result($jobresult);
@@ -315,7 +331,10 @@ function tzproto_handle_create_report_cmd(&$cmd, &$result) {
 
   // Store new reports
   if($reportcmd->new_report()) {
-      $report = tzproto_create_tzreport_from_protobuf($reportcmd->new_report());
+      $report = tzproto_create_tzreport_from_protobuf($reportcmd->new_report(), $result);
+      if($result->error_code()) {
+        return;
+      }
       $reportresult->set_id($report->nid);
   }
   $result->set_create_report_result($reportresult);
@@ -336,6 +355,13 @@ function tzproto_fill_from_node(&$proto, $node) {
   if($node->type == 'tzjob') {
     $proto->set_parent_id($node->parentid);
     $proto->set_job_code($node->jobcode);
+    /*TODO: these just check the node type, we really want
+     * special access rules to check if _this_ node and user combo
+     * allows creating children/reports et c. ... */
+    $proto->set_may_create_child(node_access('create', $node->type));
+    $proto->set_may_create_report(
+      user_access('create tzreport content'));
+    $proto->set_may_edit(node_access('update', $node));
   } else if($node->type == 'tzreport') {
     $proto->set_vid($node->vid);
     $proto->set_job_id($node->jobid);
@@ -345,14 +371,18 @@ function tzproto_fill_from_node(&$proto, $node) {
     $proto->set_signature($node->signature);
     $proto->set_travel_duration($node->travelduration);
     $proto->set_travel_km($node->travelkm);
+
+    $proto->set_may_edit(node_access('update', $node));
   }
 }
 
-function tzproto_create_tzreport_from_protobuf($data) {
+function tzproto_create_tzreport_from_protobuf($data, &$result) {
   global $user;
 
   // Find new job node id
   if(!$data->job_id()) {
+    $result->set_error_code(400);
+    $result->set_error_msg('invalid job id');
     watchdog('tzproto', 'No job set for report', array(), WATCHDOG_WARNING);
     return;
   }
@@ -362,7 +392,17 @@ function tzproto_create_tzreport_from_protobuf($data) {
   // Load node if this is an update
   if($data->id()) {
     $report = node_load($data->id());
+    if(!node_access('update', $report)) {
+      $result->set_error_code(403);
+      $result->set_error_msg('access denied');
+      return;
+    }
   } else {
+    if(!node_access('create', 'tzreport')) {
+      $result->set_error_code(403);
+      $result->set_error_msg('access denied');
+      return;
+    }
     $report->type = 'tzreport';
     if(module_exists('og')) {
       $report->og_groups = $user->og_groups;
@@ -417,16 +457,27 @@ function tzproto_create_tzreport_from_protobuf($data) {
   return $report;
 }
 
-function tzproto_create_tzjob_from_protobuf($data) {
+function tzproto_create_tzjob_from_protobuf($data, &$result) {
   global $user;
 
   $job = new stdClass();
 
-
   // Load node if this is an update
   if($data->id()) {
     $job = node_load($data->id());
+    if(!node_access('update', $job)) {
+      $result->set_error_code(403);
+      $result->set_error_msg('access denied');
+      return;
+    }
   } else {
+    // new node, check create permissions
+    if(!node_access('create', 'tzjob')) {
+      $result->set_error_code(403);
+      $result->set_error_msg('access denied');
+      return;
+    }
+
     $job->type = 'tzjob';
     if(module_exists('og')) {
       $job->og_groups = $user->og_groups;

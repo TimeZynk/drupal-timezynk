@@ -55,6 +55,18 @@ class TZReport extends PBMessage
     $this->values["18"] = "";
     $this->fields["19"] = "PBInt";
     $this->values["19"] = "";
+    $this->fields["20"] = "PBBool";
+    $this->values["20"] = "";
+    $this->values["20"] = new PBBool();
+    $this->values["20"]->value = false;
+    $this->fields["21"] = "PBBool";
+    $this->values["21"] = "";
+    $this->values["21"] = new PBBool();
+    $this->values["21"]->value = false;
+    $this->fields["22"] = "PBBool";
+    $this->values["22"] = "";
+    $this->values["22"] = new PBBool();
+    $this->values["22"]->value = false;
   }
   function id()
   {
@@ -176,6 +188,30 @@ class TZReport extends PBMessage
   {
     return $this->_set_value("19", $value);
   }
+  function may_remove()
+  {
+    return $this->_get_value("20");
+  }
+  function set_may_remove($value)
+  {
+    return $this->_set_value("20", $value);
+  }
+  function may_edit()
+  {
+    return $this->_get_value("21");
+  }
+  function set_may_edit($value)
+  {
+    return $this->_set_value("21", $value);
+  }
+  function may_reset()
+  {
+    return $this->_get_value("22");
+  }
+  function set_may_reset($value)
+  {
+    return $this->_set_value("22", $value);
+  }
 }
 class TZJob extends PBMessage
 {
@@ -199,6 +235,18 @@ class TZJob extends PBMessage
     $this->values["6"] = "";
     $this->fields["7"] = "PBInt";
     $this->values["7"] = "";
+    $this->fields["18"] = "PBBool";
+    $this->values["18"] = "";
+    $this->values["18"] = new PBBool();
+    $this->values["18"]->value = false;
+    $this->fields["19"] = "PBBool";
+    $this->values["19"] = "";
+    $this->values["19"] = new PBBool();
+    $this->values["19"]->value = false;
+    $this->fields["20"] = "PBBool";
+    $this->values["20"] = "";
+    $this->values["20"] = new PBBool();
+    $this->values["20"]->value = false;
   }
   function id()
   {
@@ -256,6 +304,30 @@ class TZJob extends PBMessage
   {
     return $this->_set_value("7", $value);
   }
+  function may_create_child()
+  {
+    return $this->_get_value("18");
+  }
+  function set_may_create_child($value)
+  {
+    return $this->_set_value("18", $value);
+  }
+  function may_create_report()
+  {
+    return $this->_get_value("19");
+  }
+  function set_may_create_report($value)
+  {
+    return $this->_set_value("19", $value);
+  }
+  function may_edit()
+  {
+    return $this->_get_value("20");
+  }
+  function set_may_edit($value)
+  {
+    return $this->_set_value("20", $value);
+  }
 }
 class TZUser extends PBMessage
 {
@@ -273,6 +345,10 @@ class TZUser extends PBMessage
     $this->values["3"] = "";
     $this->fields["4"] = "PBString";
     $this->values["4"] = "";
+    $this->fields["16"] = "PBBool";
+    $this->values["16"] = "";
+    $this->values["16"] = new PBBool();
+    $this->values["16"]->value = false;
   }
   function id()
   {
@@ -305,6 +381,14 @@ class TZUser extends PBMessage
   function set_email($value)
   {
     return $this->_set_value("4", $value);
+  }
+  function may_create_job()
+  {
+    return $this->_get_value("16");
+  }
+  function set_may_create_job($value)
+  {
+    return $this->_set_value("16", $value);
   }
 }
 class TZGetUserCmd extends PBMessage

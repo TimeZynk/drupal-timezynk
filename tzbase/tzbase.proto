@@ -38,6 +38,10 @@ message TZReport {
   optional string comments = 17;
   optional int32 travel_duration = 18;
   optional int32 travel_km = 19;
+  // Permissions //
+  optional bool may_remove = 20 [default = false]; // The user may remove this report.
+  optional bool may_edit = 21 [default = false]; // The user may edit and submit this report
+  optional bool may_reset = 22 [default = false]; // The user may reset this report to original values
 }
 
 message TZJob {
@@ -48,6 +52,10 @@ message TZJob {
   optional string title = 5;
   optional string description = 6;
   optional int32 changed = 7;
+  // Permissions //
+  optional bool may_create_child = 18 [default = false]; // User may create a subjob.
+  optional bool may_create_report = 19 [default = false]; // User may create a report linked to this job
+  optional bool may_edit = 20 [default = false]; // User may modify this job.
 }
 
 message TZUser {
@@ -55,6 +63,8 @@ message TZUser {
   optional string username = 2;
   optional string realname = 3;
   optional string email = 4;
+  // Permissions // 
+  optional bool may_create_job = 16 [default = false]; // User may create top level jobs.
 }
 
 // RPC messages
