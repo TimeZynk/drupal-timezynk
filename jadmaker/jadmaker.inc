@@ -25,7 +25,13 @@ function jadmaker_create_jad() {
   }
 
   if(false !== strpos($ua, 'iPhone')) {
-    drupal_goto('/mobile');
+    // Check for customer-specific overrride
+    $mobile_path = file_directory_path() . '/mobile';
+    if(file_exists($mobile_path)) {
+      drupal_goto(file_create_url($mobile_path));
+    } else {
+      drupal_goto('mobile');
+    }
   }
 
   $jarfile = 'tz-Generic-AnyPhone-sv.jar';
