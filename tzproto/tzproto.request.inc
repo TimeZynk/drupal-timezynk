@@ -9,8 +9,7 @@
  * Request dispatcher
  */
 function tzproto_request() {
-  require_once(drupal_get_path('module', 'tzbase') . '/pb4php-read-only/message/pb_message.php');
-  require_once(drupal_get_path('module', 'tzbase') . '/pb_proto_tzbase.php');
+  tzbase_include_proto_classes();
 
   // Read POST data
   $raw_data = file_get_contents('php://input');
@@ -18,7 +17,7 @@ function tzproto_request() {
     tzproto_error(t('No input data'), 405);
     die();
   }
-  
+
   // Check if the message is base64 encoded
   $use_base64 = TRUE;
   $data = base64_decode($raw_data, TRUE);
@@ -31,7 +30,7 @@ function tzproto_request() {
   $req->parseFromString($data);
 
   $response = new TZResponse();
-  
+
   // Store timestamp
   $response->set_timestamp(time());
 
@@ -99,11 +98,14 @@ function tzproto_login($req) {
   }
 
   /* Login and run login hooks */
-  $user = user_authenticate(array('name' => $req->username(), 'pass' => $req->password()));
+  $form_state = array();
+  $form_state['values']['name'] = $req->username();
+  $form_state['values']['pass'] = $req->password();
+  $form_state['values']['op'] = t('Log in');
+  drupal_execute('user_login', $form_state);
+
   if ($user->uid) {
     watchdog('tzproto', 'Login for !name', array('!name' => $user->name));
-
-    module_invoke_all('user', 'login', NULL, $user);
     return 0;
   }
 
@@ -116,11 +118,14 @@ function tzproto_login($req) {
 function tzproto_logout() {
   /* Logout and destroy user object */
   global $user;
+
+  watchdog('tzproto', 'Session closed for %name.', array('%name' => $user->name));
+
   session_destroy();
-  if($user->uid) {
-    module_invoke_all('user', 'logout', NULL, $user);
-    $user = drupal_anonymous_user();
-  }
+  // Only variables can be passed by reference workaround.
+  $null = NULL;
+  user_module_invoke('logout', $null, $user);
+  $user = drupal_anonymous_user();
 }
 
 /**
@@ -144,7 +149,9 @@ function tzproto_handle_get_user(&$cmd, &$result) {
   // Load basic data
   $tzuser->set_id($user->uid);
   $tzuser->set_username($user->name);
-  $tzuser->set_realname($user->realname);
+  if(module_exists('realname')) {
+    $tzuser->set_realname($user->realname);
+  }
 
   $result->set_user($tzuser);
 }
@@ -154,23 +161,23 @@ function tzproto_handle_get_user(&$cmd, &$result) {
  */
 function tzproto_handle_sync_cmd(&$cmd, &$result) {
   global $user;
-  
+
   $sync_cmd = $cmd->sync_cmd();
-  
+
   $last_sync = 0;
   if($sync_cmd->last_sync()) {
     $last_sync = $sync_cmd->last_sync();
   }
-  
+
   for($i = 0; $i < $sync_cmd->new_job_size(); $i++) {
       $job = tzproto_create_tzjob_from_protobuf($sync_cmd->new_job($i));
   }
-  
+
   // Store new reports
   for($i = 0; $i < $sync_cmd->new_report_size(); $i++) {
       $report = tzproto_create_tzreport_from_protobuf($sync_cmd->new_report($i));
   }
-  
+
   // Load jobs
   $sql = "SELECT n.nid FROM {node} n WHERE type = 'tzjob' AND status = 1 AND changed > %d";
   $db_result = db_query(db_rewrite_sql($sql), $last_sync);
@@ -179,7 +186,7 @@ function tzproto_handle_sync_cmd(&$cmd, &$result) {
     $tzjob = $result->add_job();
     tzproto_fill_from_node($tzjob, $node);
   }
-  
+
   // Load reports
   $sql = "SELECT n.nid FROM {node} n INNER JOIN {tzreport} tz ON n.nid = tz.nid WHERE type = 'tzreport' AND status = 1 AND changed > %d AND tz.assignedto = %d";
   $db_result = db_query(db_rewrite_sql($sql), $last_sync, $user->uid);
@@ -197,8 +204,8 @@ function tzproto_handle_sync_cmd(&$cmd, &$result) {
  */
 function tzproto_handle_get_job_cmd(&$cmd, &$result) {
   $jobcmd = $cmd->get_job_cmd();
-  $jobresult = new TZGetJobResult(); 
-  
+  $jobresult = new TZGetJobResult();
+
   // Are we looking for a single id?
   if($jobcmd->job_id()) {
     $node = node_load($jobcmd->job_id());
@@ -214,7 +221,7 @@ function tzproto_handle_get_job_cmd(&$cmd, &$result) {
     if($jobcmd->changed_after()) {
       $changed = $jobcmd->changed_after();
     }
-    
+
     $sql = "SELECT n.nid FROM {node} n WHERE type = 'tzjob' AND status = 1 AND changed > %d ORDER BY title";
     $db_result = FALSE;
     if($jobcmd->limit()) {
@@ -237,10 +244,10 @@ function tzproto_handle_get_job_cmd(&$cmd, &$result) {
  */
 function tzproto_handle_get_report_cmd(&$cmd, &$result) {
   global $user;
-  
+
   $reportcmd = $cmd->get_report_cmd();
-  $reportresult = new TZGetReportResult(); 
-  
+  $reportresult = new TZGetReportResult();
+
   // Are we looking for a single id?
   if($reportcmd->report_id()) {
     $node = node_load($reportcmd->report_id());
@@ -265,7 +272,7 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result) {
        // Fetch number of available nodes
       $count_query = db_rewrite_sql("SELECT COUNT(DISTINCT n.nid) FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE n.type = 'tzreport' AND n.status = 1 AND n.changed > %d AND tz.assignedto = %d");
       $count = (int)db_result(db_query($count_query, $changed, $user->uid));
-      
+
       $db_result = db_query_range(db_rewrite_sql($sql), $changed, $user->uid, $reportcmd->offset(), $reportcmd->limit());
       $reportresult->set_offset($reportcmd->offset());
       $reportresult->set_total_report_count($count);
@@ -289,7 +296,7 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result) {
 function tzproto_handle_create_job_cmd(&$cmd, &$result) {
   $jobcmd = $cmd->create_job_cmd();
   $jobresult = new TZCreateJobResult();
-  
+
   // Store new job
   if($jobcmd->new_job()) {
       $job = tzproto_create_tzjob_from_protobuf($jobcmd->new_job());
@@ -305,7 +312,7 @@ function tzproto_handle_create_job_cmd(&$cmd, &$result) {
 function tzproto_handle_create_report_cmd(&$cmd, &$result) {
   $reportcmd = $cmd->create_report_cmd();
   $reportresult = new TZCreateReportResult();
-  
+
   // Store new reports
   if($reportcmd->new_report()) {
       $report = tzproto_create_tzreport_from_protobuf($reportcmd->new_report());
@@ -343,7 +350,7 @@ function tzproto_fill_from_node(&$proto, $node) {
 
 function tzproto_create_tzreport_from_protobuf($data) {
   global $user;
-  
+
   // Find new job node id
   if(!$data->job_id()) {
     watchdog('tzproto', 'No job set for report', array(), WATCHDOG_WARNING);
@@ -363,27 +370,29 @@ function tzproto_create_tzreport_from_protobuf($data) {
     }
     $report->created = $data->changed();
   }
-  
+
   $report->jobid = $data->job_id();
-  
+
   // Set title if available
   if($data->title()) {
     $report->title = $data->title();
   } else {
-    $report->title = 'Time Report from ' . $user->realname;
+    // Get title from job
+    $title = db_result(db_query("SELECT title FROM {node} WHERE nid = %d", $report->jobid));
+    $report->title = $title ? $title : 'Time Report from ' . $user->name;
   }
-  
+
   $report->body = $data->description();
 
   // Parse start and finish
   $report->begintime = $data->begin_time();
   $report->endtime = $data->end_time();
   $report->breakduration = $data->break_duration();
-  
+
   $report->travelduration = 0;
   $report->travelkm = 0;
   $report->signature = "";
-  
+
   $report->flags = $data->flags();
 
   // Prepare node for saving
@@ -394,10 +403,10 @@ function tzproto_create_tzreport_from_protobuf($data) {
   $report->assignedto = $user->uid;
   $report->changed = $data->changed();
   node_save($report);
-  
-  if($data->id()) {   
-    watchdog('tzproto', 'Updated report !nid', array('!nid' => $report->nid));   
-    /* If the node has been updated and is immediately 
+
+  if($data->id()) {
+    watchdog('tzproto', 'Updated report !nid', array('!nid' => $report->nid));
+    /* If the node has been updated and is immediately
      * reloaded after update, it will
      *  load the OLD cached version. */
     node_load(0, NULL, TRUE);
@@ -412,7 +421,7 @@ function tzproto_create_tzjob_from_protobuf($data) {
   global $user;
 
   $job = new stdClass();
-  
+
 
   // Load node if this is an update
   if($data->id()) {
@@ -425,10 +434,12 @@ function tzproto_create_tzjob_from_protobuf($data) {
     }
     $job->created = $data->changed();
   }
-  
+
   $job->parentid = $data->parent_id();
   $job->title = $data->title();
   $job->body = $data->description();
+  $job->jobcode = '';
+  $job->flags = 0;
 
   // Prepare node for saving
   $job = node_submit($job);
@@ -437,10 +448,10 @@ function tzproto_create_tzjob_from_protobuf($data) {
   $job->uid = $user->uid;
   $job->changed = $data->changed();
   node_save($job);
-  
-  if($data->id()) {   
-    watchdog('tzproto', 'Updated job !nid', array('!nid' => $job->nid));   
-    /* If the node has been updated and is immediately 
+
+  if($data->id()) {
+    watchdog('tzproto', 'Updated job !nid', array('!nid' => $job->nid));
+    /* If the node has been updated and is immediately
      * reloaded after update, it will
      *  load the OLD cached version. */
     node_load(0, NULL, TRUE);

@@ -2,5 +2,4 @@ name = TimeZynk RPC Protocol
 description = Communicates using Protocol Buffer messages
 package = TimeZynk
 dependencies[] = tzbase
-dependencies[] = realname
 core = 6.x

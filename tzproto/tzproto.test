@@ -1,0 +1,148 @@
+<?php
+
+/**
+ * @file
+ * TimeZynk intellitime integration tests.
+ */
+class TZProtoTestCase extends DrupalWebTestCase {
+  private $test_user = NULL;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'TZProto Test Suite',
+      'description' => '',
+      'group' => 'TZProto',
+    );
+  }
+
+  public function setUp() {
+    // Enable any modules required for the test.
+   parent::setUp('tzbase', 'tzproto');
+   tzbase_include_proto_classes();
+   require_once dirname(__FILE__) . '/tzproto.request.inc';
+
+   // Create and test user
+   $this->test_user = $this->drupalCreateUser(array('access content'));
+  }
+
+  public function tearDown() {
+    parent::tearDown();
+    $this->test_user = NULL;
+  }
+
+  public function testOperations() {
+    $tzuser = $this->doGetUser();
+    $jobid = $this->doCreateJob();
+    $reportid =$this->doCreateReport($jobid);
+  }
+
+  public function doGetUser() {
+    $request = $this->createRequest();
+    $cmd = $request->add_command();
+    $get_user_cmd = new TZGetUserCmd();
+    $cmd->set_get_user_cmd($get_user_cmd);
+
+    $response = $this->sendRequest($request);
+    $this->assertEqual(1, $response->result_size(), 'Expects one result');
+    $result = $response->result(0);
+    $tzuser = $result->user();
+
+    $this->assertEqual($this->test_user->uid, $tzuser->id(), 'Expected id ' . $this->test_user->uid . ', got ' . $tzuser->id());
+    $this->assertEqual($this->test_user->name, $tzuser->username(), 'Expected username ' . $this->test_user->name . ', got ' . $tzuser->username());
+    return $tzuser;
+  }
+
+  public function doCreateJob() {
+    $request = $this->createRequest();
+    $cmd = $request->add_command();
+
+    // Populate default tz job
+    $job = new TZJob();
+    $job->set_parent_id(0);
+    $job->set_title('test job');
+
+
+    $create_job_cmd = new TZCreateJobCmd();
+    $create_job_cmd->set_new_job($job);
+    $cmd->set_create_job_cmd($create_job_cmd);
+
+    $response = $this->sendRequest($request);
+    $this->assertEqual(1, $response->result_size(), 'Expects one result');
+    $result = $response->result(0);
+    $create_job_result = $result->create_job_result();
+    $this->assertTrue($create_job_result->id(), 'Expect valid job id, got ' . $create_job_result->id());
+
+    // Check against actual saved node
+    $node = node_load($create_job_result->id());
+    $this->assertEqual($job->title(), $node->title);
+    $this->assertEqual($job->parent_id(), $node->parentid);
+
+    return $create_job_result->id();
+  }
+
+  public function doCreateReport($jobid) {
+    $request = $this->createRequest();
+    $cmd = $request->add_command();
+
+    // Populate default TZ report
+    $report = new TZReport();
+    $report->set_job_id($jobid);
+    $report->set_assigned_to($this->test_user->uid);
+
+    $now = time();
+    $begintime = $now - 3600*2;
+    $endtime = $now - 3600;
+    $breakduration = 1800;
+
+    $report->set_begin_time($begintime);
+    $report->set_end_time($endtime);
+    $report->set_break_duration($breakduration);
+    $report->set_flags(TZFlags::CREATED);
+
+    $create_report_cmd = new TZCreateReportCmd();
+    $create_report_cmd->set_new_report($report);
+    $cmd->set_create_report_cmd($create_report_cmd);
+
+    $response = $this->sendRequest($request);
+    $this->assertEqual(1, $response->result_size(), 'Expects one result');
+    $result = $response->result(0);
+    $create_report_result = $result->create_report_result();
+    $this->assertTrue($create_report_result->id(), 'Expected valid job id, got ' . $create_report_result->id());
+
+    // Load node and check results
+    $node = node_load($create_report_result->id());
+    $this->assertEqual($begintime, $node->begintime, 'Expected begintime ' . $begintime . ', got ' . $node->begintime);
+    $this->assertEqual($endtime, $node->endtime, 'Expected begintime ' . $endtime . ', got ' . $node->endtime);
+    $this->assertEqual($breakduration, $node->breakduration, 'Expected begintime ' . $breakduration . ', got ' . $node->breakduration);
+
+    return $create_report_result->id();
+  }
+
+  private function createRequest() {
+    $request = new TZRequest();
+    $request->set_username($this->test_user->name);
+    $request->set_password($this->test_user->pass_raw);
+    return $request;
+  }
+
+  /**
+   * Post TZProto request
+   * @param TZRequest $request
+   */
+  private function sendRequest($request) {
+    $request_data = $request->SerializeToString();
+
+    $out = $this->curlExec(array(
+      CURLOPT_URL => url('tzproto', array('absolute' => TRUE)),
+      CURLOPT_POST => TRUE,
+      CURLOPT_POSTFIELDS => $request_data,
+    ));
+
+    $response = NULL;
+    if($this->assertResponse(200)) {
+      $response = new TZResponse();
+      $response->parseFromString($out);
+    }
+    return $response;
+  }
+}

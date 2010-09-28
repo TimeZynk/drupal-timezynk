@@ -14,7 +14,7 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
     return array(
       'name' => 'TZIntellitimeBot test suite',
       'description' => '',
-      'group' => 'TimeZynk',
+      'group' => 'TZIntellitime',
     );
   }
 
@@ -90,7 +90,7 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
     return array(
       'name' => 'TZIntellitimeParser test suite',
       'description' => '',
-      'group' => 'TimeZynk',
+      'group' => 'TZIntellitime',
     );
   }
 
@@ -195,7 +195,7 @@ class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
     return array(
       'name' => 'TZIntellitimeReport test suite',
       'description' => '',
-      'group' => 'TimeZynk',
+      'group' => 'TZIntellitime',
     );
   }
 
@@ -316,7 +316,7 @@ class TZIntellitimeAdminPageTests extends DrupalWebTestCase {
     return array(
       'name' => 'Intellitime Admin page test suite',
       'description' => '',
-      'group' => 'TimeZynk',
+      'group' => 'TZIntellitime',
     );
   }
 
@@ -365,7 +365,7 @@ class TZIntellitimeLoginSyncTests extends DrupalWebTestCase {
     return array(
       'name' => 'Intellitime login sync test suite',
       'description' => '',
-      'group' => 'TimeZynk',
+      'group' => 'TZIntellitime',
     );
   }
 

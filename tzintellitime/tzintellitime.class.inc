@@ -98,6 +98,7 @@ class TZIntellitimeBot {
     }
 
     $result['assignments'] = $parser->parse_assignments();
+    $result['absence_types'] = $parser->parse_absence_types();
     $result['reports'] = $parser->parse_reports();
     return $result;
   }
@@ -396,13 +397,27 @@ class TZIntellitimeParser {
    * @return Array Map of "<jobcode>" => "<jobtitle>"
    */
   public function parse_assignments() {
-    $elems = $this->doc->xpath('//select[@id="CustOrdersDropDown"]');
-    foreach($elems as $elem) {
-      foreach($elem->option as $option) {
-        $jobcode = (string)$option['value'];
-        if($jobcode != '0') {
-          $result[] = array('id' => $jobcode, 'title' => trim((string)$option));
-        }
+    $elems = $this->doc->xpath('//select[@id="CustOrdersDropDown"]/option');
+    foreach($elems as $option) {
+      $jobcode = (string)$option['value'];
+      if($jobcode) {
+        $result[] = array('id' => $jobcode, 'title' => trim((string)$option));
+      }
+    }
+    return $result;
+  }
+
+  /**
+   * Parse absence types and titles from the current document.
+   * @return Array Map of <absence type code> => <absence type title>
+   */
+  public function parse_absence_types() {
+    $elems = $this->doc->xpath('//select[@id="AddRowDropDown"]/option');
+    foreach($elems as $option) {
+      $jobcode = (string)$option['value'];
+      $jobtitle = trim((string)$option);
+      if($jobcode && $jobtitle && preg_match('/^_AC_/', $jobcode)) {
+        $result[] = array('id' => substr($jobcode, 4), 'title' => $jobtitle);
       }
     }
     return $result;
@@ -450,9 +465,13 @@ class TZIntellitimeParser {
     $id = preg_replace("/^.*Expense.aspx\?(.*)\'.*$/", "$1", (string)$onclick_handlers[0]['onclick']);
     $report->id =  $id;
 
-    // Index 1 has the "done" checkbox.
+    // Index 1 has either a "done" checkbox or the "locked" icon.
     $td = $row->td[1];
-    $report->done =  $td->input['checked'] ? TRUE : FALSE;
+    if($td->input['checked']) {
+      $report->state = TZIntellitimeReport::STATE_REPORTED;
+    } elseif(FALSE !== stripos($td->img['src'], 'lock')) {
+      $report->state = TZIntellitimeReport::STATE_LOCKED;
+    }
 
     //Fourth element has the span with a date label.
     $td = $row->td[3];
@@ -503,8 +522,12 @@ class TZIntellitimeParser {
 }
 
 class TZIntellitimeReport {
+  const STATE_OPEN = 0;
+  const STATE_REPORTED = 1;
+  const STATE_LOCKED = 2;
+
   public $id = NULL;
-  public $done = FALSE;
+  public $state = TZIntellitimeReport::STATE_OPEN;
   public $year = NULL;
   public $month = NULL;
   public $day = NULL;
@@ -588,6 +611,17 @@ class TZIntellitimeReport {
     $tzreport->travelkm = 0;
     $tzreport->signature = "";
 
+    switch($this->state) {
+      case TZIntellitimeReport::STATE_OPEN:
+        $tzreport->flags = TZFlags::CREATED;
+        break;
+      case TZIntellitimeReport::STATE_REPORTED:
+        $tzreport->flags = TZFlags::REPORTED;
+        break;
+      default:
+        $tzreport->flags = TZFlags::LOCKED;
+        break;
+    }
     $tzreport->flags = $this->done ? TZFlags::REPORTED : TZFlags::CREATED;
     $tzreport->changed = time();
 
