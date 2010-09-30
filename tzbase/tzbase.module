@@ -374,7 +374,6 @@ function tzbase_form($node) {
 function tzbase_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   if($node->type === 'tzreport') {
     if($op === 'presave') {
-      watchdog('tzreport', 'presave: ' . print_r($node, TRUE));
       if($node->jobid) {
         $jobid = explode(':', $node->jobid);
         $node->jobid = intval(end($jobid));
@@ -567,7 +566,6 @@ function tzbase_tzreport_list_flags() {
  */
 function tzbase_format_tzreport_flags($flags) {
   $flaglist = tzbase_tzreport_list_flags();
-  watchdog('tzbase', 'format ' . $flags . ' from ' . print_r($flaglist, TRUE));
   return $flaglist[$flags];
 }
 

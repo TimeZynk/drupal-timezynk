@@ -1,0 +1,48 @@
+<?php
+
+function tzintellitime_mock_menu() {
+  $items['IntelliplanWeb'] = array(
+    'title' => 'Intellitime Mockup',
+    'page callback' => 'tzintellitime_mock_request',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+function tzintellitime_mock_request() {
+  $path = arg();
+  watchdog('mock', 'Request for path ' . print_r($path, TRUE));
+  if(count($path) < 3 && FALSE !== strpos(end($path), '.aspx')) {
+    array_splice($path, -1, 0, 'Portal');
+    drupal_goto(implode('/', $path));
+  }
+  switch(end($path)) {
+    case 'Login.aspx':
+      if('POST' === $_SERVER['REQUEST_METHOD']) {
+        array_pop($path);
+        $path[] = 'Main.aspx';
+        drupal_goto(implode('/', $path));
+      } else {
+        readfile(dirname(__FILE__) . '/intellitime-login-page.html');
+      }
+      break;
+
+    case 'Main.aspx':
+      readfile(dirname(__FILE__) . '/intellitime-main-page.html');
+      break;
+
+    case 'TimeReport.aspx':
+      readfile(dirname(__FILE__) . '/intellitime-timereport-page.html');
+      break;
+
+    case 'LogOut.aspx':
+      array_splice($path, -1, 1, 'Login.aspx');
+      drupal_goto(implode('/', $path));
+      break;
+
+    default:
+      drupal_goto('IntelliplanWeb/Portal/Login.aspx');
+      break;
+  }
+}

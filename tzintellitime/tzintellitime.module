@@ -1,5 +1,7 @@
 <?php
 
+define('TZINTELLITIME_BASE_URL', variable_get('tzintellitime_base_url', ''));
+
 /**
  * Implementation of hook_menu().
  */
@@ -36,19 +38,17 @@ function tzintellitime_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 
       case 'insert':
         if(isset($node->intellitime_id) && $node->intellitime_id) {
-          db_query('INSERT INTO {tzintellitime} (nid, intellitime_id) VALUES (%d, \'%s\')',
-            $node->nid, $node->intellitime_id);
+          drupal_write_record('tzintellitime', $node);
         }
         break;
 
       case 'load':
-        return db_fetch_object(db_query('SELECT * FROM {tzintellitime} WHERE nid = %d', $node->nid));
+        return db_fetch_array(db_query('SELECT * FROM {tzintellitime} WHERE nid = %d', $node->nid));
         break;
 
       case 'update':
         if(isset($node->intellitime_id) && $node->intellitime_id) {
-          db_query('UPDATE {tzintellitime} SET intellitime_id = \'%s\' WHERE nid = %d',
-            $node->intellitime_id, $node->nid);
+          drupal_write_record('tzintellitime', $node, 'nid');
         }
         break;
     }
@@ -66,16 +66,19 @@ function tzintellitime_form_alter(&$form, &$form_state, $form_id) {
   }
 }
 
+/**
+ * Authenticate a user towards intellitime
+ * @param Array $form
+ * @param Array $form_state
+ */
 function tzintellitime_login_authenticate_validate($form, &$form_state) {
-  require_once dirname(__FILE__) . '/tzintellitime.class.inc';
   global $user;
+  tzintellitime_include_classes();
   $username = $form_state['values']['name'];
   $password = $form_state['values']['pass'];
 
   // Check for valid user name
   user_login_name_validate($form, $form_state);
-  // Intellitime bot will fail to login if the URL is empty, no need to check $url.
-  $url = variable_get('tzintellitime_base_url', '');
 
   // Load the user if it is exists and is not blocked
   $account = user_load(array('name' => $username, 'status' => 1));
@@ -85,46 +88,32 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
     return;
   }
 
-  if (!$account || isset($account->intellitime_user) && !_tzintellitime_is_authenticated($account)) {
+  if (!$account || isset($account->intellitime_user) && !tzintellitime_is_authenticated($account)) {
     // new user or existing user with expired cookie-jar.
     if(isset($account->intellitime_session_data)) {
       TZIntellitimeBot::destroy_session_data($account->intellitime_session_data);
     }
-    $bot = new TZIntellitimeBot($url);
+    $bot = new TZIntellitimeBot(TZINTELLITIME_BASE_URL);
     if(!$bot->login($username, $password)) {
       TZIntellitimeBot::destroy_session_data($bot->get_session_data());
       return;
     }
-    $first_time_sync_results = NULL;
-    if ($account) {
-      $mail = $account->mail;
-      $init = $account->init;
-    } else {
-      $mail = $username;
-      $init = $username;
-      // TODO: replace me with a cron or batch job.
-      $first_time_sync_results = $bot->load_assignments();
-    }
-    $user = user_save($account, array(
-      'name' => $username,
-      'pass' => $password,
-      'status' => 1,
-      'mail' => $mail,
-      'init' => $init,
+    $user_data = array(
       'intellitime_user' => TRUE,
       'intellitime_session_data' => $bot->get_session_data(),
-    ));
+    );
+    if (!$account) {
+      $user_data['mail'] = $username;
+      $user_data['init'] = $username;
+      $user_data['name'] = $username;
+      $user_data['pass'] = $password;
+      $user_data['status'] = 1;
+    }
+    $user = user_save($account, $user_data);
 
-    // TODO: loop over reports and convert.
-    if (isset($first_time_sync_results['assignments']) && isset($first_time_sync_results['reports'])) {
-      $jobmap = array();
-      foreach($first_time_sync_results['assignments'] as $tzassignment) {
-        $job = _tzintellitime_create_job($tzassignment);
-        $jobmap[$job->title] = $job->nid;
-      }
-      foreach($first_time_sync_results['reports'] as $intelli_report) {
-        _tzintellitime_create_report($intelli_report, $jobmap);
-      }
+    // Schedule for sync
+    if(module_exists('tzintellitime_sync')) {
+      tzintellitime_sync_schedule_user($user->uid);
     }
   } else {
     // Admins and existing users with cookiejars in order authenticate normally.
@@ -133,74 +122,19 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
 }
 
 
-function _tzintellitime_create_report($intelli_report, $job_map = array()) {
-  global $user;
-  // Try to fetch previous report
-  $tzreport = tzintellitime_node_load_by_intellitime_id($intelli_report->id);
-  $tzreport = $intelli_report->convert_to_tzreport($tzreport);
-
-  // Map job to report by searching for matching title
-  if (isset($job_map[$intelli_report->title])) {
-    $tzreport->jobid = $job_map[$intelli_report->title];
-  } elseif(!isset($tzreport->jobid)) {
-    // Should not be able to create a report without a valid job.
-    return NULL;
-  }
-
-  // Set author and date
-  $tzreport->name = $user->name;
-  $tzreport->uid = $user->uid;
-  $tzreport->assignedto = $user->uid;
-
-  $report_node = node_submit($tzreport);
-
-  /* $report_node->uid might be empty here even after
-   * node_submit() if the user did not have sufficient permissions to
-   * set author through the 'name' field.  */
-  if(!$report_node->uid) {
-    $report_node->uid = $user->uid;
-  }
-
-  node_save($report_node);
-  watchdog('tzintellitime', 'Inserted report !nid', array('!nid' => $report_node->nid));
-
-  return $report_node;
-}
-
-function _tzintellitime_create_job($assignment) {
-  global $user;
-   // Load node if this is an update
-  $job = tzintellitime_node_load_by_intellitime_id($assignment['id']);
-  if (!$job) {
-    $job = new stdClass();
-    $job->type = 'tzjob';
-  }
-
-  $job->parentid = 0; // No parent jobs in intellitime.
-  $job->title = $assignment['title'];
-  $job->body = '';
-  $job->intellitime_id = $assignment['id'];
-  $job->jobcode = '';
-  $job->flags = 0;
-  $job->name = $user->name;
-  // Prepare node for saving
-  $job = node_submit($job);
-
-  /* Set author and date. $job->uid might be empty here even after
-   * node_submit() if the user did not have sufficient permissions to
-   * set author through the 'name' field.  */
-  if(!$job->uid) {
-    $job->uid = $user->uid;
-  }
-  $job->changed = time();
-  node_save($job);
-
-  watchdog('tzintellitime', 'Inserted job !nid', array('!nid' => $job->nid));
-  return $job;
-}
-
+/**
+ * Load a node by searching for the intellitime ID
+ * @param string $intellitime_id
+ */
 function tzintellitime_node_load_by_intellitime_id($intellitime_id) {
   return node_load(db_result(db_query("SELECT nid FROM {tzintellitime} WHERE intellitime_id = '%s'", $intellitime_id)));
+}
+
+/**
+ * Include tzintellitime class files
+ */
+function tzintellitime_include_classes() {
+  require_once dirname(__FILE__) . '/tzintellitime.class.inc';
 }
 
 /**
@@ -209,7 +143,7 @@ function tzintellitime_node_load_by_intellitime_id($intellitime_id) {
  * been verified to be an intellitime account has valid authentication.
  * @param unknown_type $account
  */
-function _tzintellitime_is_authenticated($account) {
+function tzintellitime_is_authenticated($account) {
   return ($account && $account->intellitime_user &&
     isset($account->intellitime_session_data) &&
     TZIntellitimeBot::is_valid_session_data($account->intellitime_session_data)

@@ -1,0 +1,135 @@
+<?php
+
+define('TZINTELLITIME_SYNC_USERS_PER_RUN', variable_get('tzintellitime_sync_users_per_run', 100));
+
+/**
+ * Schedule the user with specified uid for synchronizations as soon as possible.
+ * @param int $uid user id
+ */
+function tzintellitime_sync_schedule_user($uid) {
+  if($uid) {
+    $entry = array('uid' => $uid, 'last_sync' => 0);
+    if(db_result(db_query('SELECT COUNT(*) FROM {tzintellitime_sync} WHERE uid = %d', $uid))) {
+      drupal_write_record('tzintellitime_sync', $entry, 'uid');
+    } else {
+      drupal_write_record('tzintellitime_sync', $entry);
+    }
+    return TRUE;
+  }
+  return FALSE;
+}
+
+function tzintellitime_sync_unschedule_user($uid) {
+  if($uid) {
+    db_query('DELETE FROM {tzintellitime_sync} WHERE uid = %d', $uid);
+    return TRUE;
+  }
+  return FALSE;
+}
+
+function tzintellitime_sync_synchronize_users() {
+  tzintellitime_include_classes();
+  $result = db_query_range('SELECT * FROM {tzintellitime_sync} ORDER BY last_sync ASC', 0, TZINTELLITIME_SYNC_USERS_PER_RUN);
+  while($elem = db_fetch_object($result)) {
+    // Load user account
+    $account = user_load(array('uid' => $elem->uid));
+    if(!$account || !tzintellitime_is_authenticated($account)) {
+      // User not found or not intellitime user
+      tzintellitime_sync_unschedule_user($elem->uid);
+      continue;
+    }
+
+    $account = tzintellitime_sync_synchronize_user($account);
+
+    if(tzintellitime_is_authenticated($account)) {
+      $elem->last_sync = time();
+      drupal_write_record('tzintellitime_sync', $elem, 'uid');
+    } elseif($account) {
+      // Failed authentication, unschedule user
+      tzintellitime_sync_unschedule_user($elem->uid);
+    } else {
+      // Hopefully a temporary failure, do nothing
+    }
+  }
+}
+
+function tzintellitime_sync_synchronize_user($account) {
+  // Setup bot and fetch this weeks assignments
+  $bot = new TZIntellitimeBot(TZINTELLITIME_BASE_URL, $account->intellitime_session_data);
+
+  // Allways sync this week
+  $week_data = NULL;
+  $weeks_to_load = array(date('Y\WW'));
+  $jobmap = array();
+  $year_week = reset($weeks_to_load);
+  while($year_week) {
+    watchdog('tzintellitime_sync', 'Loading week ' . $year_week);
+    $week_data = $bot->load_week(strtotime($year_week));
+    foreach($week_data['assignments'] as $tzassignment) {
+      $job = _tzintellitime_sync_create_job($account, $tzassignment);
+      $jobmap[$tzassignment->report_key] = $job->nid;
+    }
+    foreach($week_data['reports'] as $intelli_report) {
+      _tzintellitime_sync_create_report($account, $intelli_report, $jobmap);
+    }
+    foreach($week_data['unfinished_weeks'] as $weekdate) {
+      $weekstr = date('Y\WW', $weekdate);
+      if(FALSE === array_search($weekstr, $weeks_to_load)) {
+        $weeks_to_load[] = $weekstr;
+      }
+    }
+    $year_week = next($weeks_to_load);
+  }
+
+  // Check if we could sync anything
+  if(FALSE === $week_data) {
+    // Failed to load week because of network error, give up for now
+    return NULL;
+  } else if(!$week_data) {
+    // no data, session expired. Destroy session
+    TZIntellitimeBot::destroy_session_data($account->intellitime_session_data);
+    return user_save($account, array('intellitime_session_data' => NULL));
+  }
+
+  return $account;
+}
+
+function _tzintellitime_sync_create_report($account, $intelli_report, $job_map = array()) {
+  // Try to fetch previous report
+  $tzreport = tzintellitime_node_load_by_intellitime_id($intelli_report->id);
+  $tzreport = $intelli_report->convert_to_tzreport($account, $tzreport);
+
+  // Map job to report by searching for matching title
+  if (isset($job_map[$intelli_report->title])) {
+    $tzreport->jobid = $job_map[$intelli_report->title];
+  } elseif(!isset($tzreport->jobid) || !$tzreport->jobid) {
+    // Should not be able to create a report without a valid job.
+    return NULL;
+  }
+
+  return _tzintellitime_sync_store_node($tzreport);
+}
+
+function _tzintellitime_sync_create_job($account, $intelli_assignment, $parentid = 0) {
+  // Load node if this is an update
+  $job = tzintellitime_node_load_by_intellitime_id($intelli_assignment->id);
+  $job = $intelli_assignment->convert_to_tzjob($account, $job);
+  $tzjob->parentid = $parentid;
+  return _tzintellitime_sync_store_node($job);
+}
+
+function _tzintellitime_sync_store_node($node_data) {
+  $node = node_submit($node_data);
+  node_save($node);
+
+  watchdog('tzintellitime_sync',
+           '!operation !type !nid',
+           array(
+             '!operation' => isset($node_data->nid) ? 'Updated' : 'Inserted',
+             '!type' => $node->type,
+             '!nid' => $node->nid),
+           WATCHDOG_NOTICE,
+           l('View', 'node/' . $node->nid));
+
+  return $node;
+}

@@ -1,0 +1,5 @@
+name = TimeZynk intellitime synchronization
+description = Provides TimeZynk intellitime synchronization
+core = 6.x
+package = TimeZynk
+dependencies[] = tzintellitime

@@ -82,7 +82,13 @@ class TZIntellitimeBot {
     return FALSE;
   }
 
-  public function load_assignments($date = 0) {
+  /**
+   * Fetch all available intellitime data for the week that contains the given date
+   * @param int $date date as timestamp
+   * @return FALSE on network failure, empty array on login failure, otherwise array with keys
+   *   'assignments', 'reports' and 'unfinished_weeks'.
+   */
+  public function load_week($date = 0) {
     // Use today as default date
     if($date === 0) {
       $date = time();
@@ -94,12 +100,17 @@ class TZIntellitimeBot {
     $url = $this->build_action_url($dateaction);
     $parser = $this->request($url);
     if(!$parser) {
-      return NULL;
+      return FALSE;
     }
 
-    $result['assignments'] = $parser->parse_assignments();
-    $result['absence_types'] = $parser->parse_absence_types();
-    $result['reports'] = $parser->parse_reports();
+    $result = array();
+    if($parser->is_valid_login()) {
+      $assignments = $parser->parse_assignments();
+      $absence_types = $parser->parse_absence_types();
+      $result['assignments'] = array_merge($assignments, $absence_types);
+      $result['reports'] = $parser->parse_reports();
+      $result['unfinished_weeks'] = $parser->parse_unfinished_weeks();
+    }
     return $result;
   }
 
@@ -225,8 +236,10 @@ class TZIntellitimeBot {
    * @param Array $session_data
    */
   public static function destroy_session_data(&$session_data) {
-    unlink($session_data['cookiejar']);
-    unset($session_data['cookiejar']);
+    if(isset($session_data['cookiejar']) && file_exists($session_data['cookiejar'])) {
+      unlink($session_data['cookiejar']);
+      unset($session_data['cookiejar']);
+    }
     unset($session_data['last_effective_url']);
   }
 }
@@ -243,11 +256,19 @@ class TZIntellitimeParser {
    */
   public function __construct($html_string) {
     $doc = new DOMDocument();
+    /* The time report document contains some horrible misencodings
+     * if adding absence rows containing '<' or '>'. They are printed
+     * raw into the HTML and makes the parser cut the rest of the line.
+     * Try to replace them with HTML entities.
+     */
+    $html_string = preg_replace('/ <(\d+)/', ' &lt;$1', $html_string);
+    $html_string = preg_replace('/ >(\d+)/', ' &gt;$1', $html_string);
     /* Supress any warnings from malformed HTML soup.
      * The intellitime docs are declared as ISO-8859-1, but are in fact UTF-8.
      * In order to get rid of the horrible misencodings, we force UTF-8.
      */
-    @$doc->loadHTML('<?xml encoding="UTF-8">' . $html_string);
+    $html_string = mb_convert_encoding($html_string, 'HTML-ENTITIES', 'UTF-8');
+    @$doc->loadHTML($html_string);
     $this->doc = simplexml_import_dom($doc);
   }
 
@@ -260,7 +281,7 @@ class TZIntellitimeParser {
       return FALSE;
     }
 
-    $list = $this->doc->xpath('//a[@href="LogOut.aspx?MId=LogOut"]');
+    $list = $this->doc->xpath('//img[@src="../Images/Img_LogOut.gif"]');
     if (count($list) === 0) {
       return FALSE;
     }
@@ -397,11 +418,17 @@ class TZIntellitimeParser {
    * @return Array Map of "<jobcode>" => "<jobtitle>"
    */
   public function parse_assignments() {
+    $result = array();
     $elems = $this->doc->xpath('//select[@id="CustOrdersDropDown"]/option');
     foreach($elems as $option) {
-      $jobcode = (string)$option['value'];
-      if($jobcode) {
-        $result[] = array('id' => $jobcode, 'title' => trim((string)$option));
+      $jobcode = trim((string)$option['value']);
+      $jobtitle = trim((string)$option);
+      if($jobcode && $jobtitle) {
+        $assignment = new TZIntellitimeAssignment();
+        $assignment->id = $jobcode;
+        $assignment->report_key = $jobtitle;
+        $assignment->title = $jobtitle;
+        $result[] = $assignment;
       }
     }
     return $result;
@@ -412,12 +439,34 @@ class TZIntellitimeParser {
    * @return Array Map of <absence type code> => <absence type title>
    */
   public function parse_absence_types() {
+    $result = array();
     $elems = $this->doc->xpath('//select[@id="AddRowDropDown"]/option');
     foreach($elems as $option) {
-      $jobcode = (string)$option['value'];
+      $jobcode = trim((string)$option['value']);
       $jobtitle = trim((string)$option);
-      if($jobcode && $jobtitle && preg_match('/^_AC_/', $jobcode)) {
-        $result[] = array('id' => substr($jobcode, 4), 'title' => $jobtitle);
+      $matches = array();
+      if($jobcode && $jobtitle && preg_match('/^_AC_(.+)/', $jobcode, $matches)) {
+        $assignment = new TZIntellitimeAssignment();
+        $assignment->id = $jobcode;
+        $assignment->report_key = $matches[1];
+        $assignment->title = $jobtitle;
+        $assignment->type = TZIntellitimeAssignment::TYPE_ABSENCE;
+        $result[] = $assignment;
+      }
+    }
+    return $result;
+  }
+
+  /**
+   * Parse list over which weeks that have unfinished reports.
+   * @return Array Timestamp describing one of the days in the week that have unfinished reports
+   */
+  public function parse_unfinished_weeks() {
+    $elems = $this->doc->xpath('//a[@class="WeeksNav"]');
+    foreach($elems as $a) {
+      $match = array();
+      if(preg_match('/DateInWeek=(\d{4}-\d{2}-\d{2})/', $a['href'], $match)) {
+        $result[] = strtotime($match[1]);
       }
     }
     return $result;
@@ -584,15 +633,21 @@ class TZIntellitimeReport {
   /**
    * Convert this TZIntellitimeReport to a tzreport node. If a previous
    * node is available, it is updated instead.
+   * @param array $account user object associated with this report
    * @param array $tzreport optional tzreport node to update
    * @return array new or updated tzreport node
    */
-  public function convert_to_tzreport($tzreport = NULL) {
+  public function convert_to_tzreport($account, $tzreport = NULL) {
     tzbase_include_proto_classes();
 
     if(!$tzreport) {
       $tzreport = new stdClass();
       $tzreport->type = 'tzreport';
+      $tzreport->travelduration = 0;
+      $tzreport->travelkm = 0;
+      $tzreport->signature = '';
+      $tzreport->name = $account->name;
+      $tzreport->uid = $account->uid;
     }
 
     $tzreport->title = $this->title;
@@ -607,10 +662,6 @@ class TZIntellitimeReport {
     }
     $tzreport->breakduration = $this->break_duration_minutes*60;
 
-    $tzreport->travelduration = 0;
-    $tzreport->travelkm = 0;
-    $tzreport->signature = "";
-
     switch($this->state) {
       case TZIntellitimeReport::STATE_OPEN:
         $tzreport->flags = TZFlags::CREATED;
@@ -622,8 +673,9 @@ class TZIntellitimeReport {
         $tzreport->flags = TZFlags::LOCKED;
         break;
     }
-    $tzreport->flags = $this->done ? TZFlags::REPORTED : TZFlags::CREATED;
     $tzreport->changed = time();
+
+    $tzreport->assignedto = $account->uid;
 
     return $tzreport;
   }
@@ -635,6 +687,34 @@ class TZIntellitimeReport {
    */
   private function get_in_epoch($time_string) {
     return strtotime($this->get_date_string() . "T" . $time_string);
+  }
+}
+
+class TZIntellitimeAssignment {
+  const TYPE_ASSIGNMENT = 0;
+  const TYPE_ABSENCE = 1;
+
+  public $id = NULL;
+  public $report_key = NULL;
+  public $title = NULL;
+  public $type = TZIntellitimeAssignment::TYPE_ASSIGNMENT;
+
+  public function convert_to_tzjob($account, $tzjob = NULL) {
+    if (!$tzjob) {
+      // New job, set default fields
+      $tzjob = new stdClass();
+      $tzjob->type = 'tzjob';
+      $tzjob->body = '';
+      $tzjob->jobcode = '';
+      $tzjob->name = $account->name;
+      $tzjob->uid = $account->uid;
+      $tzjob->parentid = 0;
+      $tzjob->flags = TZJobFlags::ACTIVE;
+    }
+
+    $tzjob->title = $this->title;
+    $tzjob->intellitime_id = $this->id;
+    return $tzjob;
   }
 }
 

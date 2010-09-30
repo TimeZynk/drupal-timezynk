@@ -1,0 +1,121 @@
+<?php
+
+class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'TZIntellitimeSync Test Suite',
+      'description' => '',
+      'group' => 'TZIntellitimeSync',
+    );
+  }
+
+  public function setUp() {
+    // Enable any modules required for the test.
+    parent::setUp('tzbase', 'tzintellitime', 'tzintellitime_mock', 'tzintellitime_sync');
+    // Set up mock intellitime
+    variable_set('tzintellitime_base_url', url('IntelliplanWeb/Login.aspx', array('absolute' => TRUE)));
+    // Include resources
+    tzbase_include_proto_classes();
+    tzintellitime_include_classes();
+    // Create and test user
+    $account = (object)array('name' => 'test user', 'pass_raw' => 'test password');
+    $this->drupalLogin($account);
+    $this->account = user_load(array('name' => 'test user'));
+    $this->assertTrue($this->account, 'account created for ' . $this->account->name);
+  }
+
+  public function testScheduleHandler() {
+    $this->doTestScheduleUser();
+  }
+
+  private function doTestScheduleUser() {
+    $num_rows = db_result(db_query('SELECT COUNT(*) FROM {tzintellitime_sync}'));
+    $this->assertTrue($num_rows);
+  }
+
+  public function testCreatingData() {
+    $this->doTestCreatingJob();
+    $this->doTestUpdatingExistingJob();
+    $this->doTestCreatingReport();
+    $this->doTestUpdatingExistingReport();
+    $this->doTestCreatingReportWithoutJobShallFail();
+  }
+
+  public function doTestCreatingJob() {
+    $job = $this->createJob();
+    $node = _tzintellitime_sync_create_job($this->account, $job);
+    $this->assertNotNull($node);
+    $this->assertTrue($node->nid, "Expected valid drupal ID.");
+    $this->assertEqual($job['id'], $node->intellitime_id, 'Expected same intellitime id.');
+    $this->assertEqual($job['title'], $node->title, 'Expected equal titles');
+  }
+
+  public function doTestUpdatingExistingJob() {
+    $job = $this->createJob();
+    $nodes[] = _tzintellitime_sync_create_job($this->account, $job);
+    $job['title'] .= '2';
+    $nodes[] = _tzintellitime_sync_create_job($this->account, $job);
+    $this->assertEqual($nodes[0]->nid, $nodes[1]->nid, 'Expected same node-id');
+    $this->assertEqual($job['title'], $nodes[1]->title, 'Expected equal titles');
+  }
+
+  public function doTestCreatingReport() {
+    $report = $this->createReport();
+    $job = $this->createJob($report->title);
+    $job_node = _tzintellitime_sync_create_job($this->account, $job);
+    $report_node = _tzintellitime_sync_create_report($this->account, $report, array($job['title'] => $job_node->nid));
+    $this->assertNotNull($report_node);
+    $this->assertTrue($report_node->nid);
+  }
+
+  public function doTestUpdatingExistingReport() {
+    $report = $this->createReport();
+    $job = $this->createJob($report->title);
+    $job_node = _tzintellitime_sync_create_job($this->account, $job);
+    $report_node = _tzintellitime_sync_create_report($this->account, $report, array($job['title'] => $job_node->nid));
+
+    // Update report and create again
+    $report->break_duration_minutes = 35;
+    $report_node2 = _tzintellitime_sync_create_report($this->account, $report, array($job['title'] => $job_node->nid));
+
+    $this->assertEqual($report_node->nid, $report_node2->nid, 'Expected equal NID after update');
+    $this->assertEqual($report->break_duration_minutes*60, $report_node2->breakduration, 'Expected updated breakduration');
+  }
+
+  public function doTestCreatingReportWithoutJobShallFail() {
+    $report = $this->createReport();
+    $report_node = _tzintellitime_sync_create_report($this->account, $report);
+    $this->assertNull($report_node);
+  }
+
+  function createJob($title = "A very nice job..") {
+    return array(
+      'id' => uniqid('testjob'),
+      'title' => $title,
+    );
+  }
+
+  function createReport() {
+    $report = new TZIntellitimeReport();
+    $report->id = uniqid('testreport');
+    $report->state = TZIntellitimeReport::STATE_OPEN;
+    $report->year = 2010;
+    $report->month = 9;
+    $report->day = 15;
+    $report->title = "En dag i livet för en apa.";
+    $report->begin = "08:00";
+    $report->end = "18:00";
+    $report->break_duration_minutes = 24;
+    $report->overtime_hours = 4;
+    return $report;
+  }
+
+  /** Override assertEqual to get nice log prints by default */
+  protected function assertEqual($first, $second, $message = '', $group = 'Other') {
+    if(!$message) {
+      $message = 'Expected "' . $first . '", got "' . $second . '"';
+    }
+    parent::assertEqual($first, $second, $message, $group);
+  }
+}
+

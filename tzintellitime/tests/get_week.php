@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(__FILE__) . '/../tzintellitime.class.inc');
+tzintellitime_include_classes();
 
 $date = time();
 if($_SERVER['argc'] == 5) {
@@ -15,7 +15,7 @@ if(!$ok) {
   exit();
 }
 $start_time = microtime(TRUE);
-$assignments = $bot->load_assignments($date);
+$assignments = $bot->load_week($date);
 $stop_time = microtime(TRUE);
 print_r($assignments);
 echo "\n";

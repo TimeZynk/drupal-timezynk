@@ -5,7 +5,7 @@ function tzintellitime_admin_settings() {
     '#type' => 'textfield',
     '#title' => t('Intellitime base URL'),
     '#description' => t('Customer specific HTTPS URL for the portal login page'),
-    '#default_value' => variable_get('tzintellitime_base_url', ''),
+    '#default_value' => TZINTELLITIME_BASE_URL,
   );
 
   return system_settings_form($form);

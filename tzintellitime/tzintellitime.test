@@ -5,6 +5,43 @@
  * TimeZynk intellitime integration tests.
  */
 
+class TZIntellitimeTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'TZIntellitime test suite',
+      'description' => '',
+      'group' => 'TZIntellitime',
+    );
+  }
+
+  /**
+   * setUp() performs any pre-requisite tasks that need to happen.
+   */
+  public function setUp() {
+    // Enable any modules required for the test.
+    parent::setUp('tzintellitime');
+    tzintellitime_include_classes();
+    $this->account = $this->drupalCreateUser(array('access content'));
+    $this->drupalLogin($this->account);
+  }
+
+  public function testIntellitimeAnnotation() {
+    // Check that our nodes are successfully extended with intellitime information
+    $expected_id = uniqid('reportid');
+    $node = new stdClass();
+    $node->type = 'tzreport';
+    $node->title = 'test';
+    $node->intellitime_id = $expected_id;
+    $node->name = $this->account->name;
+    $node = node_submit($node);
+    node_save($node);
+
+    // Load from ID again
+    $node = node_load($node->nid);
+    $this->assertEqual($expected_id, $node->intellitime_id);
+  }
+}
+
 class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   private $intelli_url = "http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d";
   private $login_view_state = "dDwyNDA3MjczMzc7dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw1PjtpPDE1PjtpPDE5Pjs+O2w8dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9DdXN0b21lcnMvaW50ZWxsaXBsYW5fbG9nby5naWY7Pj47Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDx+L0ltYWdlcy9JbWdfSW50ZWxsaXBsYW5Mb2dvV2hpdGUuZ2lmOz4+Oz47Oz47Pj47Pj47dDxwPHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxMb2dnYSBpbjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8R2zDtm10IGzDtnNlbm9yZGV0Pzs+Pjs+Ozs+Oz4+Oz4+Oz5ngNWIe5WIW3O3prUuG7wbptC3jg==";
@@ -65,7 +102,7 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
     $session_data = $this->bot->get_session_data();
     unset($this->bot);
     $this->bot = new TZIntellitimeBot($this->intelli_url, $session_data);
-    $results = $this->bot->load_assignments();
+    $results = $this->bot->load_week();
     $this->assertNotNull($results, 'Expected $results NOT NULL.');
     $this->assertNotNull($results['assignments'], 'Expected $results["assignments"] NOT NULL.');
     $this->assertNotNull($results['reports'], 'Expected $results["reports"] NOT NULL.');
@@ -357,79 +394,6 @@ class TZIntellitimeAdminPageTests extends DrupalWebTestCase {
       'Did not expect ' . $edit['tzintellitime_base_url'] . ', got ' . variable_get('tzintellitime_base_url', ''));
   }
 
-}
-
-class TZIntellitimeLoginSyncTests extends DrupalWebTestCase {
-
-  public static function getInfo() {
-    return array(
-      'name' => 'Intellitime login sync test suite',
-      'description' => '',
-      'group' => 'TZIntellitime',
-    );
-  }
-
-  public function setUp() {
-    // Enable any modules required for the test.
-   parent::setUp('tzintellitime', 'tzbase');
-   require_once dirname(__FILE__) . '/tzintellitime.class.inc';
-   // Create and login user
-   $admin_user = $this->drupalCreateUser(array('access content'));
-   $this->drupalLogin($admin_user);
-  }
-
-  public function testCreatingJob() {
-    $expected_id = "5983";
-    $expected_title = "A very nice job..";
-    $job = _tzintellitime_create_job(array('id' => $expected_id, 'title' => $expected_title));
-    $this->assertNotNull($job);
-    $this->assertTrue($job->nid, "Expected valid drupal ID.");
-    $this->assertEqual($expected_id, $job->intellitime_id, 'Expected same intellitime id.');
-    $this->assertEqual($expected_title, $job->title, 'Expected equal titles');
-  }
-
-  public function testUpdatingExistingJob() {
-    $expected_id = "5983";
-    $expected_title = "A very nice job..";
-    $job1 = _tzintellitime_create_job(array('id' => $expected_id, 'title' => $expected_title));
-    $job2 = _tzintellitime_create_job(array('id' => $expected_id, 'title' => $expected_title . "2"));
-    $this->assertEqual($job1->nid, $job2->nid, 'Expected same node-id');
-    $this->assertEqual($expected_title . "2", $job2->title, 'Expected equal titles');
-  }
-
-  public function testCreatingReport() {
-    $report = new TZIntellitimeReport();
-    _tzintellitime_populate_report($report);
-    $expected_id = "5983";
-    $expected_title = $report->title;
-    $job = _tzintellitime_create_job(array('id' => $expected_id, 'title' => $expected_title));
-    $report_node = _tzintellitime_create_report($report, array($expected_title => $job->nid));
-    $this->assertNotNull($report_node);
-    $this->assertTrue($report_node->nid);
-  }
-
-  public function testUpdatingExistingReport() {
-    $report = new TZIntellitimeReport();
-    _tzintellitime_populate_report($report);
-    $expected_id = "5983";
-    $expected_title = $report->title;
-    $job = _tzintellitime_create_job(array('id' => $expected_id, 'title' => $expected_title));
-    $report_node = _tzintellitime_create_report($report, array($expected_title => $job->nid));
-
-    // Update report and create again
-    $report->break_duration_minutes = 35;
-    $report_node2 = _tzintellitime_create_report($report, array($expected_title => $job->nid));
-
-    $this->assertEqual($report_node->nid, $report_node2->nid, 'Expected equal NID after update');
-    $this->assertEqual($report->break_duration_minutes*60, $report_node2->breakduration, 'Expected updated breakduration');
-  }
-
-  public function testCreatingReportWithoutJobShallFail() {
-    $report = new TZIntellitimeReport();
-    _tzintellitime_populate_report($report);
-    $report_node = _tzintellitime_create_report($report);
-    $this->assertNull($report_node);
-  }
 }
 
 function _tzintellitime_populate_report(&$report) {

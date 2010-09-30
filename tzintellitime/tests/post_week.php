@@ -10,7 +10,7 @@ if(!$ok) {
   exit();
 }
 
-$result = $bot->load_assignments();
+$result = $bot->load_week();
 print_r($result);
 $reports = $result['reports'];
 
