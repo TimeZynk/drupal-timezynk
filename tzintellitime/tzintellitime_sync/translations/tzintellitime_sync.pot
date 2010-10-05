@@ -1,0 +1,66 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  tzintellitime_sync.module: n/a
+#  tzintellitime_sync.install: n/a
+#  tzintellitime_sync.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-10-06 18:43+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: tzintellitime_sync.module:225
+msgid "Absence"
+msgstr ""
+
+#: tzintellitime_sync.module:88;289;312
+msgid "tzintellitime"
+msgstr ""
+
+#: tzintellitime_sync.module:88
+msgid "Failed to synchronize user !name (!uid), last sync !min minutes ago"
+msgstr ""
+
+#: tzintellitime_sync.module:289
+msgid "Sending report with nid !nid and itid !itid to week !week"
+msgstr ""
+
+#: tzintellitime_sync.module:312
+msgid "Tried to create tzreport without valid jobid"
+msgstr ""
+
+#: tzintellitime_sync.module:341
+msgid "tzintellitime_sync"
+msgstr ""
+
+#: tzintellitime_sync.module:341
+msgid "!operation !type !nid"
+msgstr ""
+
+#: tzintellitime_sync.install:43
+msgid "Stores synchronization info for tzintellitime"
+msgstr ""
+
+#: tzintellitime_sync.info:0
+msgid "TimeZynk intellitime synchronization"
+msgstr ""
+
+#: tzintellitime_sync.info:0
+msgid "Provides TimeZynk intellitime synchronization"
+msgstr ""
+
+#: tzintellitime_sync.info:0
+msgid "TimeZynk"
+msgstr ""
+

@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(__FILE__) . '/../tzintellitime.module');
+tzintellitime_include_classes();
 
 $intelli_url = "http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d";
 $bot = new TZIntellitimeBot($intelli_url);
@@ -15,8 +15,8 @@ print_r($result);
 $reports = $result['reports'];
 
 // Change report[3] and update it again
-$reports[1]->begin = "10:16";
-$reports[1]->end = "16:55";
-$reports[1]->done = TRUE;
+$reports[1]->begin = "10:10";
+$reports[1]->end = "16:32";
+$reports[1]->state = TZIntellitimeReport::STATE_OPEN;
 
 print_r($bot->update_report($reports[1]));

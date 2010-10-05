@@ -441,7 +441,7 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
   // Set author and date
   $report->uid = $user->uid;
   $report->assignedto = $user->uid;
-  $report->changed = $data->changed();
+  $report->changed = time();
   node_save($report);
 
   if($data->id()) {
@@ -497,7 +497,7 @@ function tzproto_create_tzjob_from_protobuf($data, &$result) {
 
   // Set author and date
   $job->uid = $user->uid;
-  $job->changed = $data->changed();
+  $job->changed = time();
   node_save($job);
 
   if($data->id()) {

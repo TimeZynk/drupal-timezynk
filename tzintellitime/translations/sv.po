@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TZIntellitime\n"
-"POT-Creation-Date: 2010-09-30 09:20+0200\n"
-"PO-Revision-Date: 2010-09-30 09:23+0100\n"
+"POT-Creation-Date: 2010-10-06 18:48+0200\n"
+"PO-Revision-Date: 2010-10-06 18:49+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: sv <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -39,23 +39,11 @@ msgstr "Ogiltig URL, vänligen mata in en korrekt inloggnings-URL för intellipl
 msgid "We can only handle HTTP or HTTPS connections to intellitime"
 msgstr "Ange en HTTP eller HTTPS länk för anslutning till intellitime"
 
-#: tzintellitime.module:165;198
-msgid "tzintellitime"
-msgstr "tzintellitime"
-
-#: tzintellitime.module:165
-msgid "Inserted report !nid"
-msgstr "Lade till rapport !nid"
-
-#: tzintellitime.module:198
-msgid "Inserted job !nid"
-msgstr "Lade till jobb !nid"
-
-#: tzintellitime.module:9
+#: tzintellitime.module:11
 msgid "Intellitime"
 msgstr "Intellitime"
 
-#: tzintellitime.module:10
+#: tzintellitime.module:12
 msgid "Sitewide settings for the TimeZynk Intellitime bridge."
 msgstr "Inställningar för TimeZynks intellitime-brygga."
 
@@ -82,6 +70,15 @@ msgstr "Tillhandahåller Intellitime-integration för TimeZynk"
 #: tzintellitime.info:0
 msgid "TimeZynk"
 msgstr "TimeZynk"
+
+#~ msgid "tzintellitime"
+#~ msgstr "tzintellitime"
+
+#~ msgid "Inserted report !nid"
+#~ msgstr "Lade till rapport !nid"
+
+#~ msgid "Inserted job !nid"
+#~ msgstr "Lade till jobb !nid"
 
 #~ msgid "Intellitime time report with id: @id"
 #~ msgstr "Intellitime-tidrapport med id: @id"

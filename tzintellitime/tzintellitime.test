@@ -142,7 +142,7 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
   }
 
   private function loadHTMLFile($filename) {
-    $full_name = dirname(__FILE__) . "/test/$filename";
+    $full_name = dirname(__FILE__) . "/tests/$filename";
     $handle = fopen($full_name, "r");
     $contents = fread($handle, filesize($full_name));
     fclose($handle);
@@ -173,15 +173,21 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
     $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
     $assignments = $parser->parse_assignments();
     $this->assertEqual(1, count($assignments), "only one assignment");
-    $this->assertEqual("5983", $assignments[0]['id'], "assignment code 5983");
+    $this->assertEqual("5983", $assignments[0]->id, "assignment code 5983");
   }
 
   public function testParseAssignmentsUTF8Encoding() {
     $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
     $assignments = $parser->parse_assignments();
-    $this->assertEqual("Testföretaget Effekt, Lagerarbetare", $assignments[0]['title'], "expect UTF-8 encoding");
+    $this->assertEqual("Testföretaget Effekt, Lagerarbetare", $assignments[0]->title, "expect UTF-8 encoding");
   }
 
+  public function testParseAbsenceTypes() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
+    $absence_types = $parser->parse_absence_types();
+    $this->assertEqual(28, count($absence_types));
+    $this->assertEqual("_AC_Uttag extra fridag", $absence_types[4]->id);
+  }
 
   public function testParseReportsCorrectCount() {
     $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
