@@ -327,7 +327,8 @@ class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
 
   public function testConvertToTZReport() {
     _tzintellitime_populate_report($this->report);
-    $tzreport = $this->report->convert_to_tzreport();
+    $mockaccount = (object)array('uid' => '1234', 'name' => 'Mock User');
+    $tzreport = $this->report->convert_to_tzreport($mockaccount);
     $this->assertNotNull($tzreport, 'Expected $tzreport not NULL.');
     $this->assertEqual($this->report->title, $tzreport->title, "Expected equal titles");
     $this->assertEqual(1284530400, $tzreport->begintime, 'Expected 1284530400 as begintime, got ' . $tzreport->begintime);
@@ -338,10 +339,11 @@ class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
 
   public function testUpdateTZReport() {
     _tzintellitime_populate_report($this->report);
-    $tzreport = $this->report->convert_to_tzreport();
+    $mockaccount = (object)array('uid' => '1234', 'name' => 'Mock User');
+    $tzreport = $this->report->convert_to_tzreport($mockaccount);
     $tzreport->nid = 12345;
     $this->report->break_duration_minutes = 35;
-    $tzreport = $this->report->convert_to_tzreport($tzreport);
+    $tzreport = $this->report->convert_to_tzreport($mockaccount, $tzreport);
     $this->assertNotNull($tzreport, 'Expected $tzreport not NULL.');
     $this->assertEqual(12345, $tzreport->nid);
     $this->assertEqual($this->report->title, $tzreport->title, "Expected equal titles");

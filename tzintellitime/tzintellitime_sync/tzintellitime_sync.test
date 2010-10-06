@@ -35,49 +35,60 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
   }
 
   public function testCreatingData() {
+    $this->controller = new TZIntellitimeSyncController($this->account);
     $this->doTestCreatingJob();
     $this->doTestUpdatingExistingJob();
     $this->doTestCreatingReport();
     $this->doTestUpdatingExistingReport();
+    $this->doTestCreateChildJob();
     $this->doTestCreatingReportWithoutJobShallFail();
   }
 
   public function doTestCreatingJob() {
-    $job = $this->createJob();
-    $node = _tzintellitime_sync_create_job($this->account, $job);
+    $assignment = $this->createAssignment();
+    $node = $this->controller->create_job($assignment);
     $this->assertNotNull($node);
     $this->assertTrue($node->nid, "Expected valid drupal ID.");
-    $this->assertEqual($job['id'], $node->intellitime_id, 'Expected same intellitime id.');
-    $this->assertEqual($job['title'], $node->title, 'Expected equal titles');
+    $this->assertEqual($assignment->id, $node->intellitime_id, 'Expected same intellitime id.');
+    $this->assertEqual($assignment->title, $node->title, 'Expected equal titles');
   }
 
   public function doTestUpdatingExistingJob() {
-    $job = $this->createJob();
-    $nodes[] = _tzintellitime_sync_create_job($this->account, $job);
-    $job['title'] .= '2';
-    $nodes[] = _tzintellitime_sync_create_job($this->account, $job);
+    $assignment = $this->createAssignment();
+    $nodes[] = $this->controller->create_job($assignment);
+    $assignment->title .= '2';
+    $nodes[] = $this->controller->create_job($assignment);
     $this->assertEqual($nodes[0]->nid, $nodes[1]->nid, 'Expected same node-id');
-    $this->assertEqual($job['title'], $nodes[1]->title, 'Expected equal titles');
+    $this->assertEqual($assignment->title, $nodes[1]->title, 'Expected equal titles');
+  }
+
+  public function doTestCreateChildJob() {
+    $parent_job = $this->createAssignment();
+    $parent_node = $this->controller->create_job($parent_job);
+    $assignment = $this->createAssignment();
+    $node = $this->controller->create_job($assignment, $parent_node->nid);
+    $this->assertEqual($parent_node->nid, $node->parentid);
+    $this->assertEqual(0, $parent_node->parentid);
   }
 
   public function doTestCreatingReport() {
     $report = $this->createReport();
-    $job = $this->createJob($report->title);
-    $job_node = _tzintellitime_sync_create_job($this->account, $job);
-    $report_node = _tzintellitime_sync_create_report($this->account, $report, array($job['title'] => $job_node->nid));
+    $assignment = $this->createAssignment($report->title);
+    $job_node = $this->controller->create_job($assignment);
+    $report_node = $this->controller->create_report($report, array($assignment->title => $job_node->nid));
     $this->assertNotNull($report_node);
     $this->assertTrue($report_node->nid);
   }
 
   public function doTestUpdatingExistingReport() {
     $report = $this->createReport();
-    $job = $this->createJob($report->title);
-    $job_node = _tzintellitime_sync_create_job($this->account, $job);
-    $report_node = _tzintellitime_sync_create_report($this->account, $report, array($job['title'] => $job_node->nid));
+    $assignment = $this->createAssignment($report->title);
+    $job_node = $this->controller->create_job($assignment);
+    $report_node = $this->controller->create_report($report, array($assignment->title => $job_node->nid));
 
     // Update report and create again
     $report->break_duration_minutes = 35;
-    $report_node2 = _tzintellitime_sync_create_report($this->account, $report, array($job['title'] => $job_node->nid));
+    $report_node2 = $this->controller->create_report($report, array($assignment->title => $job_node->nid));
 
     $this->assertEqual($report_node->nid, $report_node2->nid, 'Expected equal NID after update');
     $this->assertEqual($report->break_duration_minutes*60, $report_node2->breakduration, 'Expected updated breakduration');
@@ -85,15 +96,16 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
 
   public function doTestCreatingReportWithoutJobShallFail() {
     $report = $this->createReport();
-    $report_node = _tzintellitime_sync_create_report($this->account, $report);
+    $report_node = $this->controller->create_report($report);
     $this->assertNull($report_node);
   }
 
-  function createJob($title = "A very nice job..") {
-    return array(
-      'id' => uniqid('testjob'),
-      'title' => $title,
-    );
+  function createAssignment($title = "A very nice job..") {
+    $assignment = new TZIntellitimeAssignment();
+    $assignment->id = uniqid('testjob');
+    $assignment->title = $title;
+    $assignment->report_key = $title;
+    return $assignment;
   }
 
   function createReport() {
