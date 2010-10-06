@@ -58,6 +58,7 @@ function tzbase_update_6002() {
         'default' => 0,
         'description' => t('Total duration in seconds'),
       ));
+  db_query('UPDATE {tzreport} SET totalduration = (endtime - begintime - breakduration)');
   return $ret;
 }
 
