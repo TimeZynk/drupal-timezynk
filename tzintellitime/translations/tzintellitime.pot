@@ -12,7 +12,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-09-30 09:20+0200\n"
+"POT-Creation-Date: 2010-10-06 18:48+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -37,23 +37,11 @@ msgstr ""
 msgid "We can only handle HTTP or HTTPS connections to intellitime"
 msgstr ""
 
-#: tzintellitime.module:165;198
-msgid "tzintellitime"
-msgstr ""
-
-#: tzintellitime.module:165
-msgid "Inserted report !nid"
-msgstr ""
-
-#: tzintellitime.module:198
-msgid "Inserted job !nid"
-msgstr ""
-
-#: tzintellitime.module:9
+#: tzintellitime.module:11
 msgid "Intellitime"
 msgstr ""
 
-#: tzintellitime.module:10
+#: tzintellitime.module:12
 msgid "Sitewide settings for the TimeZynk Intellitime bridge."
 msgstr ""
 

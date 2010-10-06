@@ -16,6 +16,25 @@ function tzintellitime_sync_uninstall() {
   variable_del('tzintellitime_sync_users_per_run');
 }
 
+function tzintellitime_sync_update_6000() {
+  $ret = array();
+
+  switch ($GLOBALS['db_type']) {
+    case 'pgsql':
+      db_change_column($ret, 'tzintellitime_sync', 'last_sync', 'intellitime_last_sync', 'int', array('unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
+      db_add_column($ret, 'tzintellitime_sync', 'intellitime_active', 'int', array('unsigned' => TRUE, 'not null' => TRUE, 'default' => 1));
+      break;
+
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {tzintellitime_sync} CHANGE COLUMN last_sync intellitime_last_sync int UNSIGNED NOT NULL DEFAULT 0");
+      $ret[] = update_sql("ALTER TABLE {tzintellitime_sync} ADD COLUMN intellitime_active int UNSIGNED NOT NULL DEFAULT 1");
+      break;
+  }
+
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
@@ -29,11 +48,19 @@ function tzintellitime_sync_schema() {
         'not null' => TRUE,
         'description' => 'User ID from {users}.uid.',
       ),
-      'last_sync' => array(
+      'intellitime_last_sync' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
+        'default' => 0,
         'description' => 'Timestamp of last successful synchronization',
+      ),
+      'intellitime_active' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'Boolean if this user is active for sync or not',
       ),
     ),
     'primary key' => array('uid'),

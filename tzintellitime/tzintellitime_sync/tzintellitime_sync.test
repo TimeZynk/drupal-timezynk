@@ -31,6 +31,7 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
   private function doTestScheduleUser() {
     $num_rows = db_result(db_query('SELECT COUNT(*) FROM {tzintellitime_sync}'));
     $this->assertTrue($num_rows);
+    $this->assertEqual(0, $this->account->intellitime_last_sync);
   }
 
   public function testCreatingData() {

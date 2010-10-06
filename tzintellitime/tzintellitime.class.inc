@@ -103,15 +103,7 @@ class TZIntellitimeBot {
       return FALSE;
     }
 
-    $result = array();
-    if($parser->is_valid_login()) {
-      $assignments = $parser->parse_assignments();
-      $absence_types = $parser->parse_absence_types();
-      $result['assignments'] = array_merge($assignments, $absence_types);
-      $result['reports'] = $parser->parse_reports();
-      $result['unfinished_weeks'] = $parser->parse_unfinished_weeks();
-    }
-    return $result;
+    return $this->week_data($parser);
   }
 
   /**
@@ -167,7 +159,8 @@ class TZIntellitimeBot {
   /**
    * Send an updated report to the intellitime web service.
    * @param TZIntellitimeReport $report a report containing the updated values.
-   * @return bool TRUE if report was updated on server, else FALSE
+   * @return FALSE on network failure, empty array on login failure, otherwise array with keys
+   *   'assignments', 'reports' and 'unfinished_weeks'.
    */
   public function update_report($report) {
     $datestr = $report->get_date_string();
@@ -177,31 +170,31 @@ class TZIntellitimeBot {
     $url = $this->build_action_url($dateaction);
     $parser = $this->request($url);
     $reports = $parser->parse_reports();
+
+    // Check the current state of the report that has changed
     foreach($reports as $old_report) {
       if ($report->id === $old_report->id) {
         if ($report == $old_report) {
           // No need to do anything, the report has not changed.
-          return TRUE;
-        } else if ($old_report->done) {
-          // First unlock the report
-          $old_done_value = $report->done;
-          $report->done = FALSE;
+          return $this->week_data($parser);
+        } else if ($old_report->state == TZIntellitimeReport::STATE_REPORTED) {
+          // First open the report
+          $old_state = $report->state;
+          $report->state = TZIntellitimeReport::STATE_OPEN;
           $parser = $this->post_report($parser, $dateaction, $report);
-          $report->done = $old_done_value;
+          $report->state = $old_state;
+        } else if ($old_report->state == TZIntellitimeReport::STATE_LOCKED) {
+          // Report locked, nothing can be done
+          return $this->week_data($parser);
         }
-      }
-    }
-    // Send the post.
-    $parser = $this->post_report($parser, $dateaction, $report);
-    $reports = $parser->parse_reports();
 
-    // Check that the report was updated
-    foreach($reports as $updated_report) {
-      if ($report == $updated_report) {
-        return TRUE;
+        // Send the post.
+        $parser = $this->post_report($parser, $dateaction, $report);
+        break;
       }
     }
-    return FALSE;
+
+    return $this->week_data($parser);
   }
 
   private function post_report($parser, $dateaction, $report) {
@@ -217,6 +210,23 @@ class TZIntellitimeBot {
    */
   public function get_session_data() {
     return $this->session_data;
+  }
+
+  /**
+   * Parse current week data.
+   * @param TZIntellitimeParser $parser
+   * @return Array array with keys 'assignments', 'reports' and 'unfinished_weeks' or empty array if not logged in
+   */
+  private function week_data($parser) {
+    $result = array();
+    if($parser->is_valid_login()) {
+      $assignments = $parser->parse_assignments();
+      $absence_types = $parser->parse_absence_types();
+      $result['assignments'] = array_merge($assignments, $absence_types);
+      $result['reports'] = $parser->parse_reports();
+      $result['unfinished_weeks'] = $parser->parse_unfinished_weeks();
+    }
+    return $result;
   }
 
   /**
@@ -318,11 +328,14 @@ class TZIntellitimeParser {
     return $post;
   }
 
+  /**
+   * Process all form inputs and build a POST:able array containing the new data
+   * from $report
+   *
+   * @param TZIntellitimeReport $report
+   * @return Array HTTP POST fields
+   */
   public function build_inputs($report) {
-    $row = $this->find_row_by_id($report->id);
-    if(!$row) {
-      return NULL;
-    }
     $inputs = $this->doc->xpath("//input");
     foreach ($inputs as $input) {
       if (!$input['disabled']) {
@@ -333,34 +346,47 @@ class TZIntellitimeParser {
         }
       }
     }
-    foreach ($row->xpath("*/input") as $input) {
-      $input_name = (string)$input['name'];
-      $split_input_name = split(":",  $input_name);
-      /* The inputs are named like this: "OldRowsRepeater:_ctl6:TextboxTimeTo"
-       * We want the last part, i.e. "TextboxTimeTo" */
-      $element = $split_input_name[2];
-      switch($element) {
-        case "TextboxTimeFrom":
-          $result[$input_name] = $report->begin;
-          break;
-        case "TextboxTimeTo":
-          $result[$input_name] = $report->end;
-          break;
-        case "TextboxBreak":
-          $result[$input_name] = $report->break_duration_minutes;
-          break;
-        case "CheckboxDayDone":
-          if ($report->done) {
-            $result[$input_name] = "on";
-          } else {
-            unset($result[$input_name]);
-          }
-          break;
-        case "TextboxExplicitOvertime":
-          $result[$input_name] = $report->overtime_hours;
-          break;
-        default:
-          // Skip over.
+
+    // Check if $report is found among the input rows
+    $row = $this->find_row_by_id($report->id);
+    if($row) {
+      // Found! Update fields from $report
+      foreach ($row->xpath("*/input") as $input) {
+        $input_name = (string)$input['name'];
+        $split_input_name = split(":",  $input_name);
+        /* The inputs are named like this: "OldRowsRepeater:_ctl6:TextboxTimeTo"
+         * We want the last part, i.e. "TextboxTimeTo" */
+        $element = $split_input_name[2];
+        switch($element) {
+          case "TextboxTimeFrom":
+            $result[$input_name] = $report->begin;
+            break;
+          case "TextboxTimeTo":
+            $result[$input_name] = $report->end;
+            break;
+          case "TextboxBreak":
+            $result[$input_name] = $report->break_duration_minutes;
+            break;
+          case "CheckboxDayDone":
+            if ($report->state == TZIntellitimeReport::STATE_OPEN) {
+              unset($result[$input_name]);
+            } else {
+              $result[$input_name] = "on";
+            }
+            break;
+          case "TextboxExplicitOvertime":
+            $result[$input_name] = $report->overtime_hours;
+            break;
+          case "CheckBoxDelete":
+            if ($report->state == TZIntellitimeReport::STATE_DELETED) {
+              $result[$input_name] = "on";
+             } else {
+               unset($result[$input_name]);
+             }
+             break;
+          default:
+            // Skip over.
+        }
       }
     }
     return $result;
@@ -574,6 +600,7 @@ class TZIntellitimeReport {
   const STATE_OPEN = 0;
   const STATE_REPORTED = 1;
   const STATE_LOCKED = 2;
+  const STATE_DELETED = 255;
 
   public $id = NULL;
   public $state = TZIntellitimeReport::STATE_OPEN;
@@ -585,6 +612,38 @@ class TZIntellitimeReport {
   public $end = NULL;
   public $break_duration_minutes = 0;
   public $overtime_hours = 0;
+
+  /**
+   * Construct an intellitime report from a tzreport
+   */
+  public function __construct($tzreport = NULL) {
+    if($tzreport) {
+      if(isset($tzreport->intellitime_id)) {
+        $id = unserialize($tzreport->intellitime_id);
+        $this->id = $id[2];
+      }
+      if($tzreport->flags < TZFlags::REPORTED) {
+        $this->state = TZIntellitimeReport::STATE_OPEN;
+      } elseif($tzreport->flags == TZFlags::REPORTED) {
+        $this->state = TZIntellitimeReport::STATE_REPORTED;
+      } elseif($tzreport->flags == TZFlags::DELETED) {
+        $this->state = TZIntellitimeReport::STATE_DELETED;
+      } else {
+        $this->state = TZIntellitimeReport::STATE_LOCKED;
+      }
+
+      $this->year = date('Y', $tzreport->begintime);
+      $this->month = date('m', $tzreport->begintime);
+      $this->day = date('d', $tzreport->begintime);
+
+      $this->title = $tzreport->title;
+
+      $this->begin = date('H:i', $tzreport->begintime);
+      $this->end = date('H:i', $tzreport->endtime);
+
+      $this->break_duration_minutes = round($tzreport->breakduration/60);
+    }
+  }
 
   /**
    * This is a utility method that takes an array of years
@@ -651,16 +710,18 @@ class TZIntellitimeReport {
     }
 
     $tzreport->title = $this->title;
-    $tzreport->intellitime_id = $this->id;
 
     // Convert begin and end to epoch timestamps
     $tzreport->begintime = $this->get_in_epoch($this->begin);
     $tzreport->endtime = $this->get_in_epoch($this->end);
     if ($tzreport->endtime < $tzreport->begintime) {
-      // endtime can only be smaller if we have passed midnight.
-      $tzreport->endtime += 24*60*60; // add 24h.
+      // endtime can only be smaller if we have passed midnight. Add one day to endtime
+      $time = explode(':', $this->end);
+      $tzreport->endtime = mktime($time[0], $time[1], 0, $this->month, $this->day + 1, $this->year);
     }
     $tzreport->breakduration = $this->break_duration_minutes*60;
+
+    $tzreport->intellitime_id = $this->get_intellitime_id($account->uid);
 
     switch($this->state) {
       case TZIntellitimeReport::STATE_OPEN:
@@ -678,6 +739,16 @@ class TZIntellitimeReport {
     $tzreport->assignedto = $account->uid;
 
     return $tzreport;
+  }
+
+  /**
+   * Get the unique report ID that will be used when saving
+   * this report as a tzreport.
+   * @param string uid User ID of assigned user
+   * @return string unique ID
+   */
+  public function get_intellitime_id($uid) {
+    return serialize(array($this->get_date_string(), (string)$uid, (string)$this->id));
   }
 
   /**
