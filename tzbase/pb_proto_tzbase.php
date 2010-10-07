@@ -483,10 +483,20 @@ class TZGetReportCmd extends PBMessage
     $this->values["1"] = "";
     $this->fields["2"] = "PBInt";
     $this->values["2"] = "";
+    $this->values["2"] = new PBInt();
+    $this->values["2"]->value = 0;
     $this->fields["3"] = "PBInt";
     $this->values["3"] = "";
+    $this->values["3"] = new PBInt();
+    $this->values["3"]->value = 0;
     $this->fields["4"] = "PBInt";
     $this->values["4"] = "";
+    $this->values["4"] = new PBInt();
+    $this->values["4"]->value = 0;
+    $this->fields["5"] = "PBBool";
+    $this->values["5"] = "";
+    $this->values["5"] = new PBBool();
+    $this->values["5"]->value = true;
   }
   function report_id()
   {
@@ -519,6 +529,14 @@ class TZGetReportCmd extends PBMessage
   function set_offset($value)
   {
     return $this->_set_value("4", $value);
+  }
+  function include_deleted()
+  {
+    return $this->_get_value("5");
+  }
+  function set_include_deleted($value)
+  {
+    return $this->_set_value("5", $value);
   }
 }
 class TZGetReportResult extends PBMessage

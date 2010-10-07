@@ -195,7 +195,7 @@ function tzproto_handle_sync_cmd(&$cmd, &$result) {
   $sql = "SELECT n.nid FROM {node} n WHERE type = 'tzjob' AND status = 1 AND changed > %d";
   $db_result = db_query(db_rewrite_sql($sql), $last_sync);
   while($data = db_fetch_object($db_result)) {
-    $node = node_load($data->nid);
+    $node = node_load($data->nid, NULL, TRUE);
     $tzjob = $result->add_job();
     tzproto_fill_from_node($tzjob, $node);
   }
@@ -204,7 +204,7 @@ function tzproto_handle_sync_cmd(&$cmd, &$result) {
   $sql = "SELECT n.nid FROM {node} n INNER JOIN {tzreport} tz ON n.nid = tz.nid WHERE type = 'tzreport' AND status = 1 AND changed > %d AND tz.assignedto = %d";
   $db_result = db_query(db_rewrite_sql($sql), $last_sync, $user->uid);
   while($data = db_fetch_object($db_result)) {
-    $node = node_load($data->nid);
+    $node = node_load($data->nid, NULL, TRUE);
     $tzreport = $result->add_report();
     tzproto_fill_from_node($tzreport, $node);
   }
@@ -243,7 +243,7 @@ function tzproto_handle_get_job_cmd(&$cmd, &$result) {
       $db_result = db_query(db_rewrite_sql($sql), $changed);
     }
     while($data = db_fetch_object($db_result)) {
-      $node = node_load($data->nid);
+      $node = node_load($data->nid, NULL, TRUE);
       $tzjob = $jobresult->add_job();
       tzproto_fill_from_node($tzjob, $node);
     }
@@ -265,8 +265,10 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result) {
   if($reportcmd->report_id()) {
     $node = node_load($reportcmd->report_id());
     if($node && $node->nid) {
-      $tzreport = $reportresult->add_report();
-      tzproto_fill_from_node($tzreport, $node);
+      if ($node->flags != TZFlags::DELETED ||  $reportcmd->include_deleted()) {
+        $tzreport = $reportresult->add_report();
+        tzproto_fill_from_node($tzreport, $node);
+      }
     }
   }
   // Fetch a collections of jobs
@@ -276,25 +278,29 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result) {
     if($reportcmd->changed_after()) {
       $changed = $reportcmd->changed_after();
     }
-
-    $sql = "SELECT n.nid FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE n.type = 'tzreport' AND n.status = 1 AND n.changed > %d AND tz.assignedto = %d ORDER BY tz.begintime DESC";
+    // Detect if we should include deleted reports or not.
+    $highest_flag_to_fetch = TZFlags::DELETED;
+    if (!$reportcmd->include_deleted()) {
+      $highest_flag_to_fetch = TZFlags::DELETED-1;
+    }
+    $sql = "SELECT n.nid FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE n.type = 'tzreport' AND n.status = 1 AND n.changed > %d AND tz.assignedto = %d AND tz.flags <= %d ORDER BY tz.begintime DESC";
     $db_result = FALSE;
 
     // Have the user requested a limited query?
     if($reportcmd->limit()) {
-       // Fetch number of available nodes
-      $count_query = db_rewrite_sql("SELECT COUNT(DISTINCT n.nid) FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE n.type = 'tzreport' AND n.status = 1 AND n.changed > %d AND tz.assignedto = %d");
-      $count = (int)db_result(db_query($count_query, $changed, $user->uid));
+      // Fetch number of available nodes
+      $count_query = db_rewrite_sql("SELECT COUNT(DISTINCT n.nid) FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE n.type = 'tzreport' AND n.status = 1 AND n.changed > %d AND tz.assignedto = %d AND tz.flags <= %d");
+      $count = (int)db_result(db_query($count_query, $changed, $user->uid, $highest_flag_to_fetch));
 
-      $db_result = db_query_range(db_rewrite_sql($sql), $changed, $user->uid, $reportcmd->offset(), $reportcmd->limit());
+      $db_result = db_query_range(db_rewrite_sql($sql), $changed, $user->uid, $highest_flag_to_fetch, $reportcmd->offset(), $reportcmd->limit());
       $reportresult->set_offset($reportcmd->offset());
       $reportresult->set_total_report_count($count);
     } else {
-      $db_result = db_query(db_rewrite_sql($sql), $changed);
+      $db_result = db_query(db_rewrite_sql($sql), $changed, $user->uid, $highest_flag_to_fetch);
     }
 
     while($data = db_fetch_object($db_result)) {
-      $node = node_load($data->nid);
+      $node = node_load($data->nid, NULL, TRUE);
       $tzreport = $reportresult->add_report();
       tzproto_fill_from_node($tzreport, $node);
     }

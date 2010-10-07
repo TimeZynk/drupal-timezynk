@@ -5,9 +5,6 @@
  * TimeZynk protobuf tests
  */
 class TZProtoTestCase extends DrupalWebTestCase {
-  private $admin_user = NULL;
-  private $standard_user = NULL;
-
   public static function getInfo() {
     return array(
       'name' => 'TZProto Test Suite',
@@ -15,6 +12,11 @@ class TZProtoTestCase extends DrupalWebTestCase {
       'group' => 'TZProto',
     );
   }
+
+  private $admin_user = NULL;
+  private $standard_user = NULL;
+
+
 
   public function setUp() {
     // Enable any modules required for the test.
@@ -33,11 +35,27 @@ class TZProtoTestCase extends DrupalWebTestCase {
   public function testOperations() {
     $tzuser = $this->doGetAdminUser();
     $jobid = $this->doCreateJob();
-    $reportid =$this->doCreateReport($jobid);
+    $reportid = $this->doCreateReport($jobid);
     $stduser = $this->doGetStandardUser();
     $this->doCreateJobForbidden();
     $this->doCreateReportForbidden($jobid);
   }
+
+  public function testGetDeletedReport() {
+    $jobid = $this->doCreateJob();
+    $reportid = $this->doCreateReport($jobid, TZFlags::DELETED);
+    $reports = $this->doGetReports(true);
+    $this->assertEqual(1, count($reports));
+    $this->assertEqual(TZFlags::DELETED, $reports[0]->flags());
+  }
+
+  public function testDoNotGetDeletedReport() {
+    $jobid = $this->doCreateJob();
+    $reportid = $this->doCreateReport($jobid, TZFlags::DELETED);
+    $reports = $this->doGetReports(false);
+    $this->assertEqual(0, count($reports));
+  }
+
 
   public function doGetAdminUser() {
     $request = $this->createRequest($this->admin_user);
@@ -54,6 +72,24 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $this->assertEqual($this->admin_user->name, $tzuser->username());
     $this->assertTrue($tzuser->may_create_job(), 'Expect permission to create a job');
     return $tzuser;
+  }
+
+  public function doGetReports($include_deleted) {
+    $request = $this->createRequest($this->admin_user);
+    $cmd = $request->add_command();
+    $get_report_cmd = new TZGetReportCmd();
+    $get_report_cmd->set_include_deleted($include_deleted);
+    $cmd->set_get_report_cmd($get_report_cmd);
+
+    $response = $this->sendRequest($request);
+    $this->assertEqual(1, $response->result_size());
+    $result = $response->result(0);
+    $reports = array();
+    $get_report_result = $result->get_report_result();
+    for ($i = 0; $i < $get_report_result->report_size(); $i++) {
+      $reports[] = $get_report_result->report($i);
+    }
+    return $reports;
   }
 
   public function doGetStandardUser() {
@@ -94,7 +130,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $this->assertTrue($create_job_result->id(), 'Expect valid job id, got ' . $create_job_result->id());
 
     // Check against actual saved node
-    $node = node_load($create_job_result->id());
+    $node = node_load($create_job_result->id(), NULL, TRUE);
     $this->assertEqual($job->title(), $node->title);
     $this->assertEqual($job->parent_id(), $node->parentid);
 
@@ -121,7 +157,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $this->assertNotNull($result->error_msg());
   }
 
-  public function doCreateReport($jobid) {
+  public function doCreateReport($jobid, $flags = TZFLags::CREATED) {
     $request = $this->createRequest($this->admin_user);
     $cmd = $request->add_command();
 
@@ -138,7 +174,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $report->set_begin_time($begintime);
     $report->set_end_time($endtime);
     $report->set_break_duration($breakduration);
-    $report->set_flags(TZFlags::CREATED);
+    $report->set_flags($flags);
 
     $create_report_cmd = new TZCreateReportCmd();
     $create_report_cmd->set_new_report($report);
@@ -148,10 +184,10 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $this->assertEqual(1, $response->result_size());
     $result = $response->result(0);
     $create_report_result = $result->create_report_result();
-    $this->assertTrue($create_report_result->id(), 'Expected valid job id, got ' . $create_report_result->id());
+    $this->assertTrue($create_report_result->id(), 'Expected valid report id, got ' . $create_report_result->id());
 
     // Load node and check results
-    $node = node_load($create_report_result->id());
+    $node = node_load($create_report_result->id(), NULL, TRUE);
     $this->assertEqual($begintime, $node->begintime);
     $this->assertEqual($endtime, $node->endtime);
     $this->assertEqual($breakduration, $node->breakduration);
