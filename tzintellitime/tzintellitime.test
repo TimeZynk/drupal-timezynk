@@ -228,6 +228,13 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
     $this->assertEqual($expected_array, $selects, "Expect CustOrdersDropDown = 0");
   }
 
+  /** Override assertEqual to get nice log prints by default */
+  protected function assertEqual($first, $second, $message = '', $group = 'Other') {
+    if(!$message) {
+      $message = 'Expected "' . $first . '", got "' . $second . '"';
+    }
+    parent::assertEqual($first, $second, $message, $group);
+  }
 }
 
 class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
@@ -334,7 +341,6 @@ class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
     $this->assertEqual(1284530400, $tzreport->begintime, 'Expected 1284530400 as begintime, got ' . $tzreport->begintime);
     $this->assertEqual(1284566400, $tzreport->endtime, 'Expected 1284566400 as endtime, got ' . $tzreport->endtime);
     $this->assertEqual($this->report->break_duration_minutes*60, $tzreport->breakduration, "Expected break durations to match");
-    $this->assertTrue($tzreport->changed > 0, 'Expected changed value to be greater than 0, got ' . $tzreport->changed);
   }
 
   public function testUpdateTZReport() {
@@ -350,9 +356,15 @@ class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
     $this->assertEqual(1284530400, $tzreport->begintime, 'Expected 1284530400 as begintime, got ' . $tzreport->begintime);
     $this->assertEqual(1284566400, $tzreport->endtime, 'Expected 1284566400 as endtime, got ' . $tzreport->endtime);
     $this->assertEqual($this->report->break_duration_minutes*60, $tzreport->breakduration, "Expected break durations to match");
-    $this->assertTrue($tzreport->changed > 0, 'Expected changed value to be greater than 0, got ' . $tzreport->changed);
   }
 
+  /** Override assertEqual to get nice log prints by default */
+  protected function assertEqual($first, $second, $message = '', $group = 'Other') {
+    if(!$message) {
+      $message = 'Expected "' . $first . '", got "' . $second . '"';
+    }
+    parent::assertEqual($first, $second, $message, $group);
+  }
 }
 
 class TZIntellitimeAdminPageTests extends DrupalWebTestCase {

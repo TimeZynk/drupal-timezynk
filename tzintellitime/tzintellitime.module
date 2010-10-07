@@ -127,7 +127,7 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
  * @param string $intellitime_id
  */
 function tzintellitime_node_load_by_intellitime_id($intellitime_id) {
-  return node_load(db_result(db_query("SELECT nid FROM {tzintellitime} WHERE intellitime_id = '%s'", $intellitime_id)));
+  return node_load(db_result(db_query("SELECT nid FROM {tzintellitime} WHERE intellitime_id = '%s'", $intellitime_id)), NULL, TRUE);
 }
 
 /**

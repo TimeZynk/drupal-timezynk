@@ -3,6 +3,7 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
+#  tzintellitime_sync.admin.inc: n/a
 #  tzintellitime_sync.module: n/a
 #  tzintellitime_sync.install: n/a
 #  tzintellitime_sync.info: n/a
@@ -11,7 +12,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-10-06 18:43+0200\n"
+"POT-Creation-Date: 2010-10-07 19:53+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -20,32 +21,104 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzintellitime_sync.module:225
+#: tzintellitime_sync.admin.inc:6
+msgid "Minutes between synchronizations"
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:7
+msgid "Minimum interval in minutes between two synchronizations of the same user. Make sure to setup the cron interval to a equal or shorter interval than this."
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:12
+msgid "Users per synchronization"
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:13
+msgid "Maximum number of users to synchronize per session"
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:18
+msgid "Initial synchronization"
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:20
+msgid "Do a full synchronization for both new users and users with a expired session."
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:21
+msgid "Only for new users. Users with expired session are synchronized at the next scheduled synchronization."
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:22
+msgid "Never do initial synchronization, always defer to the next scheduled synchronization."
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:24
+msgid "Configure how to handle synchronization on login"
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:39
+msgid "Invalid synchronization interval, enter number of minutes."
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:41
+msgid "Synchronization interval must be greater than 1"
+msgstr ""
+
+#: tzintellitime_sync.module:313
 msgid "Absence"
 msgstr ""
 
-#: tzintellitime_sync.module:88;289;312
+#: tzintellitime_sync.module:132;137;155;165;173;368;384;413
 msgid "tzintellitime"
 msgstr ""
 
-#: tzintellitime_sync.module:88
-msgid "Failed to synchronize user !name (!uid), last sync !min minutes ago"
+#: tzintellitime_sync.module:132
+msgid "Tried to start synchronization for illegal user id \"@uid\""
 msgstr ""
 
-#: tzintellitime_sync.module:289
+#: tzintellitime_sync.module:137
+msgid "No session available for user !name (!uid), last sync !interval ago"
+msgstr ""
+
+#: tzintellitime_sync.module:155
+msgid "Synchronized user !name (!uid), last sync !interval ago"
+msgstr ""
+
+#: tzintellitime_sync.module:165
+msgid "Expired session for user !name (!uid), last sync !interval ago"
+msgstr ""
+
+#: tzintellitime_sync.module:173
+msgid "Failed to synchronize user !name (!uid), last sync !interval ago"
+msgstr ""
+
+#: tzintellitime_sync.module:368
+msgid "Removed !rows reports for user !user (!uid) after sync"
+msgstr ""
+
+#: tzintellitime_sync.module:384
 msgid "Sending report with nid !nid and itid !itid to week !week"
 msgstr ""
 
-#: tzintellitime_sync.module:312
+#: tzintellitime_sync.module:413
 msgid "Tried to create tzreport without valid jobid"
 msgstr ""
 
-#: tzintellitime_sync.module:341
+#: tzintellitime_sync.module:458
 msgid "tzintellitime_sync"
 msgstr ""
 
-#: tzintellitime_sync.module:341
+#: tzintellitime_sync.module:458
 msgid "!operation !type !nid"
+msgstr ""
+
+#: tzintellitime_sync.module:63
+msgid "Intellitime Sync"
+msgstr ""
+
+#: tzintellitime_sync.module:64
+msgid "Data synchronization settings for the TimeZynk Intellitime bridge."
 msgstr ""
 
 #: tzintellitime_sync.install:43

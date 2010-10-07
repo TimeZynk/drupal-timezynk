@@ -121,11 +121,13 @@ class TZIntellitimeBot {
    */
   public function request($url, $post_data = NULL) {
     $curl_opts = array(
-    CURLOPT_RETURNTRANSFER => TRUE,
-    CURLOPT_BINARYTRANSFER => TRUE,
-    CURLOPT_FAILONERROR => TRUE,
-    CURLOPT_URL => $url,
-    CURLOPT_FOLLOWLOCATION => TRUE,
+      CURLOPT_RETURNTRANSFER => TRUE,
+      CURLOPT_BINARYTRANSFER => TRUE,
+      CURLOPT_FAILONERROR => TRUE,
+      CURLOPT_URL => $url,
+      CURLOPT_FOLLOWLOCATION => TRUE,
+      CURLOPT_SSL_VERIFYPEER => FALSE, // Turn of SSL verification since intellitime uses a non-standard CA
+      CURLOPT_SSL_VERIFYHOST => 2,
     );
 
     if($post_data) {
@@ -142,6 +144,7 @@ class TZIntellitimeBot {
       $this->session_data['last_effective_url'] = curl_getinfo($this->handle, CURLINFO_EFFECTIVE_URL);
       return new TZIntellitimeParser($output);
     }
+    watchdog('tzintellitime', 'Request failed: @error', array('@error' => curl_error($this->handle)), WATCHDOG_WARNING);
     return FALSE;
   }
 
@@ -271,8 +274,7 @@ class TZIntellitimeParser {
      * raw into the HTML and makes the parser cut the rest of the line.
      * Try to replace them with HTML entities.
      */
-    $html_string = preg_replace('/ <(\d+)/', ' &lt;$1', $html_string);
-    $html_string = preg_replace('/ >(\d+)/', ' &gt;$1', $html_string);
+    $html_string = preg_replace_callback('/\s([<>])(\d+)/', 'TZIntellitimeParser::replace_lt_gt_with_entities', $html_string);
     /* Supress any warnings from malformed HTML soup.
      * The intellitime docs are declared as ISO-8859-1, but are in fact UTF-8.
      * In order to get rid of the horrible misencodings, we force UTF-8.
@@ -280,6 +282,14 @@ class TZIntellitimeParser {
     $html_string = mb_convert_encoding($html_string, 'HTML-ENTITIES', 'UTF-8');
     @$doc->loadHTML($html_string);
     $this->doc = simplexml_import_dom($doc);
+  }
+
+  /**
+   * Replace '<' with '&lt;' and '>' with '&gt;'
+   * @param array $matches matches from preg_replace_callback
+   */
+  public static function replace_lt_gt_with_entities($matches) {
+    return ' ' . ($matches[1] == '<' ? '&lt;' : '&gt;') . $matches[2];
   }
 
   /**
@@ -734,7 +744,6 @@ class TZIntellitimeReport {
         $tzreport->flags = TZFlags::LOCKED;
         break;
     }
-    $tzreport->changed = time();
 
     $tzreport->assignedto = $account->uid;
 

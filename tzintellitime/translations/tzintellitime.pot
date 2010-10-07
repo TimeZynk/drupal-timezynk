@@ -4,6 +4,7 @@
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
 #  tzintellitime.admin.inc: n/a
+#  tzintellitime.class.inc: n/a
 #  tzintellitime.module: n/a
 #  tzintellitime.install: n/a
 #  tzintellitime.info: n/a
@@ -12,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-10-06 18:48+0200\n"
+"POT-Creation-Date: 2010-10-07 20:12+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -25,16 +26,24 @@ msgstr ""
 msgid "Intellitime base URL"
 msgstr ""
 
-#: tzintellitime.admin.inc:7
-msgid "Customer specific HTTPS URL for the portal login page"
+#: tzintellitime.admin.inc:8
+msgid "Customer specific URL for the portal login page. Using HTTPS is strongly recommended!"
 msgstr ""
 
-#: tzintellitime.admin.inc:23
+#: tzintellitime.admin.inc:24
 msgid "Invalid URL, please enter a correct intelliplan login URL."
 msgstr ""
 
-#: tzintellitime.admin.inc:25
+#: tzintellitime.admin.inc:26
 msgid "We can only handle HTTP or HTTPS connections to intellitime"
+msgstr ""
+
+#: tzintellitime.class.inc:147
+msgid "tzintellitime"
+msgstr ""
+
+#: tzintellitime.class.inc:147
+msgid "Request failed: @error"
 msgstr ""
 
 #: tzintellitime.module:11

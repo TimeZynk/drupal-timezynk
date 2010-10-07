@@ -1,6 +1,20 @@
 <?php
 
+define('TZINTELLITIME_SYNC_INTERVAL_MINUTES', variable_get('tzintellitime_sync_interval_minutes', 12));
 define('TZINTELLITIME_SYNC_USERS_PER_RUN', variable_get('tzintellitime_sync_users_per_run', 100));
+
+/** Sync both new users and users with expired session on login */
+define('TZINTELLITIME_SYNC_INITIAL_SYNC_BOTH', 'both');
+
+/** Sync only new users on login */
+define('TZINTELLITIME_SYNC_INITIAL_SYNC_NEW', 'new');
+
+/** Defer all synchronization to the next scheduled occasion */
+define('TZINTELLITIME_SYNC_INITIAL_SYNC_NONE', 'none');
+
+/** Actual set value from drupal admin page */
+define('TZINTELLITIME_SYNC_INITIAL_SYNC', variable_get('tzintellitime_sync_initial_sync', TZINTELLITIME_SYNC_INITIAL_SYNC_BOTH));
+
 define('TZINTELLITIME_SYNC_ABSENCE_PARENT_JOB_ID', 'TimeZynkIntellitimeSyncAbsenceParent');
 
 /**
@@ -8,6 +22,10 @@ define('TZINTELLITIME_SYNC_ABSENCE_PARENT_JOB_ID', 'TimeZynkIntellitimeSyncAbsen
  */
 function tzintellitime_sync_user($op, &$edit, &$account, $category = NULL) {
   switch($op) {
+    case 'delete':
+      db_query('DELETE FROM {tzintellitime_sync} WHERE uid = %d', $account->uid);
+      break;
+
     case 'insert':
       if(isset($edit['intellitime_last_sync'])) {
         drupal_write_record('tzintellitime_sync', $edit);
@@ -27,7 +45,8 @@ function tzintellitime_sync_user($op, &$edit, &$account, $category = NULL) {
 
     case 'update':
       if(isset($edit['intellitime_last_sync']) || isset($edit['intellitime_active'])) {
-        drupal_write_record('tzintellitime_sync', $edit, 'uid');
+        $entry = array_merge(array('uid' => $account->uid), $edit);
+        drupal_write_record('tzintellitime_sync', $entry, 'uid');
       }
       $edit['intellitime_last_sync'] = NULL;
       $edit['intellitime_active'] = NULL;
@@ -36,16 +55,50 @@ function tzintellitime_sync_user($op, &$edit, &$account, $category = NULL) {
 }
 
 /**
+ * Implementation of hook_menu. Adds settings page to admin section.
+ */
+function tzintellitime_sync_menu() {
+  $items = array();
+  $items['admin/settings/timezynk/tzintellitime_sync'] = array(
+    'title' => 'Intellitime Sync',
+    'description' => 'Data synchronization settings for the TimeZynk Intellitime bridge.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzintellitime_sync_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'tzintellitime_sync.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_cron. Checks if there are users to synchronize on each cron run.
+ */
+function tzintellitime_sync_cron() {
+  tzintellitime_sync_synchronize_users();
+}
+
+/**
  * Schedule the user with specified uid for synchronizations as soon as possible.
  * @param int $uid user id
  */
 function tzintellitime_sync_schedule_user($uid) {
   if($uid) {
-    $entry = array('uid' => $uid, 'intellitime_active' => 1);
-    if(db_result(db_query('SELECT COUNT(*) FROM {tzintellitime_sync} WHERE uid = %d', $uid))) {
+    $result = db_query('SELECT * FROM {tzintellitime_sync} WHERE uid = %d', $uid);
+    if($entry = db_fetch_object($result)) {
+      $entry->intellitime_active = 1;
       drupal_write_record('tzintellitime_sync', $entry, 'uid');
+
+      if(TZINTELLITIME_SYNC_INITIAL_SYNC == TZINTELLITIME_SYNC_INITIAL_SYNC_BOTH) {
+        tzintellitime_sync_synchronize_user($uid);
+      }
     } else {
+      $entry = array('uid' => $uid, 'intellitime_active' => 1);
       drupal_write_record('tzintellitime_sync', $entry);
+      if(TZINTELLITIME_SYNC_INITIAL_SYNC == TZINTELLITIME_SYNC_INITIAL_SYNC_BOTH ||
+         TZINTELLITIME_SYNC_INITIAL_SYNC == TZINTELLITIME_SYNC_INITIAL_SYNC_NEW) {
+        tzintellitime_sync_synchronize_user($uid);
+      }
     }
     return TRUE;
   }
@@ -60,35 +113,69 @@ function tzintellitime_sync_unschedule_user($uid) {
   return FALSE;
 }
 
+/**
+ * Synchronize users that have exceeded the current synchronization interval.
+ */
 function tzintellitime_sync_synchronize_users() {
   tzintellitime_include_classes();
-  $result = db_query_range('SELECT * FROM {tzintellitime_sync} WHERE intellitime_active = 1 ORDER BY intellitime_last_sync ASC', 0, TZINTELLITIME_SYNC_USERS_PER_RUN);
-  while($elem = db_fetch_object($result)) {
-    // Load user account
-    $account = user_load(array('uid' => $elem->uid));
-    if(!$account || !tzintellitime_is_authenticated($account)) {
-      // User not found or not intellitime user
-      tzintellitime_sync_unschedule_user($elem->uid);
-      continue;
-    }
+  $sync_limit = time() - TZINTELLITIME_SYNC_INTERVAL_MINUTES*60;
+  $result = db_query_range('SELECT uid FROM {tzintellitime_sync} WHERE intellitime_active = 1 AND intellitime_last_sync <= %d ORDER BY intellitime_last_sync ASC', $sync_limit, 0, TZINTELLITIME_SYNC_USERS_PER_RUN);
+  while($uid = db_result($result)) {
+    tzintellitime_sync_synchronize_user($uid);
+  }
+}
 
-    $ctrlr = new TZIntellitimeSyncController($account);
+function tzintellitime_sync_synchronize_user($uid) {
+  // Load user account
+  $account = user_load(array('uid' => $uid));
+  if(!$account) {
+    watchdog('tzintellitime', 'Tried to start synchronization for illegal user id "@uid"', array('@uid' => $uid), WATCHDOG_WARNING);
+    return;
+  }
 
-    $result = $ctrlr->synchronize();
+  if(!tzintellitime_is_authenticated($account)) {
+    watchdog('tzintellitime',
+             'No session available for user !name (!uid), last sync !interval ago',
+             array('!name' => $account->name,
+                   '!uid' => $account->uid,
+                   '!interval' => format_interval(time() - $account->intellitime_last_sync)),
+             WATCHDOG_WARNING,
+             l('View user', 'user/' . $account->uid));
+    // User not found or not intellitime user
+    user_save($account, array('intellitime_active' => 0));
+    return;
+  }
 
-    if(TZIntellitimeSyncController::SYNC_OK === $result) {
-      $elem->intellitime_last_sync = time();
-      drupal_write_record('tzintellitime_sync', $elem, 'uid');
-    } elseif(TZIntellitimeSyncController::AUTH_FAILURE === $result) {
-      // Failed authentication, unschedule user
-      TZIntellitimeBot::destroy_session_data($account->intellitime_session_data);
-      user_save($account, array('intellitime_session_data' => NULL, 'intellitime_active' => 0));
-    } else {
-      // Hopefully a temporary failure, log
-      watchdog('tzintellitime', 'Failed to synchronize user !name (!uid), last sync !min minutes ago',
-               array('!name' => $account->name, '!uid' => $account->uid, '!min' => (time() - $elem->intellitime_last_sync)/60),
-               WATCHDOG_WARNING);
-    }
+  $ctrlr = new TZIntellitimeSyncController($account);
+  $result = $ctrlr->synchronize();
+
+  if(TZIntellitimeSyncController::SYNC_OK === $result) {
+    $last_sync = $account->intellitime_last_sync;
+    $account = user_save($account, array('intellitime_last_sync' => time()));
+    watchdog('tzintellitime', 'Synchronized user !name (!uid), last sync !interval ago',
+             array('!name' => $account->name,
+                   '!uid' => $account->uid,
+                   '!interval' => format_interval($account->intellitime_last_sync - $last_sync)),
+             WATCHDOG_NOTICE,
+             l('View user', 'user/' . $account->uid));
+  } elseif(TZIntellitimeSyncController::AUTH_FAILURE === $result) {
+    // Failed authentication, unschedule user
+    TZIntellitimeBot::destroy_session_data($account->intellitime_session_data);
+    user_save($account, array('intellitime_session_data' => NULL, 'intellitime_active' => 0));
+    watchdog('tzintellitime', 'Expired session for user !name (!uid), last sync !interval ago',
+             array('!name' => $account->name,
+                   '!uid' => $account->uid,
+                   '!interval' => format_interval(time() - $account->intellitime_last_sync)),
+             WATCHDOG_WARNING,
+             l('View user', 'user/' . $account->uid));
+  } else {
+    // Hopefully a temporary failure, log
+    watchdog('tzintellitime', 'Failed to synchronize user !name (!uid), last sync !interval ago',
+             array('!name' => $account->name,
+                   '!uid' => $account->uid,
+                   '!interval' => format_interval(time() - $account->intellitime_last_sync)),
+             WATCHDOG_WARNING,
+             l('View user', 'user/' . $account->uid));
   }
 }
 
@@ -107,7 +194,8 @@ class TZIntellitimeSyncController {
   );
 
   function __construct($account) {
-    // Setup bot and fetch this weeks assignments
+    tzbase_include_proto_classes();
+    tzintellitime_include_classes();
     $this->account = $account;
     $this->bot = new TZIntellitimeBot(TZINTELLITIME_BASE_URL, $account->intellitime_session_data);
   }
@@ -257,6 +345,7 @@ class TZIntellitimeSyncController {
    * @param Array $seen_reports lists of all reports found during synchronization
    */
   function mark_removed_reports($seen_reports) {
+    $affected_rows = 0;
     $seenquery = array();
     foreach($seen_reports as $nid) {
       $seenquery[] = 'n.nid != %d';
@@ -273,7 +362,14 @@ class TZIntellitimeSyncController {
       // Update tzreport->flags to TZFlags::DELETED if the node ID is not found in the $seen_reports array
       $query = 'UPDATE {node} n INNER JOIN {tzreport} t ON n.nid = t.nid SET changed = %d, flags = %d WHERE flags != %d AND begintime >= %d AND begintime < %d AND assignedto = %d AND ' . $seenquery;
       db_query($query, $queryargs);
-      watchdog('zynk', 'updated !rows deleted rows', array('!rows' => db_affected_rows()));
+      $affected_rows += db_affected_rows();
+    }
+    if($affected_rows) {
+      watchdog('tzintellitime',
+               'Removed !rows reports for user !user (!uid) after sync',
+               array('!rows' => $affected_rows,
+                     '!user' => $this->account->name,
+                     '!uid' => $this->account->uid));
     }
   }
 
@@ -301,6 +397,12 @@ class TZIntellitimeSyncController {
   function create_report($intelli_report, $job_map = array()) {
     // Try to fetch previous report
     $tzreport = tzintellitime_node_load_by_intellitime_id($intelli_report->get_intellitime_id($this->account->uid));
+
+    $original_tzreport = NULL;
+    if($tzreport) {
+      $original_tzreport = clone $tzreport;
+    }
+
     $tzreport = $intelli_report->convert_to_tzreport($this->account, $tzreport);
 
     // Map job to report by searching for matching title
@@ -312,7 +414,11 @@ class TZIntellitimeSyncController {
       return NULL;
     }
 
-    return $this->store_node($tzreport);
+    if($tzreport != $original_tzreport) {
+      $tzreport = $this->store_node($tzreport);
+    }
+
+    return $tzreport;
   }
 
   /**
@@ -323,9 +429,21 @@ class TZIntellitimeSyncController {
   function create_job($intelli_assignment, $parentid = 0) {
     // Load node if this is an update
     $job = tzintellitime_node_load_by_intellitime_id($intelli_assignment->id);
+
+    // Clone job to be able to check for changes later
+    $original_job = NULL;
+    if($job) {
+      $original_job = clone $job;
+    }
+
     $job = $intelli_assignment->convert_to_tzjob($this->account, $job);
     $job->parentid = $parentid;
-    return $this->store_node($job);
+
+    if($job != $original_job) {
+      $job = $this->store_node($job);
+    }
+
+    return $job;
   }
 
   /**

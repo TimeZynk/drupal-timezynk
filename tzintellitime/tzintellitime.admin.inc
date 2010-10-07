@@ -4,7 +4,8 @@ function tzintellitime_admin_settings() {
   $form['tzintellitime_base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Intellitime base URL'),
-    '#description' => t('Customer specific HTTPS URL for the portal login page'),
+    '#size' => 100,
+    '#description' => t('Customer specific URL for the portal login page. Using HTTPS is strongly recommended!'),
     '#default_value' => TZINTELLITIME_BASE_URL,
   );
 
