@@ -44,7 +44,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
   public function testGetDeletedReport() {
     $jobid = $this->doCreateJob();
     $reportid = $this->doCreateReport($jobid, TZFlags::DELETED);
-    $reports = $this->doGetReports(true);
+    $reports = $this->doGetReports();
     $this->assertEqual(1, count($reports));
     $this->assertEqual(TZFlags::DELETED, $reports[0]->flags());
   }
@@ -52,8 +52,60 @@ class TZProtoTestCase extends DrupalWebTestCase {
   public function testDoNotGetDeletedReport() {
     $jobid = $this->doCreateJob();
     $reportid = $this->doCreateReport($jobid, TZFlags::DELETED);
-    $reports = $this->doGetReports(false);
+    $reports = $this->doGetReports(TZFlags::LOCKED);
     $this->assertEqual(0, count($reports));
+  }
+
+  public function testGetReportsByMaxFlag() {
+    $jobid = $this->doCreateJob();
+    $this->doCreateReport($jobid, TZFlags::CREATED);
+    $this->doCreateReport($jobid, TZFlags::SIGNED_IN);
+    $this->doCreateReport($jobid, TZFlags::REPORTED);
+    $this->doCreateReport($jobid, TZFlags::APPROVED);
+    $this->doCreateReport($jobid, TZFlags::LOCKED);
+    $this->doCreateReport($jobid, TZFlags::DELETED);
+
+    $reported_or_less = $this->doGetReports(TZFlags::REPORTED);
+    $this->assertEqual(3, count($reported_or_less));
+
+    $locked_or_less = $this->doGetReports(TZFlags::LOCKED);
+    $this->assertEqual(5, count($locked_or_less));
+  }
+
+  public function testGetReportsByDate() {
+    $expectedBeginTime = 123456;
+    $jobid = $this->doCreateJob();
+    for ($i = 1; $i<11; $i++) {
+      $this->doCreateReport($jobid, TZFlags::CREATED, $expectedBeginTime*$i);
+    }
+
+    $before7 = $this->doGetReports(NULL, $expectedBeginTime*7);
+    $this->assertEqual(6, count($before7));
+
+    $after3 = $this->doGetReports(NULL, NULL, $expectedBeginTime*3);
+    $this->assertEqual(7, count($after3));
+  }
+
+  public function testGetReportsByDateAndFlags() {
+    $flaglist = tzbase_tzreport_list_flags();
+    $flagindices = array_keys($flaglist);
+    $expectedBeginTime = 123456;
+    $jobid = $this->doCreateJob();
+    $reflection = new ReflectionClass('TZFlags');
+    for ($i = 1; $i<11; $i++) {
+      /* This should create reports with flags
+       * 1      , 2        , 3       , 4       , 5     , 6      , 7      , 8        , 9       , 10
+       * CREATED, SIGNED_IN, REPORTED, APPROVED, LOCKED, DELETED, CREATED, SIGNED_IN, REPORTED, APPROVED
+       */
+      $this->verbose($flaglist[$flagindices[($i-1)%count($flagindices)]]);
+      $this->doCreateReport($jobid, $reflection->getConstant($flaglist[$flagindices[($i-1)%count($flagindices)]]), $expectedBeginTime*$i);
+    }
+
+    $before7 = $this->doGetReports(TZFlags::LOCKED, $expectedBeginTime*7);
+    $this->assertEqual(5, count($before7));
+
+    $after3 = $this->doGetReports(TZFlags::REPORTED, NULL, $expectedBeginTime*3);
+    $this->assertEqual(3, count($after3));
   }
 
 
@@ -74,11 +126,19 @@ class TZProtoTestCase extends DrupalWebTestCase {
     return $tzuser;
   }
 
-  public function doGetReports($include_deleted) {
+  public function doGetReports($max_flags = NULL, $before = NULL , $after = NULL) {
     $request = $this->createRequest($this->admin_user);
     $cmd = $request->add_command();
     $get_report_cmd = new TZGetReportCmd();
-    $get_report_cmd->set_include_deleted($include_deleted);
+    if($max_flags != NULL) {
+      $get_report_cmd->set_max_flag($max_flags);
+    }
+    if ($before != NULL) {
+      $get_report_cmd->set_before($before);
+    }
+    if ($after != NULL) {
+      $get_report_cmd->set_after($after);
+    }
     $cmd->set_get_report_cmd($get_report_cmd);
 
     $response = $this->sendRequest($request);
@@ -157,7 +217,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $this->assertNotNull($result->error_msg());
   }
 
-  public function doCreateReport($jobid, $flags = TZFLags::CREATED) {
+  public function doCreateReport($jobid, $flags = TZFLags::CREATED, $begintime = NULL) {
     $request = $this->createRequest($this->admin_user);
     $cmd = $request->add_command();
 
@@ -166,9 +226,11 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $report->set_job_id($jobid);
     $report->set_assigned_to($this->admin_user->uid);
 
-    $now = time();
-    $begintime = $now - 3600*2;
-    $endtime = $now - 3600;
+    if ($begintime == NULL) {
+      $now = time();
+      $begintime = $now - 3600*2;
+    }
+    $endtime = $begintime + 3600;
     $breakduration = 1800;
 
     $report->set_begin_time($begintime);

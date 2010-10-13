@@ -265,38 +265,63 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result) {
   if($reportcmd->report_id()) {
     $node = node_load($reportcmd->report_id());
     if($node && $node->nid) {
-      if ($node->flags != TZFlags::DELETED ||  $reportcmd->include_deleted()) {
-        $tzreport = $reportresult->add_report();
-        tzproto_fill_from_node($tzreport, $node);
-      }
+      $tzreport = $reportresult->add_report();
+      tzproto_fill_from_node($tzreport, $node);
     }
   }
   // Fetch a collections of jobs
   else {
+    $filter_strings = array();
+    $filter_args = array();
+
+    $filter_strings[] = 'n.status = %d';
+    $filter_args[] = 1;
+
+    // Always check current assigned user
+    $filter_strings[] = 'tz.assignedto = %d';
+    $filter_args[] = $user->uid;
+
     // Filtering on changed time?
-    $changed = 0;
     if($reportcmd->changed_after()) {
-      $changed = $reportcmd->changed_after();
+      $filter_strings[] = 'n.changed > %d';
+      $filter_args[] = $reportcmd->changed_after();
     }
+
+    // Filtering on max flags
+    if($reportcmd->max_flag() != NULL) {
+      $filter_strings[] = 'tz.flags <= %d';
+      $filter_args[] = $reportcmd->max_flag();
+    }
+
+    if($reportcmd->after()) {
+      $filter_strings[] = 'tz.begintime > %d';
+      $filter_args[] = $reportcmd->after();
+    }
+
+    if($reportcmd->before()) {
+      $filter_strings[] = 'tz.begintime < %d';
+      $filter_args[] = $reportcmd->before();
+    }
+
+    $filter_string = implode(' AND ', $filter_strings);
+
     // Detect if we should include deleted reports or not.
-    $highest_flag_to_fetch = TZFlags::DELETED;
-    if (!$reportcmd->include_deleted()) {
-      $highest_flag_to_fetch = TZFlags::DELETED-1;
-    }
-    $sql = "SELECT n.nid FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE n.type = 'tzreport' AND n.status = 1 AND n.changed > %d AND tz.assignedto = %d AND tz.flags <= %d ORDER BY tz.begintime DESC";
+    $highest_flag_to_fetch = $reportcmd->max_flag();
+    $sql = "SELECT n.nid FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE n.type = 'tzreport' AND $filter_string ORDER BY tz.begintime DESC";
+
     $db_result = FALSE;
 
     // Have the user requested a limited query?
     if($reportcmd->limit()) {
       // Fetch number of available nodes
-      $count_query = db_rewrite_sql("SELECT COUNT(DISTINCT n.nid) FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE n.type = 'tzreport' AND n.status = 1 AND n.changed > %d AND tz.assignedto = %d AND tz.flags <= %d");
+      $count_query = db_rewrite_sql("SELECT COUNT(DISTINCT n.nid) FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE n.type = 'tzreport' AND $filter_string");
       $count = (int)db_result(db_query($count_query, $changed, $user->uid, $highest_flag_to_fetch));
 
-      $db_result = db_query_range(db_rewrite_sql($sql), $changed, $user->uid, $highest_flag_to_fetch, $reportcmd->offset(), $reportcmd->limit());
+      $db_result = db_query_range(db_rewrite_sql($sql), $filter_args, $reportcmd->offset(), $reportcmd->limit());
       $reportresult->set_offset($reportcmd->offset());
       $reportresult->set_total_report_count($count);
     } else {
-      $db_result = db_query(db_rewrite_sql($sql), $changed, $user->uid, $highest_flag_to_fetch);
+      $db_result = db_query(db_rewrite_sql($sql), $filter_args);
     }
 
     while($data = db_fetch_object($db_result)) {

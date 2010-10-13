@@ -493,10 +493,14 @@ class TZGetReportCmd extends PBMessage
     $this->values["4"] = "";
     $this->values["4"] = new PBInt();
     $this->values["4"]->value = 0;
-    $this->fields["5"] = "PBBool";
+    $this->fields["5"] = "TZFlags";
     $this->values["5"] = "";
-    $this->values["5"] = new PBBool();
-    $this->values["5"]->value = true;
+    $this->values["5"] = new TZFlags();
+    $this->values["5"]->value = TZFlags::DELETED;
+    $this->fields["6"] = "PBInt";
+    $this->values["6"] = "";
+    $this->fields["7"] = "PBInt";
+    $this->values["7"] = "";
   }
   function report_id()
   {
@@ -530,13 +534,29 @@ class TZGetReportCmd extends PBMessage
   {
     return $this->_set_value("4", $value);
   }
-  function include_deleted()
+  function max_flag()
   {
     return $this->_get_value("5");
   }
-  function set_include_deleted($value)
+  function set_max_flag($value)
   {
     return $this->_set_value("5", $value);
+  }
+  function before()
+  {
+    return $this->_get_value("6");
+  }
+  function set_before($value)
+  {
+    return $this->_set_value("6", $value);
+  }
+  function after()
+  {
+    return $this->_get_value("7");
+  }
+  function set_after($value)
+  {
+    return $this->_set_value("7", $value);
   }
 }
 class TZGetReportResult extends PBMessage

@@ -80,7 +80,7 @@ message TZSyncCmd {
 }
 
 message TZGetReportCmd {
-  // Exact report id to fetch
+  // Exact report id to fetch, if set we will ignore all other filtering options
   optional int32 report_id = 1;
   
   // Fetch reports that have changed since timestamp
@@ -92,8 +92,14 @@ message TZGetReportCmd {
   // Offset into dataset to fetch from
   optional int32 offset = 4 [default = 0];
   
-  // If true, we want to fetch deleted reports.
-  optional bool include_deleted = 5 [default = true]; 
+  // Filters away all reports with flags larger than max_flag
+  optional TZFlags max_flag = 5 [default = DELETED];
+  
+  // Only return reports with begin_time before this timestamp
+  optional int32 before = 6;
+
+  // Only return reports with begin_time after this timestamp
+  optional int32 after = 7; 
 }
 message TZGetReportResult {
   // Only returned for ranged queries. (limit > 0)
