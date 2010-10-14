@@ -518,22 +518,25 @@ class TZIntellitimeParser {
      * If not, we need to look at the month of the report,
      * which will tell us which of the years to choose.
      * This works since we look at one week at a time. */
+    $years = array();
     $hrefs = $this->doc->xpath('//a/@href');
     foreach ($hrefs as $href) {
       $matches = array();
-      if (preg_match("/TimeReport\.aspx\?DateInWeek=(\d{4})-\d{2}-\d{2}/", $href, $matches)) {
+      if (preg_match("/TimeReport\.aspx\?DateInWeek=(\d{4})-\d{2}-\d{2}/", (string)$href, $matches)) {
         $years[$matches[1]] = TRUE;
       }
     }
     ksort($years);
     $years = array_keys($years);
 
-    $table_rows = $this->doc->xpath('//select[@id="SelectExpenses"]/../..');
     $reports = array();
-    foreach($table_rows as $row) {
-      $report = $this->parse_report_row($row);
-      $report->set_year($years);
-      $reports[] = $report;
+    $table_rows = $this->doc->xpath('//select[@id="SelectExpenses"]/../..');
+    if(!empty($table_rows)) {
+      foreach($table_rows as $row) {
+        $report = $this->parse_report_row($row);
+        $report->set_year($years);
+        $reports[] = $report;
+      }
     }
     return $reports;
   }

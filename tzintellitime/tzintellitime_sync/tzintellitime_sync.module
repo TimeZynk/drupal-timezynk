@@ -285,10 +285,12 @@ class TZIntellitimeSyncController {
       }
 
       // Check for extra weeks that needs to be synchronized
-      foreach($data['unfinished_weeks'] as $weekdate) {
-        $weekstr = $this->week_key($weekdate);
-        if(!isset($this->week_status[$weekstr])) {
-          $this->week_status[$weekstr] = TZIntellitimeSyncController::PENDING;
+      if(!empty($data['unfinished_weeks'])) {
+        foreach($data['unfinished_weeks'] as $weekdate) {
+          $weekstr = $this->week_key($weekdate);
+          if(!isset($this->week_status[$weekstr])) {
+            $this->week_status[$weekstr] = TZIntellitimeSyncController::PENDING;
+          }
         }
       }
 

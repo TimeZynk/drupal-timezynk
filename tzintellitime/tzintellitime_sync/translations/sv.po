@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TZIntellitimeSync\n"
 "POT-Creation-Date: 2010-10-07 19:53+0200\n"
-"PO-Revision-Date: 2010-10-07 20:03+0100\n"
+"PO-Revision-Date: 2010-10-14 19:11+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: sv <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -48,7 +48,7 @@ msgstr "Synkronisera direkt för både nya användare och användare med en ogil
 
 #: tzintellitime_sync.admin.inc:21
 msgid "Only for new users. Users with expired session are synchronized at the next scheduled synchronization."
-msgstr "Endast nya användare. Användare med ogiltig sessionsnyckel synkroniseras på vid nästa schemalagda tillfälle."
+msgstr "Endast nya användare. Användare med ogiltig sessionsnyckel synkroniseras vid nästa schemalagda tillfälle."
 
 #: tzintellitime_sync.admin.inc:22
 msgid "Never do initial synchronization, always defer to the next scheduled synchronization."
