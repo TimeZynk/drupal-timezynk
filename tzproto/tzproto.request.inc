@@ -315,7 +315,7 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result) {
     if($reportcmd->limit()) {
       // Fetch number of available nodes
       $count_query = db_rewrite_sql("SELECT COUNT(DISTINCT n.nid) FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE n.type = 'tzreport' AND $filter_string");
-      $count = (int)db_result(db_query($count_query, $changed, $user->uid, $highest_flag_to_fetch));
+      $count = (int)db_result(db_query($count_query, $filter_args));
 
       $db_result = db_query_range(db_rewrite_sql($sql), $filter_args, $reportcmd->offset(), $reportcmd->limit());
       $reportresult->set_offset($reportcmd->offset());
