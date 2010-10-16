@@ -404,6 +404,7 @@ function tzproto_fill_from_node(&$proto, $node) {
     $proto->set_travel_km($node->travelkm);
 
     $proto->set_may_edit(node_access('update', $node));
+    $proto->set_may_remove(node_access('update', $node));
   }
 }
 
