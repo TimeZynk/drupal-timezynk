@@ -98,7 +98,7 @@ message TZGetReportCmd {
   // Only return reports with begin_time before this timestamp
   optional int32 before = 6;
 
-  // Only return reports with begin_time after this timestamp
+  // Only return reports with begin_time greater than or equal to this timestamp
   optional int32 after = 7; 
 }
 message TZGetReportResult {

@@ -294,7 +294,7 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result) {
     }
 
     if($reportcmd->after()) {
-      $filter_strings[] = 'tz.begintime > %d';
+      $filter_strings[] = 'tz.begintime >= %d';
       $filter_args[] = $reportcmd->after();
     }
 
