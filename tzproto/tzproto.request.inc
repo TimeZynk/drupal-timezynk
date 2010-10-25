@@ -9,6 +9,11 @@
  * Request dispatcher
  */
 function tzproto_request() {
+  /* PHP's session handler normally adds a pretty large session cookie to
+   * the HTTP headers. We here disable this cookie to reduce the
+   * data transfer as much as possible. */
+  ini_set('session.use_cookies', '0');
+
   tzbase_include_proto_classes();
 
   // Read POST data
