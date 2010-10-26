@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * Definition of hook_menu()
+ */
+function tzsms_ui_menu() {
+  $items['tzsms/installation'] = array(
+    'title' => 'Send installation SMS',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzsms_ui_to_number_form'),
+    'access arguments' => array('send install sms to number'),
+    'file' => 'tzsms_ui.number.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm()
+ * Define available permissions.
+ */
+function tzsms_ui_perm() {
+  return array('send install sms to number');
+}
+
+
+

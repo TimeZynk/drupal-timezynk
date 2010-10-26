@@ -1,0 +1,6 @@
+name = TimeZynk SMS UI
+description = Provides TimeZynk SMS sending UI
+package = TimeZynk
+core = 6.x
+dependencies[] = tzsms
+dependencies[] = ahah_helper

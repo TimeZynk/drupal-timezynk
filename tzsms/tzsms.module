@@ -15,6 +15,21 @@ function tzsms_user_operations() {
   return $operations;
 }
 
+/**
+ * Validate a mobile phone number and strip out all extra characters
+ * @param string $number phone number to validate
+ * @return all-numeric phone number if success, otherwise FALSE
+ */
+function tzsms_validate_phone_number($number) {
+  // Remove characters like '+', '-', ' ' and '/'
+  $mobile_number = preg_replace('/[\+\- \/]/', '', $number);
+  // There should be only digits left now
+  if(!ctype_digit($mobile_number) || strlen($mobile_number) < 6) {
+    return FALSE;
+  }
+  return $mobile_number;
+}
+
 
 /**
  * Provide a simple form to set the default country code
@@ -45,7 +60,7 @@ function tzsms_form_user_admin_settings_alter(&$form, &$form_state) {
 
 
 /**
- * Validate the form to check that admin has entered correct TimeZynk 
+ * Validate the form to check that admin has entered correct TimeZynk
  * SMS settings.
  * @param $form submitted form
  * @param $form_state submitted form state
@@ -93,7 +108,7 @@ function tzsms_form_user_register_submit($form, &$form_state) {
 function tzsms_form_user_pass_alter(&$form, &$form_state) {
   $form['name']['#title'] = t('Your mobile phone number or e-mail address');
   $form['submit']['#value'] = t('Send new password over SMS');
-  $form['#submit'] = array('tzsms_form_user_pass_submit');  
+  $form['#submit'] = array('tzsms_form_user_pass_submit');
 }
 
 /**
