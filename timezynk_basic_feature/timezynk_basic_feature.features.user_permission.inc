@@ -70,6 +70,14 @@ function timezynk_basic_feature_user_default_permissions() {
     ),
   );
 
+  // Exported permission: use timezynk report generator
+  $permissions['use timezynk report generator'] = array(
+    'name' => 'use timezynk report generator',
+    'roles' => array(
+      '0' => 'authenticated user',
+    ),
+  );
+
   // Exported permission: view any tzjob content
   $permissions['view any tzjob content'] = array(
     'name' => 'view any tzjob content',
@@ -97,14 +105,6 @@ function timezynk_basic_feature_user_default_permissions() {
   // Exported permission: view own tzreport content
   $permissions['view own tzreport content'] = array(
     'name' => 'view own tzreport content',
-    'roles' => array(
-      '0' => 'authenticated user',
-    ),
-  );
-
-  // Exported permission: view tzstats invoice
-  $permissions['view tzstats invoice'] = array(
-    'name' => 'view tzstats invoice',
     'roles' => array(
       '0' => 'authenticated user',
     ),

@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * Implementation of hook_install()
+ */
+function tzstats_install() {
+  drupal_install_schema('tzstats');
+}
+
+/**
+ * Implementation of hook_uninstall()
+ */
+function tzstats_uninstall() {
+  drupal_uninstall_schema('tzstats');
+}
+
+/**
+ * TZStats database schema
+ */
+function tzstats_schema() {
+  /* SMS schema keeps track of sent SMS messages */
+  $schema['tzstats_sms'] = array(
+    'description' => t('Stores statistics over sent SMS messages'),
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Sending user's {users}.uid.",
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp when this SMS was sent",
+      ),
+      'sms_type' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'SMS type as defined by the tzsms module',
+      ),
+      'destination' => array(
+        'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'SMS destination phone number',
+      ),
+    ),
+    'indexes' => array('uid' => array('uid')),
+  );
+  return $schema;
+}

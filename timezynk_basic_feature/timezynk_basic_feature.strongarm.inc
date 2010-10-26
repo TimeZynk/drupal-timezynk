@@ -193,9 +193,9 @@ function timezynk_basic_feature_strongarm() {
     'sms_clickatell_api_id' => '3222910',
     'sms_clickatell_user' => 'timezynk',
     'sms_clickatell_password' => 'Aen8shah',
-    'sms_clickatell_from' => '46733623516',
+    'sms_clickatell_from' => '',
     'sms_clickatell_callback' => '0',
-    'form_build_id' => 'form-f94f4989311c09baec5f1ed913c41e86',
+    'form_build_id' => 'form-cc20b88b7ec66fd0b9ea200f9e0a8c27',
   );
 
   $export['sms_clickatell_settings'] = $strongarm;

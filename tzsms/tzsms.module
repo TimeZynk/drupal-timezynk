@@ -4,6 +4,16 @@
  */
 
 /**
+ * SMS type definition for standard user SMS messages
+ */
+define(TZSMS_TYPE_USER_SMS, 0);
+
+/**
+ * SMS type definition for installation SMS messages
+ */
+define(TZSMS_TYPE_INSTALL_SMS, 1);
+
+/**
  * Implements hook_user_operations. Adds a new selection to the mass user action
  * dropdown at the administration pages.
  */
@@ -32,6 +42,24 @@ function tzsms_validate_phone_number($number) {
     return FALSE;
   }
   return $mobile_number;
+}
+
+
+/**
+ * Send a SMS message to phonenbr. This is the lowest level function you
+ * should call to send a SMS. Do not use the SMS Framework module
+ * directly since it would bypass the statistics functions.
+ *
+ * @param string $phonenbr Phone number to send to
+ * @param string $msg message to send
+ */
+function tzsms_send($type, $phonenbr, $msg) {
+  // Invoke tzsms_send hook to allow modules to collect statistics or billing info
+  module_invoke_all('tzsms_send', $type, $phonenbr);
+
+  // Load country code and send SMS
+  $country_code = intval(variable_get('tzsms_default_country_code', '46'));
+  sms_send($phonenbr, $msg, array('country' => $country_code));
 }
 
 
@@ -169,7 +197,6 @@ function tzsms_send_install_sms($users) {
  */
 function tzsms_send_new_user_sms($username, $phonenbr, $password = NULL) {
   watchdog('tzsms', 'Sending install SMS to !nbr', array('!nbr' => $phonenbr));
-  $country_code = intval(variable_get('tzsms_default_country_code', '46'));
   $msg = '';
   if($password) {
     $msg = tzsms_install_sms_template(array(
@@ -183,7 +210,7 @@ function tzsms_send_new_user_sms($username, $phonenbr, $password = NULL) {
     	'!username' => $phonenbr)
     );
   }
-  sms_send($phonenbr, $msg, array('country' => $country_code));
+  tzsms_send(TZSMS_TYPE_INSTALL_SMS, $phonenbr, $msg);
 }
 
 /**

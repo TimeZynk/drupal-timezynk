@@ -1,0 +1,51 @@
+<?php
+class TZStatsTestCase extends DrupalWebTestCase {
+  private $test_user = NULL;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'TZStats Test Suite',
+      'description' => '',
+      'group' => 'TZStats',
+    );
+  }
+
+  public function setUp() {
+    // Enable any modules required for the test.
+   parent::setUp('tzstats');
+  }
+
+  public function tearDown() {
+    parent::tearDown();
+  }
+
+  public function testTZSMS_Send_Hook() {
+    // Check that our table is empty now
+    $this->assertEqual(0, db_result(db_query('SELECT COUNT(*) FROM {tzstats_sms}')));
+
+    $before = time();
+
+    // Trigger send hook a couple of times
+    for($i = 0; $i < 256; $i++) {
+      module_invoke_all('tzsms_send', 0, '0777888999' . $i);
+    }
+
+    $result = db_query('SELECT * FROM {tzstats_sms}');
+    $i = 0;
+    while($row = db_fetch_object($result)) {
+      $this->assertEqual(0, $row->sms_type);
+      $this->assertEqual('0777888999' . $i, $row->destination);
+      $this->assertTrue($row->timestamp >= $before);
+      $i++;
+    }
+    $this->assertEqual(256, $i);
+  }
+
+  /** Override assertEqual to get nice log prints by default */
+  protected function assertEqual($first, $second, $message = '', $group = 'Other') {
+    if(!$message) {
+      $message = 'Expected "' . $first . '", got "' . $second . '"';
+    }
+    parent::assertEqual($first, $second, $message, $group);
+  }
+}

@@ -1,6 +1,4 @@
 name = TimeZynk Statistics
-description = Provides TimeZynk statistics and reports
-dependencies[] = tzbase
-dependencies[] = views
+description = Provides TimeZynk statistics
 package = TimeZynk
 core = 6.x
