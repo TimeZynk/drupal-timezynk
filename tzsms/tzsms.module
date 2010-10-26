@@ -8,9 +8,13 @@
  * dropdown at the administration pages.
  */
 function tzsms_user_operations() {
-  $operations['tzsms_install_sms'] = array(
-    'label' => t('Send TimeZynk installation SMS'),
-    'callback' => 'tzsms_reset_pw_and_send_sms',
+  $operations['tzsms_reset_pw_and_send_install_sms'] = array(
+    'label' => t('Reset password and send new TimeZynk installation SMS'),
+    'callback' => 'tzsms_reset_pw_and_send_install_sms',
+  );
+  $operations['tzsms_send_install_sms'] = array(
+    'label' => t('Send new TimeZynk installation SMS'),
+    'callback' => 'tzsms_send_install_sms',
   );
   return $operations;
 }
@@ -53,6 +57,12 @@ function tzsms_form_user_admin_settings_alter(&$form, &$form_state) {
       '#title' => t('The content of the SMS'),
       '#default_value' => variable_get('tzsms_install_sms_template', tzsms_install_sms_template()),
       '#description' => t('The available variables are: !url, !username and !password'),
+    ),
+    'tzsms_install_sms_no_password_template' => array(
+      '#type' => 'textarea',
+      '#title' => t('The content of the SMS when keeping the same password'),
+      '#default_value' => variable_get('tzsms_install_sms_no_password_template', tzsms_install_sms_no_password_template()),
+      '#description' => t('The available variables are: !url and !username'),
     ),
   );
   $form['#validate'][] = 'tzsms_form_user_admin_settings_validate';
@@ -98,7 +108,7 @@ function tzsms_form_user_register_alter(&$form, &$form_state) {
 function tzsms_form_user_register_submit($form, &$form_state) {
   $username = $form_state['values']['name'];
   $password = $form_state['values']['pass'];
-  tzsms_send_new_user_sms($username, $password);
+  tzsms_send_new_user_sms($username, $username, $password);
 }
 
 
@@ -116,7 +126,7 @@ function tzsms_form_user_pass_alter(&$form, &$form_state) {
  */
 function tzsms_form_user_pass_submit($form, &$form_state) {
   $account = $form_state['values']['account'];
-  tzsms_reset_pw_and_send_sms(array($account->uid));
+  tzsms_reset_pw_and_send_install_sms(array($account->uid));
   watchdog('tzsms', 'User %name requested new password over SMS', array('%name' => $account->name));
   drupal_set_message(t('New password has been sent to you over SMS'));
   $form_state['redirect'] = 'user';
@@ -127,13 +137,25 @@ function tzsms_form_user_pass_submit($form, &$form_state) {
  * installations sms messages.
  * @param $users array of user IDs
  */
-function tzsms_reset_pw_and_send_sms($users) {
+function tzsms_reset_pw_and_send_install_sms($users) {
   foreach($users as $uid) {
     $user = user_load($uid);
     $new_pass = genpass_generate();
     $user = user_save($user, array('pass' => $new_pass));
     if($user) {
-      tzsms_send_new_user_sms($user->name, $new_pass);
+      tzsms_send_new_user_sms($user->name, $user->name, $new_pass);
+    }
+  }
+}
+
+/**
+ * Function send an installation SMS to the selected users
+ */
+function tzsms_send_install_sms($users) {
+  foreach($users as $uid) {
+    $user = user_load($uid);
+    if($user) {
+      tzsms_send_new_user_sms($user->name, $user->name);
     }
   }
 }
@@ -145,14 +167,22 @@ function tzsms_reset_pw_and_send_sms($users) {
  * @param $phonenbr phone number to send SMS to
  * @param $password password to send
  */
-function tzsms_send_new_user_sms($phonenbr, $password) {
+function tzsms_send_new_user_sms($username, $phonenbr, $password = NULL) {
   watchdog('tzsms', 'Sending install SMS to !nbr', array('!nbr' => $phonenbr));
   $country_code = intval(variable_get('tzsms_default_country_code', '46'));
-  $msg = tzsms_install_sms_template(array(
-    '!url' => url('tz.jad',  array('absolute' => TRUE)),
-    '!username' => $phonenbr,
-    '!password' => $password)
-  );
+  $msg = '';
+  if($password) {
+    $msg = tzsms_install_sms_template(array(
+    	'!url' => url('tz.jad',  array('absolute' => TRUE)),
+    	'!username' => $phonenbr,
+    	'!password' => $password)
+    );
+  } else {
+    $msg = tzsms_install_sms_no_password_template(array(
+    	'!url' => url('tz.jad',  array('absolute' => TRUE)),
+    	'!username' => $phonenbr)
+    );
+  }
   sms_send($phonenbr, $msg, array('country' => $country_code));
 }
 
@@ -166,6 +196,20 @@ function tzsms_install_sms_template($variables = array()) {
     return strtr($admin_setting, $variables);
   } else {
     return t('Welcome to TimeZynk! Visit !url to install, then login using !username as username and "!password" as password.',
+      $variables);
+  }
+}
+
+/**
+ * Generate install sms message from template
+ * @param $variables array with substitution variables (!url, !username, !password)
+ */
+function tzsms_install_sms_no_password_template($variables = array()) {
+  if ($admin_setting = variable_get('tzsms_install_sms_no_password_template', FALSE)) {
+    // An admin setting overrides the default string.
+    return strtr($admin_setting, $variables);
+  } else {
+    return t('Welcome to TimeZynk! Visit !url to install, then login using !username as username.',
       $variables);
   }
 }
