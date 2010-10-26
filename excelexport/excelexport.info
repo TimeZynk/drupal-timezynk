@@ -3,4 +3,5 @@ description = Exports time reports to excel
 core = 6.x
 dependencies[] = tzbase
 depencencies[] = realname
+dependencies[] = libraries
 package = TimeZynk

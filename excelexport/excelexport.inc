@@ -4,9 +4,11 @@
  * @file Contains the excel export routines
  */
 function excelexport_export() {
-    require_once (dirname(__FILE__) . '/phpexcel/Classes/PHPExcel.php');
-    require_once(drupal_get_path('module', 'tzbase') . '/pb4php-read-only/message/pb_message.php');
-    require_once(drupal_get_path('module', 'tzbase') . '/pb_proto_tzbase.php');
+    tzbase_include_proto_classes();
+
+    // Find and include the PHPExcel library
+    $phpexcel_path = libraries_get_path('phpexcel');
+    require_once ($phpexcel_path . '/Classes/PHPExcel.php');
 
     $objPHPExcel = new PHPExcel();
 
@@ -29,7 +31,7 @@ function excelexport_export() {
         $node = node_load($data->nid);
         $job = node_load($node->jobid);
         $assigned_user = user_load($node->assignedto);
-        
+
         $totalduration = '';
 
         // Calculate total duration if we are not signed in
@@ -59,7 +61,7 @@ function excelexport_export() {
     $objWriter->save($filename);
 
     drupal_set_header('Content-Type: application/vnd.ms-excel');
-    drupal_set_header('Content-Disposition: attachment; filename=TimeZynk_Reports_' . 
+    drupal_set_header('Content-Disposition: attachment; filename=TimeZynk_Reports_' .
       format_date(time(), 'custom', 'Y-m-d') . '.xls');
 
 	// We flush in order for the temp file to be fully written before we pass its contents on to drupal.
@@ -88,8 +90,8 @@ function _excelexport_autosize_columns($php_excel_instance, $max_column = 0) {
 }
 
 /**
- * Takes an unixtime timetamp and returns a de-epochified datetime string  
- * corrected to be in GMT and not the local timezone. 
+ * Takes an unixtime timetamp and returns a de-epochified datetime string
+ * corrected to be in GMT and not the local timezone.
  * @param $timestamp the UNIX timestamp.
  */
 function _excelexport_build_datetime_string($timestamp) {
@@ -122,16 +124,16 @@ function _excelexport_format_flags($flags) {
   switch($flags) {
     case TZFlags::CREATED:
       return t('New');
-      
+
     case TZFlags::SIGNED_IN:
       return t('Signed in');
 
     case TZFlags::REPORTED:
       return t('Reported');
-      
+
     case TZFlags::APPROVED:
       return t('Approved');
-      
+
     case TZFlags::LOCKED:
       return t('Locked');
   }
