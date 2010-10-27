@@ -7,8 +7,8 @@ function tzsms_ui_menu() {
   $items['tzsms/installation'] = array(
     'title' => 'Send installation SMS',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('tzsms_ui_to_number_form'),
-    'access arguments' => array('send install sms to number'),
+    'page arguments' => array('tzsms_ui_installation_sms_form'),
+    'access arguments' => array('send installation sms'),
     'file' => 'tzsms_ui.number.inc',
   );
 
@@ -20,7 +20,7 @@ function tzsms_ui_menu() {
  * Define available permissions.
  */
 function tzsms_ui_perm() {
-  return array('send install sms to number');
+  return array('send installation sms');
 }
 
 

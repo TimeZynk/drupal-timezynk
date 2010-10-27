@@ -4,7 +4,7 @@
  * Form definition for send SMS to number UI
  * @param Array $form_state current form state
  */
-function tzsms_ui_to_number_form(&$form_state) {
+function tzsms_ui_installation_sms_form(&$form_state) {
   ahah_helper_register($form, $form_state);
 
   // Check how many number rows we currently show
@@ -69,14 +69,34 @@ function tzsms_ui_to_number_form(&$form_state) {
  * @param $form the form
  * @param $form_state form state and values
  */
-function tzsms_ui_to_number_form_validate($form, &$form_state) {
+function tzsms_ui_installation_sms_form_validate($form, &$form_state) {
   $numrows = $form_state['storage']['numrows'];
+  $seen_numbers = array();
   for($i = 0; $i < $numrows; $i++) {
     $rowid = 'row_' . $i;
     if(!empty($form_state['values']['rows'][$rowid])) {
-      if(!tzsms_validate_phone_number($form_state['values']['rows'][$rowid])) {
+      $number = tzsms_validate_phone_number($form_state['values']['rows'][$rowid]);
+      if(!$number) {
         form_set_error("rows][$rowid", t('Please enter a valid mobile number'));
+      } else if(empty($seen_numbers[$number])) {
+        $seen_numbers[$number] = TRUE;
+      } else {
+        form_set_error("rows][$rowid", t('Number entered twice'));
       }
     }
+  }
+  $form_state['storage']['numbers'] = array_keys($seen_numbers);
+}
+
+function tzsms_ui_installation_sms_form_submit($form, &$form_state) {
+  // We only do full submit if we are called by the submit button
+  if($form_state['values']['op'] === t('Send installation SMS')) {
+    foreach($form_state['storage']['numbers'] as $mobile_number) {
+      tzsms_send_new_user_sms($mobile_number, $mobile_number);
+      drupal_set_message(t('Sent install SMS to number %number', array('%number' => $mobile_number)));
+    }
+
+    // Clear the form
+    unset($form_state['storage']);
   }
 }

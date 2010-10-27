@@ -1,0 +1,85 @@
+<?php
+class TZSMSUITestCase extends DrupalWebTestCase {
+  private $test_user = NULL;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'TZSMS UI Test Suite',
+      'description' => '',
+      'group' => 'TZSMS',
+    );
+  }
+
+  public function setUp() {
+    // Enable any modules required for the test.
+   parent::setUp('ahah_helper', 'sms', 'tzsms', 'tzsms_ui');
+
+   // Create and test user
+   $this->test_user = $this->drupalCreateUser(array(
+     'send installation sms',
+   ));
+   $this->drupalLogin($this->test_user);
+  }
+
+  public function tearDown() {
+    parent::tearDown();
+    $this->test_user = NULL;
+  }
+
+  public function testBasicForm() {
+    $this->_testGetForm();
+    $this->_testAddRows();
+    $this->_testSendSMS();
+    $this->_testStopDuplicates();
+  }
+
+  public function _testGetForm() {
+    $this->drupalGet('tzsms/installation');
+    $this->assertResponse(200, 'User is allowed to access the SMS sending page');
+
+    for($i = 0; $i < 10; $i++) {
+      $this->assertFieldByName("rows[row_$i]", '', "Found recipient field $i");
+    }
+
+    $this->assertField('edit-rows-add-more', '', 'Found add more button');
+    $this->assertField('edit-submit', '', 'Found submit button');
+  }
+
+  public function _testAddRows() {
+    // Values set in the form before extending
+    $edit['rows[row_0]'] = '073884748';
+    $edit['rows[row_7]'] = '073938822';
+    $this->drupalPost('tzsms/installation', $edit, t('Add more numbers'));
+    $this->assertResponse(200, 'Add more rows returned 200 OK');
+
+    // Check that we have more rows
+    for($i = 0; $i < 20; $i++) {
+      $this->assertFieldByName("rows[row_$i]", '', "Found recipient field $i");
+    }
+
+    // Check that we kept the previous values
+    foreach($edit as $key => $value) {
+      $this->assertField($key, $value, 'kept value in ' . $key);
+    }
+  }
+
+  public function _testSendSMS() {
+    $edit['rows[row_0]'] = '0738-847 48';
+    $edit['rows[row_7]'] = '073/93 88 22';
+    $this->drupalPost('tzsms/installation', $edit, t('Send installation SMS'));
+    $this->assertResponse(200, 'Submit returned 200 OK');
+
+    $this->assertRaw(t('Sent install SMS to number %number', array('%number' => '073884748')));
+    $this->assertRaw(t('Sent install SMS to number %number', array('%number' => '073938822')));
+  }
+
+  public function _testStopDuplicates() {
+    $edit['rows[row_0]'] = '0738-847 48';
+    $edit['rows[row_7]'] = '073/93 88 22';
+    $edit['rows[row_9]'] = '073/88-47-48';
+    $this->drupalPost('tzsms/installation', $edit, t('Send installation SMS'));
+    $this->assertResponse(200, 'Submit returned 200 OK');
+
+    $this->assertText(t('Number entered twice'));
+  }
+}

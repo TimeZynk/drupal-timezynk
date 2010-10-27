@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-10-27 13:28+0200\n"
+"POT-Creation-Date: 2010-10-27 14:17+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -38,7 +38,7 @@ msgstr ""
 msgid "Recipient !index"
 msgstr ""
 
-#: tzsms_ui.number.inc:57 tzsms_ui.module:8
+#: tzsms_ui.number.inc:57;93 tzsms_ui.module:8
 msgid "Send installation SMS"
 msgstr ""
 
@@ -46,8 +46,16 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
-#: tzsms_ui.number.inc:78
+#: tzsms_ui.number.inc:80
 msgid "Please enter a valid mobile number"
+msgstr ""
+
+#: tzsms_ui.number.inc:84
+msgid "Number entered twice"
+msgstr ""
+
+#: tzsms_ui.number.inc:96
+msgid "Sent install SMS to number %number"
 msgstr ""
 
 #: tzsms.module:12
@@ -127,7 +135,7 @@ msgid "Sending install SMS to !nbr"
 msgstr ""
 
 #: tzsms_ui.module:23
-msgid "send install sms to number"
+msgid "send installation sms"
 msgstr ""
 
 #: tzsms.info:0

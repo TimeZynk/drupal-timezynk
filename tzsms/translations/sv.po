@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tzsms\n"
-"POT-Creation-Date: 2010-10-27 13:28+0200\n"
-"PO-Revision-Date: 2010-10-27 13:32+0100\n"
+"POT-Creation-Date: 2010-10-27 14:17+0200\n"
+"PO-Revision-Date: 2010-10-27 14:19+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: sv <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -30,7 +30,7 @@ msgstr "Nummer att skicka till"
 msgid "Recipient !index"
 msgstr "Mottagare !index"
 
-#: tzsms_ui.number.inc:57
+#: tzsms_ui.number.inc:57;93
 #: tzsms_ui.module:8
 msgid "Send installation SMS"
 msgstr "Skicka installations-SMS"
@@ -39,9 +39,17 @@ msgstr "Skicka installations-SMS"
 msgid "Reset"
 msgstr "Rensa"
 
-#: tzsms_ui.number.inc:78
+#: tzsms_ui.number.inc:80
 msgid "Please enter a valid mobile number"
 msgstr "Skriv in ett giltigt mobilnummer"
+
+#: tzsms_ui.number.inc:84
+msgid "Number entered twice"
+msgstr "Varje nummer får endast anges en gång"
+
+#: tzsms_ui.number.inc:96
+msgid "Sent install SMS to number %number"
+msgstr "Skickade installations-SMS till %number"
 
 #: tzsms.module:12
 msgid "Reset password and send new TimeZynk installation SMS"
@@ -120,7 +128,7 @@ msgid "Sending install SMS to !nbr"
 msgstr "Skicka installations-SMS till !nbr"
 
 #: tzsms_ui.module:23
-msgid "send install sms to number"
+msgid "send installation sms"
 msgstr ""
 
 #: tzsms.info:0
