@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * Implementation of hook_requirements().
+ * Checks availability of phpexcel library
+ */
+function excelexport_requirements() {
+  $req = array();
+
+  // Called during install phase, must get translation function manually
+  $t = get_t();
+
+  $phpexcel_path = libraries_get_path('phpexcel');
+
+  $req['phpexcel']['title'] = 'PHPExcel';
+  if(is_file($phpexcel_path . '/Classes/PHPExcel.php')) {
+    $req['phpexcel']['value'] = $t('PHPExcel installed under %path.', array('%path' => $phpexcel_path));
+    $req['phpexcel']['severity'] = REQUIREMENT_OK;
+  } else {
+    $req['phpexcel']['value'] = $t('Not found');
+    $req['phpexcel']['description'] = $t('Please install PHPExcel 1.7.4 or newer under sites/all/libraries/phpexcel.');
+    $req['phpexcel']['severity'] = REQUIREMENT_ERROR;
+  }
+
+  return $req;
+}

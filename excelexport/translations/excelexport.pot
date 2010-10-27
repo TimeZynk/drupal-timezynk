@@ -1,17 +1,18 @@
 # $Id$
 #
 # LANGUAGE translation of Drupal (general)
-# Copyright 2010 TimeZynk AB <dev@timezynk.com>
+# Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
 #  excelexport.inc: n/a
 #  excelexport.module: n/a
+#  excelexport.install: n/a
 #  excelexport.info: n/a
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-07-07 13:45+0200\n"
+"POT-Creation-Date: 2010-10-27 11:10+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -20,79 +21,79 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: excelexport.inc:17
+#: excelexport.inc:19
 msgid "Id"
 msgstr ""
 
-#: excelexport.inc:17
+#: excelexport.inc:19
 msgid "Subject"
 msgstr ""
 
-#: excelexport.inc:17
+#: excelexport.inc:19
 msgid "Description"
 msgstr ""
 
-#: excelexport.inc:17
+#: excelexport.inc:19
 msgid "Assignment"
 msgstr ""
 
-#: excelexport.inc:17
+#: excelexport.inc:19
 msgid "Assignment description"
 msgstr ""
 
-#: excelexport.inc:18
+#: excelexport.inc:20
 msgid "Start time"
 msgstr ""
 
-#: excelexport.inc:18
+#: excelexport.inc:20
 msgid "End time"
 msgstr ""
 
-#: excelexport.inc:18
+#: excelexport.inc:20
 msgid "Break duration"
 msgstr ""
 
-#: excelexport.inc:18
+#: excelexport.inc:20
 msgid "Total"
 msgstr ""
 
-#: excelexport.inc:18
+#: excelexport.inc:20
 msgid "State"
 msgstr ""
 
-#: excelexport.inc:18
+#: excelexport.inc:20
 msgid "Assigned to"
 msgstr ""
 
-#: excelexport.inc:124
+#: excelexport.inc:126
 msgid "New"
 msgstr ""
 
-#: excelexport.inc:127
+#: excelexport.inc:129
 msgid "Signed in"
 msgstr ""
 
-#: excelexport.inc:130
+#: excelexport.inc:132
 msgid "Reported"
 msgstr ""
 
-#: excelexport.inc:133
+#: excelexport.inc:135
 msgid "Approved"
 msgstr ""
 
-#: excelexport.inc:136
+#: excelexport.inc:138
 msgid "Locked"
 msgstr ""
 
-#: excelexport.inc:138
+#: excelexport.inc:140
 msgid "Unknown"
 msgstr ""
 
-#: excelexport.inc:78
+#: excelexport.inc:80
 msgid "Excel export"
 msgstr ""
 
-#: excelexport.inc:78
+#: excelexport.inc:80
 msgid "Could not autosize columns, no such instance of PHPExcel"
 msgstr ""
 
@@ -102,6 +103,18 @@ msgstr ""
 
 #: excelexport.module:22
 msgid "Export time reports to excel"
+msgstr ""
+
+#: (duplicate) excelexport.install:17 
+msgid "PHPExcel installed under %path."
+msgstr ""
+
+#: (duplicate) excelexport.install:20 
+msgid "Not found"
+msgstr ""
+
+#: (duplicate) excelexport.install:21 
+msgid "Please install PHPExcel 1.7.4 or newer under sites/all/libraries/phpexcel."
 msgstr ""
 
 #: excelexport.info:0

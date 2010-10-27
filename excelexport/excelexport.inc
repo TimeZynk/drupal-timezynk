@@ -57,7 +57,7 @@ function excelexport_export() {
     _excelexport_autosize_columns($objPHPExcel, $column);
 
     $filename = tempnam(file_directory_temp(), 'ExcelExport');
-    $objWriter = PHPExcel_IOFactory :: createWriter($objPHPExcel, 'Excel5');
+    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
     $objWriter->save($filename);
 
     drupal_set_header('Content-Type: application/vnd.ms-excel');
