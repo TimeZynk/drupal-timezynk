@@ -111,6 +111,7 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
     }
     $user = user_save($account, $user_data);
 
+    unset($bot); // flushes the cookiejar used by sync..
     // Schedule for sync
     if(module_exists('tzintellitime_sync')) {
       tzintellitime_sync_schedule_user($user->uid);

@@ -43,8 +43,7 @@ class TZIntellitimeTestCase extends DrupalWebTestCase {
 }
 
 class TZIntellitimeBotTestCase extends DrupalWebTestCase {
-  private $intelli_url = "http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d";
-  private $login_view_state = "dDwyNDA3MjczMzc7dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw1PjtpPDE1PjtpPDE5Pjs+O2w8dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9DdXN0b21lcnMvaW50ZWxsaXBsYW5fbG9nby5naWY7Pj47Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDx+L0ltYWdlcy9JbWdfSW50ZWxsaXBsYW5Mb2dvV2hpdGUuZ2lmOz4+Oz47Oz47Pj47Pj47dDxwPHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxMb2dnYSBpbjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8R2zDtm10IGzDtnNlbm9yZGV0Pzs+Pjs+Ozs+Oz4+Oz4+Oz5ngNWIe5WIW3O3prUuG7wbptC3jg==";
+  private $intelli_url = NULL;
   private $bot = NULL;
 
   public static function getInfo() {
@@ -60,8 +59,9 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
    */
   public function setUp() {
     // Enable any modules required for the test.
-    parent::setUp('tzintellitime');
+    parent::setUp('tzintellitime_mock','tzintellitime');
     require_once dirname(__FILE__) . '/tzintellitime.class.inc';
+    $this->intelli_url = url('IntelliplanWeb/Login.aspx', array('absolute' => TRUE));
     $this->bot = new TZIntellitimeBot($this->intelli_url);
   }
 
@@ -79,17 +79,17 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   }
 
   public function testValidUsernameInvalidPass() {
-    $ok = $this->bot->login("Johan Heander", "monkey");
+    $ok = $this->bot->login("test user", "monkey");
     $this->assertFalse($ok);
   }
 
   public function testValidLogin() {
-    $ok = $this->bot->login("Johan Heander", "0733623516");
+    $ok = $this->bot->login("test user", "test password");
     $this->assertTrue($ok);
   }
 
   public function testDestructorDoesNotRemoveCookiejar() {
-     $ok = $this->bot->login("Johan Heander", "0733623516");
+     $ok = $this->bot->login("test user", "test password");
      $this->assertTrue($ok);
      $session_data = $this->bot->get_session_data();
      unset($this->bot);
@@ -97,7 +97,7 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   }
 
   public function testResumeSession() {
-    $ok = $this->bot->login("Johan Heander", "0733623516");
+    $ok = $this->bot->login("test user", "test password");
     $this->assertTrue($ok);
     $session_data = $this->bot->get_session_data();
     unset($this->bot);
@@ -116,11 +116,24 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
     global $base_url;
     $this->assertFalse($this->bot->request(url('user', array('absolute' => TRUE)) . '/my_monkeys'), "Should be FALSE");
   }
+  public function testCheckIfCookieFileIsEmpty() {
+    $ok = $this->bot->login("test user", "test password");
+    $this->assertTrue($ok);
+    $session_data = $this->bot->get_session_data();
+    unset($this->bot);
+    unlink($session_data['cookiejar']);
+    $session_data['cookiejar'] = tempnam(file_directory_temp(), 'testtzintellitimebot');
+    try {
+      $this->bot = new TZIntellitimeBot($this->intelli_url, $session_data);
+      $this->fail('Should have generated an InvalidArgumentException');
+    } catch (InvalidArgumentException $e) {
+      $this->pass('Caught exception');
+    }
+  }
 }
 
 
 class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
-  private $intelli_url = "http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d";
   private $login_view_state = "dDwyNDA3MjczMzc7dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw1PjtpPDE1PjtpPDE5Pjs+O2w8dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9DdXN0b21lcnMvaW50ZWxsaXBsYW5fbG9nby5naWY7Pj47Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDx+L0ltYWdlcy9JbWdfSW50ZWxsaXBsYW5Mb2dvV2hpdGUuZ2lmOz4+Oz47Oz47Pj47Pj47dDxwPHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxMb2dnYSBpbjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8R2zDtm10IGzDtnNlbm9yZGV0Pzs+Pjs+Ozs+Oz4+Oz4+Oz5ngNWIe5WIW3O3prUuG7wbptC3jg==";
 
   public static function getInfo() {

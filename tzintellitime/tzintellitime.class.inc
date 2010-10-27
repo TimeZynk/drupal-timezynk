@@ -35,6 +35,9 @@ class TZIntellitimeBot {
 
     // Resume session if session data is available, otherwise initialize new
     if($session_data) {
+      if(!is_file($session_data['cookiejar']) || !(filesize($session_data['cookiejar']) > 0)) {
+        throw new InvalidArgumentException('session_data contained invalid cookie jar');
+      }
       $this->session_data = $session_data;
     } else {
       $this->session_data = array(

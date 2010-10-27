@@ -11,6 +11,9 @@ function tzintellitime_mock_menu() {
 }
 
 function tzintellitime_mock_request() {
+  $valid_users = array(
+    'test user' => md5('test password'),
+  );
   $path = arg();
   watchdog('mock', 'Request for path ' . print_r($path, TRUE));
   if(count($path) < 3 && FALSE !== strpos(end($path), '.aspx')) {
@@ -20,25 +23,44 @@ function tzintellitime_mock_request() {
   switch(end($path)) {
     case 'Login.aspx':
       if('POST' === $_SERVER['REQUEST_METHOD']) {
-        array_pop($path);
-        $path[] = 'Main.aspx';
-        drupal_goto(implode('/', $path));
+        // Check login
+        $user = $_POST['TextBoxUserName'];
+        $pass = md5($_POST['TextBoxPassword']);
+        if(empty($valid_users[$user]) || $valid_users[$user] !== $pass) {
+          drupal_goto('IntelliplanWeb/Portal/Login.aspx');
+        } else {
+          $value = md5($path . microtime());
+          variable_set('tzintellitime_mock_cookie', $value);
+          // Set a session cookie specific for the mock.
+          setcookie('tzintellitime_mock_cookie', $value, 0, '/IntelliplanWeb');
+          array_pop($path);
+          $path[] = 'Main.aspx';
+          drupal_goto(implode('/', $path));
+        }
       } else {
         readfile(dirname(__FILE__) . '/intellitime-login-page.html');
       }
       break;
 
     case 'Main.aspx':
-      readfile(dirname(__FILE__) . '/intellitime-main-page.html');
+      if (tzintellitime_mock_check_cookie()) {
+        readfile(dirname(__FILE__) . '/intellitime-main-page.html');
+      } else {
+        drupal_goto('IntelliplanWeb/Portal/Login.aspx');
+      }
       break;
 
     case 'TimeReport.aspx':
-      readfile(dirname(__FILE__) . '/intellitime-timereport-page.html');
+      if (tzintellitime_mock_check_cookie()) {
+        readfile(dirname(__FILE__) . '/intellitime-timereport-page.html');
+      } else {
+        drupal_goto('IntelliplanWeb/Portal/Login.aspx');
+      }
       break;
 
     case 'LogOut.aspx':
-      array_splice($path, -1, 1, 'Login.aspx');
-      drupal_goto(implode('/', $path));
+      variable_del('tzintellitime_mock_cookie');
+      drupal_goto('IntelliplanWeb/Portal/Login.aspx');
       break;
 
     default:
@@ -46,3 +68,6 @@ function tzintellitime_mock_request() {
       break;
   }
 }
+function tzintellitime_mock_check_cookie() {
+    return (variable_get('tzintellitime_mock_cookie', 'wrong cookie') == $_COOKIE['tzintellitime_mock_cookie']);
+  }

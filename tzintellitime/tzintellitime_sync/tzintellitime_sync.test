@@ -19,9 +19,14 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
     tzintellitime_include_classes();
     // Create and test user
     $account = (object)array('name' => 'test user', 'pass_raw' => 'test password');
+    $this->login_timestamp = time();
     $this->drupalLogin($account);
     $this->account = user_load(array('name' => 'test user'));
     $this->assertTrue($this->account, 'account created for ' . $this->account->name);
+  }
+
+  public function testIsCorrectlySynchronizedOnFirstLogin() {
+    $this->assertTrue($this->login_timestamp <= $this->account->intellitime_last_sync);
   }
 
   public function testScheduleHandler() {

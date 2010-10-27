@@ -82,8 +82,8 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $before7 = $this->doGetReports(NULL, $expectedBeginTime*7);
     $this->assertEqual(6, count($before7));
 
-    $after3 = $this->doGetReports(NULL, NULL, $expectedBeginTime*3);
-    $this->assertEqual(7, count($after3));
+    $after_and_including_3 = $this->doGetReports(NULL, NULL, $expectedBeginTime*3);
+    $this->assertEqual(8, count($after_and_including_3));
   }
 
   public function testGetReportsByDateAndFlags() {
@@ -104,8 +104,8 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $before7 = $this->doGetReports(TZFlags::LOCKED, $expectedBeginTime*7);
     $this->assertEqual(5, count($before7));
 
-    $after3 = $this->doGetReports(TZFlags::REPORTED, NULL, $expectedBeginTime*3);
-    $this->assertEqual(3, count($after3));
+    $after_and_including_3 = $this->doGetReports(TZFlags::REPORTED, NULL, $expectedBeginTime*3);
+    $this->assertEqual(4, count($after_and_including_3));
   }
 
 
