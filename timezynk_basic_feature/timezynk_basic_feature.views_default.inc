@@ -3,10 +3,10 @@
 /**
  * Implementation of hook_views_default_views().
  */
-function tzbase_views_default_views() {
-  /*
-   * View 'invoice_report'
-   */
+function timezynk_basic_feature_views_default_views() {
+  $views = array();
+
+  // Exported view: invoice_report
   $view = new view;
   $view->name = 'invoice_report';
   $view->description = 'Invoice overview';
@@ -278,6 +278,36 @@ function tzbase_views_default_views() {
       'id' => 'totalduration',
       'table' => 'tzreport',
       'field' => 'totalduration',
+      'relationship' => 'none',
+    ),
+    'edit_node' => array(
+      'label' => '',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'text' => '',
+      'exclude' => 0,
+      'id' => 'edit_node',
+      'table' => 'node',
+      'field' => 'edit_node',
       'relationship' => 'none',
     ),
   ));
@@ -583,11 +613,10 @@ function tzbase_views_default_views() {
     'default' => 'begintime_1',
     'detailed_values' => '0',
   ));
+
   $views[$view->name] = $view;
 
-  /*
-   * View 'salary_report'
-   */
+  // Exported view: salary_report
   $view = new view;
   $view->name = 'salary_report';
   $view->description = 'Salary overview';
@@ -840,6 +869,39 @@ function tzbase_views_default_views() {
       'table' => 'tzreport',
       'field' => 'flags',
     ),
+    'edit_node' => array(
+      'label' => '',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'text' => '',
+      'exclude' => 0,
+      'id' => 'edit_node',
+      'table' => 'node',
+      'field' => 'edit_node',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
+    ),
   ));
   $handler->override_option('filters', array(
     'type' => array(
@@ -961,33 +1023,28 @@ function tzbase_views_default_views() {
     'grouping' => '',
     'override' => 1,
     'sticky' => 0,
-    'order' => 'desc',
+    'order' => 'asc',
     'columns' => array(
+      'realname' => 'realname',
       'title_1' => 'title_1',
-      'title' => 'title',
-      'body' => 'body',
       'begintime_1' => 'begintime_1',
       'begintime' => 'begintime',
       'endtime' => 'endtime',
       'breakduration' => 'breakduration',
       'totalduration' => 'totalduration',
+      'flags' => 'flags',
+      'edit_node' => 'edit_node',
     ),
     'info' => array(
+      'realname' => array(
+        'sortable' => 0,
+        'separator' => '',
+        'justification' => 'views_calc_justify_none',
+        'has_calc' => 0,
+        'calc' => array(),
+      ),
       'title_1' => array(
         'sortable' => 1,
-        'separator' => '',
-        'justification' => 'views_calc_justify_none',
-        'has_calc' => 0,
-        'calc' => array(),
-      ),
-      'title' => array(
-        'sortable' => 1,
-        'separator' => '',
-        'justification' => 'views_calc_justify_none',
-        'has_calc' => 0,
-        'calc' => array(),
-      ),
-      'body' => array(
         'separator' => '',
         'justification' => 'views_calc_justify_none',
         'has_calc' => 0,
@@ -1029,6 +1086,19 @@ function tzbase_views_default_views() {
           'SUM' => 'SUM',
         ),
       ),
+      'flags' => array(
+        'sortable' => 0,
+        'separator' => '',
+        'justification' => 'views_calc_justify_none',
+        'has_calc' => 0,
+        'calc' => array(),
+      ),
+      'edit_node' => array(
+        'separator' => '',
+        'justification' => 'views_calc_justify_none',
+        'has_calc' => 0,
+        'calc' => array(),
+      ),
     ),
     'default' => 'begintime_1',
     'detailed_values' => '0',
@@ -1049,6 +1119,7 @@ function tzbase_views_default_views() {
     'weight' => 0,
     'name' => 'navigation',
   ));
+
   $views[$view->name] = $view;
 
   return $views;

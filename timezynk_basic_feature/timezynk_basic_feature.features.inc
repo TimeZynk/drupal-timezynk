@@ -29,3 +29,12 @@ function timezynk_basic_feature_node_info() {
   );
   return $items;
 }
+
+/**
+ * Implementation of hook_views_api().
+ */
+function timezynk_basic_feature_views_api() {
+  return array(
+    'api' => '2',
+  );
+}
