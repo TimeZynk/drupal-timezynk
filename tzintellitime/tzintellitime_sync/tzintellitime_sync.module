@@ -411,9 +411,10 @@ class TZIntellitimeSyncController {
     $tzreport = $intelli_report->convert_to_tzreport($this->account, $tzreport);
 
     // Map job to report by searching for matching title
-    if (isset($job_map[$intelli_report->title])) {
-      $tzreport->jobid = $job_map[$intelli_report->title];
-    } elseif(!isset($tzreport->jobid) || !$tzreport->jobid) {
+    $jobid = $this->match_job($job_map, $intelli_report->title);
+    if ($jobid) {
+      $tzreport->jobid = $jobid;
+    } else {
       // Should not be able to create a report without a valid job.
       watchdog('tzintellitime', 'Tried to create tzreport without valid jobid', array(), WATCHDOG_WARNING);
       return NULL;
@@ -470,5 +471,34 @@ class TZIntellitimeSyncController {
              l('View', 'node/' . $node->nid));
 
     return $node;
+  }
+
+  static function match_job($jobmap, $jobtitle) {
+    if(!empty($jobmap[$jobtitle]) && $jobmap[$jobtitle]) {
+      return $jobmap[$jobtitle];
+    }
+
+    $jobpath = explode(', ', $jobtitle);
+    foreach($jobmap as $key => $jobid) {
+      $match = TRUE;
+      $keypath = explode(', ', $key);
+      if(count($jobpath) != count($keypath)) {
+        continue;
+      }
+      for($i = 0; $i < count($jobpath); $i++) {
+        $key = $keypath[$i];
+        $job = $jobpath[$i];
+        $segment = substr($job, 0, strlen($key));
+        if($key != $segment) {
+          $match = FALSE;
+          break;
+        }
+      }
+      if($match) {
+        return $jobid;
+      }
+    }
+
+    return FALSE;
   }
 }

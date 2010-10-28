@@ -39,6 +39,52 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
     $this->assertTrue(0 <= $this->account->intellitime_last_sync);
   }
 
+  public function testMatchJobShouldNotReturnFalse() {
+
+    $jobmap = array(
+      'Axis Commun, Lagerarbeta, Q6032, spec' => 1,
+      'Axis Communic, Lagerarbeta, "Heating"' => 2,
+      'Axis Communicatio, Lagerarbeta, P553' => 3,
+      'Lagerarbetare, TimeZynk' => 4,
+    );
+
+    $titles = array(
+      'Axis Communication AB, Lagerarbetare, Q6032, spec. prod.',
+      'Axis Communication AB, Lagerarbetare, "Heating"',
+      'Axis Communicatio, Lagerarbeta, P5534',
+      'Lagerarbetare, TimeZynk',
+    );
+    $count = sizeof($titles);
+    for ($i = 0; $i < $count; $i++) {
+      $title = $titles[$i];
+      $nid = TZIntellitimeSyncController::match_job($jobmap, $title);
+      $this->assertEqual($nid, $i+1);
+    }
+  }
+
+public function testMatchJobShouldReturnFalse() {
+
+    $jobmap = array(
+      'Axis Community, Lagerarbeta, Q6032, spec,' => 1,
+      'Axis Communic, Lagerarbetax, "Heating"' => 2,
+      'Axis Communicatio, Lagerarbeta, P583' => 3,
+      'Lagerarbetare, Timezynk' => 4,
+    );
+
+    $titles = array(
+      'Axis Communication AB, Lagerarbetare, Q6032, spec. prod.',
+      'Axis Communication AB, Lagerarbetare, "Heating"',
+      'Axis Communicatio, Lagerarbeta, P5534',
+      'Lagerarbetare, TimeZynk',
+    );
+    $count = sizeof($titles);
+    for ($i = 0; $i < $count; $i++) {
+      $title = $titles[$i];
+      $nid = TZIntellitimeSyncController::match_job($jobmap, $title);
+      $this->assertFalse($nid, t('Expected titles to not match'));
+    }
+  }
+  
   public function testCreatingData() {
     $this->controller = new TZIntellitimeSyncController($this->account);
     $this->doTestCreatingJob();
