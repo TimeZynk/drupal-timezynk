@@ -529,7 +529,7 @@ function timezynk_basic_feature_views_default_views() {
   ));
   $handler->override_option('access', array(
     'type' => 'perm',
-    'perm' => 'view tzstats invoice',
+    'perm' => 'use timezynk report generator',
   ));
   $handler->override_option('cache', array(
     'type' => 'none',
@@ -1011,7 +1011,7 @@ function timezynk_basic_feature_views_default_views() {
   ));
   $handler->override_option('access', array(
     'type' => 'perm',
-    'perm' => 'view tzstats invoice',
+    'perm' => 'use timezynk report generator',
   ));
   $handler->override_option('cache', array(
     'type' => 'none',
