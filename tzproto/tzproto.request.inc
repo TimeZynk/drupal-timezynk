@@ -43,7 +43,6 @@ function tzproto_request() {
   if(0 == tzproto_login($req)) {
     for($i = 0; $i < $req->command_size(); $i++) {
       $cmd = $req->command($i);
-      watchdog('tzproto', 'received command<pre>' . print_r($cmd, TRUE) . '</pre>');
 
       // Return client request ID
       $result = $response->add_result();
@@ -71,7 +70,6 @@ function tzproto_request() {
         $result->set_error_code(501);
         $result->set_error_msg('Not implemented');
       }
-      watchdog('tzproto', 'sending result<pre>' . print_r($result, TRUE) . '</pre>');
     }
   }
 
@@ -123,8 +121,6 @@ function tzproto_login($req) {
 function tzproto_logout() {
   /* Logout and destroy user object */
   global $user;
-
-  watchdog('tzproto', 'Session closed for %name.', array('%name' => $user->name));
 
   session_destroy();
   // Only variables can be passed by reference workaround.
