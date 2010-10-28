@@ -23,5 +23,14 @@ function tzsms_ui_perm() {
   return array('send installation sms');
 }
 
-
-
+/**
+ * Implementation of hook_theme().
+ * Declares the theme function for formatting the installation SMS form rows.
+ */
+function tzsms_ui_theme() {
+  return array(
+    'tzsms_ui_installation_rows' => array(
+      'arguments' => array(),
+    ),
+  );
+}

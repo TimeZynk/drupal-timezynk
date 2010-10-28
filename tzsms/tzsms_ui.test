@@ -38,7 +38,9 @@ class TZSMSUITestCase extends DrupalWebTestCase {
     $this->assertResponse(200, 'User is allowed to access the SMS sending page');
 
     for($i = 0; $i < 10; $i++) {
-      $this->assertFieldByName("rows[row_$i]", '', "Found recipient field $i");
+      $this->assertFieldByName("rows[row_$i][number]", '', "Found recipient field $i");
+      $this->assertFieldByName("rows[row_$i][username]", '', "Found recipient field $i");
+      $this->assertFieldByName("rows[row_$i][password]", '', "Found recipient field $i");
     }
 
     $this->assertField('edit-rows-add-more', '', 'Found add more button');
@@ -47,14 +49,17 @@ class TZSMSUITestCase extends DrupalWebTestCase {
 
   public function _testAddRows() {
     // Values set in the form before extending
-    $edit['rows[row_0]'] = '073884748';
-    $edit['rows[row_7]'] = '073938822';
+    $edit['rows[row_0][number]'] = '073884748';
+    $edit['rows[row_0][username]'] = 'test user';
+    $edit['rows[row_7][number]'] = '073938822';
+    $edit['rows[row_7][username]'] = 'test user 2';
+    $edit['rows[row_7][password]'] = 'test password 2';
     $this->drupalPost('tzsms/installation', $edit, t('Add more numbers'));
     $this->assertResponse(200, 'Add more rows returned 200 OK');
 
     // Check that we have more rows
     for($i = 0; $i < 20; $i++) {
-      $this->assertFieldByName("rows[row_$i]", '', "Found recipient field $i");
+      $this->assertFieldByName("rows[row_$i][number]", '', "Found recipient field $i");
     }
 
     // Check that we kept the previous values
@@ -64,8 +69,8 @@ class TZSMSUITestCase extends DrupalWebTestCase {
   }
 
   public function _testSendSMS() {
-    $edit['rows[row_0]'] = '0738-847 48';
-    $edit['rows[row_7]'] = '073/93 88 22';
+    $edit['rows[row_0][number]'] = '0738-847 48';
+    $edit['rows[row_7][number]'] = '073/93 88 22';
     $this->drupalPost('tzsms/installation', $edit, t('Send installation SMS'));
     $this->assertResponse(200, 'Submit returned 200 OK');
 
@@ -74,9 +79,9 @@ class TZSMSUITestCase extends DrupalWebTestCase {
   }
 
   public function _testStopDuplicates() {
-    $edit['rows[row_0]'] = '0738-847 48';
-    $edit['rows[row_7]'] = '073/93 88 22';
-    $edit['rows[row_9]'] = '073/88-47-48';
+    $edit['rows[row_0][number]'] = '0738-847 48';
+    $edit['rows[row_7][number]'] = '073/93 88 22';
+    $edit['rows[row_9][number]'] = '073/88-47-48';
     $this->drupalPost('tzsms/installation', $edit, t('Send installation SMS'));
     $this->assertResponse(200, 'Submit returned 200 OK');
 

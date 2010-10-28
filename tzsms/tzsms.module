@@ -6,12 +6,12 @@
 /**
  * SMS type definition for standard user SMS messages
  */
-define(TZSMS_TYPE_USER_SMS, 0);
+define('TZSMS_TYPE_USER_SMS', 0);
 
 /**
  * SMS type definition for installation SMS messages
  */
-define(TZSMS_TYPE_INSTALL_SMS, 1);
+define('TZSMS_TYPE_INSTALL_SMS', 1);
 
 /**
  * Implements hook_user_operations. Adds a new selection to the mass user action
@@ -50,6 +50,7 @@ function tzsms_validate_phone_number($number) {
  * should call to send a SMS. Do not use the SMS Framework module
  * directly since it would bypass the statistics functions.
  *
+ * @param int $type SMS type ID, e.g. TZSMS_TYPE_USER_SMS
  * @param string $phonenbr Phone number to send to
  * @param string $msg message to send
  */
@@ -193,21 +194,24 @@ function tzsms_send_install_sms($users) {
  * the user_register form.
  *
  * @param $phonenbr phone number to send SMS to
- * @param $password password to send
+ * @param $username username to substitute in the install SMS template
+ * @param $password password to substitute in the install SMS template
  */
-function tzsms_send_new_user_sms($username, $phonenbr, $password = NULL) {
+function tzsms_send_new_user_sms($phonenbr, $username, $password = NULL) {
   watchdog('tzsms', 'Sending install SMS to !nbr', array('!nbr' => $phonenbr));
   $msg = '';
   if($password) {
     $msg = tzsms_install_sms_template(array(
     	'!url' => url('tz.jad',  array('absolute' => TRUE)),
-    	'!username' => $phonenbr,
-    	'!password' => $password)
+        '!username' => $username,
+        '!password' => $password
+      )
     );
   } else {
     $msg = tzsms_install_sms_no_password_template(array(
-    	'!url' => url('tz.jad',  array('absolute' => TRUE)),
-    	'!username' => $phonenbr)
+        '!url' => url('tz.jad',  array('absolute' => TRUE)),
+        '!username' => $username
+      )
     );
   }
   tzsms_send(TZSMS_TYPE_INSTALL_SMS, $phonenbr, $msg);
@@ -222,7 +226,7 @@ function tzsms_install_sms_template($variables = array()) {
     // An admin setting overrides the default string.
     return strtr($admin_setting, $variables);
   } else {
-    return t('Welcome to TimeZynk! Visit !url to install, then login using !username as username and "!password" as password.',
+    return t('Welcome to TimeZynk! Visit !url to install, then login using "!username" as username and "!password" as password.',
       $variables);
   }
 }
@@ -236,7 +240,7 @@ function tzsms_install_sms_no_password_template($variables = array()) {
     // An admin setting overrides the default string.
     return strtr($admin_setting, $variables);
   } else {
-    return t('Welcome to TimeZynk! Visit !url to install, then login using !username as username.',
+    return t('Welcome to TimeZynk! Visit !url to install, then login using "!username" as username.',
       $variables);
   }
 }
