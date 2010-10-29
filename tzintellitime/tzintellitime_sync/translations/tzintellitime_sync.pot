@@ -12,7 +12,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-10-07 19:53+0200\n"
+"POT-Creation-Date: 2010-10-29 17:00+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -26,7 +26,7 @@ msgid "Minutes between synchronizations"
 msgstr ""
 
 #: tzintellitime_sync.admin.inc:7
-msgid "Minimum interval in minutes between two synchronizations of the same user. Make sure to setup the cron interval to a equal or shorter interval than this."
+msgid "Minimum interval in minutes between two synchronizations of the same user. The actual synchronization times are also affected by the current cron-interval."
 msgstr ""
 
 #: tzintellitime_sync.admin.inc:12
@@ -38,86 +38,102 @@ msgid "Maximum number of users to synchronize per session"
 msgstr ""
 
 #: tzintellitime_sync.admin.inc:18
-msgid "Initial synchronization"
+msgid "Number of weeks forward in time to synchronize"
 msgstr ""
 
-#: tzintellitime_sync.admin.inc:20
-msgid "Do a full synchronization for both new users and users with a expired session."
-msgstr ""
-
-#: tzintellitime_sync.admin.inc:21
-msgid "Only for new users. Users with expired session are synchronized at the next scheduled synchronization."
-msgstr ""
-
-#: tzintellitime_sync.admin.inc:22
-msgid "Never do initial synchronization, always defer to the next scheduled synchronization."
+#: tzintellitime_sync.admin.inc:19
+msgid "Enter 0 for only the current week, 1 for the current week and next week, and so on."
 msgstr ""
 
 #: tzintellitime_sync.admin.inc:24
+msgid "Initial synchronization"
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:26
+msgid "Do a full synchronization for both new users and users with a expired session."
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:27
+msgid "Only for new users. Users with expired session are synchronized at the next scheduled synchronization."
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:28
+msgid "Never do initial synchronization, always defer to the next scheduled synchronization."
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:30
 msgid "Configure how to handle synchronization on login"
 msgstr ""
 
-#: tzintellitime_sync.admin.inc:39
+#: tzintellitime_sync.admin.inc:45
 msgid "Invalid synchronization interval, enter number of minutes."
 msgstr ""
 
-#: tzintellitime_sync.admin.inc:41
+#: tzintellitime_sync.admin.inc:47
 msgid "Synchronization interval must be greater than 1"
 msgstr ""
 
-#: tzintellitime_sync.module:313
+#: tzintellitime_sync.admin.inc:51
+msgid "Enter number of weeks as a positive integer."
+msgstr ""
+
+#: tzintellitime_sync.admin.inc:53
+msgid "Must synchronize at least the current week"
+msgstr ""
+
+#: tzintellitime_sync.module:341
 msgid "Absence"
 msgstr ""
 
-#: tzintellitime_sync.module:132;137;155;165;173;368;384;413
+#: tzintellitime_sync.module:133;138;158;168;176;396;412;442
 msgid "tzintellitime"
 msgstr ""
 
-#: tzintellitime_sync.module:132
+#: tzintellitime_sync.module:133
 msgid "Tried to start synchronization for illegal user id \"@uid\""
 msgstr ""
 
-#: tzintellitime_sync.module:137
+#: tzintellitime_sync.module:138
 msgid "No session available for user !name (!uid), last sync !interval ago"
 msgstr ""
 
-#: tzintellitime_sync.module:155
+#: tzintellitime_sync.module:158
 msgid "Synchronized user !name (!uid), last sync !interval ago"
 msgstr ""
 
-#: tzintellitime_sync.module:165
+#: tzintellitime_sync.module:168
 msgid "Expired session for user !name (!uid), last sync !interval ago"
 msgstr ""
 
-#: tzintellitime_sync.module:173
+#: tzintellitime_sync.module:176
 msgid "Failed to synchronize user !name (!uid), last sync !interval ago"
 msgstr ""
 
-#: tzintellitime_sync.module:368
+#: tzintellitime_sync.module:396
 msgid "Removed !rows reports for user !user (!uid) after sync"
 msgstr ""
 
-#: tzintellitime_sync.module:384
+#: tzintellitime_sync.module:412
 msgid "Sending report with nid !nid and itid !itid to week !week"
 msgstr ""
 
-#: tzintellitime_sync.module:413
+#: tzintellitime_sync.module:442
 msgid "Tried to create tzreport without valid jobid"
 msgstr ""
 
-#: tzintellitime_sync.module:458
+#: tzintellitime_sync.module:487
 msgid "tzintellitime_sync"
 msgstr ""
 
-#: tzintellitime_sync.module:458
+#: tzintellitime_sync.module:487
 msgid "!operation !type !nid"
 msgstr ""
 
-#: tzintellitime_sync.module:63
+#: tzintellitime_sync.module:64
 msgid "Intellitime Sync"
 msgstr ""
 
-#: tzintellitime_sync.module:64
+#: tzintellitime_sync.module:65
 msgid "Data synchronization settings for the TimeZynk Intellitime bridge."
 msgstr ""
 

@@ -480,17 +480,19 @@ class TZIntellitimeParser {
   public function parse_absence_types() {
     $result = array();
     $elems = $this->doc->xpath('//select[@id="AddRowDropDown"]/option');
-    foreach($elems as $option) {
-      $jobcode = trim((string)$option['value']);
-      $jobtitle = trim((string)$option);
-      $matches = array();
-      if($jobcode && $jobtitle && preg_match('/^_AC_(.+)/', $jobcode, $matches)) {
-        $assignment = new TZIntellitimeAssignment();
-        $assignment->id = $jobcode;
-        $assignment->report_key = $matches[1];
-        $assignment->title = $jobtitle;
-        $assignment->type = TZIntellitimeAssignment::TYPE_ABSENCE;
-        $result[] = $assignment;
+    if(!empty($elems)) {
+      foreach($elems as $option) {
+        $jobcode = trim((string)$option['value']);
+        $jobtitle = trim((string)$option);
+        $matches = array();
+        if($jobcode && $jobtitle && preg_match('/^_AC_(.+)/', $jobcode, $matches)) {
+          $assignment = new TZIntellitimeAssignment();
+          $assignment->id = $jobcode;
+          $assignment->report_key = $matches[1];
+          $assignment->title = $jobtitle;
+          $assignment->type = TZIntellitimeAssignment::TYPE_ABSENCE;
+          $result[] = $assignment;
+        }
       }
     }
     return $result;

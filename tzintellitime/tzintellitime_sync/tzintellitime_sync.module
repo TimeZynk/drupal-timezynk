@@ -2,6 +2,7 @@
 
 define('TZINTELLITIME_SYNC_INTERVAL_MINUTES', variable_get('tzintellitime_sync_interval_minutes', 12));
 define('TZINTELLITIME_SYNC_USERS_PER_RUN', variable_get('tzintellitime_sync_users_per_run', 100));
+define('TZINTELLITIME_SYNC_WEEKS_FORWARD', variable_get('tzintellitime_sync_weeks_forward', 2));
 
 /** Sync both new users and users with expired session on login */
 define('TZINTELLITIME_SYNC_INITIAL_SYNC_BOTH', 'both');
@@ -208,9 +209,8 @@ class TZIntellitimeSyncController {
    * @return SYNC_OK on success, and NETWORK_FAILURE or AUTH_FAILURE respectively on error.
    */
   function synchronize() {
-    // Always sync this week
-    $this->set_week_status(time(), TZIntellitimeSyncController::PENDING);
 
+    $this->add_standard_weeks();
     $this->add_unlocked_weeks();
     $this->send_updated_reports();
     $this->load_pending_weeks();
@@ -251,6 +251,23 @@ class TZIntellitimeSyncController {
   }
 
   /**
+   * Add default weeks to the pending synchronization
+   */
+  function add_standard_weeks() {
+    $now = getdate();
+
+    // Always sync this week
+    $this->set_week_status($now[0], TZIntellitimeSyncController::PENDING);
+
+    // Sync weeks forward in time according to current configuration
+    $weeks_to_sync = (int)TZINTELLITIME_SYNC_WEEKS_FORWARD;
+    for($i = 1; $i <= $weeks_to_sync; $i++) {
+      $weekdate = mktime(12, 0, 0, $now['mon'], $now['mday']+(7*$i), $now['year']);
+      $this->set_week_status($weekdate, TZIntellitimeSyncController::PENDING);
+    }
+  }
+
+  /**
    * Add weeks where we have unlocked reports as pending for sync.
    */
   function add_unlocked_weeks() {
@@ -267,6 +284,11 @@ class TZIntellitimeSyncController {
     while($week = array_search(TZIntellitimeSyncController::PENDING, $this->week_status)) {
       $data = $this->bot->load_week(strtotime($week));
       $this->process_week_data($week, $data);
+
+      // If authentication failed, there is not much point to try again with a different page
+      if($this->week_status[$week] == TZIntellitimeSyncController::AUTH_FAILURE) {
+        break;
+      }
     }
   }
 
