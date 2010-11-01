@@ -391,8 +391,7 @@ function tzproto_fill_from_node(&$proto, $node) {
      * special access rules to check if _this_ node and user combo
      * allows creating children/reports et c. ... */
     $proto->set_may_create_child(node_access('create', $node->type));
-    $proto->set_may_create_report(
-      user_access('create tzreport content'));
+    $proto->set_may_create_report(node_access('create', 'tzreport'));
     $proto->set_may_edit(node_access('update', $node));
   } else if($node->type == 'tzreport') {
     $proto->set_vid($node->vid);
@@ -405,7 +404,7 @@ function tzproto_fill_from_node(&$proto, $node) {
     $proto->set_travel_km($node->travelkm);
 
     $proto->set_may_edit(node_access('update', $node));
-    $proto->set_may_remove(node_access('update', $node));
+    $proto->set_may_remove(user_access('remove own tzreport content'));
   }
 }
 
@@ -466,14 +465,24 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
   $report->travelkm = 0;
   $report->signature = "";
 
-  $report->flags = $data->flags();
+  // Check for permissions to set the requested flags
+  if($report->flags != $data->flags()) {
+    if($data->flags() != TZFlags::DELETED || user_access('remove own tzreport content')) {
+      $report->flags = $data->flags();
+    } else {
+      $result->set_error_code(403);
+      $result->set_error_msg('access denied');
+      return;
+    }
+  }
+
+  $report->assignedto = $user->uid;
 
   // Prepare node for saving
   $report = node_submit($report);
 
   // Set author and date
   $report->uid = $user->uid;
-  $report->assignedto = $user->uid;
   $report->changed = time();
   node_save($report);
 

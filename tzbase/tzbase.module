@@ -81,6 +81,7 @@ function tzbase_perm() {
     'view own tzreport content',
     'edit any tzreport content',
     'edit own tzreport content',
+    'remove own tzreport content',
 
     'create tzjob content',
     'view any tzjob content',
@@ -273,7 +274,19 @@ function tzbase_form($node) {
       '#weight' => 1,
     );
 
+    /* List available flags.
+     * If the user is not allowed to delete content, we will either
+     * remove the DELETED flag from the list, or if the node is already
+     * deleted keep it as the only available option.
+     */
     $flag_options = tzbase_tzreport_list_flags();
+    if(!user_access('remove own tzreport content')) {
+      if($node->flags == TZFlags::DELETED) {
+        $flag_options = array(TZFlags::DELETED => 'DELETED');
+      } else {
+        unset($flag_options[TZFlags::DELETED]);
+      }
+    }
     $form['flags'] = array(
       '#type' => 'select',
       '#title' => t('Report status'),

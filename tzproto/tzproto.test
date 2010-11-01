@@ -24,7 +24,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
    tzbase_include_proto_classes();
 
    // Create test users
-   $this->admin_user = $this->drupalCreateUser(array('create tzjob content', 'create tzreport content', 'edit own tzreport content', 'view own tzreport content', 'view any tzjob content'));
+   $this->admin_user = $this->drupalCreateUser(array('create tzjob content', 'create tzreport content', 'edit own tzreport content', 'view own tzreport content', 'remove own tzreport content', 'view any tzjob content'));
    $this->standard_user = $this->drupalCreateUser(array('edit own tzreport content', 'view own tzreport content', 'view any tzjob content'));
   }
 
@@ -36,9 +36,11 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $tzuser = $this->doGetAdminUser();
     $jobid = $this->doCreateJob();
     $reportid = $this->doCreateReport($jobid);
+
     $stduser = $this->doGetStandardUser();
-    $this->doCreateJobForbidden();
-    $this->doCreateReportForbidden($jobid);
+    $this->assertFalse($this->doCreateJob($this->standard_user));
+    $reportid = $this->doCreateReport($jobid, TZFlags::CREATED, NULL, $this->standard_user);
+    $this->assertFalse($reportid);
   }
 
   public function testGetDeletedReport() {
@@ -165,19 +167,22 @@ class TZProtoTestCase extends DrupalWebTestCase {
 
     $this->assertEqual($this->standard_user->uid, $tzuser->id());
     $this->assertEqual($this->standard_user->name, $tzuser->username());
-    $this->assertFalse($tzuser->may_create_job(), 'Expect permission to create a job');
+    $this->assertFalse($tzuser->may_create_job(), 'No permission to create a job');
     return $tzuser;
   }
 
-  public function doCreateJob() {
-    $request = $this->createRequest($this->admin_user);
+  public function doCreateJob($account = NULL) {
+    if($account == NULL) {
+      $account = $this->admin_user;
+    }
+
+    $request = $this->createRequest($account);
     $cmd = $request->add_command();
 
     // Populate default tz job
     $job = new TZJob();
     $job->set_parent_id(0);
     $job->set_title('test job');
-
 
     $create_job_cmd = new TZCreateJobCmd();
     $create_job_cmd->set_new_job($job);
@@ -186,6 +191,13 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $response = $this->sendRequest($request);
     $this->assertEqual(1, $response->result_size());
     $result = $response->result(0);
+
+    // Check for error
+    if($result->error_code()) {
+      $this->assertNotNull($result->error_msg());
+      return FALSE;
+    }
+
     $create_job_result = $result->create_job_result();
     $this->assertTrue($create_job_result->id(), 'Expect valid job id, got ' . $create_job_result->id());
 
@@ -197,28 +209,12 @@ class TZProtoTestCase extends DrupalWebTestCase {
     return $create_job_result->id();
   }
 
-  public function doCreateJobForbidden() {
-    $request = $this->createRequest($this->standard_user);
-    $cmd = $request->add_command();
+  public function doCreateReport($jobid, $flags = TZFLags::CREATED, $begintime = NULL, $account = NULL) {
+    if($account == NULL) {
+      $account = $this->admin_user;
+    }
 
-    // Populate default tz job
-    $job = new TZJob();
-    $job->set_parent_id(0);
-    $job->set_title('test job');
-
-    $create_job_cmd = new TZCreateJobCmd();
-    $create_job_cmd->set_new_job($job);
-    $cmd->set_create_job_cmd($create_job_cmd);
-
-    $response = $this->sendRequest($request);
-    $this->assertEqual(1, $response->result_size());
-    $result = $response->result(0);
-    $this->assertEqual(403, $result->error_code());
-    $this->assertNotNull($result->error_msg());
-  }
-
-  public function doCreateReport($jobid, $flags = TZFLags::CREATED, $begintime = NULL) {
-    $request = $this->createRequest($this->admin_user);
+    $request = $this->createRequest($account);
     $cmd = $request->add_command();
 
     // Populate default TZ report
@@ -245,6 +241,13 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $response = $this->sendRequest($request);
     $this->assertEqual(1, $response->result_size());
     $result = $response->result(0);
+
+    // Check for error
+    if($result->error_code()) {
+      $this->assertNotNull($result->error_msg());
+      return FALSE;
+    }
+
     $create_report_result = $result->create_report_result();
     $this->assertTrue($create_report_result->id(), 'Expected valid report id, got ' . $create_report_result->id());
 
@@ -255,36 +258,6 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $this->assertEqual($breakduration, $node->breakduration);
 
     return $create_report_result->id();
-  }
-
-  public function doCreateReportForbidden($jobid) {
-    $request = $this->createRequest($this->standard_user);
-    $cmd = $request->add_command();
-
-    // Populate default TZ report
-    $report = new TZReport();
-    $report->set_job_id($jobid);
-    $report->set_assigned_to($this->admin_user->uid);
-
-    $now = time();
-    $begintime = $now - 3600*2;
-    $endtime = $now - 3600;
-    $breakduration = 1800;
-
-    $report->set_begin_time($begintime);
-    $report->set_end_time($endtime);
-    $report->set_break_duration($breakduration);
-    $report->set_flags(TZFlags::CREATED);
-
-    $create_report_cmd = new TZCreateReportCmd();
-    $create_report_cmd->set_new_report($report);
-    $cmd->set_create_report_cmd($create_report_cmd);
-
-    $response = $this->sendRequest($request);
-    $this->assertEqual(1, $response->result_size());
-    $result = $response->result(0);
-    $this->assertEqual(403, $result->error_code());
-    $this->assertNotNull($result->error_msg());
   }
 
   private function createRequest($user) {
