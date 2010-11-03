@@ -141,17 +141,19 @@ function tzintellitime_sync_synchronize_user($uid) {
                    '!uid' => $account->uid,
                    '!interval' => format_interval(time() - $account->intellitime_last_sync)),
              WATCHDOG_WARNING,
-             l('View user', 'user/' . $account->uid));
+             theme('username', $account));
     // User not found or not intellitime user
     user_save($account, array('intellitime_active' => 0));
     return;
   }
+
   try {
-  $ctrlr = new TZIntellitimeSyncController($account);
-  $result = $ctrlr->synchronize();
+    $ctrlr = new TZIntellitimeSyncController($account);
+    $result = $ctrlr->synchronize();
   } catch (InvalidArgumentException $e) {
     $result = NULL;
   }
+
   if(TZIntellitimeSyncController::SYNC_OK === $result) {
     $last_sync = $account->intellitime_last_sync;
     $account = user_save($account, array('intellitime_last_sync' => time()));
@@ -160,7 +162,7 @@ function tzintellitime_sync_synchronize_user($uid) {
                    '!uid' => $account->uid,
                    '!interval' => format_interval($account->intellitime_last_sync - $last_sync)),
              WATCHDOG_NOTICE,
-             l('View user', 'user/' . $account->uid));
+             theme('username', $account));
   } elseif(TZIntellitimeSyncController::AUTH_FAILURE === $result) {
     // Failed authentication, unschedule user
     TZIntellitimeBot::destroy_session_data($account->intellitime_session_data);
@@ -170,7 +172,7 @@ function tzintellitime_sync_synchronize_user($uid) {
                    '!uid' => $account->uid,
                    '!interval' => format_interval(time() - $account->intellitime_last_sync)),
              WATCHDOG_WARNING,
-             l('View user', 'user/' . $account->uid));
+             theme('username', $account));
   } else {
     // Hopefully a temporary failure, log
     watchdog('tzintellitime', 'Failed to synchronize user !name (!uid), last sync !interval ago',
@@ -178,7 +180,7 @@ function tzintellitime_sync_synchronize_user($uid) {
                    '!uid' => $account->uid,
                    '!interval' => format_interval(time() - $account->intellitime_last_sync)),
              WATCHDOG_WARNING,
-             l('View user', 'user/' . $account->uid));
+             theme('username', $account));
   }
 
 }
@@ -393,10 +395,12 @@ class TZIntellitimeSyncController {
     }
     if($affected_rows) {
       watchdog('tzintellitime',
-               'Removed !rows reports for user !user (!uid) after sync',
+               'Removed !rows reports after sync',
                array('!rows' => $affected_rows,
                      '!user' => $this->account->name,
-                     '!uid' => $this->account->uid));
+                     '!uid' => $this->account->uid),
+               WATCHDOG_NOTICE,
+               theme('username', $this->account));
     }
   }
 
@@ -408,7 +412,10 @@ class TZIntellitimeSyncController {
     $result = db_query('SELECT * FROM {node} n INNER JOIN {tzreport} t ON n.nid = t.nid INNER JOIN {tzintellitime} i ON n.nid = i.nid WHERE n.changed > %d AND t.assignedto = %d',
                        $this->account->intellitime_last_sync, $this->account->uid);
     while($tzreport = db_fetch_object($result)) {
-      watchdog('tzintellitime', 'Sending report with nid !nid and itid !itid to week !week', array('!nid' => $tzreport->nid, '!itid' => $tzreport->intellitime_id, '!week' => date('o\WW', $tzreport->begintime)));
+      watchdog('tzintellitime', 'Sending report with nid !nid to week !week',
+        array('!nid' => $tzreport->nid, '!itid' => $tzreport->intellitime_id, '!week' => date('o\WW', $tzreport->begintime)),
+        WATCHDOG_NOTICE,
+        l('Node', 'node/' . $tzreport->nid) . ', ' . theme('username', $this->account));
       // Convert and post report
       $itreport = new TZIntellitimeReport($tzreport);
       $data = $this->bot->update_report($itreport);
@@ -438,7 +445,7 @@ class TZIntellitimeSyncController {
       $tzreport->jobid = $jobid;
     } else {
       // Should not be able to create a report without a valid job.
-      watchdog('tzintellitime', 'Tried to create tzreport without valid jobid', array(), WATCHDOG_WARNING);
+      watchdog('tzintellitime', 'No match for "!title" in jobmap', array('!title' => $intelli_report->title), WATCHDOG_WARNING);
       return NULL;
     }
 

@@ -12,7 +12,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-10-29 17:00+0200\n"
+"POT-Creation-Date: 2010-11-03 18:07+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -81,11 +81,11 @@ msgstr ""
 msgid "Must synchronize at least the current week"
 msgstr ""
 
-#: tzintellitime_sync.module:341
+#: tzintellitime_sync.module:342
 msgid "Absence"
 msgstr ""
 
-#: tzintellitime_sync.module:133;138;158;168;176;396;412;442
+#: tzintellitime_sync.module:133;138;160;170;178;397;415;448
 msgid "tzintellitime"
 msgstr ""
 
@@ -97,35 +97,35 @@ msgstr ""
 msgid "No session available for user !name (!uid), last sync !interval ago"
 msgstr ""
 
-#: tzintellitime_sync.module:158
+#: tzintellitime_sync.module:160
 msgid "Synchronized user !name (!uid), last sync !interval ago"
 msgstr ""
 
-#: tzintellitime_sync.module:168
+#: tzintellitime_sync.module:170
 msgid "Expired session for user !name (!uid), last sync !interval ago"
 msgstr ""
 
-#: tzintellitime_sync.module:176
+#: tzintellitime_sync.module:178
 msgid "Failed to synchronize user !name (!uid), last sync !interval ago"
 msgstr ""
 
-#: tzintellitime_sync.module:396
-msgid "Removed !rows reports for user !user (!uid) after sync"
+#: tzintellitime_sync.module:397
+msgid "Removed !rows reports after sync"
 msgstr ""
 
-#: tzintellitime_sync.module:412
-msgid "Sending report with nid !nid and itid !itid to week !week"
+#: tzintellitime_sync.module:415
+msgid "Sending report with nid !nid to week !week"
 msgstr ""
 
-#: tzintellitime_sync.module:442
-msgid "Tried to create tzreport without valid jobid"
+#: tzintellitime_sync.module:448
+msgid "No match for \"!title\" in jobmap"
 msgstr ""
 
-#: tzintellitime_sync.module:487
+#: tzintellitime_sync.module:493
 msgid "tzintellitime_sync"
 msgstr ""
 
-#: tzintellitime_sync.module:487
+#: tzintellitime_sync.module:493
 msgid "!operation !type !nid"
 msgstr ""
 

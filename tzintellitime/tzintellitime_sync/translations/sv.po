@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TZIntellitimeSync\n"
-"POT-Creation-Date: 2010-10-29 17:00+0200\n"
-"PO-Revision-Date: 2010-10-29 17:04+0100\n"
+"POT-Creation-Date: 2010-11-03 18:07+0100\n"
+"PO-Revision-Date: 2010-11-03 18:09+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: sv <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -82,11 +82,11 @@ msgstr "Skriv in antalet veckor att synkronisera som ett positivt heltal."
 msgid "Must synchronize at least the current week"
 msgstr "Måste synkronizera åtminstone nuvarande vecka"
 
-#: tzintellitime_sync.module:341
+#: tzintellitime_sync.module:342
 msgid "Absence"
 msgstr "Frånvaro"
 
-#: tzintellitime_sync.module:133;138;158;168;176;396;412;442
+#: tzintellitime_sync.module:133;138;160;170;178;397;415;448
 msgid "tzintellitime"
 msgstr ""
 
@@ -98,35 +98,35 @@ msgstr "Försökte synkronisera ogilitigt användar-id \"@uid\""
 msgid "No session available for user !name (!uid), last sync !interval ago"
 msgstr "Ogiltig session för !name (!uid), senast synkroniserad !interval sen"
 
-#: tzintellitime_sync.module:158
+#: tzintellitime_sync.module:160
 msgid "Synchronized user !name (!uid), last sync !interval ago"
 msgstr "Synkroniserade !name (!uid), senast synkroniserad !interval sen"
 
-#: tzintellitime_sync.module:168
+#: tzintellitime_sync.module:170
 msgid "Expired session for user !name (!uid), last sync !interval ago"
 msgstr "Gammal session för !name (!uid), senast synkroniserad !interval sen"
 
-#: tzintellitime_sync.module:176
+#: tzintellitime_sync.module:178
 msgid "Failed to synchronize user !name (!uid), last sync !interval ago"
 msgstr "Synkronisering för !name (!uid) misslyckades, senast synkroniserad !interval sen"
 
-#: tzintellitime_sync.module:396
-msgid "Removed !rows reports for user !user (!uid) after sync"
-msgstr "Tog bort !rows rapporter för användare !user (!uid) efter synkronisering"
+#: tzintellitime_sync.module:397
+msgid "Removed !rows reports after sync"
+msgstr "Tog bort !rows rapporter efter synkronisering"
 
-#: tzintellitime_sync.module:412
-msgid "Sending report with nid !nid and itid !itid to week !week"
-msgstr "Skickar rapport med node-id !nid och intellitime-id !itid till vecka !week"
+#: tzintellitime_sync.module:415
+msgid "Sending report with nid !nid to week !week"
+msgstr "Skickar rapport med node-id !nid till vecka !week"
 
-#: tzintellitime_sync.module:442
-msgid "Tried to create tzreport without valid jobid"
-msgstr "Försökte skapa tzreport utan giltigt jobid"
+#: tzintellitime_sync.module:448
+msgid "No match for \"!title\" in jobmap"
+msgstr "Kunde inte hitta \"!title\" i uppdragslistan"
 
-#: tzintellitime_sync.module:487
+#: tzintellitime_sync.module:493
 msgid "tzintellitime_sync"
 msgstr ""
 
-#: tzintellitime_sync.module:487
+#: tzintellitime_sync.module:493
 msgid "!operation !type !nid"
 msgstr ""
 
@@ -154,3 +154,5 @@ msgstr "Tillhandlahåller data-synkronisering mellan intellitime och TimeZynk"
 msgid "TimeZynk"
 msgstr ""
 
+#~ msgid "Tried to create tzreport without valid jobid"
+#~ msgstr "Försökte skapa tzreport utan giltigt jobid"

@@ -281,7 +281,7 @@ function tzbase_form($node) {
      */
     $flag_options = tzbase_tzreport_list_flags();
     if(!user_access('remove own tzreport content')) {
-      if($node->flags == TZFlags::DELETED) {
+      if(!empty($node->flags) && $node->flags == TZFlags::DELETED) {
         $flag_options = array(TZFlags::DELETED => 'DELETED');
       } else {
         unset($flag_options[TZFlags::DELETED]);

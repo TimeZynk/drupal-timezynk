@@ -415,7 +415,6 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
   if(!$data->job_id()) {
     $result->set_error_code(400);
     $result->set_error_msg('invalid job id');
-    watchdog('tzproto', 'No job set for report', array(), WATCHDOG_WARNING);
     return;
   }
 
@@ -487,13 +486,13 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
   node_save($report);
 
   if($data->id()) {
-    watchdog('tzproto', 'Updated report !nid', array('!nid' => $report->nid));
+    watchdog('tzproto', 'Updated report !nid', array('!nid' => $report->nid), WATCHDOG_NOTICE, l('View', 'node/' . $report->nid));
     /* If the node has been updated and is immediately
      * reloaded after update, it will
      *  load the OLD cached version. */
     node_load(0, NULL, TRUE);
   } else {
-    watchdog('tzproto', 'Inserted report !nid', array('!nid' => $report->nid));
+    watchdog('tzproto', 'Inserted report !nid', array('!nid' => $report->nid), WATCHDOG_NOTICE, l('View', 'node/' . $report->nid));
   }
 
   return $report;
@@ -543,13 +542,13 @@ function tzproto_create_tzjob_from_protobuf($data, &$result) {
   node_save($job);
 
   if($data->id()) {
-    watchdog('tzproto', 'Updated job !nid', array('!nid' => $job->nid));
+    watchdog('tzproto', 'Updated job !nid', array('!nid' => $job->nid), WATCHDOG_NOTICE, l('View', 'node/' . $job->nid));
     /* If the node has been updated and is immediately
      * reloaded after update, it will
      *  load the OLD cached version. */
     node_load(0, NULL, TRUE);
   } else {
-    watchdog('tzproto', 'Inserted job !nid', array('!nid' => $job->nid));
+    watchdog('tzproto', 'Inserted job !nid', array('!nid' => $job->nid), WATCHDOG_NOTICE, l('View', 'node/' . $job->nid));
   }
 
   return $job;

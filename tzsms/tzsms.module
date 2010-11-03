@@ -156,7 +156,7 @@ function tzsms_form_user_pass_alter(&$form, &$form_state) {
 function tzsms_form_user_pass_submit($form, &$form_state) {
   $account = $form_state['values']['account'];
   tzsms_reset_pw_and_send_install_sms(array($account->uid));
-  watchdog('tzsms', 'User %name requested new password over SMS', array('%name' => $account->name));
+  watchdog('tzsms', 'Requested new password over SMS', array(), WATCHDOG_NOTICE, theme('username', $account));
   drupal_set_message(t('New password has been sent to you over SMS'));
   $form_state['redirect'] = 'user';
 }

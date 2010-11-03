@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-10-28 13:33+0200\n"
+"POT-Creation-Date: 2010-11-03 18:16+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzsms_ui.number.inc:15;54
+#: tzsms_ui.number.inc:15;60
 msgid "Add more numbers"
 msgstr ""
 
@@ -30,111 +30,111 @@ msgstr ""
 msgid "To send TimeZynk installation SMS, fill in mobile phone numbers in the form below and then press send. If you need more rows use the <em>Add more numbers</em> button."
 msgstr ""
 
-#: tzsms_ui.number.inc:64;140 tzsms_ui.module:8
+#: tzsms_ui.number.inc:70;152 tzsms_ui.module:8
 msgid "Send installation SMS"
 msgstr ""
 
-#: tzsms_ui.number.inc:68
+#: tzsms_ui.number.inc:74
 msgid "Reset"
 msgstr ""
 
-#: tzsms_ui.number.inc:94
+#: tzsms_ui.number.inc:108
 msgid "Mobile number"
 msgstr ""
 
-#: tzsms_ui.number.inc:94
+#: tzsms_ui.number.inc:108
 msgid "Username"
 msgstr ""
 
-#: tzsms_ui.number.inc:94
+#: tzsms_ui.number.inc:108
 msgid "Password"
 msgstr ""
 
-#: tzsms_ui.number.inc:116
+#: tzsms_ui.number.inc:128
 msgid "Please enter a valid mobile number"
 msgstr ""
 
-#: tzsms_ui.number.inc:123
+#: tzsms_ui.number.inc:135
 msgid "Number entered twice"
 msgstr ""
 
-#: tzsms_ui.number.inc:143
+#: tzsms_ui.number.inc:155
 msgid "Sent install SMS to number %number"
 msgstr ""
 
-#: tzsms.module:12
+#: tzsms.module:22
 msgid "Reset password and send new TimeZynk installation SMS"
 msgstr ""
 
-#: tzsms.module:16
+#: tzsms.module:26
 msgid "Send new TimeZynk installation SMS"
 msgstr ""
 
-#: tzsms.module:46
+#: tzsms.module:75
 msgid "TimeZynk SMS settings"
 msgstr ""
 
-#: tzsms.module:47
+#: tzsms.module:76
 msgid "TimeZynk sends out installation instructions via SMS, configure the settings here!"
 msgstr ""
 
-#: tzsms.module:51
+#: tzsms.module:80
 msgid "Default country code for this site"
 msgstr ""
 
-#: tzsms.module:53
+#: tzsms.module:82
 msgid "The country code will be used to send installation SMS to the users registered on this site"
 msgstr ""
 
-#: tzsms.module:57
+#: tzsms.module:86
 msgid "The content of the SMS"
 msgstr ""
 
-#: tzsms.module:59
+#: tzsms.module:88
 msgid "The available variables are: !url, !username and !password"
 msgstr ""
 
-#: tzsms.module:63
+#: tzsms.module:92
 msgid "The content of the SMS when keeping the same password"
 msgstr ""
 
-#: tzsms.module:65
+#: tzsms.module:94
 msgid "The available variables are: !url and !username"
 msgstr ""
 
-#: tzsms.module:83
+#: tzsms.module:112
 msgid "You must enter a numeric country code (e.g. 46 for Sweden)!"
 msgstr ""
 
-#: tzsms.module:119
+#: tzsms.module:148
 msgid "Your mobile phone number or e-mail address"
 msgstr ""
 
-#: tzsms.module:120
+#: tzsms.module:149
 msgid "Send new password over SMS"
 msgstr ""
 
-#: tzsms.module:131
+#: tzsms.module:160
 msgid "New password has been sent to you over SMS"
 msgstr ""
 
-#: tzsms.module:198
+#: tzsms.module:229
 msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username and \"!password\" as password."
 msgstr ""
 
-#: tzsms.module:212
+#: tzsms.module:243
 msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username."
 msgstr ""
 
-#: tzsms.module:130;171
+#: tzsms.module:159;201
 msgid "tzsms"
 msgstr ""
 
-#: tzsms.module:130
-msgid "User %name requested new password over SMS"
+#: tzsms.module:159
+msgid "Requested new password over SMS"
 msgstr ""
 
-#: tzsms.module:171
+#: tzsms.module:201
 msgid "Sending install SMS to !nbr"
 msgstr ""
 
