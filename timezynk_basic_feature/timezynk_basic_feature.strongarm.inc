@@ -22,6 +22,29 @@ function timezynk_basic_feature_strongarm() {
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'content_profile_profile';
+  $strongarm->value = array(
+    'weight' => '-2',
+    'user_display' => 'full',
+    'edit_link' => 0,
+    'edit_tab' => 'sub',
+    'add_link' => 1,
+    'registration_use' => 1,
+    'admin_user_create_use' => 1,
+    'registration_hide' => array(),
+  );
+
+  $export['content_profile_profile'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'content_profile_use_profile';
+  $strongarm->value = 1;
+
+  $export['content_profile_use_profile'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'genpass_algorithm';
   $strongarm->value = 'genpass';
 
@@ -193,9 +216,9 @@ function timezynk_basic_feature_strongarm() {
     'sms_clickatell_api_id' => '3222910',
     'sms_clickatell_user' => 'timezynk',
     'sms_clickatell_password' => 'Aen8shah',
-    'sms_clickatell_from' => '',
+    'sms_clickatell_from' => 'TimeZynk',
     'sms_clickatell_callback' => '0',
-    'form_build_id' => 'form-cc20b88b7ec66fd0b9ea200f9e0a8c27',
+    'form_build_id' => 'form-d8e0b572d1e17cdf2973d18085042fde',
   );
 
   $export['sms_clickatell_settings'] = $strongarm;
