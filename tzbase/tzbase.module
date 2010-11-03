@@ -512,7 +512,8 @@ function tzbase_job_by_jobcode($jobcode) {
 }
 
 function tzbase_include_proto_classes() {
-  require_once dirname(__FILE__) . '/pb4php-read-only/message/pb_message.php';
+  $pb4php_path = libraries_get_path('pb4php');
+  require_once $pb4php_path . '/message/pb_message.php';
   require_once dirname(__FILE__) . '/pb_proto_tzbase.php';
 }
 

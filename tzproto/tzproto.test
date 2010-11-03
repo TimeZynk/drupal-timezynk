@@ -20,7 +20,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
 
   public function setUp() {
     // Enable any modules required for the test.
-   parent::setUp('tzbase', 'tzproto');
+   parent::setUp('libraries', 'tzbase', 'tzproto');
    tzbase_include_proto_classes();
 
    // Create test users
@@ -99,7 +99,6 @@ class TZProtoTestCase extends DrupalWebTestCase {
        * 1      , 2        , 3       , 4       , 5     , 6      , 7      , 8        , 9       , 10
        * CREATED, SIGNED_IN, REPORTED, APPROVED, LOCKED, DELETED, CREATED, SIGNED_IN, REPORTED, APPROVED
        */
-      $this->verbose($flaglist[$flagindices[($i-1)%count($flagindices)]]);
       $this->doCreateReport($jobid, $reflection->getConstant($flaglist[$flagindices[($i-1)%count($flagindices)]]), $expectedBeginTime*$i);
     }
 
@@ -118,7 +117,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $cmd->set_get_user_cmd($get_user_cmd);
 
     $response = $this->sendRequest($request);
-    $this->assertEqual(1, $response->result_size());
+    $this->assertEqual(1, $response->results_size());
     $result = $response->result(0);
     $tzuser = $result->user();
 
@@ -144,11 +143,11 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $cmd->set_get_report_cmd($get_report_cmd);
 
     $response = $this->sendRequest($request);
-    $this->assertEqual(1, $response->result_size());
+    $this->assertEqual(1, $response->results_size());
     $result = $response->result(0);
     $reports = array();
     $get_report_result = $result->get_report_result();
-    for ($i = 0; $i < $get_report_result->report_size(); $i++) {
+    for ($i = 0; $i < $get_report_result->reports_size(); $i++) {
       $reports[] = $get_report_result->report($i);
     }
     return $reports;
@@ -161,7 +160,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $cmd->set_get_user_cmd($get_user_cmd);
 
     $response = $this->sendRequest($request);
-    $this->assertEqual(1, $response->result_size());
+    $this->assertEqual(1, $response->results_size());
     $result = $response->result(0);
     $tzuser = $result->user();
 
@@ -189,7 +188,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $cmd->set_create_job_cmd($create_job_cmd);
 
     $response = $this->sendRequest($request);
-    $this->assertEqual(1, $response->result_size());
+    $this->assertEqual(1, $response->results_size());
     $result = $response->result(0);
 
     // Check for error
@@ -239,7 +238,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $cmd->set_create_report_cmd($create_report_cmd);
 
     $response = $this->sendRequest($request);
-    $this->assertEqual(1, $response->result_size());
+    $this->assertEqual(1, $response->results_size());
     $result = $response->result(0);
 
     // Check for error
@@ -280,9 +279,8 @@ class TZProtoTestCase extends DrupalWebTestCase {
       CURLOPT_POSTFIELDS => $request_data,
     ));
 
-    $response = NULL;
+    $response = new TZResponse();
     if($this->assertResponse(200)) {
-      $response = new TZResponse();
       $response->parseFromString($out);
     }
     return $response;

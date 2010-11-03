@@ -1,9 +1,21 @@
 <?
+/**
+ * Run with drush scr
+ */
+
 // just create from the proto file a pb_prot[NAME].php file
-require_once(dirname(__FILE__) . '/pb4php-read-only/parser/pb_parser.php');
+$pb4php_path = libraries_get_path('pb4php') . '/parser/pb_parser.php';
+print("pb4php path: $pb4php_path\n");
+if(!file_exists($pb4php_path)) {
+  die('Could not find pb4php');
+}
+require_once($pb4php_path);
 
+$tzbase_path = drupal_get_path('module', 'tzbase');
+$pbfilename = $tzbase_path . '/pb_proto_tzbase.php';
+print("tzbase path: $tzbase_path\n");
 $parser = new PBParser();
-$parser->parse(dirname(__FILE__) . '/tzbase.proto');
+$parser->parse($tzbase_path . '/tzbase.proto', $pbfilename);
 
-print("File parsing done!\n");
+print("Output written to: $pbfilename\n");
 ?>

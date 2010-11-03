@@ -11,7 +11,7 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
 
   public function setUp() {
     // Enable any modules required for the test.
-    parent::setUp('tzbase', 'tzintellitime', 'tzintellitime_mock', 'tzintellitime_sync');
+    parent::setUp('libraries', 'tzbase', 'tzintellitime', 'tzintellitime_mock', 'tzintellitime_sync');
     // Set up mock intellitime
     variable_set('tzintellitime_base_url', url('IntelliplanWeb/Login.aspx', array('absolute' => TRUE)));
     // Include resources
@@ -84,7 +84,7 @@ public function testMatchJobShouldReturnFalse() {
       $this->assertFalse($nid, t('Expected titles to not match'));
     }
   }
-  
+
   public function testCreatingData() {
     $this->controller = new TZIntellitimeSyncController($this->account);
     $this->doTestCreatingJob();

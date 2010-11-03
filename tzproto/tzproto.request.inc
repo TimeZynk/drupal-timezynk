@@ -41,7 +41,7 @@ function tzproto_request() {
 
   // Authenticate user
   if(0 == tzproto_login($req)) {
-    for($i = 0; $i < $req->command_size(); $i++) {
+    for($i = 0; $i < $req->commands_size(); $i++) {
       $cmd = $req->command($i);
 
       // Return client request ID
@@ -175,7 +175,7 @@ function tzproto_handle_sync_cmd(&$cmd, &$result) {
     $last_sync = $sync_cmd->last_sync();
   }
 
-  for($i = 0; $i < $sync_cmd->new_job_size(); $i++) {
+  for($i = 0; $i < $sync_cmd->new_jobs_size(); $i++) {
       $job = tzproto_create_tzjob_from_protobuf($sync_cmd->new_job($i), $result);
       if($result->error_code()) {
         // Break if we hit an error
@@ -184,7 +184,7 @@ function tzproto_handle_sync_cmd(&$cmd, &$result) {
   }
 
   // Store new reports
-  for($i = 0; $i < $sync_cmd->new_report_size(); $i++) {
+  for($i = 0; $i < $sync_cmd->new_reports_size(); $i++) {
       $report = tzproto_create_tzreport_from_protobuf($sync_cmd->new_report($i), $result);
       if($result->error_code()) {
         // Break if we hit an error
@@ -465,7 +465,7 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
   $report->signature = "";
 
   // Check for permissions to set the requested flags
-  if($report->flags != $data->flags()) {
+  if(empty($report->flags) || ($report->flags != $data->flags())) {
     if($data->flags() != TZFlags::DELETED || user_access('remove own tzreport content')) {
       $report->flags = $data->flags();
     } else {

@@ -30,6 +30,27 @@ function tzbase_uninstall() {
   drupal_uninstall_schema('tzbase');
 }
 
+function tzbase_requirements($phase) {
+  $req = array();
+
+  if($phase == 'runtime') {
+    /* Check installation of pb4php library */
+    $pb4php_path = libraries_get_path('pb4php');
+
+    $req['pb4php']['title'] = 'pb4php';
+    if(is_file($pb4php_path . '/message/pb_message.php')) {
+      $req['pb4php']['value'] = t('pb4php installed under %path.', array('%path' => $pb4php_path));
+      $req['pb4php']['severity'] = REQUIREMENT_OK;
+    } else {
+      $req['pb4php']['value'] = t('Not found');
+      $req['pb4php']['description'] = t('Please install pb4php under sites/all/libraries/pb4php.');
+      $req['pb4php']['severity'] = REQUIREMENT_ERROR;
+    }
+  }
+
+  return $req;
+}
+
 /**
  * First update, adds assignedto field pointing to assigned User UID.
  */

@@ -7,11 +7,31 @@ class TZFlags extends PBEnum
   const APPROVED  = 3;
   const LOCKED  = 4;
   const DELETED  = 255;
+
+  public function __construct($reader=null)
+  {
+   	parent::__construct($reader);
+ 	$this->names = array(
+			0 => "CREATED",
+			1 => "SIGNED_IN",
+			2 => "REPORTED",
+			3 => "APPROVED",
+			4 => "LOCKED",
+			255 => "DELETED");
+   }
 }
 class TZJobFlags extends PBEnum
 {
   const ACTIVE  = 0;
   const INACTIVE  = 255;
+
+  public function __construct($reader=null)
+  {
+   	parent::__construct($reader);
+ 	$this->names = array(
+			0 => "ACTIVE",
+			255 => "INACTIVE");
+   }
 }
 class TZReport extends PBMessage
 {
@@ -19,54 +39,72 @@ class TZReport extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZReport"]["1"] = "PBInt";
     $this->values["1"] = "";
     $this->values["1"] = new PBInt();
     $this->values["1"]->value = 0;
-    $this->fields["2"] = "PBInt";
+    self::$fieldNames["TZReport"]["1"] = "id";
+    self::$fields["TZReport"]["2"] = "PBInt";
     $this->values["2"] = "";
     $this->values["2"] = new PBInt();
     $this->values["2"]->value = 0;
-    $this->fields["3"] = "PBInt";
+    self::$fieldNames["TZReport"]["2"] = "vid";
+    self::$fields["TZReport"]["3"] = "PBInt";
     $this->values["3"] = "";
     $this->values["3"] = new PBInt();
     $this->values["3"]->value = 0;
-    $this->fields["4"] = "PBString";
+    self::$fieldNames["TZReport"]["3"] = "job_id";
+    self::$fields["TZReport"]["4"] = "PBString";
     $this->values["4"] = "";
-    $this->fields["5"] = "PBString";
+    self::$fieldNames["TZReport"]["4"] = "title";
+    self::$fields["TZReport"]["5"] = "PBString";
     $this->values["5"] = "";
-    $this->fields["6"] = "PBInt";
+    self::$fieldNames["TZReport"]["5"] = "description";
+    self::$fields["TZReport"]["6"] = "PBInt";
     $this->values["6"] = "";
-    $this->fields["7"] = "PBInt";
+    self::$fieldNames["TZReport"]["6"] = "assigned_to";
+    self::$fields["TZReport"]["7"] = "PBInt";
     $this->values["7"] = "";
-    $this->fields["8"] = "PBInt";
+    self::$fieldNames["TZReport"]["7"] = "begin_time";
+    self::$fields["TZReport"]["8"] = "PBInt";
     $this->values["8"] = "";
-    $this->fields["9"] = "PBInt";
+    self::$fieldNames["TZReport"]["8"] = "end_time";
+    self::$fields["TZReport"]["9"] = "PBInt";
     $this->values["9"] = "";
-    $this->fields["10"] = "PBInt";
+    self::$fieldNames["TZReport"]["9"] = "break_duration";
+    self::$fields["TZReport"]["10"] = "PBInt";
     $this->values["10"] = "";
-    $this->fields["11"] = "PBInt";
+    self::$fieldNames["TZReport"]["10"] = "flags";
+    self::$fields["TZReport"]["11"] = "PBInt";
     $this->values["11"] = "";
-    $this->fields["16"] = "PBString";
+    self::$fieldNames["TZReport"]["11"] = "changed";
+    self::$fields["TZReport"]["16"] = "PBString";
     $this->values["16"] = "";
-    $this->fields["17"] = "PBString";
+    self::$fieldNames["TZReport"]["16"] = "signature";
+    self::$fields["TZReport"]["17"] = "PBString";
     $this->values["17"] = "";
-    $this->fields["18"] = "PBInt";
+    self::$fieldNames["TZReport"]["17"] = "comments";
+    self::$fields["TZReport"]["18"] = "PBInt";
     $this->values["18"] = "";
-    $this->fields["19"] = "PBInt";
+    self::$fieldNames["TZReport"]["18"] = "travel_duration";
+    self::$fields["TZReport"]["19"] = "PBInt";
     $this->values["19"] = "";
-    $this->fields["20"] = "PBBool";
+    self::$fieldNames["TZReport"]["19"] = "travel_km";
+    self::$fields["TZReport"]["20"] = "PBBool";
     $this->values["20"] = "";
     $this->values["20"] = new PBBool();
     $this->values["20"]->value = false;
-    $this->fields["21"] = "PBBool";
+    self::$fieldNames["TZReport"]["20"] = "may_remove";
+    self::$fields["TZReport"]["21"] = "PBBool";
     $this->values["21"] = "";
     $this->values["21"] = new PBBool();
     $this->values["21"]->value = false;
-    $this->fields["22"] = "PBBool";
+    self::$fieldNames["TZReport"]["21"] = "may_edit";
+    self::$fields["TZReport"]["22"] = "PBBool";
     $this->values["22"] = "";
     $this->values["22"] = new PBBool();
     $this->values["22"]->value = false;
+    self::$fieldNames["TZReport"]["22"] = "may_reset";
   }
   function id()
   {
@@ -219,34 +257,44 @@ class TZJob extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZJob"]["1"] = "PBInt";
     $this->values["1"] = "";
     $this->values["1"] = new PBInt();
     $this->values["1"]->value = 0;
-    $this->fields["2"] = "PBInt";
+    self::$fieldNames["TZJob"]["1"] = "id";
+    self::$fields["TZJob"]["2"] = "PBInt";
     $this->values["2"] = "";
-    $this->fields["3"] = "PBInt";
+    self::$fieldNames["TZJob"]["2"] = "parent_id";
+    self::$fields["TZJob"]["3"] = "PBInt";
     $this->values["3"] = "";
-    $this->fields["4"] = "PBString";
+    self::$fieldNames["TZJob"]["3"] = "flags";
+    self::$fields["TZJob"]["4"] = "PBString";
     $this->values["4"] = "";
-    $this->fields["5"] = "PBString";
+    self::$fieldNames["TZJob"]["4"] = "job_code";
+    self::$fields["TZJob"]["5"] = "PBString";
     $this->values["5"] = "";
-    $this->fields["6"] = "PBString";
+    self::$fieldNames["TZJob"]["5"] = "title";
+    self::$fields["TZJob"]["6"] = "PBString";
     $this->values["6"] = "";
-    $this->fields["7"] = "PBInt";
+    self::$fieldNames["TZJob"]["6"] = "description";
+    self::$fields["TZJob"]["7"] = "PBInt";
     $this->values["7"] = "";
-    $this->fields["18"] = "PBBool";
+    self::$fieldNames["TZJob"]["7"] = "changed";
+    self::$fields["TZJob"]["18"] = "PBBool";
     $this->values["18"] = "";
     $this->values["18"] = new PBBool();
     $this->values["18"]->value = false;
-    $this->fields["19"] = "PBBool";
+    self::$fieldNames["TZJob"]["18"] = "may_create_child";
+    self::$fields["TZJob"]["19"] = "PBBool";
     $this->values["19"] = "";
     $this->values["19"] = new PBBool();
     $this->values["19"]->value = false;
-    $this->fields["20"] = "PBBool";
+    self::$fieldNames["TZJob"]["19"] = "may_create_report";
+    self::$fields["TZJob"]["20"] = "PBBool";
     $this->values["20"] = "";
     $this->values["20"] = new PBBool();
     $this->values["20"]->value = false;
+    self::$fieldNames["TZJob"]["20"] = "may_edit";
   }
   function id()
   {
@@ -335,20 +383,25 @@ class TZUser extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZUser"]["1"] = "PBInt";
     $this->values["1"] = "";
     $this->values["1"] = new PBInt();
     $this->values["1"]->value = 0;
-    $this->fields["2"] = "PBString";
+    self::$fieldNames["TZUser"]["1"] = "id";
+    self::$fields["TZUser"]["2"] = "PBString";
     $this->values["2"] = "";
-    $this->fields["3"] = "PBString";
+    self::$fieldNames["TZUser"]["2"] = "username";
+    self::$fields["TZUser"]["3"] = "PBString";
     $this->values["3"] = "";
-    $this->fields["4"] = "PBString";
+    self::$fieldNames["TZUser"]["3"] = "realname";
+    self::$fields["TZUser"]["4"] = "PBString";
     $this->values["4"] = "";
-    $this->fields["16"] = "PBBool";
+    self::$fieldNames["TZUser"]["4"] = "email";
+    self::$fields["TZUser"]["16"] = "PBBool";
     $this->values["16"] = "";
     $this->values["16"] = new PBBool();
     $this->values["16"]->value = false;
+    self::$fieldNames["TZUser"]["16"] = "may_create_job";
   }
   function id()
   {
@@ -397,10 +450,11 @@ class TZGetUserCmd extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZGetUserCmd"]["1"] = "PBInt";
     $this->values["1"] = "";
     $this->values["1"] = new PBInt();
     $this->values["1"]->value = 0;
+    self::$fieldNames["TZGetUserCmd"]["1"] = "unused";
   }
   function unused()
   {
@@ -417,12 +471,15 @@ class TZSyncCmd extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZSyncCmd"]["1"] = "PBInt";
     $this->values["1"] = "";
-    $this->fields["2"] = "TZJob";
+    self::$fieldNames["TZSyncCmd"]["1"] = "last_sync";
+    self::$fields["TZSyncCmd"]["2"] = "TZJob";
     $this->values["2"] = array();
-    $this->fields["3"] = "TZReport";
+    self::$fieldNames["TZSyncCmd"]["2"] = "new_job";
+    self::$fields["TZSyncCmd"]["3"] = "TZReport";
     $this->values["3"] = array();
+    self::$fieldNames["TZSyncCmd"]["3"] = "new_report";
   }
   function last_sync()
   {
@@ -444,13 +501,21 @@ class TZSyncCmd extends PBMessage
   {
     $this->_set_arr_value("2", $index, $value);
   }
+  function set_all_new_jobs($values)
+  {
+    return $this->_set_arr_values("2", $values);
+  }
   function remove_last_new_job()
   {
     $this->_remove_last_arr_value("2");
   }
-  function new_job_size()
+  function new_jobs_size()
   {
     return $this->_get_arr_size("2");
+  }
+  function get_new_jobs()
+  {
+    return $this->_get_value("2");
   }
   function new_report($offset)
   {
@@ -464,13 +529,21 @@ class TZSyncCmd extends PBMessage
   {
     $this->_set_arr_value("3", $index, $value);
   }
+  function set_all_new_reports($values)
+  {
+    return $this->_set_arr_values("3", $values);
+  }
   function remove_last_new_report()
   {
     $this->_remove_last_arr_value("3");
   }
-  function new_report_size()
+  function new_reports_size()
   {
     return $this->_get_arr_size("3");
+  }
+  function get_new_reports()
+  {
+    return $this->_get_value("3");
   }
 }
 class TZGetReportCmd extends PBMessage
@@ -479,28 +552,35 @@ class TZGetReportCmd extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZGetReportCmd"]["1"] = "PBInt";
     $this->values["1"] = "";
-    $this->fields["2"] = "PBInt";
+    self::$fieldNames["TZGetReportCmd"]["1"] = "report_id";
+    self::$fields["TZGetReportCmd"]["2"] = "PBInt";
     $this->values["2"] = "";
     $this->values["2"] = new PBInt();
     $this->values["2"]->value = 0;
-    $this->fields["3"] = "PBInt";
+    self::$fieldNames["TZGetReportCmd"]["2"] = "changed_after";
+    self::$fields["TZGetReportCmd"]["3"] = "PBInt";
     $this->values["3"] = "";
     $this->values["3"] = new PBInt();
     $this->values["3"]->value = 0;
-    $this->fields["4"] = "PBInt";
+    self::$fieldNames["TZGetReportCmd"]["3"] = "limit";
+    self::$fields["TZGetReportCmd"]["4"] = "PBInt";
     $this->values["4"] = "";
     $this->values["4"] = new PBInt();
     $this->values["4"]->value = 0;
-    $this->fields["5"] = "TZFlags";
+    self::$fieldNames["TZGetReportCmd"]["4"] = "offset";
+    self::$fields["TZGetReportCmd"]["5"] = "TZFlags";
     $this->values["5"] = "";
     $this->values["5"] = new TZFlags();
     $this->values["5"]->value = TZFlags::DELETED;
-    $this->fields["6"] = "PBInt";
+    self::$fieldNames["TZGetReportCmd"]["5"] = "max_flag";
+    self::$fields["TZGetReportCmd"]["6"] = "PBInt";
     $this->values["6"] = "";
-    $this->fields["7"] = "PBInt";
+    self::$fieldNames["TZGetReportCmd"]["6"] = "before";
+    self::$fields["TZGetReportCmd"]["7"] = "PBInt";
     $this->values["7"] = "";
+    self::$fieldNames["TZGetReportCmd"]["7"] = "after";
   }
   function report_id()
   {
@@ -542,6 +622,10 @@ class TZGetReportCmd extends PBMessage
   {
     return $this->_set_value("5", $value);
   }
+  function max_flag_string()
+  {
+    return $this->values["5"]->get_description();
+  }
   function before()
   {
     return $this->_get_value("6");
@@ -565,12 +649,15 @@ class TZGetReportResult extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZGetReportResult"]["1"] = "PBInt";
     $this->values["1"] = "";
-    $this->fields["2"] = "PBInt";
+    self::$fieldNames["TZGetReportResult"]["1"] = "total_report_count";
+    self::$fields["TZGetReportResult"]["2"] = "PBInt";
     $this->values["2"] = "";
-    $this->fields["3"] = "TZReport";
+    self::$fieldNames["TZGetReportResult"]["2"] = "offset";
+    self::$fields["TZGetReportResult"]["3"] = "TZReport";
     $this->values["3"] = array();
+    self::$fieldNames["TZGetReportResult"]["3"] = "report";
   }
   function total_report_count()
   {
@@ -600,13 +687,21 @@ class TZGetReportResult extends PBMessage
   {
     $this->_set_arr_value("3", $index, $value);
   }
+  function set_all_reports($values)
+  {
+    return $this->_set_arr_values("3", $values);
+  }
   function remove_last_report()
   {
     $this->_remove_last_arr_value("3");
   }
-  function report_size()
+  function reports_size()
   {
     return $this->_get_arr_size("3");
+  }
+  function get_reports()
+  {
+    return $this->_get_value("3");
   }
 }
 class TZCreateReportCmd extends PBMessage
@@ -615,8 +710,9 @@ class TZCreateReportCmd extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["2"] = "TZReport";
+    self::$fields["TZCreateReportCmd"]["2"] = "TZReport";
     $this->values["2"] = "";
+    self::$fieldNames["TZCreateReportCmd"]["2"] = "new_report";
   }
   function new_report()
   {
@@ -633,8 +729,9 @@ class TZCreateReportResult extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZCreateReportResult"]["1"] = "PBInt";
     $this->values["1"] = "";
+    self::$fieldNames["TZCreateReportResult"]["1"] = "id";
   }
   function id()
   {
@@ -651,14 +748,18 @@ class TZGetJobCmd extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZGetJobCmd"]["1"] = "PBInt";
     $this->values["1"] = "";
-    $this->fields["2"] = "PBInt";
+    self::$fieldNames["TZGetJobCmd"]["1"] = "job_id";
+    self::$fields["TZGetJobCmd"]["2"] = "PBInt";
     $this->values["2"] = "";
-    $this->fields["3"] = "PBInt";
+    self::$fieldNames["TZGetJobCmd"]["2"] = "changed_after";
+    self::$fields["TZGetJobCmd"]["3"] = "PBInt";
     $this->values["3"] = "";
-    $this->fields["4"] = "PBInt";
+    self::$fieldNames["TZGetJobCmd"]["3"] = "limit";
+    self::$fields["TZGetJobCmd"]["4"] = "PBInt";
     $this->values["4"] = "";
+    self::$fieldNames["TZGetJobCmd"]["4"] = "offset";
   }
   function job_id()
   {
@@ -699,12 +800,15 @@ class TZGetJobResult extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZGetJobResult"]["1"] = "PBInt";
     $this->values["1"] = "";
-    $this->fields["2"] = "PBInt";
+    self::$fieldNames["TZGetJobResult"]["1"] = "total_job_count";
+    self::$fields["TZGetJobResult"]["2"] = "PBInt";
     $this->values["2"] = "";
-    $this->fields["3"] = "TZJob";
+    self::$fieldNames["TZGetJobResult"]["2"] = "offset";
+    self::$fields["TZGetJobResult"]["3"] = "TZJob";
     $this->values["3"] = array();
+    self::$fieldNames["TZGetJobResult"]["3"] = "job";
   }
   function total_job_count()
   {
@@ -734,13 +838,21 @@ class TZGetJobResult extends PBMessage
   {
     $this->_set_arr_value("3", $index, $value);
   }
+  function set_all_jobs($values)
+  {
+    return $this->_set_arr_values("3", $values);
+  }
   function remove_last_job()
   {
     $this->_remove_last_arr_value("3");
   }
-  function job_size()
+  function jobs_size()
   {
     return $this->_get_arr_size("3");
+  }
+  function get_jobs()
+  {
+    return $this->_get_value("3");
   }
 }
 class TZCreateJobCmd extends PBMessage
@@ -749,8 +861,9 @@ class TZCreateJobCmd extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "TZJob";
+    self::$fields["TZCreateJobCmd"]["1"] = "TZJob";
     $this->values["1"] = "";
+    self::$fieldNames["TZCreateJobCmd"]["1"] = "new_job";
   }
   function new_job()
   {
@@ -767,8 +880,9 @@ class TZCreateJobResult extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZCreateJobResult"]["1"] = "PBInt";
     $this->values["1"] = "";
+    self::$fieldNames["TZCreateJobResult"]["1"] = "id";
   }
   function id()
   {
@@ -785,22 +899,29 @@ class TZCommand extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZCommand"]["1"] = "PBInt";
     $this->values["1"] = "";
     $this->values["1"] = new PBInt();
     $this->values["1"]->value = 0;
-    $this->fields["2"] = "TZGetUserCmd";
+    self::$fieldNames["TZCommand"]["1"] = "client_handle";
+    self::$fields["TZCommand"]["2"] = "TZGetUserCmd";
     $this->values["2"] = "";
-    $this->fields["3"] = "TZSyncCmd";
+    self::$fieldNames["TZCommand"]["2"] = "get_user_cmd";
+    self::$fields["TZCommand"]["3"] = "TZSyncCmd";
     $this->values["3"] = "";
-    $this->fields["4"] = "TZGetReportCmd";
+    self::$fieldNames["TZCommand"]["3"] = "sync_cmd";
+    self::$fields["TZCommand"]["4"] = "TZGetReportCmd";
     $this->values["4"] = "";
-    $this->fields["5"] = "TZCreateReportCmd";
+    self::$fieldNames["TZCommand"]["4"] = "get_report_cmd";
+    self::$fields["TZCommand"]["5"] = "TZCreateReportCmd";
     $this->values["5"] = "";
-    $this->fields["6"] = "TZGetJobCmd";
+    self::$fieldNames["TZCommand"]["5"] = "create_report_cmd";
+    self::$fields["TZCommand"]["6"] = "TZGetJobCmd";
     $this->values["6"] = "";
-    $this->fields["7"] = "TZCreateJobCmd";
+    self::$fieldNames["TZCommand"]["6"] = "get_job_cmd";
+    self::$fields["TZCommand"]["7"] = "TZCreateJobCmd";
     $this->values["7"] = "";
+    self::$fieldNames["TZCommand"]["7"] = "create_job_cmd";
   }
   function client_handle()
   {
@@ -865,28 +986,38 @@ class TZResult extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBInt";
+    self::$fields["TZResult"]["1"] = "PBInt";
     $this->values["1"] = "";
     $this->values["1"] = new PBInt();
     $this->values["1"]->value = 0;
-    $this->fields["2"] = "PBInt";
+    self::$fieldNames["TZResult"]["1"] = "client_handle";
+    self::$fields["TZResult"]["2"] = "PBInt";
     $this->values["2"] = "";
-    $this->fields["3"] = "PBString";
+    self::$fieldNames["TZResult"]["2"] = "error_code";
+    self::$fields["TZResult"]["3"] = "PBString";
     $this->values["3"] = "";
-    $this->fields["4"] = "TZUser";
+    self::$fieldNames["TZResult"]["3"] = "error_msg";
+    self::$fields["TZResult"]["4"] = "TZUser";
     $this->values["4"] = "";
-    $this->fields["5"] = "TZReport";
+    self::$fieldNames["TZResult"]["4"] = "user";
+    self::$fields["TZResult"]["5"] = "TZReport";
     $this->values["5"] = array();
-    $this->fields["6"] = "TZJob";
+    self::$fieldNames["TZResult"]["5"] = "report";
+    self::$fields["TZResult"]["6"] = "TZJob";
     $this->values["6"] = array();
-    $this->fields["7"] = "TZGetReportResult";
+    self::$fieldNames["TZResult"]["6"] = "job";
+    self::$fields["TZResult"]["7"] = "TZGetReportResult";
     $this->values["7"] = "";
-    $this->fields["8"] = "TZCreateReportResult";
+    self::$fieldNames["TZResult"]["7"] = "get_report_result";
+    self::$fields["TZResult"]["8"] = "TZCreateReportResult";
     $this->values["8"] = "";
-    $this->fields["9"] = "TZGetJobResult";
+    self::$fieldNames["TZResult"]["8"] = "create_report_result";
+    self::$fields["TZResult"]["9"] = "TZGetJobResult";
     $this->values["9"] = "";
-    $this->fields["10"] = "TZCreateJobResult";
+    self::$fieldNames["TZResult"]["9"] = "get_job_result";
+    self::$fields["TZResult"]["10"] = "TZCreateJobResult";
     $this->values["10"] = "";
+    self::$fieldNames["TZResult"]["10"] = "create_job_result";
   }
   function client_handle()
   {
@@ -932,13 +1063,21 @@ class TZResult extends PBMessage
   {
     $this->_set_arr_value("5", $index, $value);
   }
+  function set_all_reports($values)
+  {
+    return $this->_set_arr_values("5", $values);
+  }
   function remove_last_report()
   {
     $this->_remove_last_arr_value("5");
   }
-  function report_size()
+  function reports_size()
   {
     return $this->_get_arr_size("5");
+  }
+  function get_reports()
+  {
+    return $this->_get_value("5");
   }
   function job($offset)
   {
@@ -952,13 +1091,21 @@ class TZResult extends PBMessage
   {
     $this->_set_arr_value("6", $index, $value);
   }
+  function set_all_jobs($values)
+  {
+    return $this->_set_arr_values("6", $values);
+  }
   function remove_last_job()
   {
     $this->_remove_last_arr_value("6");
   }
-  function job_size()
+  function jobs_size()
   {
     return $this->_get_arr_size("6");
+  }
+  function get_jobs()
+  {
+    return $this->_get_value("6");
   }
   function get_report_result()
   {
@@ -999,12 +1146,15 @@ class TZRequest extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "PBString";
+    self::$fields["TZRequest"]["1"] = "PBString";
     $this->values["1"] = "";
-    $this->fields["2"] = "PBString";
+    self::$fieldNames["TZRequest"]["1"] = "username";
+    self::$fields["TZRequest"]["2"] = "PBString";
     $this->values["2"] = "";
-    $this->fields["3"] = "TZCommand";
+    self::$fieldNames["TZRequest"]["2"] = "password";
+    self::$fields["TZRequest"]["3"] = "TZCommand";
     $this->values["3"] = array();
+    self::$fieldNames["TZRequest"]["3"] = "command";
   }
   function username()
   {
@@ -1034,13 +1184,21 @@ class TZRequest extends PBMessage
   {
     $this->_set_arr_value("3", $index, $value);
   }
+  function set_all_commands($values)
+  {
+    return $this->_set_arr_values("3", $values);
+  }
   function remove_last_command()
   {
     $this->_remove_last_arr_value("3");
   }
-  function command_size()
+  function commands_size()
   {
     return $this->_get_arr_size("3");
+  }
+  function get_commands()
+  {
+    return $this->_get_value("3");
   }
 }
 class TZResponse extends PBMessage
@@ -1049,10 +1207,12 @@ class TZResponse extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    $this->fields["1"] = "TZResult";
+    self::$fields["TZResponse"]["1"] = "TZResult";
     $this->values["1"] = array();
-    $this->fields["2"] = "PBInt";
+    self::$fieldNames["TZResponse"]["1"] = "result";
+    self::$fields["TZResponse"]["2"] = "PBInt";
     $this->values["2"] = "";
+    self::$fieldNames["TZResponse"]["2"] = "timestamp";
   }
   function result($offset)
   {
@@ -1066,13 +1226,21 @@ class TZResponse extends PBMessage
   {
     $this->_set_arr_value("1", $index, $value);
   }
+  function set_all_results($values)
+  {
+    return $this->_set_arr_values("1", $values);
+  }
   function remove_last_result()
   {
     $this->_remove_last_arr_value("1");
   }
-  function result_size()
+  function results_size()
   {
     return $this->_get_arr_size("1");
+  }
+  function get_results()
+  {
+    return $this->_get_value("1");
   }
   function timestamp()
   {

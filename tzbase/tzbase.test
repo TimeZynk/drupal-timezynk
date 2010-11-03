@@ -17,7 +17,7 @@ class TZBaseTestCase extends DrupalWebTestCase {
 
   public function setUp() {
     // Enable any modules required for the test.
-   parent::setUp('tzbase');
+   parent::setUp('libraries', 'tzbase');
 
    // Create and test user
    $this->test_user = $this->drupalCreateUser(array(

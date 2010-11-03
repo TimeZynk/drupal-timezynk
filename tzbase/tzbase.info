@@ -1,4 +1,5 @@
 name = TimeZynk Base
 description = Provides TimeZynk data types and relations
 package = TimeZynk
+dependencies[] = libraries
 core = 6.x
