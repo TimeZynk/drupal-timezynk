@@ -569,13 +569,16 @@ class TZIntellitimeParser {
     //Fourth element has the span with a date label.
     $td = $row->td[3];
     $date_matches = array();
-    if ($td && preg_match("/(\d{2}).(\d{2})/", strval($td->span), $date_matches)) {
+    if ($td && preg_match('/(\d{2}).(\d{2})/', strval($td->span), $date_matches)) {
       $report->month = intval($date_matches[2], 10);
       $report->day = intval($date_matches[1], 10);
     };
 
     $td = $row->td[5];
     $report->title =  $td ? trim((string)$td->span) : NULL;
+
+    $rowprefix = (string) $row->td[7]['id'];
+    $rowprefix = preg_replace('/_[^_]+$/', '', $rowprefix);
 
     // indices 7, 9, 11 => start time, end time, break duration
     $report->begin =  $this->parse_time_field($row->td[7]);
@@ -584,6 +587,16 @@ class TZIntellitimeParser {
     // TODO: find out if overtime is float or int..
     // 15 is overtime. In hours...
     $report->overtime_hours =  intval($row->td[15]->input[0]['value'], 10);
+
+    /*
+     * Intellitime places the comment field on the next row,
+     * so we cannot check the row td like we do with the time fields.
+     */
+    $commentelement = $row->xpath('..//input[@id=\'' . $rowprefix . '_TextboxNote\']');
+    if (!empty($commentelement[0]['value'])) {
+      $report->comment = trim((string) $commentelement[0]['value']);
+    }
+
     return $report;
   }
 
@@ -630,6 +643,7 @@ class TZIntellitimeReport {
   public $end = NULL;
   public $break_duration_minutes = 0;
   public $overtime_hours = 0;
+  public $comment = '';
 
   /**
    * Construct an intellitime report from a tzreport
@@ -728,6 +742,7 @@ class TZIntellitimeReport {
     }
 
     $tzreport->title = $this->title;
+    $tzreport->body = $this->comment;
 
     // Convert begin and end to epoch timestamps
     $tzreport->begintime = $this->get_in_epoch($this->begin);

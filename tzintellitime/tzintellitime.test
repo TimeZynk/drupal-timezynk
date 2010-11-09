@@ -241,6 +241,14 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
     $this->assertEqual($expected_array, $selects, "Expect CustOrdersDropDown = 0");
   }
 
+  public function testReadComments() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-with-comments.html');
+    $reports = $parser->parse_reports();
+    $this->assertEqual('asda', $reports[0]->comment);
+    $this->assertEqual('', $reports[1]->comment);
+    $this->assertEqual('Panda panda panda "test mjauu" hej!*\'112\'', $reports[2]->comment);
+  }
+
   /** Override assertEqual to get nice log prints by default */
   protected function assertEqual($first, $second, $message = '', $group = 'Other') {
     if(!$message) {
@@ -351,6 +359,7 @@ class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
     $tzreport = $this->report->convert_to_tzreport($mockaccount);
     $this->assertNotNull($tzreport, 'Expected $tzreport not NULL.');
     $this->assertEqual($this->report->title, $tzreport->title, "Expected equal titles");
+    $this->assertEqual($this->report->comment, $tzreport->body, "Expected equal comments");
     $this->assertEqual(1284530400, $tzreport->begintime, 'Expected 1284530400 as begintime, got ' . $tzreport->begintime);
     $this->assertEqual(1284566400, $tzreport->endtime, 'Expected 1284566400 as endtime, got ' . $tzreport->endtime);
     $this->assertEqual($this->report->break_duration_minutes*60, $tzreport->breakduration, "Expected break durations to match");
@@ -440,4 +449,5 @@ function _tzintellitime_populate_report(&$report) {
     $report->end = "18:00";
     $report->break_duration_minutes = 24;
     $report->overtime_hours = 4;
+    $report->comment = 'TimeZynk';
 }
