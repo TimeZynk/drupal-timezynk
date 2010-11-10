@@ -4,6 +4,7 @@
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
 #  tzintellitime_sync.admin.inc: n/a
+#  tzintellitime_sync.class.inc: n/a
 #  tzintellitime_sync.module: n/a
 #  tzintellitime_sync.install: n/a
 #  tzintellitime_sync.info: n/a
@@ -12,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-11-03 18:07+0100\n"
+"POT-Creation-Date: 2010-11-10 17:57+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -81,12 +82,32 @@ msgstr ""
 msgid "Must synchronize at least the current week"
 msgstr ""
 
-#: tzintellitime_sync.module:342
+#: tzintellitime_sync.class.inc:162
 msgid "Absence"
 msgstr ""
 
-#: tzintellitime_sync.module:133;138;160;170;178;397;415;448
+#: tzintellitime_sync.class.inc:220;239;272 tzintellitime_sync.module:133;138;163;173;181
 msgid "tzintellitime"
+msgstr ""
+
+#: tzintellitime_sync.class.inc:220
+msgid "Removed !rows reports after sync"
+msgstr ""
+
+#: tzintellitime_sync.class.inc:239
+msgid "Sending report with nid !nid to week !week"
+msgstr ""
+
+#: tzintellitime_sync.class.inc:272
+msgid "No match for \"!title\" in jobmap"
+msgstr ""
+
+#: tzintellitime_sync.class.inc:317
+msgid "tzintellitime_sync"
+msgstr ""
+
+#: tzintellitime_sync.class.inc:317
+msgid "!operation !type !nid"
 msgstr ""
 
 #: tzintellitime_sync.module:133
@@ -97,36 +118,16 @@ msgstr ""
 msgid "No session available for user !name (!uid), last sync !interval ago"
 msgstr ""
 
-#: tzintellitime_sync.module:160
+#: tzintellitime_sync.module:163
 msgid "Synchronized user !name (!uid), last sync !interval ago"
 msgstr ""
 
-#: tzintellitime_sync.module:170
+#: tzintellitime_sync.module:173
 msgid "Expired session for user !name (!uid), last sync !interval ago"
 msgstr ""
 
-#: tzintellitime_sync.module:178
+#: tzintellitime_sync.module:181
 msgid "Failed to synchronize user !name (!uid), last sync !interval ago"
-msgstr ""
-
-#: tzintellitime_sync.module:397
-msgid "Removed !rows reports after sync"
-msgstr ""
-
-#: tzintellitime_sync.module:415
-msgid "Sending report with nid !nid to week !week"
-msgstr ""
-
-#: tzintellitime_sync.module:448
-msgid "No match for \"!title\" in jobmap"
-msgstr ""
-
-#: tzintellitime_sync.module:493
-msgid "tzintellitime_sync"
-msgstr ""
-
-#: tzintellitime_sync.module:493
-msgid "!operation !type !nid"
 msgstr ""
 
 #: tzintellitime_sync.module:64

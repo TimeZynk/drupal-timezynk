@@ -11,12 +11,17 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
 
   public function setUp() {
     // Enable any modules required for the test.
-    parent::setUp('libraries', 'tzbase', 'tzintellitime', 'tzintellitime_mock', 'tzintellitime_sync');
-    // Set up mock intellitime
+    parent::setUp('libraries', 'date_api', 'date_timezone', 'tzbase', 'tzintellitime', 'tzintellitime_mock', 'tzintellitime_sync');
+
+    // Use mock intellitime URL
     variable_set('tzintellitime_base_url', url('IntelliplanWeb/Login.aspx', array('absolute' => TRUE)));
+    variable_set('date_default_timezone_name', 'Europe/Stockholm');
+
     // Include resources
     tzbase_include_proto_classes();
     tzintellitime_include_classes();
+    require_once dirname(__FILE__) . '/tzintellitime_sync.class.inc';
+
     // Create and test user
     $account = (object)array('name' => 'test user', 'pass_raw' => 'test password');
     $this->login_timestamp = time();

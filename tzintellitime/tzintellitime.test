@@ -297,7 +297,7 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
   }
 }
 
-class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
+class TZIntellitimeReportTestCase extends DrupalWebTestCase {
 
   private $report = NULL;
 
@@ -311,8 +311,10 @@ class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
 
   public function setUp() {
     // Enable any modules required for the test.
-    parent::setUp('tzintellitime');
-    require_once dirname(__FILE__) . '/tzintellitime.class.inc';
+    parent::setUp('date_api', 'date_timezone', 'tzbase', 'tzintellitime');
+    variable_set('date_default_timezone_name', 'Europe/Stockholm');
+    tzintellitime_include_classes();
+
     $this->report = new TZIntellitimeReport();
   }
 
@@ -389,7 +391,6 @@ class TZIntellitimeReportTestCase extends DrupalUnitTestCase {
     $other_report->overtime_hours = 6;
 
     $this->assertNotEqual($this->report, $other_report, 'Expected the two reports to not be considered equal.');
-
   }
 
   public function testConvertToTZReport() {

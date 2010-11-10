@@ -8,8 +8,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tzbase\n"
-"POT-Creation-Date: 2010-07-16 13:53+0200\n"
-"PO-Revision-Date: 2010-07-16 13:54+0100\n"
+"POT-Creation-Date: 2010-11-10 17:52+0100\n"
+"PO-Revision-Date: 2010-11-10 17:54+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: TimeZynk AB <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -20,69 +20,80 @@ msgstr ""
 "X-Poedit-Country: SWEDEN\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: tzstats.invoice.inc:28
+#: tzreports.invoice.inc:30
 msgid "Summary for @job @startdate - @enddate"
 msgstr "Sammanfattning för @job @startdate - @enddate"
 
-#: tzstats.invoice.inc:64
+#: tzreports.invoice.inc:63
 msgid "No reports for the selected date span"
 msgstr "Inga rapporter hittade i det valda datumintervallet"
 
-#: tzstats.invoice.inc:92
-msgid "Select job..."
-msgstr "Välj uppdrag..."
-
-#: tzstats.invoice.inc:116
+#: tzreports.invoice.inc:116
 msgid "Select options"
 msgstr "Sökning"
 
-#: tzstats.invoice.inc:123
-msgid "Job to invoice"
-msgstr "Välj uppdrag att fakturera"
+#: tzreports.invoice.inc:123;126
+msgid "Select assignment"
+msgstr "Välj uppdrag"
 
-#: tzstats.invoice.inc:125
-msgid "Select which job to list time reports for"
-msgstr "Välj uppdrag att hämta tidrapporter från"
+#: tzreports.invoice.inc:128
+msgid "Select which assignment to list time reports for"
+msgstr "Välj uppdrag att hämta tidrapporter för"
 
-#: tzstats.invoice.inc:131
+#: tzreports.invoice.inc:134
 msgid "Start date"
 msgstr "Startdatum"
 
-#: tzstats.invoice.inc:140
+#: tzreports.invoice.inc:139
 msgid "End date"
 msgstr "Slutdatum"
 
-#: tzstats.invoice.inc:150
+#: tzreports.invoice.inc:145
 msgid "Apply"
 msgstr "Verkställ"
 
-#: tzstats.invoice.inc:158
-msgid "Please select a job to invoice"
-msgstr "Vänligen välj vilket uppdrag du vill hämta tidrapporter från"
+#: tzreports.invoice.inc:153
+msgid "Please select an assignment"
+msgstr "Välj vilket uppdrag du vill hämta tidrapporter från"
 
-#: tzstats.invoice.inc:165
+#: tzreports.invoice.inc:160
 msgid "End date must be after start date"
 msgstr "Slutdatumet måste vara efter startdatumet"
 
-#: tzstats.module:12
-msgid "Invoice"
-msgstr "Fakturera"
-
-#: tzstats.module:26
-msgid "view tzstats invoice"
+#: tzreports.module:27
+msgid "use timezynk report generator"
 msgstr ""
 
-#: tzstats.info:0
-msgid "TimeZynk Statistics"
-msgstr "TimeZynk Statistik"
+#: tzreports.module:12
+msgid "Assignment summary"
+msgstr "Uppdragsöversikt"
 
-#: tzstats.info:0
-msgid "Provides TimeZynk statistics and reports"
-msgstr "Tillhandahåller statistik och rapporter för TimeZynk"
+#: tzreports.info:0
+msgid "TimeZynk report generator"
+msgstr "Rapportgenerator för TimeZynk"
 
-#: tzstats.info:0
+#: tzreports.info:0
+msgid "Provides TimeZynk reports"
+msgstr "Tillhandahåller rapporter för TimeZynk"
+
+#: tzreports.info:0
 msgid "TimeZynk"
 msgstr ""
+
+#~ msgid "-- Select assignment --"
+#~ msgstr "-- Välj uppdrag --"
+
+#~ msgid "Select job..."
+#~ msgstr "Välj uppdrag..."
+
+#~ msgid "Job to invoice"
+#~ msgstr "Välj uppdrag att fakturera"
+
+#~ msgid "Invoice"
+#~ msgstr "Fakturera"
+
+#~ msgid "TimeZynk Statistics"
+#~ msgstr "TimeZynk Statistik"
 
 #~ msgid "Invoices for @job"
 #~ msgstr "Faktureringsunderlag för @job"

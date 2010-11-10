@@ -9,7 +9,7 @@
  */
 function tzreports_menu() {
   $items['reports/invoice'] = array(
-    'title' => 'Invoice',
+    'title' => 'Assignment summary',
     'title callback' => 't',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('tzreports_invoice'),
@@ -32,12 +32,12 @@ function tzreports_perm() {
  */
 function tzreports_theme() {
   return array(
-    'invoice_legend' => array(
+    'assignment_trail' => array(
       'arguments' => array('trail' => NULL),
     ),
   );
 }
 
-function theme_invoice_legend($trail) {
+function theme_assignment_trail($trail) {
   return implode(' &raquo; ', $trail);
 }

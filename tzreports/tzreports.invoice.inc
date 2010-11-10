@@ -1,4 +1,6 @@
 <?php
+
+define('TZREPORTS_INVOICE_DATE_FORMAT', variable_get('tzreports_invoice_date_format', 'Y-m-d'));
 /**
  * @file
  * Invoice generator
@@ -11,54 +13,51 @@ function tzreports_invoice(&$form_state) {
   if(isset($form_state['values'])) {
     $form_state['storage']['job'] = $form_state['values']['job'];
     foreach(array('start', 'end') as $key) {
-      $form_state['storage'][$key] = tzreports_timestamp_from_formdate($form_state['values'][$key]);
+      $form_state['storage'][$key] = $form_state['values'][$key];
     }
   }
   $form_state['rebuild'] = TRUE;
 
-  $form['filter'] = tzreports_invoice_form($form_state);
+  $form['filter'] = _tzreports_invoice_filter_form($form_state);
 
   if(isset($form_state['values'])) {
-    $parentid = $form_state['values']['job'];
-    $parentjob = node_load($parentid);
+    $jobtrail = explode(':', $form_state['values']['job']);
+    $parentjob = node_load(end($jobtrail));
 
-    $startdate = tzreports_timestamp_from_formdate($form_state['values']['start']);
-    $enddate = tzreports_timestamp_from_formdate($form_state['values']['end']);
+    $startdate = _tzreports_datetime_from_formdate($form_state['values']['start']);
+    $enddate = _tzreports_datetime_from_formdate($form_state['values']['end']);
 
     drupal_set_title(t('Summary for @job @startdate - @enddate', array(
       '@job' => $parentjob->title,
-      '@startdate' => date(variable_get('tzreports_invoice_date_format', 'Y-m-d'), $startdate),
-      '@enddate' => date(variable_get('tzreports_invoice_date_format', 'Y-m-d'), $enddate),
+      '@startdate' => $startdate->format(TZREPORTS_INVOICE_DATE_FORMAT),
+      '@enddate' => $enddate->format(TZREPORTS_INVOICE_DATE_FORMAT),
     )));
 
-    $form['data'] = tzreports_show_invoices_for_job($parentjob, $startdate, $enddate, array());
+    $form['data'] = _tzreports_show_invoices_for_job($parentjob, $startdate, $enddate, array());
   }
 
   // Form settings
-  $form['#theme'] = 'tzreports_invoice_form';
-  $form['#validate'][] = 'tzreports_invoice_form_validate';
-  //$form['#submit'][] = 'tzreports_invoice_form_submit';
   $form['#redirect'] = FALSE;
-
-  // Make sure that we validate because this form might be submitted
-  // multiple times per page.
-  //$form_state['must_validate'] = TRUE;
-  //$form_state['rebuild'] = TRUE;
 
   return $form;
 }
 
-function tzreports_show_invoices_for_job(&$job, $startdate, $enddate, $trail) {
+function _tzreports_show_invoices_for_job(&$job, $startdate, $enddate, $trail) {
   $output = array();
 
   $trail[] = $job->title;
+
+  // make sure we show reports from startdate midnight up to and including enddate
+  $startdate->modify('midnight');
+  $enddate->modify('+1 day');
+  $enddate->modify('midnight');
 
   // Load default view
   $view_content = views_embed_view(variable_get('tzreports_invoice_view', 'invoice_report'),
     variable_get('tzreports_invoice_view_display', 'default'),
     $job->nid,
-    $startdate,
-    $enddate);
+    $startdate->format('U'),
+    $enddate->format('U') - 1);
 
   if(false === strpos($view_content, 'view-content')) {
     $view_content = t('No reports for the selected date span');
@@ -66,7 +65,7 @@ function tzreports_show_invoices_for_job(&$job, $startdate, $enddate, $trail) {
 
   $output['job_' . $job->nid] = array(
     '#type' => 'fieldset',
-    '#title' => theme('invoice_legend', $trail),
+    '#title' => theme('assignment_trail', $trail),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     'data' => array(
@@ -77,37 +76,38 @@ function tzreports_show_invoices_for_job(&$job, $startdate, $enddate, $trail) {
   );
 
   // Find all children and show their results
-  $result = tzreports_get_jobs_for_parent($job->nid);
+  $result = _tzreports_get_jobs_for_parent($job->nid);
   while($child = db_fetch_object($result)) {
-    $output[] = tzreports_show_invoices_for_job($child, $startdate, $enddate, $trail);
+    $output[] = _tzreports_show_invoices_for_job($child, $startdate, $enddate, $trail);
   }
 
   return $output;
 }
 
+function _tzreports_invoice_filter_form(&$form_state) {
+  $date = date_make_date('now');
 
-function tzreports_invoice_job_list() {
-  $result = tzreports_get_jobs_for_parent($parentid);
-  $joblist = array();
-  $joblist[0] = t('Select job...');
-  while($job = db_fetch_object($result)) {
-    $joblist[$job->nid] = $job->title;
-  }
-
-  return $joblist;
-}
-
-function tzreports_invoice_form(&$form_state) {
   // Set default day to first and last day of current month
-  $today = getdate();
   $default_date = array();
-  $default_date['start'] = getdate(mktime(0, 0, 0, $today['mon'], 1, $today['year']));
-  $default_date['end'] = getdate(mktime(0, 0, 0, $today['mon'] + 1, 0, $today['year']));
+  $default_date['start'] = array(
+    'year' => $date->format('Y'),
+    'month' => $date->format('n'),
+    'day' => 1,
+  );
+
+  $date = _tzreports_datetime_from_formdate($default_date['start']);
+  $date->modify('+1 month');
+  $date->modify('-1 day');
+  $default_date['end'] = array(
+    'year' => $date->format('Y'),
+    'month' => $date->format('n'),
+    'day' => $date->format('j'),
+  );
 
   // Check if users has stored new default values that should override the old
   foreach(array('start', 'end') as $key) {
     if(isset($form_state['storage'][$key])) {
-      $default_date[$key] = getdate($form_state['storage'][$key]);
+      $default_date[$key] = $form_state['storage'][$key];
     }
   }
 
@@ -118,31 +118,26 @@ function tzreports_invoice_form(&$form_state) {
     '#collapsible' => TRUE,
     '#collapsed' => isset($form_state['values']),
   );
+
+  $joblistoptions = tzbase_list_jobs();
+  array_unshift($joblistoptions, '-- ' . t('Select assignment') . ' --');
   $form['job'] = array(
     '#type' => 'select',
-    '#title' => t('Job to invoice'),
-    '#options' => tzreports_invoice_job_list(),
-    '#description' => t('Select which job to list time reports for'),
+    '#title' => t('Select assignment'),
+    '#options' => $joblistoptions,
+    '#description' => t('Select which assignment to list time reports for'),
     '#required' => TRUE,
     '#default_value' => isset($form_state['storage']['job']) ? $form_state['storage']['job'] : 0,
   );
   $form['start'] = array(
     '#type' => 'date',
     '#title' => t('Start date'),
-    '#default_value' => array(
-      'year' => $default_date['start']['year'],
-      'month' => $default_date['start']['mon'],
-      'day' => $default_date['start']['mday'],
-    ),
+    '#default_value' => $default_date['start'],
   );
   $form['end'] = array(
     '#type' => 'date',
     '#title' => t('End date'),
-    '#default_value' => array(
-      'year' => $default_date['end']['year'],
-      'month' => $default_date['end']['mon'],
-      'day' => $default_date['end']['mday'],
-    ),
+    '#default_value' => $default_date['end'],
   );
   $form['submit'] = array(
     '#name' => '', // prevent from showing up in $_GET.
@@ -153,32 +148,29 @@ function tzreports_invoice_form(&$form_state) {
   return $form;
 }
 
-function tzreports_invoice_form_validate($form, &$form_state) {
-  if($form_state['values']['job'] == 0) {
-    form_set_error('job', t('Please select a job to invoice'));
+function tzreports_invoice_validate($form, &$form_state) {
+  if($form_state['values']['job'] === '0') {
+    form_set_error('job', t('Please select an assignment'));
   }
 
-  $startdate = tzreports_timestamp_from_formdate($form_state['values']['start']);
-  $enddate = tzreports_timestamp_from_formdate($form_state['values']['end']);
+  $startdate = _tzreports_datetime_from_formdate($form_state['values']['start']);
+  $enddate = _tzreports_datetime_from_formdate($form_state['values']['end']);
 
   if($enddate < $startdate) {
     form_set_error('end', t('End date must be after start date'));
   }
 }
 
-function tzreports_invoice_form_submit($form, &$form_state) {
-
-}
-
-function tzreports_timestamp_from_formdate($formdate) {
-  return mktime(0, 0, 0, $formdate['month'], $formdate['day'], $formdate['year']);
+function _tzreports_datetime_from_formdate($formdate) {
+  $datestring = sprintf('%04d-%02d-%02d 00:00:00', $formdate['year'], $formdate['month'], $formdate['day']);
+  return date_make_date($datestring);
 }
 
 /**
  * Fetch all jobs that are children to $parentid
  * @param int $parentid parent id
  */
-function tzreports_get_jobs_for_parent($parentid) {
+function _tzreports_get_jobs_for_parent($parentid) {
   $sql = 'SELECT * FROM {tzjob} t INNER JOIN {node} n on t.nid = n.nid WHERE t.parentid = %d ORDER BY n.title';
   return db_query(db_rewrite_sql($sql), $parentid);
 }

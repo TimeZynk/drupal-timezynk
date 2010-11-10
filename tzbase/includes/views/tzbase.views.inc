@@ -68,7 +68,7 @@ function tzbase_views_data() {
     'help' => t('Time Report start time'),
 
     'field' => array(
-      'handler' => 'views_handler_field_date',
+      'handler' => 'tzbase_handler_field_date',
       'click sortable' => TRUE,
     ),
     'sort' => array(
@@ -88,7 +88,7 @@ function tzbase_views_data() {
     'help' => t('Time Report end time'),
 
     'field' => array(
-      'handler' => 'views_handler_field_date',
+      'handler' => 'tzbase_handler_field_date',
       'click sortable' => TRUE,
     ),
   );
@@ -162,6 +162,10 @@ function tzbase_views_handlers() {
       'path' => drupal_get_path('module', 'tzbase') . '/includes/views/handlers',
     ),
     'handlers' => array(
+      'tzbase_handler_field_date' => array(
+        'parent' => 'views_handler_field_date',
+      ),
+
       'tzbase_handler_field_interval' => array(
         'parent' => 'views_handler_field',
       ),

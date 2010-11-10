@@ -68,36 +68,6 @@ function timezynk_basic_feature_views_default_views() {
       'field' => 'realname',
       'relationship' => 'assignedto',
     ),
-    'title' => array(
-      'label' => 'Title',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'link_to_node' => 0,
-      'exclude' => 0,
-      'id' => 'title',
-      'table' => 'node',
-      'field' => 'title',
-      'relationship' => 'none',
-    ),
     'body' => array(
       'label' => 'Comment',
       'alter' => array(
@@ -541,7 +511,7 @@ function timezynk_basic_feature_views_default_views() {
     'grouping' => '',
     'override' => 1,
     'sticky' => 0,
-    'order' => 'desc',
+    'order' => 'asc',
     'columns' => array(
       'realname' => 'realname',
       'title' => 'title',
@@ -551,6 +521,7 @@ function timezynk_basic_feature_views_default_views() {
       'endtime' => 'endtime',
       'breakduration' => 'breakduration',
       'totalduration' => 'totalduration',
+      'edit_node' => 'edit_node',
     ),
     'info' => array(
       'realname' => array(
@@ -608,6 +579,12 @@ function timezynk_basic_feature_views_default_views() {
         'calc' => array(
           'SUM' => 'SUM',
         ),
+      ),
+      'edit_node' => array(
+        'separator' => '',
+        'justification' => 'views_calc_justify_none',
+        'has_calc' => 0,
+        'calc' => array(),
       ),
     ),
     'default' => 'begintime_1',
@@ -955,27 +932,37 @@ function timezynk_basic_feature_views_default_views() {
       'field' => 'flags',
       'relationship' => 'none',
     ),
-    'begintime' => array(
+    'date_filter' => array(
       'operator' => 'between',
       'value' => array(
-        'type' => 'date',
-        'value' => '',
-        'min' => '',
-        'max' => '',
+        'min' => NULL,
+        'max' => NULL,
+        'value' => NULL,
+        'default_date' => '',
+        'default_to_date' => '',
       ),
       'group' => '0',
       'exposed' => TRUE,
       'expose' => array(
+        'operator' => 'date_filter_op',
+        'label' => 'Date',
         'use_operator' => 0,
-        'operator' => 'begintime_op',
-        'identifier' => 'begintime',
-        'label' => 'Start time between',
+        'identifier' => 'date_filter',
         'optional' => 1,
         'remember' => 0,
       ),
-      'id' => 'begintime',
-      'table' => 'tzreport',
-      'field' => 'begintime',
+      'date_fields' => array(
+        'tzreport.begintime' => 'tzreport.begintime',
+      ),
+      'date_method' => 'OR',
+      'granularity' => 'day',
+      'form_type' => 'date_popup',
+      'default_date' => '',
+      'default_to_date' => '',
+      'year_range' => '-3:+3',
+      'id' => 'date_filter',
+      'table' => 'node',
+      'field' => 'date_filter',
       'override' => array(
         'button' => 'Override',
       ),
@@ -1020,7 +1007,7 @@ function timezynk_basic_feature_views_default_views() {
   $handler->override_option('items_per_page', 0);
   $handler->override_option('style_plugin', 'views_calc');
   $handler->override_option('style_options', array(
-    'grouping' => '',
+    'grouping' => 'realname',
     'override' => 1,
     'sticky' => 0,
     'order' => 'asc',
@@ -1037,7 +1024,7 @@ function timezynk_basic_feature_views_default_views() {
     ),
     'info' => array(
       'realname' => array(
-        'sortable' => 0,
+        'sortable' => 1,
         'separator' => '',
         'justification' => 'views_calc_justify_none',
         'has_calc' => 0,
@@ -1087,7 +1074,7 @@ function timezynk_basic_feature_views_default_views() {
         ),
       ),
       'flags' => array(
-        'sortable' => 0,
+        'sortable' => 1,
         'separator' => '',
         'justification' => 'views_calc_justify_none',
         'has_calc' => 0,

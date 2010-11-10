@@ -17,7 +17,15 @@ class TZBaseTestCase extends DrupalWebTestCase {
 
   public function setUp() {
     // Enable any modules required for the test.
-   parent::setUp('libraries', 'tzbase');
+   parent::setUp('libraries', 'date_timezone', 'date_api', 'tzbase');
+
+   /* For the DST checks below to work properly, we need to setup the
+    * default timezone */
+   $admin = $this->drupalCreateUser(array('administer site configuration'));
+   $this->drupalLogin($admin);
+   $form['date_default_timezone_name'] = 'Europe/Stockholm';
+   $this->drupalPost('admin/settings/date-time', $form, t('Save configuration'));
+   $this->drupalLogout();
 
    // Create and test user
    $this->test_user = $this->drupalCreateUser(array(
@@ -56,11 +64,11 @@ class TZBaseTestCase extends DrupalWebTestCase {
   }
 
   private function doTestPostSimpleReport($jobid) {
-    $now = getdate();
+    $now = date_make_date('now');
     $edit['title'] = 'Simple Report';
-    $edit['workdate[month]'] = $now['mon'];
-    $edit['workdate[day]'] = $now['mday'];
-    $edit['workdate[year]'] = $now['year'];
+    $edit['workdate[month]'] = $now->format('n');
+    $edit['workdate[day]'] = $now->format('j');
+    $edit['workdate[year]'] = $now->format('Y');
     $edit['jobid'] = 'nid:0:' . $jobid;
     $edit['assignedto_name'] = $this->test_user->name;
     $edit['flags'] = 0;
@@ -74,18 +82,14 @@ class TZBaseTestCase extends DrupalWebTestCase {
     $nid = $this->addNode('tzreport', $edit);
 
     $node = node_load($nid);
-    $begintime = getdate($node->begintime);
-    $endtime = getdate($node->endtime);
-    foreach(array('month', 'mday', 'year') as $field) {
-      $this->assertEqual($now[$field], $begintime[$field], "Expect begintime $field = $now[$field], got $begintime[$field]");
-      $this->assertEqual($now[$field], $endtime[$field], "Expect endtime $field = $now[$field], got $endtime[$field]");
-    }
-    $this->assertEqual(9, $begintime['hours']);
-    $this->assertEqual(15, $begintime['minutes']);
-    $this->assertEqual(0, $begintime['seconds']);
-    $this->assertEqual(18, $endtime['hours']);
-    $this->assertEqual(0, $endtime['minutes']);
-    $this->assertEqual(0, $endtime['seconds']);
+    $begintime = tzbase_make_date($node->begintime);
+    $this->assertEqual($now->format('Y-m-d'), $begintime->format('Y-m-d'));
+
+    $endtime = tzbase_make_date($node->endtime);
+    $this->assertEqual($now->format('Y-m-d'), $endtime->format('Y-m-d'));
+
+    $this->assertEqual('09:15:00', $begintime->format('H:i:s'));
+    $this->assertEqual('18:00:00', $endtime->format('H:i:s'));
 
     $this->assertEqual(3*3600+45*60, $node->breakduration);
     $this->assertEqual(5*3600, $node->totalduration, 'Expect 5 hours duration, got ' . $node->totalduration/3600);
@@ -99,11 +103,11 @@ class TZBaseTestCase extends DrupalWebTestCase {
   }
 
   private function doTestPostMidnightReport($jobid) {
-    $now = getdate();
+    $now = date_make_date('now');
     $edit['title'] = 'Midnight Report';
-    $edit['workdate[month]'] = $now['mon'];
-    $edit['workdate[day]'] = $now['mday'];
-    $edit['workdate[year]'] = $now['year'];
+    $edit['workdate[month]'] = $now->format('n');
+    $edit['workdate[day]'] = $now->format('j');
+    $edit['workdate[year]'] = $now->format('Y');
     $edit['jobid'] = 'nid:0:' . $jobid;
     $edit['assignedto_name'] = $this->test_user->name;
     $edit['flags'] = 0;
@@ -117,19 +121,15 @@ class TZBaseTestCase extends DrupalWebTestCase {
     $nid = $this->addNode('tzreport', $edit);
 
     $node = node_load($nid);
-    $begintime = getdate($node->begintime);
-    $endtime = getdate($node->endtime);
-    $tomorrow = getdate(mktime(0, 0, 0, $now['mon'], $now['mday'] + 1, $now['year']));
-    foreach(array('mon', 'mday', 'year') as $field) {
-      $this->assertEqual($now[$field], $begintime[$field], "Expect begintime $field = $now[$field], got $begintime[$field]");
-      $this->assertEqual($tomorrow[$field], $endtime[$field], "Expect endtime $field = $tomorrow[$field], got $endtime[$field]");
-    }
-    $this->assertEqual(22, $begintime['hours']);
-    $this->assertEqual(15, $begintime['minutes']);
-    $this->assertEqual(0, $begintime['seconds']);
-    $this->assertEqual(2, $endtime['hours']);
-    $this->assertEqual(30, $endtime['minutes']);
-    $this->assertEqual(0, $endtime['seconds']);
+    $begintime = tzbase_make_date($node->begintime);
+    $this->assertEqual($now->format('Y-m-d'), $begintime->format('Y-m-d'));
+
+    $endtime = tzbase_make_date($node->endtime);
+    $now->modify('+1 day');
+    $this->assertEqual($now->format('Y-m-d'), $endtime->format('Y-m-d'));
+
+    $this->assertEqual('22:15:00', $begintime->format('H:i:s'));
+    $this->assertEqual('02:30:00', $endtime->format('H:i:s'));
 
     $this->assertEqual(3600+15*60, $node->breakduration);
     $this->assertEqual(3*3600, $node->totalduration);
@@ -140,12 +140,12 @@ class TZBaseTestCase extends DrupalWebTestCase {
   }
 
   private function doTestPostDSTSpringReport($jobid) {
-    // Spring DST started 02:00 2010-03-28
-    $now = getdate(mktime(12,0,0,3,27,2010));
+    // Spring DST 2010 starts 02:00 2010-03-28
+    $now = date_make_date('2010-03-27 12:00');
     $edit['title'] = 'DST Spring Report';
-    $edit['workdate[month]'] = $now['mon'];
-    $edit['workdate[day]'] = $now['mday'];
-    $edit['workdate[year]'] = $now['year'];
+    $edit['workdate[month]'] = $now->format('n');
+    $edit['workdate[day]'] = $now->format('j');
+    $edit['workdate[year]'] = $now->format('Y');
     $edit['jobid'] = 'nid:0:' . $jobid;
     $edit['assignedto_name'] = $this->test_user->name;
     $edit['flags'] = 0;
@@ -159,19 +159,15 @@ class TZBaseTestCase extends DrupalWebTestCase {
     $nid = $this->addNode('tzreport', $edit);
 
     $node = node_load($nid);
-    $begintime = getdate($node->begintime);
-    $endtime = getdate($node->endtime);
-    $tomorrow = getdate(mktime(0, 0, 0, $now['mon'], $now['mday'] + 1, $now['year']));
-    foreach(array('mon', 'mday', 'year') as $field) {
-      $this->assertEqual($now[$field], $begintime[$field], "Expect begintime $field = $now[$field], got $begintime[$field]");
-      $this->assertEqual($tomorrow[$field], $endtime[$field], "Expect endtime $field = $tomorrow[$field], got $endtime[$field]");
-    }
-    $this->assertEqual(22, $begintime['hours']);
-    $this->assertEqual(15, $begintime['minutes']);
-    $this->assertEqual(0, $begintime['seconds']);
-    $this->assertEqual(3, $endtime['hours']);
-    $this->assertEqual(30, $endtime['minutes']);
-    $this->assertEqual(0, $endtime['seconds']);
+    $begintime = tzbase_make_date($node->begintime);
+    $this->assertEqual($now->format('Y-m-d'), $begintime->format('Y-m-d'));
+
+    $endtime = tzbase_make_date($node->endtime);
+    $now->modify('+1 day');
+    $this->assertEqual($now->format('Y-m-d'), $endtime->format('Y-m-d'));
+
+    $this->assertEqual('22:15:00', $begintime->format('H:i:s'));
+    $this->assertEqual('03:30:00', $endtime->format('H:i:s'));
 
     $this->assertEqual(3600+15*60, $node->breakduration);
     $this->assertEqual(3*3600, $node->totalduration);
@@ -183,11 +179,11 @@ class TZBaseTestCase extends DrupalWebTestCase {
 
   private function doTestPostDSTAutumnReport($jobid) {
     // Autumn DST ends 03:00 2010-10-31
-    $now = getdate(mktime(12,0,0,10,30,2010));
+    $now = date_make_date('2010-10-30 12:00');
     $edit['title'] = 'DST Autumn Report';
-    $edit['workdate[month]'] = $now['mon'];
-    $edit['workdate[day]'] = $now['mday'];
-    $edit['workdate[year]'] = $now['year'];
+    $edit['workdate[month]'] = $now->format('n');
+    $edit['workdate[day]'] = $now->format('j');
+    $edit['workdate[year]'] = $now->format('Y');
     $edit['jobid'] = 'nid:0:' . $jobid;
     $edit['assignedto_name'] = $this->test_user->name;
     $edit['flags'] = 0;
@@ -201,19 +197,15 @@ class TZBaseTestCase extends DrupalWebTestCase {
     $nid = $this->addNode('tzreport', $edit);
 
     $node = node_load($nid);
-    $begintime = getdate($node->begintime);
-    $endtime = getdate($node->endtime);
-    $tomorrow = getdate(mktime(0, 0, 0, $now['mon'], $now['mday'] + 1, $now['year']));
-    foreach(array('mon', 'mday', 'year') as $field) {
-      $this->assertEqual($now[$field], $begintime[$field], "Expect begintime $field = $now[$field], got $begintime[$field]");
-      $this->assertEqual($tomorrow[$field], $endtime[$field], "Expect endtime $field = $tomorrow[$field], got $endtime[$field]");
-    }
-    $this->assertEqual(22, $begintime['hours']);
-    $this->assertEqual(15, $begintime['minutes']);
-    $this->assertEqual(0, $begintime['seconds']);
-    $this->assertEqual(3, $endtime['hours']);
-    $this->assertEqual(30, $endtime['minutes']);
-    $this->assertEqual(0, $endtime['seconds']);
+    $begintime = tzbase_make_date($node->begintime);
+    $this->assertEqual($now->format('Y-m-d'), $begintime->format('Y-m-d'));
+
+    $endtime = tzbase_make_date($node->endtime);
+    $now->modify('+1 day');
+    $this->assertEqual($now->format('Y-m-d'), $endtime->format('Y-m-d'));
+
+    $this->assertEqual('22:15:00', $begintime->format('H:i:s'));
+    $this->assertEqual('03:30:00', $endtime->format('H:i:s'));
 
     $this->assertEqual(3600+15*60, $node->breakduration);
     $this->assertEqual(5*3600, $node->totalduration);

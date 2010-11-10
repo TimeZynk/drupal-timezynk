@@ -62,7 +62,7 @@ function excelexport_export() {
 
     drupal_set_header('Content-Type: application/vnd.ms-excel');
     drupal_set_header('Content-Disposition: attachment; filename=TimeZynk_Reports_' .
-      format_date(time(), 'custom', 'Y-m-d') . '.xls');
+      tzbase_make_date()->format('Y-m-d') . '.xls');
 
 	// We flush in order for the temp file to be fully written before we pass its contents on to drupal.
     flush();
@@ -96,7 +96,8 @@ function _excelexport_autosize_columns($php_excel_instance, $max_column = 0) {
  */
 function _excelexport_build_datetime_string($timestamp) {
     if (is_numeric($timestamp)) {
-    	$timestamp = format_date($timestamp, 'custom', 'Y-m-d H:i');
+        $date = tzbase_make_date($timestamp);
+        return $date->format('Y-m-d H:i');
     }
     return $timestamp;
 }

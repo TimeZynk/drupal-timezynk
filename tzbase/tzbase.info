@@ -2,4 +2,6 @@ name = TimeZynk Base
 description = Provides TimeZynk data types and relations
 package = TimeZynk
 dependencies[] = libraries
+dependencies[] = date_api
+dependencies[] = date_timezone
 core = 6.x

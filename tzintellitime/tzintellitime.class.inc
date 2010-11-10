@@ -87,17 +87,17 @@ class TZIntellitimeBot {
 
   /**
    * Fetch all available intellitime data for the week that contains the given date
-   * @param int $date date as timestamp
+   * @param int $date DateTime object
    * @return FALSE on network failure, empty array on login failure, otherwise array with keys
    *   'assignments', 'reports' and 'unfinished_weeks'.
    */
-  public function load_week($date = 0) {
+  public function load_week($date = NULL) {
     // Use today as default date
-    if($date === 0) {
-      $date = time();
+    if($date === NULL) {
+      $date = tzbase_make_date();
     }
 
-    $datestr = date("Y-m-d", $date);
+    $datestr = $date->format('Y-m-d');
     $dateaction = "TimeReport/TimeReport.aspx?DateInWeek=$datestr";
 
     $url = $this->build_action_url($dateaction);
@@ -510,10 +510,11 @@ class TZIntellitimeParser {
    */
   public function parse_unfinished_weeks() {
     $elems = $this->doc->xpath('//a[@class="WeeksNav"]');
+    $timezone = date_default_timezone(FALSE);
     foreach($elems as $a) {
       $match = array();
       if(preg_match('/DateInWeek=(\d{4}-\d{2}-\d{2})/', $a['href'], $match)) {
-        $result[] = strtotime($match[1]);
+        $result[] = date_make_date($match[1], $timezone, DATE_DATETIME, array('year', 'month', 'day'));
       }
     }
     return $result;
@@ -670,15 +671,16 @@ class TZIntellitimeReport {
         $this->state = TZIntellitimeReport::STATE_LOCKED;
       }
 
-      $this->year = date('Y', $tzreport->begintime);
-      $this->month = date('m', $tzreport->begintime);
-      $this->day = date('d', $tzreport->begintime);
+      $begindate = tzbase_make_date($tzreport->begintime);
+      $this->year = $begindate->format('Y');
+      $this->month = $begindate->format('m');
+      $this->day = $begindate->format('d');
 
       $this->title = $tzreport->title;
       $this->comment = $tzreport->body;
 
-      $this->begin = date('H:i', $tzreport->begintime);
-      $this->end = date('H:i', $tzreport->endtime);
+      $this->begin = $begindate->format('H:i');
+      $this->end = tzbase_make_date($tzreport->endtime)->format('H:i');
 
       $this->break_duration_minutes = round($tzreport->breakduration/60);
     }
@@ -751,13 +753,16 @@ class TZIntellitimeReport {
     $tzreport->title = $this->title;
     $tzreport->body = $this->comment;
 
-    // Convert begin and end to epoch timestamps
-    $tzreport->begintime = $this->get_in_epoch($this->begin);
-    $tzreport->endtime = $this->get_in_epoch($this->end);
+    // Convert begin and end to DateTime objects
+    $begindate = $this->get_datetime($this->begin);
+    $enddate = $this->get_datetime($this->end);
+
+    $tzreport->begintime = $begindate->format('U');
+    $tzreport->endtime = $enddate->format('U');
     if ($tzreport->endtime < $tzreport->begintime) {
       // endtime can only be smaller if we have passed midnight. Add one day to endtime
-      $time = explode(':', $this->end);
-      $tzreport->endtime = mktime($time[0], $time[1], 0, $this->month, $this->day + 1, $this->year);
+      $enddate->modify('+1 day');
+      $tzreport->endtime = $enddate->format('U');
     }
     $tzreport->breakduration = $this->break_duration_minutes*60;
 
@@ -791,12 +796,14 @@ class TZIntellitimeReport {
   }
 
   /**
-   * Gets an epoch time stamp based on the reports year and month, day attributes
+   * Gets an DateTime object based on the reports year and month, day attributes
    * and the passed time string.
    * @param string $time_string e.g "07:00"
    */
-  private function get_in_epoch($time_string) {
-    return strtotime($this->get_date_string() . "T" . $time_string);
+  private function get_datetime($time_string) {
+    $timezone = date_default_timezone(FALSE);
+    $isodate_string = $this->get_date_string() . " " . $time_string;
+    return date_make_date($isodate_string, $timezone);
   }
 }
 

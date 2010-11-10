@@ -4,4 +4,5 @@ core = 6.x
 dependencies[] = tzbase
 depencencies[] = realname
 dependencies[] = libraries
+dependencies[] = date_api
 package = TimeZynk

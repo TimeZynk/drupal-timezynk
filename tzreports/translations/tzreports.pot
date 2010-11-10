@@ -3,15 +3,15 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  tzstats.invoice.inc: n/a
-#  tzstats.module: n/a
-#  tzstats.info: n/a
+#  tzreports.invoice.inc: n/a
+#  tzreports.module: n/a
+#  tzreports.info: n/a
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-07-16 13:53+0200\n"
+"POT-Creation-Date: 2010-11-10 17:52+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -20,67 +20,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzstats.invoice.inc:28
+#: tzreports.invoice.inc:30
 msgid "Summary for @job @startdate - @enddate"
 msgstr ""
 
-#: tzstats.invoice.inc:64
+#: tzreports.invoice.inc:63
 msgid "No reports for the selected date span"
 msgstr ""
 
-#: tzstats.invoice.inc:92
-msgid "Select job..."
-msgstr ""
-
-#: tzstats.invoice.inc:116
+#: tzreports.invoice.inc:116
 msgid "Select options"
 msgstr ""
 
-#: tzstats.invoice.inc:123
-msgid "Job to invoice"
+#: tzreports.invoice.inc:123;126
+msgid "Select assignment"
 msgstr ""
 
-#: tzstats.invoice.inc:125
-msgid "Select which job to list time reports for"
+#: tzreports.invoice.inc:128
+msgid "Select which assignment to list time reports for"
 msgstr ""
 
-#: tzstats.invoice.inc:131
+#: tzreports.invoice.inc:134
 msgid "Start date"
 msgstr ""
 
-#: tzstats.invoice.inc:140
+#: tzreports.invoice.inc:139
 msgid "End date"
 msgstr ""
 
-#: tzstats.invoice.inc:150
+#: tzreports.invoice.inc:145
 msgid "Apply"
 msgstr ""
 
-#: tzstats.invoice.inc:158
-msgid "Please select a job to invoice"
+#: tzreports.invoice.inc:153
+msgid "Please select an assignment"
 msgstr ""
 
-#: tzstats.invoice.inc:165
+#: tzreports.invoice.inc:160
 msgid "End date must be after start date"
 msgstr ""
 
-#: tzstats.module:12
-msgid "Invoice"
+#: tzreports.module:27
+msgid "use timezynk report generator"
 msgstr ""
 
-#: tzstats.module:26
-msgid "view tzstats invoice"
+#: tzreports.module:12
+msgid "Assignment summary"
 msgstr ""
 
-#: tzstats.info:0
-msgid "TimeZynk Statistics"
+#: tzreports.info:0
+msgid "TimeZynk report generator"
 msgstr ""
 
-#: tzstats.info:0
-msgid "Provides TimeZynk statistics and reports"
+#: tzreports.info:0
+msgid "Provides TimeZynk reports"
 msgstr ""
 
-#: tzstats.info:0
+#: tzreports.info:0
 msgid "TimeZynk"
 msgstr ""
 

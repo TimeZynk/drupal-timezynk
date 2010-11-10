@@ -9,13 +9,13 @@ class tzbase_handler_argument_begintime extends views_handler_argument {
     $options = parent::option_definition();
 
     $options['operator'] = array('default' => 0);
- 
+
     return $options;
   }
-  
+
   function options_form(&$form, &$form_state) {
      parent::options_form($form, $form_state);
- 
+
      // allow <= or >=
      $form['operator'] = array(
        '#type' => 'radios',
@@ -28,8 +28,8 @@ class tzbase_handler_argument_begintime extends views_handler_argument {
        '#default_value' => empty($this->options['operator']) ? 0 : $this->options['operator'],
      );
   }
-  
-  
+
+
   function query() {
     $this->ensure_my_table();
     $operator = '>=';
