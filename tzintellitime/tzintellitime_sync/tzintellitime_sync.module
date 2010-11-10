@@ -409,9 +409,10 @@ class TZIntellitimeSyncController {
    */
   function send_updated_reports() {
     // Find reports that need update
-    $result = db_query('SELECT * FROM {node} n INNER JOIN {tzreport} t ON n.nid = t.nid INNER JOIN {tzintellitime} i ON n.nid = i.nid WHERE n.changed > %d AND t.assignedto = %d',
+    $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE n.changed > %d AND t.assignedto = %d',
                        $this->account->intellitime_last_sync, $this->account->uid);
-    while($tzreport = db_fetch_object($result)) {
+    while($nid = db_result($result)) {
+      $tzreport = node_load($nid, NULL, TRUE);
       watchdog('tzintellitime', 'Sending report with nid !nid to week !week',
         array('!nid' => $tzreport->nid, '!itid' => $tzreport->intellitime_id, '!week' => date('o\WW', $tzreport->begintime)),
         WATCHDOG_NOTICE,

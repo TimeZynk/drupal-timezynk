@@ -182,6 +182,45 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
     $this->assertTrue($parser->is_valid_login(), "detected successful login");
   }
 
+  public function testBuildInputWithComments() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-with-comments.html');
+    $reports = $parser->parse_reports();
+    $tzreport = $reports[0];
+
+    $tzreport->id = 'mhbLP96iqH3xps0bh7%2fZv84hbku5Eii3';
+    $tzreport->begin = '09:31';
+    $tzreport->end = '17:43';
+    $tzreport->comment = 'I did all I could!';
+
+    $result = $parser->build_inputs($tzreport);
+    $this->assertNotNull($result, "expect not NULL");
+    $this->assertEqual($tzreport->comment, $result['OldRowsRepeater:_ctl0:TextboxNote']);
+    $this->assertEqual($tzreport->begin, $result['OldRowsRepeater:_ctl0:TextboxTimeFrom']);
+    $this->assertEqual($tzreport->end, $result['OldRowsRepeater:_ctl0:TextboxTimeTo']);
+    $this->assertEqual($tzreport->break_duration_minutes, $result['OldRowsRepeater:_ctl0:TextboxBreak']);
+
+
+
+  }
+
+  public function testBuildInputWithoutComments() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
+    $reports = $parser->parse_reports();
+    $tzreport = $reports[4];
+
+    $tzreport->id = 'mhbLP96iqH2aeWvSjjSDX84hbku5Eii3';
+    $tzreport->begin = '09:31';
+    $tzreport->end = '17:43';
+    $tzreport->comment = 'I did all I could!';
+
+    $result = $parser->build_inputs($tzreport);
+    $this->assertNotNull($result, "expect not NULL");
+    $this->assertTrue(!isset($result['OldRowsRepeater:_ctl4:TextboxNote']));
+    $this->assertEqual($tzreport->begin, $result['OldRowsRepeater:_ctl4:TextboxTimeFrom']);
+    $this->assertEqual($tzreport->end, $result['OldRowsRepeater:_ctl4:TextboxTimeTo']);
+    $this->assertEqual($tzreport->break_duration_minutes, $result['OldRowsRepeater:_ctl4:TextboxBreak']);
+  }
+
   public function testParseAssignments() {
     $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
     $assignments = $parser->parse_assignments();

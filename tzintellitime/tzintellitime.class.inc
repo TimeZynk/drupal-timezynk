@@ -364,42 +364,48 @@ class TZIntellitimeParser {
     $row = $this->find_row_by_id($report->id);
     if($row) {
       // Found! Update fields from $report
-      foreach ($row->xpath("*/input") as $input) {
-        $input_name = (string)$input['name'];
-        $split_input_name = split(":",  $input_name);
-        /* The inputs are named like this: "OldRowsRepeater:_ctl6:TextboxTimeTo"
-         * We want the last part, i.e. "TextboxTimeTo" */
-        $element = $split_input_name[2];
-        switch($element) {
-          case "TextboxTimeFrom":
-            $result[$input_name] = $report->begin;
-            break;
-          case "TextboxTimeTo":
-            $result[$input_name] = $report->end;
-            break;
-          case "TextboxBreak":
-            $result[$input_name] = $report->break_duration_minutes;
-            break;
-          case "CheckboxDayDone":
-            if ($report->state == TZIntellitimeReport::STATE_OPEN) {
-              unset($result[$input_name]);
-            } else {
-              $result[$input_name] = "on";
-            }
-            break;
-          case "TextboxExplicitOvertime":
-            $result[$input_name] = $report->overtime_hours;
-            break;
-          case "CheckBoxDelete":
-            if ($report->state == TZIntellitimeReport::STATE_DELETED) {
-              $result[$input_name] = "on";
-             } else {
-               unset($result[$input_name]);
-             }
-             break;
-          default:
-            // Skip over.
-        }
+      $first_input = $row->xpath('*/input[1]');
+      $name_segment = explode(':', (string) $first_input[0]['name']);
+      array_pop($name_segment);
+      $control_prefix = implode(':', $name_segment) . ':';
+
+      if (isset($result[$control_prefix . "TextboxTimeFrom"])) {
+      	$result[$control_prefix . "TextboxTimeFrom"] = $report->begin;
+      }
+
+      if (isset($result[$control_prefix . "TextboxTimeTo"])) {
+      	$result[$control_prefix . "TextboxTimeTo"] = $report->end;
+      }
+
+      if (isset($result[$control_prefix . "TextboxBreak"])) {
+      	$result[$control_prefix . "TextboxBreak"] = $report->break_duration_minutes;
+      }
+
+      if (isset($result[$control_prefix . "TextboxExplicitOvertime"])) {
+      	$result[$control_prefix . "TextboxExplicitOvertime"] = $report->overtime_hours;
+      }
+
+      if (isset($result[$control_prefix . "TextboxNote"])) {
+      	$result[$control_prefix . "TextboxNote"] = $report->comment;
+      }
+
+      switch($report->state) {
+      	case TZIntellitimeReport::STATE_OPEN:
+      	  unset($result[$control_prefix . "CheckboxDayDone"]);
+      	  unset($result[$control_prefix . "CheckboxDelete"]);
+      	  break;
+
+      	case TZIntellitimeReport::STATE_REPORTED:
+      	  $result[$control_prefix . "CheckboxDayDone"] = "on";
+      	  unset($result[$control_prefix . "CheckboxDelete"]);
+      	  break;
+
+      	case TZIntellitimeReport::STATE_DELETED:
+      	  $result[$control_prefix . "CheckboxDelete"] = "on";
+      	  break;
+
+      	default:
+      	  break;
       }
     }
     return $result;
@@ -669,6 +675,7 @@ class TZIntellitimeReport {
       $this->day = date('d', $tzreport->begintime);
 
       $this->title = $tzreport->title;
+      $this->comment = $tzreport->body;
 
       $this->begin = date('H:i', $tzreport->begintime);
       $this->end = date('H:i', $tzreport->endtime);

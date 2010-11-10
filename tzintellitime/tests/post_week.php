@@ -18,5 +18,6 @@ $reports = $result['reports'];
 $reports[1]->begin = "10:10";
 $reports[1]->end = "16:32";
 $reports[1]->state = TZIntellitimeReport::STATE_OPEN;
+$reports[1]->comment = "Slapsgiving";
 
 print_r($bot->update_report($reports[1]));
