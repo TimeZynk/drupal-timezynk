@@ -33,6 +33,159 @@ class TZJobFlags extends PBEnum
 			255 => "INACTIVE");
    }
 }
+class TZConstants extends PBEnum
+{
+  const VERSION  = 1;
+
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    $this->names = array(
+			1 => "VERSION");
+   }
+}
+class TZTime extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZTime"]["1"] = "PBInt";
+    $this->values["1"] = "";
+    self::$fieldNames["TZTime"]["1"] = "hour";
+    self::$fields["TZTime"]["2"] = "PBInt";
+    $this->values["2"] = "";
+    self::$fieldNames["TZTime"]["2"] = "minute";
+  }
+  function hour()
+  {
+    return $this->_get_value("1");
+  }
+  function set_hour($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+  function minute()
+  {
+    return $this->_get_value("2");
+  }
+  function set_minute($value)
+  {
+    return $this->_set_value("2", $value);
+  }
+}
+class TZDate extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZDate"]["1"] = "PBInt";
+    $this->values["1"] = "";
+    self::$fieldNames["TZDate"]["1"] = "year";
+    self::$fields["TZDate"]["2"] = "PBInt";
+    $this->values["2"] = "";
+    self::$fieldNames["TZDate"]["2"] = "month";
+    self::$fields["TZDate"]["3"] = "PBInt";
+    $this->values["3"] = "";
+    self::$fieldNames["TZDate"]["3"] = "day";
+  }
+  function year()
+  {
+    return $this->_get_value("1");
+  }
+  function set_year($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+  function month()
+  {
+    return $this->_get_value("2");
+  }
+  function set_month($value)
+  {
+    return $this->_set_value("2", $value);
+  }
+  function day()
+  {
+    return $this->_get_value("3");
+  }
+  function set_day($value)
+  {
+    return $this->_set_value("3", $value);
+  }
+}
+class TZDateRange extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZDateRange"]["1"] = "TZDate";
+    $this->values["1"] = "";
+    self::$fieldNames["TZDateRange"]["1"] = "start";
+    self::$fields["TZDateRange"]["2"] = "TZDate";
+    $this->values["2"] = "";
+    self::$fieldNames["TZDateRange"]["2"] = "end";
+  }
+  function start()
+  {
+    return $this->_get_value("1");
+  }
+  function set_start($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+  function end()
+  {
+    return $this->_get_value("2");
+  }
+  function set_end($value)
+  {
+    return $this->_set_value("2", $value);
+  }
+}
+class TZTimeSpan extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZTimeSpan"]["1"] = "TZDate";
+    $this->values["1"] = "";
+    self::$fieldNames["TZTimeSpan"]["1"] = "date";
+    self::$fields["TZTimeSpan"]["2"] = "TZTime";
+    $this->values["2"] = "";
+    self::$fieldNames["TZTimeSpan"]["2"] = "start";
+    self::$fields["TZTimeSpan"]["3"] = "TZTime";
+    $this->values["3"] = "";
+    self::$fieldNames["TZTimeSpan"]["3"] = "end";
+  }
+  function date()
+  {
+    return $this->_get_value("1");
+  }
+  function set_date($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+  function start()
+  {
+    return $this->_get_value("2");
+  }
+  function set_start($value)
+  {
+    return $this->_set_value("2", $value);
+  }
+  function end()
+  {
+    return $this->_get_value("3");
+  }
+  function set_end($value)
+  {
+    return $this->_set_value("3", $value);
+  }
+}
 class TZReport extends PBMessage
 {
   var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
@@ -78,6 +231,9 @@ class TZReport extends PBMessage
     self::$fields["TZReport"]["11"] = "PBInt";
     $this->values["11"] = "";
     self::$fieldNames["TZReport"]["11"] = "changed";
+    self::$fields["TZReport"]["12"] = "TZTimeSpan";
+    $this->values["12"] = "";
+    self::$fieldNames["TZReport"]["12"] = "worked_time";
     self::$fields["TZReport"]["16"] = "PBString";
     $this->values["16"] = "";
     self::$fieldNames["TZReport"]["16"] = "signature";
@@ -193,6 +349,14 @@ class TZReport extends PBMessage
   function set_changed($value)
   {
     return $this->_set_value("11", $value);
+  }
+  function worked_time()
+  {
+    return $this->_get_value("12");
+  }
+  function set_worked_time($value)
+  {
+    return $this->_set_value("12", $value);
   }
   function signature()
   {
@@ -581,6 +745,9 @@ class TZGetReportCmd extends PBMessage
     self::$fields["TZGetReportCmd"]["7"] = "PBInt";
     $this->values["7"] = "";
     self::$fieldNames["TZGetReportCmd"]["7"] = "after";
+    self::$fields["TZGetReportCmd"]["8"] = "TZDateRange";
+    $this->values["8"] = "";
+    self::$fieldNames["TZGetReportCmd"]["8"] = "date_range";
   }
   function report_id()
   {
@@ -641,6 +808,14 @@ class TZGetReportCmd extends PBMessage
   function set_after($value)
   {
     return $this->_set_value("7", $value);
+  }
+  function date_range()
+  {
+    return $this->_get_value("8");
+  }
+  function set_date_range($value)
+  {
+    return $this->_set_value("8", $value);
   }
 }
 class TZGetReportResult extends PBMessage

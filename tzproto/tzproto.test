@@ -20,8 +20,10 @@ class TZProtoTestCase extends DrupalWebTestCase {
 
   public function setUp() {
     // Enable any modules required for the test.
-   parent::setUp('libraries', 'tzbase', 'tzproto');
+   parent::setUp('libraries', 'date_api', 'date_timezone', 'tzbase', 'tzproto');
+   variable_set('date_default_timezone_name', 'Europe/Stockholm');
    tzbase_include_proto_classes();
+   require_once dirname(__FILE__) . '/tzproto.request.inc';
 
    // Create test users
    $this->admin_user = $this->drupalCreateUser(array('create tzjob content', 'create tzreport content', 'edit own tzreport content', 'view own tzreport content', 'remove own tzreport content', 'view any tzjob content'));
@@ -74,7 +76,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $this->assertEqual(5, count($locked_or_less));
   }
 
-  public function testGetReportsByDate() {
+  public function testGetReportsByDateDeprecatedVersion() {
     $expectedBeginTime = 123456;
     $jobid = $this->doCreateJob();
     for ($i = 1; $i<11; $i++) {
@@ -86,6 +88,80 @@ class TZProtoTestCase extends DrupalWebTestCase {
 
     $after_and_including_3 = $this->doGetReports(NULL, NULL, $expectedBeginTime*3);
     $this->assertEqual(8, count($after_and_including_3));
+  }
+
+  public function testGetReportsByDate() {
+
+    $start = $this->createTZTime(0, 0);
+    $end = $this->createTZTime(23, 59);
+
+    $jobid = $this->doCreateJob();
+
+    $expected_time_spans = array();
+
+    for ($i = 1; $i<11; $i++) {
+      $date = $this->createTZDate(2010, 9, $i);
+
+      $time_span = new TZTimeSpan();
+      $time_span->set_start($start);
+      $time_span->set_end($end);
+      $time_span->set_date($date);
+      $expected_time_spans[$i] = $time_span;
+      $this->doCreateReportTimeSpan($jobid, TZFlags::CREATED, $time_span);
+    }
+
+    $date_range = new TZDateRange();
+    // All reports up to and including 2010-09-07 23:59
+    $date_range->set_end($expected_time_spans[7]->date());
+    $reports = $this->doGetReportsByDateRange(NULL, $date_range);
+    $this->assertEqual(7, count($reports));
+
+    $date_range = new TZDateRange();
+    // All reports after and including 2010-09-03 00:00
+    $date_range->set_start($expected_time_spans[3]->date());
+    $reports = $this->doGetReportsByDateRange(NULL, $date_range);
+    $this->assertEqual(8, count($reports));
+
+    /* Double ended range, all reports including end points between
+     * 2010-09-03 00:00 and 2010-09-07 23:59 */
+    $date_range->set_end($expected_time_spans[7]->date());
+    $reports = $this->doGetReportsByDateRange(NULL, $date_range);
+    $this->assertEqual(5, count($reports));
+  }
+
+  public function testProtocolVersion1ReturnsReportsWithWorkedTime() {
+
+    $start = $this->createTZTime(22, 5);
+    $end = $this->createTZTime(4, 30);
+
+    $jobid = $this->doCreateJob();
+
+    $date = $this->createTZDate(2010, 9, 15);
+
+    $time_span = new TZTimeSpan();
+    $time_span->set_start($start);
+    $time_span->set_end($end);
+    $time_span->set_date($date);
+    $this->doCreateReportTimeSpan($jobid, TZFlags::CREATED, $time_span);
+
+
+    /* Double ended range, all reports including end points between
+     * 2010-09-15 00:00 and 2010-09-15 23:59 */
+    $date_range = new TZDateRange();
+    $date_range->set_start($date);
+    $date_range->set_end($date);
+    $reports = $this->doGetReportsByDateRange(NULL, $date_range);
+    $this->assertEqual(1, count($reports));
+    $worked_time = $reports[0]->worked_time();
+    $this->assertEqual($date->year(), $worked_time->date()->year());
+    $this->assertEqual($date->month(), $worked_time->date()->month());
+    $this->assertEqual($date->day(), $worked_time->date()->day());
+
+    $this->assertEqual($start->hour(), $worked_time->start()->hour());
+    $this->assertEqual($start->minute(), $worked_time->start()->minute());
+
+    $this->assertEqual($end->hour(), $worked_time->end()->hour());
+    $this->assertEqual($end->minute(), $worked_time->end()->minute());
   }
 
   public function testGetReportsByDateAndFlags() {
@@ -143,6 +219,31 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $cmd->set_get_report_cmd($get_report_cmd);
 
     $response = $this->sendRequest($request);
+    $this->assertEqual(1, $response->results_size());
+    $result = $response->result(0);
+    $reports = array();
+    $get_report_result = $result->get_report_result();
+    for ($i = 0; $i < $get_report_result->reports_size(); $i++) {
+      $reports[] = $get_report_result->report($i);
+    }
+    return $reports;
+  }
+
+  public function doGetReportsByDateRange($max_flags = NULL, $date_range = NULL) {
+    $request = $this->createRequest($this->admin_user);
+    $cmd = $request->add_command();
+    $get_report_cmd = new TZGetReportCmd();
+    if($max_flags != NULL) {
+      $get_report_cmd->set_max_flag($max_flags);
+    }
+
+    if (NULL == $date_range) {
+      $date_range = new TZDateRange();
+    }
+    $get_report_cmd->set_date_range($date_range);
+    $cmd->set_get_report_cmd($get_report_cmd);
+
+    $response = $this->sendRequest($request, TZConstants::VERSION);
     $this->assertEqual(1, $response->results_size());
     $result = $response->result(0);
     $reports = array();
@@ -259,6 +360,66 @@ class TZProtoTestCase extends DrupalWebTestCase {
     return $create_report_result->id();
   }
 
+public function doCreateReportTimeSpan($jobid, $flags = TZFLags::CREATED, $time_span = NULL, $account = NULL) {
+    if($account == NULL) {
+      $account = $this->admin_user;
+    }
+
+    $request = $this->createRequest($account);
+    $cmd = $request->add_command();
+
+    // Populate default TZ report
+    $report = new TZReport();
+    $report->set_job_id($jobid);
+    $report->set_assigned_to($this->admin_user->uid);
+
+    if ($time_span == NULL) {
+      $now = time();
+
+      $begin = tzbase_make_date($now - 3600*2);
+      $end = clone($begin);
+      $end->modify('+1 hour');
+      $time_span = new TZTimeSpan();
+      $time_span->set_date(tzproto_create_tzdate($begin));
+      $time_span->set_start(tzproto_create_tztime($begin));
+      $time_span->set_end(tzproto_create_tztime($end));
+    }
+
+    $report->set_worked_time($time_span);
+    $breakduration = 1800;
+
+    $report->set_break_duration($breakduration);
+    $report->set_flags($flags);
+
+    $create_report_cmd = new TZCreateReportCmd();
+    $create_report_cmd->set_new_report($report);
+    $cmd->set_create_report_cmd($create_report_cmd);
+
+    $response = $this->sendRequest($request, TZConstants::VERSION);
+    $this->assertEqual(1, $response->results_size());
+    $result = $response->result(0);
+
+    // Check for error
+    if($result->error_code()) {
+      $this->assertNotNull($result->error_msg());
+      return FALSE;
+    }
+
+    $create_report_result = $result->create_report_result();
+    $this->assertTrue($create_report_result->id(), 'Expected valid report id, got ' . $create_report_result->id());
+
+    // Load node and check results
+    $node = node_load($create_report_result->id(), NULL, TRUE);
+
+    $expected_begin = tzproto_create_datetime($time_span->date(), $time_span->start());
+    $expected_end = tzproto_create_datetime($time_span->date(), $time_span->end());
+    $this->assertEqual($expected_begin->format('U'), $node->begintime);
+    $this->assertEqual($expected_end->format('U'), $node->endtime);
+    $this->assertEqual($breakduration, $node->breakduration);
+
+    return $create_report_result->id();
+  }
+
   private function createRequest($user) {
     $request = new TZRequest();
     $request->set_username($user->name);
@@ -270,11 +431,16 @@ class TZProtoTestCase extends DrupalWebTestCase {
    * Post TZProto request
    * @param TZRequest $request
    */
-  private function sendRequest($request) {
+  private function sendRequest($request, $protocol_version = 0) {
     $request_data = $request->SerializeToString();
 
+    $url = 'tzproto/';
+    if ($protocol_version > 0) {
+      $url .= $protocol_version;
+    }
+
     $out = $this->curlExec(array(
-      CURLOPT_URL => url('tzproto', array('absolute' => TRUE)),
+      CURLOPT_URL => url($url, array('absolute' => TRUE)),
       CURLOPT_POST => TRUE,
       CURLOPT_POSTFIELDS => $request_data,
     ));
@@ -292,5 +458,20 @@ class TZProtoTestCase extends DrupalWebTestCase {
       $message = 'Expected "' . $first . '", got "' . $second . '"';
     }
     parent::assertEqual($first, $second, $message, $group);
+  }
+
+  private function createTZDate($year, $month, $day) {
+    $date = new TZDate();
+    $date->set_year($year);
+    $date->set_month($month);
+    $date->set_day($day);
+    return $date;
+  }
+
+  private function createTZTime($hour, $minute) {
+    $time = new TZTime();
+    $time->set_hour($hour);
+    $time->set_minute($minute);
+    return $time;
   }
 }

@@ -1,5 +1,8 @@
 <?php
 /**
+ * Maps up the server URL for the protobuf based RPC protocol.
+ * If you use a specific version of the protocol, tag it on at the
+ * end of the path.
  * @file implementation of protocol buffer server
  */
 

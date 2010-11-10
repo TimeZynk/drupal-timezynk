@@ -22,26 +22,73 @@ enum TZJobFlags {
   INACTIVE = 255;
 }
 
+enum TZConstants {
+  VERSION = 1;
+}
+message TZTime {
+ optional int32 hour = 1;
+ optional int32 minute = 2;
+}
+
+message TZDate {
+  optional int32 year = 1;
+  optional int32 month = 2;
+  optional int32 day = 3;
+}
+
+// An open date range.
+// Since the range is open
+//   the start field implies time from and including 00h00 at the given date.
+//   the end field implies time up to but excluding 00h00 at the date _after_ the given date.
+// thusly
+//   start = 2010-09-15, end = 2010-09-15
+// covers all of that beautiful September day.
+//
+// Skipping either field implies an open-ended range.
+// Skipping both might mean infinity, but I promise,
+// I will show up with a baseball bat.
+// You might as well have not set a range...
+message TZDateRange {
+  optional TZDate start = 1;
+  optional TZDate end = 2;
+}
+// Encodes a timespan of maximum 24 hours, fixed to a date.
+//
+// If for some reason you want a timespan that is
+// not fixed to a specific date, just skip the date field.
+// The server will most likely not know what to do with it,
+// but there you go.
+message TZTimeSpan {
+  optional TZDate date = 1;
+  optional TZTime start = 2;
+  optional TZTime end = 3;
+}
+
 message TZReport {
   optional int32 id = 1 [default = 0];
   optional int32 vid = 2 [default = 0];
   optional int32 job_id = 3 [default = 0];
   optional string title = 4;
   optional string description = 5;
-  optional int32 assigned_to = 6;
-  optional int32 begin_time = 7;
-  optional int32 end_time = 8;
-  optional int32 break_duration = 9;
-  optional int32 flags = 10;
-  optional int32 changed = 11;
+  optional int32 assigned_to = 6; // user id in drupal
+  optional int32 begin_time = 7 [deprecated=true];
+  optional int32 end_time = 8 [deprecated=true];
+  optional int32 break_duration = 9; // in minutes
+  optional int32 flags = 10; // TZFlags
+  optional int32 changed = 11; // epoch timestamp
+  optional TZTimeSpan worked_time = 12;
   optional string signature = 16;
   optional string comments = 17;
   optional int32 travel_duration = 18;
   optional int32 travel_km = 19;
+
   // Permissions //
-  optional bool may_remove = 20 [default = false]; // The user may remove this report.
-  optional bool may_edit = 21 [default = false]; // The user may edit and submit this report
-  optional bool may_reset = 22 [default = false]; // The user may reset this report to original values
+  // The user may remove this report.
+  optional bool may_remove = 20 [default = false];
+  // The user may edit and submit this report
+  optional bool may_edit = 21 [default = false];
+  // The user may reset this report to original values
+  optional bool may_reset = 22 [default = false];
 }
 
 message TZJob {
@@ -51,10 +98,13 @@ message TZJob {
   optional string job_code = 4;
   optional string title = 5;
   optional string description = 6;
-  optional int32 changed = 7;
+  optional int32 changed = 7; // epoch timestamp
+
   // Permissions //
-  optional bool may_create_child = 18 [default = false]; // User may create a subjob.
-  optional bool may_create_report = 19 [default = false]; // User may create a report linked to this job
+  // User may create a subjob.
+  optional bool may_create_child = 18 [default = false];
+  // User may create a report linked to this job
+  optional bool may_create_report = 19 [default = false];
   optional bool may_edit = 20 [default = false]; // User may modify this job.
 }
 
@@ -63,8 +113,10 @@ message TZUser {
   optional string username = 2;
   optional string realname = 3;
   optional string email = 4;
-  // Permissions // 
-  optional bool may_create_job = 16 [default = false]; // User may create top level jobs.
+
+  // Permissions //
+  // User may create top level jobs.
+  optional bool may_create_job = 16 [default = false];
 }
 
 // RPC messages
@@ -82,24 +134,27 @@ message TZSyncCmd {
 message TZGetReportCmd {
   // Exact report id to fetch, if set we will ignore all other filtering options
   optional int32 report_id = 1;
-  
-  // Fetch reports that have changed since timestamp
+
+  // Fetch reports that have changed since timestamp (in epoch)
   optional int32 changed_after = 2 [default = 0];
-  
+
   // Maximum number of elements to fetch, 0 for no limit
   optional int32 limit = 3 [default = 0];
-  
+
   // Offset into dataset to fetch from
   optional int32 offset = 4 [default = 0];
-  
+
   // Filters away all reports with flags larger than max_flag
   optional TZFlags max_flag = 5 [default = DELETED];
-  
+
   // Only return reports with begin_time before this timestamp
-  optional int32 before = 6;
+  optional int32 before = 6 [deprecated=true];
 
   // Only return reports with begin_time greater than or equal to this timestamp
-  optional int32 after = 7; 
+  optional int32 after = 7 [deprecated=true];
+
+  // Only return reports within this date range.
+  optional TZDateRange date_range = 8;
 }
 message TZGetReportResult {
   // Only returned for ranged queries. (limit > 0)
@@ -120,13 +175,13 @@ message TZCreateReportResult {
 message TZGetJobCmd {
   // Exact job id to fetch
   optional int32 job_id = 1;
-  
+
   // Fetch jobs that have changed since timestamp
   optional int32 changed_after = 2;
-  
+
   // Maximum number of elements to fetch, 0 for no limit
   optional int32 limit = 3;
-  
+
   // Offset into dataset to fetch from
   optional int32 offset = 4;
 }
@@ -149,14 +204,14 @@ message TZCreateJobResult {
 // Generic single RPC command, must be wrapped in a TZRequest
 message TZCommand {
   optional int32 client_handle = 1 [default = 0]; // request id from client for tracking
-  
+
   // Commands
   optional TZGetUserCmd get_user_cmd = 2;
   optional TZSyncCmd sync_cmd = 3;
-  
+
   optional TZGetReportCmd get_report_cmd = 4;
   optional TZCreateReportCmd create_report_cmd = 5;
-  
+
   optional TZGetJobCmd get_job_cmd = 6;
   optional TZCreateJobCmd create_job_cmd = 7;
 }
@@ -166,17 +221,17 @@ message TZResult {
   optional int32 client_handle = 1 [default = 0]; // same as for TZCommand
   optional int32 error_code = 2;
   optional string error_msg = 3;
-  
+
   // Response for TZGetUserCmd
   optional TZUser user = 4;
-  
+
   // Response for TZSyncCmd
   repeated TZReport report = 5;
   repeated TZJob job = 6;
 
   optional TZGetReportResult get_report_result = 7;
   optional TZCreateReportResult create_report_result = 8;
-  
+
   optional TZGetJobResult get_job_result = 9;
   optional TZCreateJobResult create_job_result = 10;
 }

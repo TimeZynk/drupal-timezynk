@@ -13,8 +13,13 @@ function tzproto_request() {
    * the HTTP headers. We here disable this cookie to reduce the
    * data transfer as much as possible. */
   ini_set('session.use_cookies', '0');
-
   tzbase_include_proto_classes();
+
+  // Fetch the RPC protocol version
+  $protocol_version = arg(1);
+  if (empty($protocol_version)) {
+    $protocol_version = 0;
+  }
 
   // Read POST data
   $raw_data = file_get_contents('php://input');
@@ -58,7 +63,7 @@ function tzproto_request() {
         tzproto_handle_get_job_cmd($cmd, $result);
       }
       else if($cmd->get_report_cmd()) {
-        tzproto_handle_get_report_cmd($cmd, $result);
+        tzproto_handle_get_report_cmd($cmd, $result, $protocol_version);
       }
       else if($cmd->create_job_cmd()) {
       	tzproto_handle_create_job_cmd($cmd, $result);
@@ -256,7 +261,7 @@ function tzproto_handle_get_job_cmd(&$cmd, &$result) {
  * Handle get report command.
  * Fetches tzreport objects from the database and transfers them over protobuf
  */
-function tzproto_handle_get_report_cmd(&$cmd, &$result) {
+function tzproto_handle_get_report_cmd(&$cmd, &$result, $protocol_version = 0) {
   global $user;
 
   $reportcmd = $cmd->get_report_cmd();
@@ -267,7 +272,7 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result) {
     $node = node_load($reportcmd->report_id());
     if($node && $node->nid) {
       $tzreport = $reportresult->add_report();
-      tzproto_fill_from_node($tzreport, $node);
+      tzproto_fill_from_node($tzreport, $node, $protocol_version);
     }
   }
   // Fetch a collections of jobs
@@ -293,17 +298,38 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result) {
       $filter_strings[] = 'tz.flags <= %d';
       $filter_args[] = $reportcmd->max_flag();
     }
+    $date_range = $reportcmd->date_range();
+    if($date_range) {
+      $start_date = $date_range->start();
+      $time = new TZTime();
+      $time->set_hour(0);
+      $time->set_minute(0);
+      if ($start_date) {
+        // Start date, create a timestamp for this date, with time set to 00:00.
+        $datetime = tzproto_create_datetime($start_date, $time);
+        $filter_strings[] = 'tz.begintime >= %d';
+        $filter_args[] = $datetime->format('U');
+      }
+      $end_date = $date_range->end();
+      if (!empty($end_date)) {
+        // End date, create a timestamp for the day after, with time set to 00:00.
+        $datetime = tzproto_create_datetime($end_date, $time);
+        $datetime->modify("+1 day");
 
-    if($reportcmd->after()) {
-      $filter_strings[] = 'tz.begintime >= %d';
-      $filter_args[] = $reportcmd->after();
+        $filter_strings[] = 'tz.begintime < %d';
+        $filter_args[] = $datetime->format('U');
+      }
+    } else {
+      if ($reportcmd->after()) {
+        $filter_strings[] = 'tz.begintime >= %d';
+        $filter_args[] = $reportcmd->after();
+      }
+
+      if ($reportcmd->before()) {
+        $filter_strings[] = 'tz.begintime < %d';
+        $filter_args[] = $reportcmd->before();
+      }
     }
-
-    if($reportcmd->before()) {
-      $filter_strings[] = 'tz.begintime < %d';
-      $filter_args[] = $reportcmd->before();
-    }
-
     $filter_string = implode(' AND ', $filter_strings);
 
     // Detect if we should include deleted reports or not.
@@ -328,7 +354,7 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result) {
     while($data = db_fetch_object($db_result)) {
       $node = node_load($data->nid, NULL, TRUE);
       $tzreport = $reportresult->add_report();
-      tzproto_fill_from_node($tzreport, $node);
+      tzproto_fill_from_node($tzreport, $node, $protocol_version);
     }
   }
   $result->set_get_report_result($reportresult);
@@ -377,7 +403,7 @@ function tzproto_handle_create_report_cmd(&$cmd, &$result) {
  * @param $proto protobuf object to fill
  * @param $node node data
  */
-function tzproto_fill_from_node(&$proto, $node) {
+function tzproto_fill_from_node(&$proto, $node, $protocol_version = 0) {
   $proto->set_id($node->nid);
   $proto->set_flags($node->flags);
   $proto->set_title($node->title);
@@ -396,8 +422,14 @@ function tzproto_fill_from_node(&$proto, $node) {
   } else if($node->type == 'tzreport') {
     $proto->set_vid($node->vid);
     $proto->set_job_id($node->jobid);
-    $proto->set_begin_time($node->begintime);
-    $proto->set_end_time($node->endtime);
+    // We changed from epoch timestamps to date+time in version 1.
+    if ($protocol_version > 0) {
+      $time_span = tzproto_create_tztimespan($node->begintime, $node->endtime);
+      $proto->set_worked_time($time_span);
+    } else {
+      $proto->set_begin_time($node->begintime);
+      $proto->set_end_time($node->endtime);
+    }
     $proto->set_break_duration($node->breakduration);
     $proto->set_signature($node->signature);
     $proto->set_travel_duration($node->travelduration);
@@ -456,8 +488,32 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
   $report->body = $data->description();
 
   // Parse start and finish
-  $report->begintime = $data->begin_time();
-  $report->endtime = $data->end_time();
+  $worked_time = $data->worked_time();
+  $start = NULL;
+  $end = NULL;
+  $date = NULL;
+  if (!empty($worked_time)) {
+    $start = $worked_time->start();
+    $end = $worked_time->end();
+    $date = $worked_time->date();
+    if (empty($date) || empty($start) || empty($end)) {
+      $result->set_error_code(400);
+      $result->set_error_msg('Report lacked a date, start time or end time value.');
+      return;
+    }
+    $begin_date_time = tzproto_create_datetime($worked_time->date(), $worked_time->start());
+    $end_date_time = tzproto_create_datetime($worked_time->date(), $worked_time->end());
+    if (empty($begin_date_time) || empty($end_date_time)) {
+      $result->set_error_code(400);
+      $result->set_error_msg('Report lacked start time or end time value.');
+      return;
+    }
+    $report->begintime = $begin_date_time->format('U');
+    $report->endtime = $end_date_time->format('U');
+  } else {
+    $report->begintime = $data->begin_time();
+    $report->endtime = $data->end_time();
+  }
   $report->breakduration = $data->break_duration();
 
   $report->travelduration = 0;
@@ -552,4 +608,55 @@ function tzproto_create_tzjob_from_protobuf($data, &$result) {
   }
 
   return $job;
+}
+
+function tzproto_create_tzdate($datetime) {
+  $date = new TZDate();
+  $date->set_year(intval($datetime->format('Y'), 10));
+  $date->set_month(intval($datetime->format('n'), 10)); // Month w.o. leading zeroes.
+  $date->set_day(intval($datetime->format('j'), 10)); // Day w.o. leading zeroes.
+  return $date;
+}
+
+
+function tzproto_create_tztime($datetime) {
+  $time = new TZTime();
+  $time->set_hour(intval($datetime->format('G'), 10));
+  $time->set_minute(intval($datetime->format('i'), 10));
+  return $time;
+}
+
+function tzproto_create_datetime($tzdate, $tztime) {
+  $datetime = NULL;
+
+  $year = $tzdate->year();
+  $month = $tzdate->month();
+  $day = $tzdate->day();
+  $hour = $tztime->hour();
+  $minute = $tztime->minute();
+
+  if (!empty($year) && !empty($month) && !empty($day) &&
+    $hour !== NULL && $minute !== NULL ) {
+        $datetime = new DateTime();
+        $datetime->setTimezone(date_default_timezone(FALSE));
+        $datetime->setDate($year, $month, $day);
+        $datetime->setTime($hour, $minute);
+  }
+  return $datetime;
+}
+
+function tzproto_create_tztimespan($epoch_start, $epoch_end) {
+      $datetime = tzbase_make_date($epoch_start);
+      $date = tzproto_create_tzdate($datetime);
+
+      $start_time = tzproto_create_tztime($datetime);
+
+      $datetime = tzbase_make_date($epoch_end);
+      $end_time = tzproto_create_tztime($datetime);
+
+      $time_span = new TZTimeSpan();
+      $time_span->set_date($date);
+      $time_span->set_start($start_time);
+      $time_span->set_end($end_time);
+      return $time_span;
 }
