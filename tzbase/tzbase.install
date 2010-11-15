@@ -14,6 +14,12 @@ function tzbase_install() {
   	variable_set('og_content_type_usage_'. 'tzreport', 'group_post_standard');
   	variable_set('og_content_type_usage_'. 'tzjob', 'group_post_standard');
   }
+
+  // Setup default node flags
+  // tzreport not promoted to front page, and create a new revision on every save
+  variable_set('node_options_tzreport', array('status', 'revision'));
+  // tzjob not promoted to front page
+  variable_set('node_options_tzjob', array('status'));
 }
 
 /**
@@ -201,7 +207,7 @@ function tzbase_schema() {
         'description' => t('Account code for this job'),
       ),
       'parentid' => array(
-      	'type' => 'int',
+        'type' => 'int',
         'unsigned' => TRUE,
         'not null' => FALSE,
         'description' => t('The {tzjob}.nid of the parent job'),

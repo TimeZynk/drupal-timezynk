@@ -45,7 +45,6 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
   }
 
   public function testMatchJobShouldNotReturnFalse() {
-
     $jobmap = array(
       'Axis Commun, Lagerarbeta, Q6032, spec' => 1,
       'Axis Communic, Lagerarbeta, "Heating"' => 2,
@@ -68,19 +67,18 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
   }
 
 public function testMatchJobShouldReturnFalse() {
-
     $jobmap = array(
-      'Axis Community, Lagerarbeta, Q6032, spec,' => 1,
-      'Axis Communic, Lagerarbetax, "Heating"' => 2,
-      'Axis Communicatio, Lagerarbeta, P583' => 3,
-      'Lagerarbetare, Timezynk' => 4,
+      'Axis Commun, Lagerarbeta, Q6032, spec' => 1,
+      'Axis Communic, Lagerarbeta, "Heating"' => 2,
+      'Axis Communicatio, Lagerarbeta, P553' => 3,
+      'Lagerarbetare, TimeZynk' => 4,
     );
 
     $titles = array(
-      'Axis Communication AB, Lagerarbetare, Q6032, spec. prod.',
-      'Axis Communication AB, Lagerarbetare, "Heating"',
-      'Axis Communicatio, Lagerarbeta, P5534',
-      'Lagerarbetare, TimeZynk',
+      'Axis CommYnication AB, Lagerarbetare, Q6032, spec. prod.',
+      'Axis Communication AB, LagerarbetYre, "Heating"',
+      'Axis Communicatio, Lagerarbeta, P55Y4',
+      'Lagerarbetar, TimeZyn',
     );
     $count = sizeof($titles);
     for ($i = 0; $i < $count; $i++) {
@@ -144,7 +142,8 @@ public function testMatchJobShouldReturnFalse() {
 
     // Update report and create again
     $report->break_duration_minutes = 35;
-    $report_node2 = $this->controller->create_report($report, array($assignment->title => $job_node->nid));
+    $report_map[$report_node->intellitime_id] = $report_node;
+    $report_node2 = $this->controller->create_report($report, array($assignment->title => $job_node->nid), $report_map);
 
     $this->assertEqual($report_node->nid, $report_node2->nid, 'Expected equal NID after update');
     $this->assertEqual($report->break_duration_minutes*60, $report_node2->breakduration, 'Expected updated breakduration');

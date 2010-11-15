@@ -17,7 +17,6 @@ class TZProtoTestCase extends DrupalWebTestCase {
   private $standard_user = NULL;
 
 
-
   public function setUp() {
     // Enable any modules required for the test.
    parent::setUp('libraries', 'date_api', 'date_timezone', 'tzbase', 'tzproto');

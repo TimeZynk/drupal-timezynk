@@ -451,6 +451,7 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
   }
 
   $report = new stdClass();
+  $original_report = NULL;
 
   // Load node if this is an update
   if($data->id()) {
@@ -460,6 +461,9 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
       $result->set_error_msg('access denied');
       return;
     }
+
+    // Save original so we can check if anything really changed later
+    $original_report = clone($report);
   } else {
     if(!node_access('create', 'tzreport')) {
       $result->set_error_code(403);
@@ -533,22 +537,32 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
 
   $report->assignedto = $user->uid;
 
-  // Prepare node for saving
-  $report = node_submit($report);
-
   // Set author and date
   $report->uid = $user->uid;
-  $report->changed = time();
-  node_save($report);
+  $report->name = $user->name;
 
-  if($data->id()) {
-    watchdog('tzproto', 'Updated report !nid', array('!nid' => $report->nid), WATCHDOG_NOTICE, l('View', 'node/' . $report->nid));
-    /* If the node has been updated and is immediately
-     * reloaded after update, it will
-     *  load the OLD cached version. */
-    node_load(0, NULL, TRUE);
-  } else {
-    watchdog('tzproto', 'Inserted report !nid', array('!nid' => $report->nid), WATCHDOG_NOTICE, l('View', 'node/' . $report->nid));
+
+  // Submit and save if there are changes
+  if($report != $original_report) {
+    if(!empty($report->nid)) {
+      // Create new revision of existing reports to avoid race conditions
+      $report->revision = TRUE;
+    }
+    $report = node_submit($report);
+    node_save($report);
+
+    if($data->id()) {
+      watchdog('tzproto', 'Created revision !vid of report !nid', array('!vid' => $report->vid, '!nid' => $report->nid),
+        WATCHDOG_NOTICE,
+        l('View', 'node/' . $report->nid));
+
+      /* If the node has been updated and is immediately
+       * reloaded after update, it will
+       *  load the OLD cached version. */
+      node_load(0, NULL, TRUE);
+    } else {
+      watchdog('tzproto', 'Inserted report !nid', array('!nid' => $report->nid), WATCHDOG_NOTICE, l('View', 'node/' . $report->nid));
+    }
   }
 
   return $report;

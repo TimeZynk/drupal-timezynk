@@ -200,7 +200,7 @@ function tzbase_form($node) {
     $form['title'] = array(
       '#type' => 'textfield',
       '#title' => check_plain($type->title_label),
-      '#required' => TRUE,
+      '#required' => FALSE,
       '#default_value' => isset($node->title) ? $node->title : '',
       '#weight' => -5,
       '#maxlength' => 255,
@@ -432,6 +432,11 @@ function tzbase_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       if($node->jobid) {
         $jobid = explode(':', $node->jobid);
         $node->jobid = intval(end($jobid));
+      }
+
+      if(empty($node->title)) {
+        $job = node_load($node->jobid);
+        $node->title = $job->title;
       }
 
       if(isset($node->workdate) && is_array($node->workdate) && isset($node->time) && is_array($node->time)) {

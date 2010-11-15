@@ -12,10 +12,6 @@ class TZIntellitimeSyncController {
   private $account = NULL;
   private $bot = NULL;
   private $week_status = array();
-  private $data = array(
-   'assignments' => array(),
-   'reports' => array(),
-  );
 
   function __construct($account) {
     tzbase_include_proto_classes();
@@ -29,28 +25,20 @@ class TZIntellitimeSyncController {
    * @return SYNC_OK on success, and NETWORK_FAILURE or AUTH_FAILURE respectively on error.
    */
   function synchronize() {
-
     $this->add_standard_weeks();
     $this->add_unlocked_weeks();
-    $this->send_updated_reports();
-    $this->load_pending_weeks();
+    $this->add_updated_weeks();
+
+    $this->process_pending_weeks();
 
     // Check if we could sync anything
     if(array_search(TZIntellitimeSyncController::NETWORK_FAILURE, $this->week_status)) {
-      // Failed to load week because of network error, give up for now
+      // Failed to load some weeks because of network error
       return TZIntellitimeSyncController::NETWORK_FAILURE;
     } else if(array_search(TZIntellitimeSyncController::AUTH_FAILURE, $this->week_status)) {
       // Authentication failed
       return TZIntellitimeSyncController::AUTH_FAILURE;
     }
-
-    // All weeks fetched, convert data
-    $jobmap = $this->convert_assignments();
-    $seen_reports = $this->convert_reports($jobmap);
-
-    // Mark removed reports
-    $this->mark_removed_reports($seen_reports);
-
 
     return TZIntellitimeSyncController::SYNC_OK;
   }
@@ -65,6 +53,24 @@ class TZIntellitimeSyncController {
   function week_key($datetime) {
     return $datetime->format('o\WW');
   }
+
+  /**
+   * Make an array containing the boundaries for the week expressed as epoch timestamps.
+   * @param $week Week as a string <WeekYear>W<Week>
+   * @param $timezone timezone to use
+   * @return Array (first second of week, first second of next week)
+   */
+  function epoch_span($week, $timezone) {
+    $epoch_span = array();
+    $date = new DateTime($week, $timezone);
+      // Find beginning and end of week
+    $date->modify('midnight');
+    $epoch_span[0] = $date->format('U');
+    $date->modify('+7 days');
+    $epoch_span[1] = $date->format('U');
+    return $epoch_span;
+  }
+
 
   function set_week_status($datetime, $status) {
     $this->week_status[$this->week_key($datetime)] = $status;
@@ -98,62 +104,124 @@ class TZIntellitimeSyncController {
   }
 
   /**
-   * Load pending weeks
+   * Add weeks where we have updated reports as pending for sync.
    */
-  function load_pending_weeks() {
-    $timezone = date_default_timezone(FALSE);
-    while($week = array_search(TZIntellitimeSyncController::PENDING, $this->week_status)) {
-      $weekdate = new DateTime($week, $timezone);
-      $data = $this->bot->load_week($weekdate);
-      $this->process_week_data($week, $data);
+  function add_updated_weeks() {
+    $result = db_query('SELECT begintime FROM {tzreport} tzreport INNER JOIN {tzintellitime} tzintellitime ON tzreport.vid = tzintellitime.vid WHERE tzreport.assignedto = %d AND tzintellitime.intellitime_local_changes > 0', $this->account->uid);
+    while($time = db_result($result)) {
+      $this->set_week_status(tzbase_make_date($time), TZIntellitimeSyncController::PENDING);
+    }
+  }
 
-      // If authentication failed, there is not much point to try again with a different page
-      if($this->week_status[$week] == TZIntellitimeSyncController::AUTH_FAILURE) {
-        break;
+  /**
+   * Checks for new unfinished weeks and adds them as pending.
+   * @param $data data from TZIntellitimeBot
+   */
+  function add_unfinished_weeks($data) {
+    if($data && !empty($data['unfinished_weeks'])) {
+      foreach($data['unfinished_weeks'] as $weekdate) {
+        $weekstr = $this->week_key($weekdate);
+        if(!isset($this->week_status[$weekstr])) {
+          $this->week_status[$weekstr] = TZIntellitimeSyncController::PENDING;
+        }
       }
     }
   }
 
   /**
-   * Process the week data returned from TZIntellitimeBot.
-   * It will go through all assignments and reports and merge them into
-   * the $this->data field. It also checks for new unfinished weeks and
-   * adds them as pending.
-   * @param string $week current week as formatted by week_key()
-   * @param $data data from TZIntellitimeBot
+   * Process weeks that needs to be written to the server or read from the
+   * server.
    */
-  function process_week_data($week, $data) {
-    if($data && isset($data['reports']) && isset($data['assignments'])) {
-      foreach($data['assignments'] as $assignment) {
-        $this->data['assignments'][$assignment->id] = $assignment;
-      }
-      foreach($data['reports'] as $report) {
-        $this->data['reports'][$report->get_intellitime_id($this->account->uid)] = $report;
-      }
+  function process_pending_weeks() {
+    $timezone = date_default_timezone(FALSE);
+    $jobmap = array();
+    $deleted_reports = 0;
 
-      // Check for extra weeks that needs to be synchronized
-      if(!empty($data['unfinished_weeks'])) {
-        foreach($data['unfinished_weeks'] as $weekdate) {
-          $weekstr = $this->week_key($weekdate);
-          if(!isset($this->week_status[$weekstr])) {
-            $this->week_status[$weekstr] = TZIntellitimeSyncController::PENDING;
+    while($week = array_search(TZIntellitimeSyncController::PENDING, $this->week_status)) {
+      $data = NULL;
+
+      $weekdate = new DateTime($week, $timezone);
+
+      /* To avoid race conditions with the user, we start by fetching current copies of
+       * all local reports. We then contact the intellitime server and fetches its version
+       * of the reports. Afterwards, the reports are compared and if we find any changes
+       * from the server they are saved as an updated to the originally fetched revision.
+       * For this scheme to work, we must always create a new revision whenever a user
+       * updates a report on our server so that we don't risk user changes being overwritten
+       * with old data from the intellitime server. */
+      $affected_reports = array();
+      $updated_reports = array();
+      $epoch_span = $this->epoch_span($week, $timezone);
+      $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE t.assignedto = %d AND t.begintime >= %d AND t.begintime < %d AND t.flags != 255 AND n.status = 1',
+                         $this->account->uid, $epoch_span[0], $epoch_span[1]);
+      while($nid = db_result($result)) {
+        $node = node_load($nid, NULL, TRUE);
+        if(!empty($node->intellitime_id)) {
+          $affected_reports[$node->intellitime_id] = $node;
+          if(!empty($node->intellitime_local_changes)) {
+            $updated_reports[] = $node;
           }
         }
       }
 
-      $this->week_status[$week] = TZIntellitimeSyncController::SYNC_OK;
-    } elseif(FALSE === $data) {
-      $this->week_status[$week] = TZIntellitimeSyncController::NETWORK_FAILURE;
-    } else {
-      $this->week_status[$week] = TZIntellitimeSyncController::AUTH_FAILURE;
+      if(!empty($updated_reports)) {
+        $data = $this->send_updated_reports($updated_reports);
+      }
+      if(empty($data)) {
+        $data = $this->bot->load_week($weekdate);
+      }
+
+      $this->week_status[$week] = $this->check_status($data);
+
+      if($this->week_status[$week] == TZIntellitimeSyncController::AUTH_FAILURE) {
+        // If authentication failed, there is not much point to try another week
+        break;
+      } else if($this->week_status[$week] == TZIntellitimeSyncController::NETWORK_FAILURE) {
+        // No data, try a different week
+        continue;
+      }
+
+      // process assignments and merge jobmaps
+      $week_jobmap = $this->convert_assignments($data);
+      $jobmap = array_merge($jobmap, $week_jobmap);
+
+      $seen_reports = $this->convert_reports($data, $jobmap, $affected_reports);
+
+      $deleted_reports += $this->mark_removed_reports($seen_reports, $epoch_span[0], $epoch_span[1]);
+
+      $this->add_unfinished_weeks($data);
+    }
+
+    if($deleted_reports) {
+      watchdog('tzintellitime',
+               'Removed !nbr reports after sync',
+               array('!nbr' => $deleted_reports),
+               WATCHDOG_NOTICE,
+               theme('username', $this->account));
     }
   }
+
+
+  /**
+   * Check return status from intellitime bot.
+   * @param $data data from TZIntellitimeBot
+   */
+  function check_status($data) {
+    if($data && isset($data['reports']) && isset($data['assignments'])) {
+      return TZIntellitimeSyncController::SYNC_OK;
+    } elseif(FALSE === $data) {
+      return TZIntellitimeSyncController::NETWORK_FAILURE;
+    } else {
+      return TZIntellitimeSyncController::AUTH_FAILURE;
+    }
+  }
+
 
   /**
    * Convert all TZIntellitimeAssignments in $this->data to tzjobs.
    * @return Array map from <job key> => <job node id> for use with convert_reports
    */
-  function convert_assignments() {
+  function convert_assignments($data) {
     $jobmap = array();
 
     // Create default absence parent job if needed
@@ -162,7 +230,7 @@ class TZIntellitimeSyncController {
     $absence_assignment->title = t('Absence');
     $absence_node = $this->create_job($absence_assignment);
 
-    foreach($this->data['assignments'] as $tzassignment) {
+    foreach($data['assignments'] as $tzassignment) {
       $parentid = 0;
       // Place absence type assignments as children of the absence parent job
       if ($tzassignment->type == TZIntellitimeAssignment::TYPE_ABSENCE) {
@@ -179,10 +247,10 @@ class TZIntellitimeSyncController {
    * @param Array $jobmap jobmap from convert_assignments()
    * @return Array array of tzreport->nid for all processed reports.
    */
-  function convert_reports($jobmap) {
+  function convert_reports($data, $jobmap, $existing_reports) {
     $seen_reports = array();
-    foreach($this->data['reports'] as $itreport) {
-      $tzreport = $this->create_report($itreport, $jobmap);
+    foreach($data['reports'] as $itreport) {
+      $tzreport = $this->create_report($itreport, $jobmap, $existing_reports);
       $seen_reports[] = $tzreport->nid;
     }
     return $seen_reports;
@@ -191,71 +259,67 @@ class TZIntellitimeSyncController {
   /**
    * Mark reports as deleted if they are in our synchronized date range but was not
    * found on the server.
-   * @param Array $seen_reports lists of all reports found during synchronization
+   * @param Array $seen_reports lists of all reports found in the date span
+   * @param int $begin Epoch timestamp for the beginning of the date span
+   * @param int $end Epoch timestamp for the end for the date span
+   * @return number of deleted reports
    */
-  function mark_removed_reports($seen_reports) {
-    $timezone = date_default_timezone(FALSE);
-    $affected_rows = 0;
+  function mark_removed_reports($seen_reports, $begin, $end) {
     $seenquery = array();
     foreach($seen_reports as $nid) {
       $seenquery[] = 'n.nid != %d';
     }
     $seenquery = implode(' AND ', $seenquery);
-    foreach(array_keys($this->week_status) as $week) {
-      $date = new DateTime($week, $timezone);
-      // Find beginning and end of week
-      $date->modify('midnight');
-      $begin = $date->format('U');
-      $date->modify('+7 days');
-      $end = $date->format('U');
-      // Select reports in range
-      $queryargs = array(time(), TZFlags::DELETED, TZFlags::DELETED, $begin, $end, $this->account->uid);
-      $queryargs = array_merge($queryargs, $seen_reports);
+
+    // Select reports in range
+    $queryargs = array(time(), TZFlags::DELETED, TZFlags::DELETED, $begin, $end, $this->account->uid);
+    $queryargs = array_merge($queryargs, $seen_reports);
+    $query = 'UPDATE {node} n INNER JOIN {tzreport} t ON n.nid = t.nid SET changed = %d, flags = %d WHERE flags != %d AND begintime >= %d AND begintime < %d AND assignedto = %d';
+    if(!empty($seen_reports)) {
       // Update tzreport->flags to TZFlags::DELETED if the node ID is not found in the $seen_reports array
-      $query = 'UPDATE {node} n INNER JOIN {tzreport} t ON n.nid = t.nid SET changed = %d, flags = %d WHERE flags != %d AND begintime >= %d AND begintime < %d AND assignedto = %d AND ' . $seenquery;
-      db_query($query, $queryargs);
-      $affected_rows += db_affected_rows();
+      $query .= ' AND ' . $seenquery;
     }
-    if($affected_rows) {
-      watchdog('tzintellitime',
-               'Removed !rows reports after sync',
-               array('!rows' => $affected_rows,
-                     '!user' => $this->account->name,
-                     '!uid' => $this->account->uid),
-               WATCHDOG_NOTICE,
-               theme('username', $this->account));
-    }
+    db_query($query, $queryargs);
+
+    return db_affected_rows();
   }
 
   /**
-   * Find reports that have been updated since last sync and send them to the server
+   * Send updated reports to server
    */
-  function send_updated_reports() {
-    // Find reports that need update
-    $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE n.changed > %d AND t.assignedto = %d',
-                       $this->account->intellitime_last_sync, $this->account->uid);
-    while($nid = db_result($result)) {
-      $tzreport = node_load($nid, NULL, TRUE);
+  function send_updated_reports($reports) {
+    $data = array();
+    foreach($reports as $tzreport) {
+
+      /* TODO: Since we send reports per week anyway we might as well
+               implement the batching in bot->update_report instead. */
       $begindate = tzbase_make_date($tzreport->begintime);
-      watchdog('tzintellitime', 'Sending report with nid !nid to week !week',
-        array('!nid' => $tzreport->nid, '!itid' => $tzreport->intellitime_id, '!week' => $begindate->format('o\WW')),
-        WATCHDOG_NOTICE,
-        l('Node', 'node/' . $tzreport->nid) . ', ' . theme('username', $this->account));
       // Convert and post report
       $itreport = new TZIntellitimeReport($tzreport);
       $data = $this->bot->update_report($itreport);
-      $this->process_week_data($this->week_key($begindate), $data);
+
+      watchdog('tzintellitime', 'Sent report with nid !nid to week !week',
+        array('!nid' => $tzreport->nid, '!itid' => $tzreport->intellitime_id, '!week' => $begindate->format('o\WW')),
+        WATCHDOG_NOTICE,
+        l('Node', 'node/' . $tzreport->nid) . ', ' . theme('username', $this->account));
     }
+    return $data;
   }
 
   /**
    * Create or update a tzreport from a TZIntellitimeReport
    * @param TZIntellitimeReport $intelli_report
    * @param Array $job_map as returned from convert_assignments
+   * @param Array $existing_reports existing reports to update
    */
-  function create_report($intelli_report, $job_map = array()) {
-    // Try to fetch previous report
-    $tzreport = tzintellitime_node_load_by_intellitime_id($intelli_report->get_intellitime_id($this->account->uid));
+  function create_report($intelli_report, $job_map = array(), $existing_reports = array()) {
+    $intellitime_id = $intelli_report->get_intellitime_id($this->account->uid);
+
+    // Try to find existing report
+    $tzreport = NULL;
+    if(!empty($existing_reports[$intellitime_id])) {
+      $tzreport = $existing_reports[$intellitime_id];
+    };
 
     $original_tzreport = NULL;
     if($tzreport) {
@@ -274,9 +338,7 @@ class TZIntellitimeSyncController {
       return NULL;
     }
 
-    if($tzreport != $original_tzreport) {
-      $tzreport = $this->store_node($tzreport);
-    }
+    $tzreport = $this->store_node($tzreport, $original_tzreport);
 
     return $tzreport;
   }
@@ -299,9 +361,7 @@ class TZIntellitimeSyncController {
     $job = $intelli_assignment->convert_to_tzjob($this->account, $job);
     $job->parentid = $parentid;
 
-    if($job != $original_job) {
-      $job = $this->store_node($job);
-    }
+    $job = $this->store_node($job, $original_job);
 
     return $job;
   }
@@ -309,15 +369,30 @@ class TZIntellitimeSyncController {
   /**
    * Does the actual work of storing a node to the drupal database.
    * @param Object $node_data actual node data to save.
+   * @param Object $original_node original node data to compare to before saving.
    * @return Object Full drupal node object.
    */
-  function store_node($node_data) {
-    $node = node_submit($node_data);
+  function store_node($node, $original_node) {
+    /* Set local_changes here to make sure the comparison below
+     * triggers a save if the node is synched for the first time */
+    $node->intellitime_local_changes = 0;
+
+    if($node == $original_node) {
+      return $node;
+    }
+
+    /* Save synchronized flag so we can check it the node has been modified
+     * when we run the synchronization the next time */
+    $node->intellitime_synchronized = TRUE;
+
+    $is_new = empty($node->nid);
+
+    $node = node_submit($node);
     node_save($node);
 
-    watchdog('tzintellitime_sync', '!operation !type !nid',
+    watchdog('tzintellitime', '!operation !type !nid',
              array(
-               '!operation' => (isset($node_data->nid) && $node_data->nid) ? 'Updated' : 'Inserted',
+               '!operation' => ($is_new ? 'Inserted' : 'Updated'),
                '!type' => $node->type,
                '!nid' => $node->nid
              ),
@@ -327,9 +402,35 @@ class TZIntellitimeSyncController {
     return $node;
   }
 
+  /**
+   * Intellitime job ids are comma-separated strings from several
+   * task levels that are sometimes abbreviated in different places
+   * on the web page. The abbreviation algorithm removes a few
+   * characters from the end of each string before concatenating
+   * each string separated by commas.
+   *
+   * We need to be able to match the full-length versions of these
+   * strings with each abbreviated version, and that is the task
+   * of this function.
+   *
+   * <h2>Example</h2>
+   * Full version: 'Test Company, My assignment, My task, My reporting code'
+   * Abbreviated version: 'Test Com, My assig, My t, My repor'
+   *
+   * @param Array $jobmap
+   * @param String $jobtitle
+   */
   static function match_job($jobmap, $jobtitle) {
-    if(!empty($jobmap[$jobtitle]) && $jobmap[$jobtitle]) {
+    /* Use a static cache to avoid doing a full search
+     * every time */
+    static $jobmap_cache = array();
+
+    if(!empty($jobmap[$jobtitle])) {
       return $jobmap[$jobtitle];
+    }
+
+    if(!empty($jobmap_cache[$jobtitle])) {
+      return $jobmap_cache[$jobtitle];
     }
 
     $jobpath = explode(', ', $jobtitle);
@@ -349,6 +450,7 @@ class TZIntellitimeSyncController {
         }
       }
       if($match) {
+        $jobmap_cache[$jobtitle] = $jobid;
         return $jobid;
       }
     }

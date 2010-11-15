@@ -32,8 +32,24 @@ function tzintellitime_menu() {
 function tzintellitime_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   if($node && ($node->type == 'tzjob' || $node->type == 'tzreport')) {
     switch($op) {
+      case 'presave':
+        /* By default we assume that we are storing local changes, unless the saving
+         * code explicitly sets intellitime_synchronized to TRUE */
+        if(!empty($node->intellitime_id)) {
+          if(empty($node->intellitime_synchronized)) {
+            $node->intellitime_local_changes = 1;
+          } else {
+            $node->intellitime_local_changes = 0;
+          }
+        }
+        break;
+
       case 'delete':
         db_query('DELETE FROM {tzintellitime} WHERE nid = %d', $node->nid);
+        break;
+
+      case 'delete revision':
+        db_query('DELETE FROM {tzintellitime} WHERE vid = %d', $node->vid);
         break;
 
       case 'insert':
@@ -43,12 +59,18 @@ function tzintellitime_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         break;
 
       case 'load':
-        return db_fetch_array(db_query('SELECT * FROM {tzintellitime} WHERE nid = %d', $node->nid));
+        return db_fetch_array(db_query('SELECT * FROM {tzintellitime} WHERE vid = %d', $node->vid));
         break;
 
       case 'update':
         if(isset($node->intellitime_id) && $node->intellitime_id) {
-          drupal_write_record('tzintellitime', $node, 'nid');
+          if(!empty($node->revision)) {
+            // new revision, treat as insert
+            drupal_write_record('tzintellitime', $node);
+          } else {
+            // update of previous revision
+            drupal_write_record('tzintellitime', $node, 'vid');
+          }
         }
         break;
     }
@@ -58,11 +80,30 @@ function tzintellitime_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 
 /**
  * Implements hook_form_alter(). A very important function in this file,
- * it inserts our own authentication hook into all login forms.
+ * It:
+ * - inserts our own authentication hook into all login forms.
+ * - adds intellitime id to the node form
  */
 function tzintellitime_form_alter(&$form, &$form_state, $form_id) {
-  if (isset($form['#validate']) && is_array($form['#validate']) && ($key = array_search('user_login_authenticate_validate', $form['#validate']))) {
-    $form['#validate'][$key] = 'tzintellitime_login_authenticate_validate';
+  if ($form_id == 'user_login' || $form_id == 'user_login_block') {
+    if (isset($form['#validate']) && is_array($form['#validate'])) {
+      $validate_key = array_search('user_login_authenticate_validate', $form['#validate']);
+      if($validate_key !== FALSE) {
+        // replace standard authentication function
+        $form['#validate'][$validate_key] = 'tzintellitime_login_authenticate_validate';
+      } else {
+        // standard function deactivated by other module, insert ourselves next-last
+        $final_validator = array_pop($form['#validate']);
+        $form['#validate'][] = 'tzintellitime_login_authenticate_validate';
+        $form['#validate'][] = $final_validator;
+      }
+    }
+  } else if($form_id == 'tzreport_node_form') {
+    $node = $form['#node'];
+    $form['intellitime_id'] = array(
+      '#type' => 'value',
+      '#value' => isset($node->intellitime_id) ? $node->intellitime_id : 'not set',
+    );
   }
 }
 
@@ -126,9 +167,10 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
 /**
  * Load a node by searching for the intellitime ID
  * @param string $intellitime_id
+ * @return Node if intellitime ID was found, otherwise NULL
  */
 function tzintellitime_node_load_by_intellitime_id($intellitime_id) {
-  return node_load(db_result(db_query("SELECT nid FROM {tzintellitime} WHERE intellitime_id = '%s'", $intellitime_id)), NULL, TRUE);
+  return node_load(db_result(db_query("SELECT nid FROM {tzintellitime} WHERE intellitime_id = '%s' ORDER BY vid DESC LIMIT 1", $intellitime_id)), NULL, TRUE);
 }
 
 /**

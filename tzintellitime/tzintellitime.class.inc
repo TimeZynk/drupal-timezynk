@@ -657,7 +657,7 @@ class TZIntellitimeReport {
    */
   public function __construct($tzreport = NULL) {
     if($tzreport) {
-      if(isset($tzreport->intellitime_id)) {
+      if(!empty($tzreport->intellitime_id)) {
         $id = unserialize($tzreport->intellitime_id);
         $this->id = $id[2];
       }

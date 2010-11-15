@@ -23,6 +23,34 @@ function tzintellitime_update_6000() {
 }
 
 /**
+ * DB schema update 6001.
+ * Adds intellitime_local_changes column to track if a node has local changes
+ * that are not yet sent to intellitime.
+ */
+function tzintellitime_update_6001() {
+  $ret = array();
+
+  switch ($GLOBALS['db_type']) {
+    case 'pgsql':
+      db_add_column($ret, 'tzintellitime', 'vid', 'int', array('unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
+      db_add_column($ret, 'tzintellitime', 'intellitime_local_changes', 'int', array('unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
+      $ret[] = update_sql("ALTER TABLE {tzintellitime} DROP CONSTRAINT intellitime_id");
+      $ret[] = update_sql("ALTER TABLE {tzintellitime} DROP PRIMARY KEY, ADD PRIMARY KEY (vid)");
+      break;
+
+    case 'mysql': /* Intentional fall-through */
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {tzintellitime} ADD COLUMN vid int UNSIGNED NOT NULL DEFAULT 0");
+      $ret[] = update_sql("ALTER TABLE {tzintellitime} ADD COLUMN intellitime_local_changes int UNSIGNED NOT NULL DEFAULT 0");
+      $ret[] = update_sql("ALTER TABLE {tzintellitime} DROP KEY intellitime_id");
+      $ret[] = update_sql("ALTER TABLE {tzintellitime} DROP PRIMARY KEY, ADD PRIMARY KEY (vid)");
+      break;
+  }
+
+  return $ret;
+}
+
+/**
  * Implementation of hook_schema()
  */
 function tzintellitime_schema() {
@@ -36,15 +64,31 @@ function tzintellitime_schema() {
         'default' => 0,
         'description' => t('The {node}.nid'),
       ),
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {node_revision}.vid'),
+      ),
       'intellitime_id' => array(
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'description' => t('Node ID in intellitime'),
       ),
+      'intellitime_local_changes' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The node has local changes not yet transmitted to intellitime'),
+      ),
     ),
-    'primary key' => array('nid'),
-    'unique keys' => array('intellitime_id' => array('intellitime_id')),
+    'primary key' => array('vid'),
+    'indexes' => array(
+      'nid' => array('nid'),
+    ),
   );
   return $schema;
 }

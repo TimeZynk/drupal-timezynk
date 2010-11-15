@@ -9,15 +9,11 @@
  */
 function tzbase_views_data() {
   // View definitions for tzreport table
-  // This is a node table, left join with {node}.nid and {node_revisions}.vid
+  // This is a node table, left join with {node}.vid
   $data['tzreport']['table'] = array(
     'group' => t('Time Report'),
     'join' => array(
       'node' => array(
-        'left_field' => 'nid',
-        'field' => 'nid',
-      ),
-      'node_revisions' => array(
         'left_field' => 'vid',
         'field' => 'vid',
       ),
@@ -134,15 +130,11 @@ function tzbase_views_data() {
   );
 
   // View definitions for tzjob table
-  // This is a node table, left join with {node}.nid and {node_revisions}.vid
+  // This is a node table, left join with {node}.vid
   $data['tzjob']['table'] = array(
     'group' => t('Job'),
     'join' => array(
       'node' => array(
-        'left_field' => 'nid',
-        'field' => 'nid',
-      ),
-      'node_revisions' => array(
         'left_field' => 'vid',
         'field' => 'vid',
       ),

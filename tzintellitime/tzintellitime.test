@@ -27,18 +27,73 @@ class TZIntellitimeTestCase extends DrupalWebTestCase {
 
   public function testIntellitimeAnnotation() {
     // Check that our nodes are successfully extended with intellitime information
-    $expected_id = uniqid('reportid');
+    $id = uniqid('reportid');
+    $node = $this->postReport($id);
+
+    // Load from ID again
+    $node = tzintellitime_node_load_by_intellitime_id($id);
+    $this->assertEqual($id, $node->intellitime_id);
+    // Local changes should be set to 1 by default.
+    $this->assertEqual(1, $node->intellitime_local_changes);
+  }
+
+  public function testIntellitimeSyncedChange() {
+    // Check that we can reset local changes to 0.
+    $id = uniqid('reportid');
+    $node = $this->postReport($id, array('intellitime_synchronized' => TRUE));
+
+    $node = tzintellitime_node_load_by_intellitime_id($id);
+    $this->assertEqual(0, $node->intellitime_local_changes);
+
+    // Post again and check that local changes are set
+    $node = $this->postReport($id, (array)$node);
+    $node = tzintellitime_node_load_by_intellitime_id($id);
+    $this->assertEqual(1, $node->intellitime_local_changes);
+
+    // Set to synchronized and change a field
+    $node->intellitime_synchronized = TRUE;
+    $node->begintime = time();
+    $node->endtime = time() + 3600;
+    $node = $this->postReport($id, (array)$node);
+    $node = tzintellitime_node_load_by_intellitime_id($id);
+    // local changes should be reset, since we used the intellitime_synchronized field
+    $this->assertEqual(0, $node->intellitime_local_changes);
+    $this->assertFalse(isset($node->intellitime_synchronized));
+
+    // Create new revision and make sure that local changes are set
+    $old_vid = $node->vid;
+    $node->revision = TRUE;
+    $node = $this->postReport($id, (array)$node);
+    $node = tzintellitime_node_load_by_intellitime_id($id);
+    $this->assertEqual(1, $node->intellitime_local_changes);
+    $this->assertNotEqual($old_vid, $node->vid);
+
+    // Check that the old revision still has our previous value
+    $node = node_load($node->nid, $old_vid, TRUE);
+    $this->assertEqual(0, $node->intellitime_local_changes);
+    $this->assertFalse(isset($node->intellitime_synchronized));
+  }
+
+  private function postReport($id, $extra_fields = array()) {
     $node = new stdClass();
+    if(!empty($extra_fields)) {
+      $node = (object)$extra_fields;
+    }
     $node->type = 'tzreport';
     $node->title = 'test';
-    $node->intellitime_id = $expected_id;
+    $node->intellitime_id = $id;
     $node->name = $this->account->name;
     $node = node_submit($node);
     node_save($node);
+    return $node;
+  }
 
-    // Load from ID again
-    $node = node_load($node->nid);
-    $this->assertEqual($expected_id, $node->intellitime_id);
+  /** Override assertEqual to get nice log prints by default */
+  protected function assertEqual($first, $second, $message = '', $group = 'Other') {
+    if(!$message) {
+      $message = 'Expected "' . $first . '", got "' . $second . '"';
+    }
+    parent::assertEqual($first, $second, $message, $group);
   }
 }
 
@@ -433,7 +488,7 @@ class TZIntellitimeAdminPageTests extends DrupalWebTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => 'Intellitime Admin page test suite',
+      'name' => 'TZIntellitime Admin page test suite',
       'description' => '',
       'group' => 'TZIntellitime',
     );
