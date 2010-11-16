@@ -600,7 +600,7 @@ function tzbase_parse_duration($hhmm) {
 function tzbase_make_date($timestamp = NULL) {
   $timezone = date_default_timezone(FALSE);
 
-  if(empty($timestamp)) {
+  if($timestamp === NULL) {
     $timestamp = time();
   }
 

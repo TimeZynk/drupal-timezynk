@@ -32,6 +32,7 @@ message TZTime {
 
 message TZDate {
   optional int32 year = 1;
+  // January == 1;
   optional int32 month = 2;
   optional int32 day = 3;
 }
@@ -73,13 +74,13 @@ message TZReport {
   optional int32 assigned_to = 6; // user id in drupal
   optional int32 begin_time = 7 [deprecated=true];
   optional int32 end_time = 8 [deprecated=true];
-  optional int32 break_duration = 9; // in minutes
+  optional int32 break_duration = 9; // in seconds
   optional int32 flags = 10; // TZFlags
   optional int32 changed = 11; // epoch timestamp
   optional TZTimeSpan worked_time = 12;
   optional string signature = 16;
   optional string comments = 17;
-  optional int32 travel_duration = 18;
+  optional int32 travel_duration = 18; // in seconds
   optional int32 travel_km = 19;
 
   // Permissions //

@@ -425,7 +425,9 @@ function tzproto_fill_from_node(&$proto, $node, $protocol_version = 0) {
     // We changed from epoch timestamps to date+time in version 1.
     if ($protocol_version > 0) {
       $time_span = tzproto_create_tztimespan($node->begintime, $node->endtime);
-      $proto->set_worked_time($time_span);
+      if (!empty($time_span)) {
+        $proto->set_worked_time($time_span);
+      }
     } else {
       $proto->set_begin_time($node->begintime);
       $proto->set_end_time($node->endtime);
@@ -661,11 +663,16 @@ function tzproto_create_datetime($tzdate, $tztime) {
 
 function tzproto_create_tztimespan($epoch_start, $epoch_end) {
       $datetime = tzbase_make_date($epoch_start);
+      if (empty($datetime)) {
+        return NULL;
+      }
       $date = tzproto_create_tzdate($datetime);
-
       $start_time = tzproto_create_tztime($datetime);
 
       $datetime = tzbase_make_date($epoch_end);
+      if (empty($datetime)) {
+        return NULL;
+      }
       $end_time = tzproto_create_tztime($datetime);
 
       $time_span = new TZTimeSpan();
