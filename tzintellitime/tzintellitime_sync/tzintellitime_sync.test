@@ -1,5 +1,14 @@
 <?php
 
+/* THESE TESTS CROSS THE BOUNDARY BETWEEN TEST DB AND REAL DB !
+ *
+ * There is a patch that possibly fixes this problem, until then
+ * we have to test manually.
+ *
+ * For the patch see: http://drupal.org/node/970564
+ * For manual test instructions: https://vpn.timezynk.com/wiki/acceptanstest
+ */
+/*
 class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
   public static function getInfo() {
     return array(
@@ -13,79 +22,35 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
     // Enable any modules required for the test.
     parent::setUp('libraries', 'date_api', 'date_timezone', 'tzbase', 'tzintellitime', 'tzintellitime_mock', 'tzintellitime_sync');
 
+    $this->admin_user = $this->drupalCreateUser(array('administer site configuration'));
+    $this->drupalLogin($this->admin_user);
+
     // Use mock intellitime URL
-    variable_set('tzintellitime_base_url', url('IntelliplanWeb/Login.aspx', array('absolute' => TRUE)));
+    $post = array('tzintellitime_base_url' => url('IntelliplanWeb/Portal/Login.aspx', array('absolute' => TRUE)));
+    $this->drupalPost('admin/settings/timezynk/tzintellitime', $post, t('Save configuration'));
+
     variable_set('date_default_timezone_name', 'Europe/Stockholm');
+    $this->drupalLogout();
 
     // Include resources
     tzbase_include_proto_classes();
     tzintellitime_include_classes();
     require_once dirname(__FILE__) . '/tzintellitime_sync.class.inc';
 
+
     // Create and test user
-    $account = (object)array('name' => 'test user', 'pass_raw' => 'test password');
+    $this->account = (object)array('name' => 'test user', 'pass_raw' => 'test password');
     $this->login_timestamp = time();
-    $this->drupalLogin($account);
-    $this->account = user_load(array('name' => 'test user'));
+    $this->drupalLogin($this->account);
+    $this->account += user_load(array('name' => $this->account->name));
     $this->assertTrue($this->account, 'account created for ' . $this->account->name);
   }
 
   public function testIsCorrectlySynchronizedOnFirstLogin() {
     $this->assertTrue($this->login_timestamp <= $this->account->intellitime_last_sync);
-  }
 
-  public function testScheduleHandler() {
-    $this->doTestScheduleUser();
-  }
-
-  private function doTestScheduleUser() {
     $num_rows = db_result(db_query('SELECT COUNT(*) FROM {tzintellitime_sync}'));
     $this->assertTrue($num_rows);
-    $this->assertTrue(0 <= $this->account->intellitime_last_sync);
-  }
-
-  public function testMatchJobShouldNotReturnFalse() {
-    $jobmap = array(
-      'Axis Commun, Lagerarbeta, Q6032, spec' => 1,
-      'Axis Communic, Lagerarbeta, "Heating"' => 2,
-      'Axis Communicatio, Lagerarbeta, P553' => 3,
-      'Lagerarbetare, TimeZynk' => 4,
-    );
-
-    $titles = array(
-      'Axis Communication AB, Lagerarbetare, Q6032, spec. prod.',
-      'Axis Communication AB, Lagerarbetare, "Heating"',
-      'Axis Communicatio, Lagerarbeta, P5534',
-      'Lagerarbetare, TimeZynk',
-    );
-    $count = sizeof($titles);
-    for ($i = 0; $i < $count; $i++) {
-      $title = $titles[$i];
-      $nid = TZIntellitimeSyncController::match_job($jobmap, $title);
-      $this->assertEqual($nid, $i+1);
-    }
-  }
-
-public function testMatchJobShouldReturnFalse() {
-    $jobmap = array(
-      'Axis Commun, Lagerarbeta, Q6032, spec' => 1,
-      'Axis Communic, Lagerarbeta, "Heating"' => 2,
-      'Axis Communicatio, Lagerarbeta, P553' => 3,
-      'Lagerarbetare, TimeZynk' => 4,
-    );
-
-    $titles = array(
-      'Axis CommYnication AB, Lagerarbetare, Q6032, spec. prod.',
-      'Axis Communication AB, LagerarbetYre, "Heating"',
-      'Axis Communicatio, Lagerarbeta, P55Y4',
-      'Lagerarbetar, TimeZyn',
-    );
-    $count = sizeof($titles);
-    for ($i = 0; $i < $count; $i++) {
-      $title = $titles[$i];
-      $nid = TZIntellitimeSyncController::match_job($jobmap, $title);
-      $this->assertFalse($nid, t('Expected titles to not match'));
-    }
   }
 
   public function testCreatingData() {
@@ -155,6 +120,87 @@ public function testMatchJobShouldReturnFalse() {
     $this->assertNull($report_node);
   }
 
+  public function testFullSync() {
+    // Add a basic assignment to the mock
+    $assignments[] = $this->createAssignment('Test Company, Test Assignment, Test Task');
+
+    // Add a couple booked reports
+    $expected_title = 'Test Company, Test Assignment, Test Task';
+    $reports = array();
+    for($i = 1; $i < 11; $i++) {
+      $reports[] = $this->createReport($expected_title, 2010, 11, $i);
+    }
+
+    // Post the new data to the mock
+    $this->setupMockData($reports, $assignments);
+
+    $before_sync = time();
+    $this->assertTrue(tzintellitime_is_authenticated($this->account));
+    $this->assertEqual(TZIntellitimeSyncController::SYNC_OK, tzintellitime_sync_synchronize_user($this->account->uid));
+    $this->account = user_load($this->account->uid);
+
+    $this->assertTrue($before_sync <= $this->account->intellitime_last_sync);
+
+    // Update one report before checking results to make sure they are independant
+    $reports[3]->begin = '00:00';
+    $reports[3]->end = '08:00';
+    $reports[3]->state = TZIntellitimeReport::STATE_REPORTED;
+    $reports[] = $this->createReport($expected_title, 2010, 11, 11);
+    $this->setupMockData($reports, $assignments);
+
+    // Check reports
+    $result = db_query('SELECT nid FROM {tzreport} ORDER BY begintime ASC');
+    $i = 1;
+    while($nid = db_result($result)) {
+      $report = node_load($nid, NULL, TRUE);
+      $this->assertEqual($expected_title, $report->title);
+      $this->assertEqual("Report on 2010-11-$i", $report->body);
+      $begintime = tzbase_make_date($report->begintime);
+      $endtime = tzbase_make_date($report->endtime);
+      $this->assertEqual("2010-11-$i 08:00:00", $begintime->format('Y-m-j H:i:s'));
+      $this->assertEqual("2010-11-$i 18:00:00", $endtime->format('Y-m-j H:i:s'));
+      $this->assertEqual(TZFlags::CREATED, $report->flags);
+      $i++;
+    }
+    $this->assertEqual(11, $i);
+
+    tzintellitime_sync_synchronize_user($this->account->uid);
+
+    // Check reports
+    $result = db_query('SELECT nid FROM {tzreport} ORDER BY begintime ASC');
+    $i = 1;
+    while($nid = db_result($result)) {
+      $report = node_load($nid, NULL, TRUE);
+      $this->verbose(print_r($report, TRUE));
+      $this->assertEqual($expected_title, $report->title);
+      $this->assertEqual("Report on 2010-11-$i", $report->body);
+      $begintime = tzbase_make_date($report->begintime);
+      $endtime = tzbase_make_date($report->endtime);
+      if($i == 4) {
+        $this->assertEqual("2010-11-$i 00:00:00", $begintime->format('Y-m-j H:i:s'));
+        $this->assertEqual("2010-11-$i 08:00:00", $endtime->format('Y-m-j H:i:s'));
+        $this->assertEqual(TZFlags::REPORTED, $report->flags);
+      } else {
+        $this->assertEqual("2010-11-$i 08:00:00", $begintime->format('Y-m-j H:i:s'));
+        $this->assertEqual("2010-11-$i 18:00:00", $endtime->format('Y-m-j H:i:s'));
+        $this->assertEqual(TZFlags::CREATED, $report->flags);
+      }
+      $i++;
+    }
+    $this->assertEqual(12, $i);
+
+  }
+
+  function setupMockData($reports, $assignments) {
+    $this->drupalLogin($this->admin_user);
+    $post = array(
+      'tzintellitime_mock_reports' => serialize($reports),
+      'tzintellitime_mock_assignments' => serialize($assignments),
+    );
+    $this->drupalPost('admin/settings/timezynk/tzintellitime_mock', $post, t('Save configuration'));
+    $this->drupalLogin($this->account);
+  }
+
   function createAssignment($title = "A very nice job..") {
     $assignment = new TZIntellitimeAssignment();
     $assignment->id = uniqid('testjob');
@@ -163,22 +209,22 @@ public function testMatchJobShouldReturnFalse() {
     return $assignment;
   }
 
-  function createReport() {
+  function createReport($title = "En dag i livet för en apa.", $year = 2010, $month = 9, $day = 1) {
     $report = new TZIntellitimeReport();
     $report->id = uniqid('testreport');
     $report->state = TZIntellitimeReport::STATE_OPEN;
-    $report->year = 2010;
-    $report->month = 9;
-    $report->day = 15;
-    $report->title = "En dag i livet för en apa.";
+    $report->year = $year;
+    $report->month = $month;
+    $report->day = $day;
+    $report->title = $title;
     $report->begin = "08:00";
     $report->end = "18:00";
+    $report->comment = "Report on $year-$month-$day";
     $report->break_duration_minutes = 24;
-    $report->overtime_hours = 4;
     return $report;
   }
 
-  /** Override assertEqual to get nice log prints by default */
+
   protected function assertEqual($first, $second, $message = '', $group = 'Other') {
     if(!$message) {
       $message = 'Expected "' . $first . '", got "' . $second . '"';
@@ -186,4 +232,62 @@ public function testMatchJobShouldReturnFalse() {
     parent::assertEqual($first, $second, $message, $group);
   }
 }
+*/
 
+class TZIntellitimeSyncUnitTestCase extends DrupalUnitTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'TZIntellitimeSync Unit Test Suite',
+      'description' => '',
+      'group' => 'TZIntellitimeSync',
+    );
+  }
+
+  public function setUp() {
+    require_once dirname(__FILE__) . '/tzintellitime_sync.class.inc';
+  }
+
+public function testMatchJobShouldFindNid() {
+    $jobmap = array(
+      'Axis Commun, Lagerarbeta, Q6032, spec' => 1,
+      'Axis Communic, Lagerarbeta, "Heating"' => 2,
+      'Axis Communicatio, Lagerarbeta, P553' => 3,
+      'Lagerarbetare, TimeZynk' => 4,
+    );
+
+    $titles = array(
+      'Axis Communication AB, Lagerarbetare, Q6032, spec. prod.',
+      'Axis Communication AB, Lagerarbetare, "Heating"',
+      'Axis Communicatio, Lagerarbeta, P5534',
+      'Lagerarbetare, TimeZynk',
+    );
+    $count = sizeof($titles);
+    for ($i = 0; $i < $count; $i++) {
+      $title = $titles[$i];
+      $nid = TZIntellitimeSyncController::match_job($jobmap, $title);
+      $this->assertEqual($nid, $i+1);
+    }
+  }
+
+  public function testMatchJobShouldReturnFalse() {
+    $jobmap = array(
+      'Axis Commun, Lagerarbeta, Q6032, spec' => 1,
+      'Axis Communic, Lagerarbeta, "Heating"' => 2,
+      'Axis Communicatio, Lagerarbeta, P553' => 3,
+      'Lagerarbetare, TimeZynk' => 4,
+    );
+
+    $titles = array(
+      'Axis CommYnication AB, Lagerarbetare, Q6032, spec. prod.',
+      'Axis Communication AB, LagerarbetYre, "Heating"',
+      'Axis Communicatio, Lagerarbeta, P55Y4',
+      'Lagerarbetar, TimeZyn',
+    );
+    $count = sizeof($titles);
+    for ($i = 0; $i < $count; $i++) {
+      $title = $titles[$i];
+      $nid = TZIntellitimeSyncController::match_job($jobmap, $title);
+      $this->assertFalse($nid, t('Expected titles to not match'));
+    }
+  }
+}

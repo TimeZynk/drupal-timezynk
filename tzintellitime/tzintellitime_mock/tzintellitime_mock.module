@@ -1,0 +1,243 @@
+<?php
+
+define('TZINTELLITIME_MOCK_USERNAME', variable_get('tzintellitime_mock_username', 'test user'));
+define('TZINTELLITIME_MOCK_PASSWORD', variable_get('tzintellitime_mock_password', 'test password'));
+define('TZINTELLITIME_MOCK_DELAY_MILLIS', variable_get('tzintellitime_mock_delay_millis', '0'));
+define('TZINTELLITIME_MOCK_REPORTS', variable_get('tzintellitime_mock_reports', 'a:0:{}'));
+define('TZINTELLITIME_MOCK_ASSIGNMENTS', variable_get('tzintellitime_mock_assignments', 'a:0:{}'));
+define('TZINTELLITIME_MOCK_ENABLE_COMMENTS', variable_get('tzintellitime_mock_enable_comments', '1'));
+
+/**
+ * Implementation of hook_init
+ * Disables caching for this page
+ * @return unknown_type
+ */
+function tzintellitime_mock_init() {
+  // We don't want caching for this module
+  if (drupal_match_path($_GET['q'], 'IntelliplanWeb')) {
+    $GLOBALS['conf']['cache'] = FALSE;
+  }
+}
+
+function tzintellitime_mock_menu() {
+  $items['IntelliplanWeb'] = array(
+    'title' => 'Intellitime Mock Login',
+    'page callback' => 'tzintellitime_mock_request',
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/settings/timezynk/tzintellitime_mock'] = array(
+    'title' => 'Intellitime Mock Setup',
+    'description' => 'Settings for Intellitime Mockup site',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzintellitime_mock_setup'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'tzintellitime_mock.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function tzintellitime_mock_theme() {
+  return array(
+    'page' => array(
+      'arguments' => array('content' => NULL, 'show_blocks' => TRUE, 'show_messages' => TRUE),
+      'template' => 'page',
+    ),
+  );
+}
+
+function tzintellitime_mock_preprocess_page(&$variables) {
+  tzintellitime_include_classes();
+
+  $firstweek = empty($_GET['DateInWeek']);
+  $date = NULL;
+  if(!$firstweek) {
+    $date = date_make_date($_GET['DateInWeek'] . ' 12:00:00');
+  }
+
+  $variables['username'] = TZINTELLITIME_MOCK_USERNAME;
+  $variables['comments'] = TZINTELLITIME_MOCK_ENABLE_COMMENTS;
+
+  $all_reports = tzintellitime_mock_get_reports();
+  usort($all_reports, 'tzintellitime_mock_compare_reports');
+  $reports = array();
+  $unfinished_weeks = array();
+  $total_duration = 0;
+  foreach($all_reports as $report) {
+    if(!$date) {
+      if($report->state == TZIntellitimeReport::STATE_OPEN) {
+        $date = clone $report->get_begintime();
+      } else {
+        continue;
+      }
+    }
+
+    $reportweek = $report->get_begintime()->format('o\WW');
+    $dateweek = $date->format('o\WW');
+
+    if($report->state == TZIntellitimeReport::STATE_OPEN) {
+      $unfinished_weeks[$reportweek] = $report->get_begintime()->format('Y-m-d');
+    }
+
+    if($dateweek == $reportweek) {
+      $begintime = $report->get_begintime();
+      $endtime = $report->get_endtime();
+      if($endtime < $begintime) {
+        $endtime->modify('+1 day');
+      }
+      $duration = $endtime->format('U') - $begintime->format('U') - $report->break_duration_minutes*60;
+      $total_duration += $duration;
+      $report->duration_hours = round($duration/3600,2);
+      $reports[] = $report;
+    }
+  }
+
+  if(!$date) {
+    // If date is still null we have no reports, default to this week
+    $date = tzbase_make_date();
+  }
+
+  $variables['reports'] = $reports;
+  $variables['unfinished_weeks'] = $unfinished_weeks;
+  $variables['total_duration_hours'] = round($total_duration/3600,2);
+
+  $all_assignments = tzintellitime_mock_get_assignments();
+  $assignments = array();
+  $absence_codes = array();
+  foreach($all_assignments as $assignment) {
+    if(TZIntellitimeAssignment::TYPE_ASSIGNMENT == $assignment->type) {
+      $assignments[] = $assignment;
+    } else {
+      $absence_codes[] = $assignment;
+    }
+  }
+
+  $variables['assignments'] = $assignments;
+  $variables['absence_codes'] = $absence_codes;
+
+  $variables['current_week'] = $date->format('W');
+  $variables['DateInWeek'] = $date->format('Y-m-d');
+
+  // Move to monday if necessary
+  if($date->format('N') != '1') {
+    $date->modify('monday');
+    $date->modify('-1 week');
+  }
+  $daysthisweek = array();
+  for($i = 0; $i < 7; $i++) {
+    $daysthisweek[] = clone $date;
+    $date->modify('+1 day');
+  }
+  $variables['daysthisweek'] = $daysthisweek;
+
+  $date->modify('-2 weeks');
+  $variables['previous_dateinweek'] = $date->format('Y-m-d');
+  $date->modify('+2 weeks');
+  $variables['next_dateinweek'] = $date->format('Y-m-d');
+}
+
+function tzintellitime_mock_compare_reports($first, $second) {
+  return $first->get_begintime()->format('U') - $second->get_begintime()->format('U');
+}
+
+function tzintellitime_mock_request() {
+  watchdog('mock', 'Request for path !path', array('!path' => $_SERVER['REQUEST_URI']));
+
+  $path = arg();
+  if(count($path) < 3 && FALSE !== strpos(end($path), '.aspx')) {
+    array_splice($path, -1, 0, 'Portal');
+    drupal_goto(implode('/', $path));
+  }
+
+  // handle image requests
+  if(FALSE !== array_search('Images', $path)) {
+    drupal_set_header('Content-Type: image/gif');
+    print(base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='));
+    return;
+  }
+
+  switch(end($path)) {
+    case 'Login.aspx':
+      if('POST' === $_SERVER['REQUEST_METHOD']) {
+        if(tzintellitime_mock_authenticate($_POST['TextBoxUserName'], $_POST['TextBoxPassword'])) {
+          array_pop($path);
+          $path[] = 'Main.aspx';
+          drupal_goto(implode('/', $path));
+        } else {
+          drupal_goto('IntelliplanWeb/Portal/Login.aspx');
+        }
+      } else {
+        readfile(dirname(__FILE__) . '/../tests/intellitime-login-page.html');
+      }
+      break;
+
+    case 'Main.aspx':
+      if (tzintellitime_mock_check_cookie()) {
+        readfile(dirname(__FILE__) . '/../tests/intellitime-main-page.html');
+      } else {
+        drupal_goto('IntelliplanWeb/Portal/Login.aspx');
+      }
+      break;
+
+    case 'TimeReport.aspx':
+      if (tzintellitime_mock_check_cookie()) {
+        if(TZINTELLITIME_MOCK_DELAY_MILLIS && ctype_digit(TZINTELLITIME_MOCK_DELAY_MILLIS)) {
+          usleep(TZINTELLITIME_MOCK_DELAY_MILLIS*1000);
+        }
+        return '';
+      } else {
+        drupal_goto('IntelliplanWeb/Portal/Login.aspx');
+      }
+      break;
+
+    case 'LogOut.aspx':
+      tzintellitime_mock_logout();
+      drupal_goto('IntelliplanWeb/Portal/Login.aspx');
+      break;
+
+    default:
+      drupal_goto('IntelliplanWeb/Portal/Login.aspx');
+      break;
+  }
+}
+
+function tzintellitime_mock_authenticate($user, $pass) {
+  if($user === TZINTELLITIME_MOCK_USERNAME && $pass === TZINTELLITIME_MOCK_PASSWORD) {
+    $token = md5($user . microtime() . $pass);
+    $_SESSION['tzintellitime_mock_cookie'] = $token;
+    // Set a session cookie specific for the mock.
+    setcookie('tzintellitime_mock_cookie', $token, time() + 1800, '/IntelliplanWeb');
+    return TRUE;
+  }
+  return FALSE;
+}
+
+function tzintellitime_mock_check_cookie() {
+  if(!empty($_SESSION['tzintellitime_mock_cookie']) && !empty($_COOKIE['tzintellitime_mock_cookie']) &&
+      $_SESSION['tzintellitime_mock_cookie'] == $_COOKIE['tzintellitime_mock_cookie']) {
+    // Set a session cookie specific for the mock.
+    setcookie('tzintellitime_mock_cookie', $_SESSION['tzintellitime_mock_cookie'], time() + 1800, '/IntelliplanWeb');
+    return TRUE;
+  }
+  tzintellitime_mock_logout();
+  return FALSE;
+}
+
+function tzintellitime_mock_logout() {
+  // Unset both session and cookie
+  unset($_SESSION['tzintellitime_mock_cookie']);
+  setcookie('tzintellitime_mock_cookie', '', time() - 3600, '/IntelliplanWeb');
+}
+
+function tzintellitime_mock_get_reports() {
+  tzintellitime_include_classes();
+
+  return unserialize(TZINTELLITIME_MOCK_REPORTS);
+}
+
+function tzintellitime_mock_get_assignments($serialized_value = NULL) {
+  tzintellitime_include_classes();
+
+  return unserialize(TZINTELLITIME_MOCK_ASSIGNMENTS);
+}

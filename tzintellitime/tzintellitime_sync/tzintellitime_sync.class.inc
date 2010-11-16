@@ -397,7 +397,7 @@ class TZIntellitimeSyncController {
                '!nid' => $node->nid
              ),
              WATCHDOG_NOTICE,
-             l('View', 'node/' . $node->nid));
+             l('Node', 'node/' . $node->nid) . ', ' . theme('username', $this->account));
 
     return $node;
   }

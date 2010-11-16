@@ -253,9 +253,6 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
     $this->assertEqual($tzreport->begin, $result['OldRowsRepeater:_ctl0:TextboxTimeFrom']);
     $this->assertEqual($tzreport->end, $result['OldRowsRepeater:_ctl0:TextboxTimeTo']);
     $this->assertEqual($tzreport->break_duration_minutes, $result['OldRowsRepeater:_ctl0:TextboxBreak']);
-
-
-
   }
 
   public function testBuildInputWithoutComments() {

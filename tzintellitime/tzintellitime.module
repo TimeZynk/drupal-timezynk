@@ -114,6 +114,12 @@ function tzintellitime_form_alter(&$form, &$form_state, $form_id) {
  */
 function tzintellitime_login_authenticate_validate($form, &$form_state) {
   global $user;
+
+  if(!empty($user->uid)) {
+    // Another module has already handled authentication
+    return;
+  }
+
   tzintellitime_include_classes();
   $username = $form_state['values']['name'];
   $password = $form_state['values']['pass'];
@@ -129,7 +135,7 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
     return;
   }
 
-  if (!$account || isset($account->intellitime_user) && !tzintellitime_is_authenticated($account)) {
+  if (!$account || (isset($account->intellitime_user) && !tzintellitime_is_authenticated($account))) {
     // new user or existing user with expired cookie-jar.
     if(isset($account->intellitime_session_data)) {
       TZIntellitimeBot::destroy_session_data($account->intellitime_session_data);

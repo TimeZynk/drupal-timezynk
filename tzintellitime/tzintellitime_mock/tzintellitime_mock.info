@@ -2,4 +2,6 @@ name = TimeZynk Mock intellitime site
 description = Provides TimeZynk intellitime mockup
 core = 6.x
 package = TimeZynk
+dependencies[] = tzintellitime
+dependencies[] = date_api
 //hidden = TRUE

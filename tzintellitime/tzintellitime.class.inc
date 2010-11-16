@@ -511,6 +511,7 @@ class TZIntellitimeParser {
   public function parse_unfinished_weeks() {
     $elems = $this->doc->xpath('//a[@class="WeeksNav"]');
     $timezone = date_default_timezone(FALSE);
+    $result = array();
     foreach($elems as $a) {
       $match = array();
       if(preg_match('/DateInWeek=(\d{4}-\d{2}-\d{2})/', $a['href'], $match)) {
@@ -754,8 +755,8 @@ class TZIntellitimeReport {
     $tzreport->body = $this->comment;
 
     // Convert begin and end to DateTime objects
-    $begindate = $this->get_datetime($this->begin);
-    $enddate = $this->get_datetime($this->end);
+    $begindate = $this->get_begintime();
+    $enddate = $this->get_endtime();
 
     $tzreport->begintime = $begindate->format('U');
     $tzreport->endtime = $enddate->format('U');
@@ -796,13 +797,20 @@ class TZIntellitimeReport {
   }
 
   /**
-   * Gets an DateTime object based on the reports year and month, day attributes
-   * and the passed time string.
-   * @param string $time_string e.g "07:00"
+   * Gets an DateTime object based on the reports year and month, day and begin attributes.
    */
-  private function get_datetime($time_string) {
+  public function get_begintime() {
     $timezone = date_default_timezone(FALSE);
-    $isodate_string = $this->get_date_string() . " " . $time_string;
+    $isodate_string = $this->get_date_string() . " " . $this->begin;
+    return date_make_date($isodate_string, $timezone);
+  }
+
+  /**
+   * Gets an DateTime object based on the reports year and month, day and end attributes.
+   */
+  public function get_endtime() {
+    $timezone = date_default_timezone(FALSE);
+    $isodate_string = $this->get_date_string() . " " . $this->end;
     return date_make_date($isodate_string, $timezone);
   }
 }

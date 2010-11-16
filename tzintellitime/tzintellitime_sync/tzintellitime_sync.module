@@ -185,5 +185,5 @@ function tzintellitime_sync_synchronize_user($uid) {
              WATCHDOG_WARNING,
              theme('username', $account));
   }
-
+  return $result;
 }
