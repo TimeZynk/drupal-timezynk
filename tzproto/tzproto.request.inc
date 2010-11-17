@@ -57,7 +57,7 @@ function tzproto_request() {
         tzproto_handle_get_user($cmd, $result);
       }
       else if($cmd->sync_cmd()) {
-        tzproto_handle_sync_cmd($cmd, $result);
+        tzproto_handle_sync_cmd($cmd, $result, $protocol_version);
       }
       else if($cmd->get_job_cmd()) {
         tzproto_handle_get_job_cmd($cmd, $result);
@@ -170,7 +170,7 @@ function tzproto_handle_get_user(&$cmd, &$result) {
 /**
  * Handle the sync command
  */
-function tzproto_handle_sync_cmd(&$cmd, &$result) {
+function tzproto_handle_sync_cmd(&$cmd, &$result, $protocol_version = 0) {
   global $user;
 
   $sync_cmd = $cmd->sync_cmd();
@@ -212,7 +212,7 @@ function tzproto_handle_sync_cmd(&$cmd, &$result) {
   while($data = db_fetch_object($db_result)) {
     $node = node_load($data->nid, NULL, TRUE);
     $tzreport = $result->add_report();
-    tzproto_fill_from_node($tzreport, $node);
+    tzproto_fill_from_node($tzreport, $node, $protocol_version);
   }
 }
 
