@@ -207,7 +207,7 @@ function tzproto_handle_sync_cmd(&$cmd, &$result, $protocol_version = 0) {
   }
 
   // Load reports
-  $sql = "SELECT n.nid FROM {node} n INNER JOIN {tzreport} tz ON n.nid = tz.nid WHERE type = 'tzreport' AND status = 1 AND changed > %d AND tz.assignedto = %d";
+  $sql = "SELECT n.nid FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE type = 'tzreport' AND status = 1 AND changed > %d AND tz.assignedto = %d";
   $db_result = db_query(db_rewrite_sql($sql), $last_sync, $user->uid);
   while($data = db_fetch_object($db_result)) {
     $node = node_load($data->nid, NULL, TRUE);
@@ -332,8 +332,6 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result, $protocol_version = 0) {
     }
     $filter_string = implode(' AND ', $filter_strings);
 
-    // Detect if we should include deleted reports or not.
-    $highest_flag_to_fetch = $reportcmd->max_flag();
     $sql = "SELECT n.nid FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE n.type = 'tzreport' AND $filter_string ORDER BY tz.begintime DESC";
 
     $db_result = FALSE;
