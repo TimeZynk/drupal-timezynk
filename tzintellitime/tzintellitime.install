@@ -35,7 +35,9 @@ function tzintellitime_update_6001() {
       db_add_column($ret, 'tzintellitime', 'vid', 'int', array('unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
       db_add_column($ret, 'tzintellitime', 'intellitime_local_changes', 'int', array('unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
       $ret[] = update_sql("ALTER TABLE {tzintellitime} DROP CONSTRAINT intellitime_id");
-      $ret[] = update_sql("ALTER TABLE {tzintellitime} DROP PRIMARY KEY, ADD PRIMARY KEY (vid)");
+      $ret[] = update_sql("ALTER TABLE {tzintellitime} DROP PRIMARY KEY");
+      $ret[] = update_sql("UPDATE {tzintellitime} tz INNER JOIN {node} n ON n.nid = tz.nid SET tz.vid = n.vid");
+      $ret[] = update_sql("ALTER TABLE {tzintellitime} ADD PRIMARY KEY (vid)");
       break;
 
     case 'mysql': /* Intentional fall-through */
@@ -43,7 +45,9 @@ function tzintellitime_update_6001() {
       $ret[] = update_sql("ALTER TABLE {tzintellitime} ADD COLUMN vid int UNSIGNED NOT NULL DEFAULT 0");
       $ret[] = update_sql("ALTER TABLE {tzintellitime} ADD COLUMN intellitime_local_changes int UNSIGNED NOT NULL DEFAULT 0");
       $ret[] = update_sql("ALTER TABLE {tzintellitime} DROP KEY intellitime_id");
-      $ret[] = update_sql("ALTER TABLE {tzintellitime} DROP PRIMARY KEY, ADD PRIMARY KEY (vid)");
+      $ret[] = update_sql("ALTER TABLE {tzintellitime} DROP PRIMARY KEY");
+      $ret[] = update_sql("UPDATE {tzintellitime} tz INNER JOIN {node} n ON n.nid = tz.nid SET tz.vid = n.vid");
+      $ret[] = update_sql("ALTER TABLE {tzintellitime} ADD PRIMARY KEY (vid)");
       break;
   }
 
