@@ -9,6 +9,8 @@
 function jadmaker_create_jad() {
   $ua = $_SERVER['HTTP_USER_AGENT'];
 
+  jadmaker_store_download_stats();
+
   // Try to serve up APK-file if available
   if(false !== strpos($ua, 'Android')) {
     $apkfile = 'tz-Generic-android-sv.apk';
@@ -95,4 +97,18 @@ function jadmaker_create_jad() {
 
   drupal_set_header('Content-Type: text/vnd.sun.j2me.app-descriptor');
   print($jaddata);
+}
+
+function jadmaker_store_download_stats() {
+  $vars = array();
+  foreach($_SERVER as $key => $value) {
+    if(substr($key, 0, 5) === 'HTTP_') {
+      $vars[$key] = $value;
+    }
+  }
+  $entry = array(
+    'timestamp' => time(),
+    'http_data' => gzcompress(serialize($vars)),
+  );
+  drupal_write_record('jadmaker', $entry);
 }
