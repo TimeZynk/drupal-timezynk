@@ -1,10 +1,7 @@
 <?php
 
-define('TZINTELLITIME_MOCK_USERNAME', variable_get('tzintellitime_mock_username', 'test user'));
-define('TZINTELLITIME_MOCK_PASSWORD', variable_get('tzintellitime_mock_password', 'test password'));
 define('TZINTELLITIME_MOCK_DELAY_MILLIS', variable_get('tzintellitime_mock_delay_millis', '0'));
 define('TZINTELLITIME_MOCK_REPORTS', variable_get('tzintellitime_mock_reports', 'a:0:{}'));
-define('TZINTELLITIME_MOCK_ASSIGNMENTS', variable_get('tzintellitime_mock_assignments', 'a:0:{}'));
 define('TZINTELLITIME_MOCK_ENABLE_COMMENTS', variable_get('tzintellitime_mock_enable_comments', '1'));
 
 /**
@@ -26,16 +23,45 @@ function tzintellitime_mock_menu() {
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
   );
-  $items['admin/settings/timezynk/tzintellitime_mock'] = array(
-    'title' => 'Intellitime Mock Setup',
+    $items['admin/settings/tzintellitime_mock'] = array(
+    'title' => 'Intellitime Mock',
     'description' => 'Settings for Intellitime Mockup site',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('tzintellitime_mock_setup'),
+    'page callback' => 'tzintellitime_mock_admin_settings_block',
     'access arguments' => array('administer site configuration'),
-    'file' => 'tzintellitime_mock.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/settings/tzintellitime_mock/users'] = array(
+    'title' => 'Users',
+    'description' => 'Setup Intellitime Mockup users',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzintellitime_mock_setup_users'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'tzintellitime_mock.users.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/settings/tzintellitime_mock/assignments'] = array(
+    'title' => 'Mock assignments',
+    'description' => 'Setup Intellitime Mockup assignments',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzintellitime_mock_setup_assignments'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'tzintellitime_mock.assignments.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/settings/tzintellitime_mock/reports'] = array(
+    'title' => 'Mock reports',
+    'description' => 'Setup Intellitime Mockup reports',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzintellitime_mock_setup_reports'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'tzintellitime_mock.reports.inc',
     'type' => MENU_NORMAL_ITEM,
   );
   return $items;
+}
+
+function tzintellitime_mock_admin_settings_block() {
+  return theme('admin_block_content', system_admin_menu_block(menu_get_item()));
 }
 
 function tzintellitime_mock_theme() {
@@ -44,11 +70,19 @@ function tzintellitime_mock_theme() {
       'arguments' => array('content' => NULL, 'show_blocks' => TRUE, 'show_messages' => TRUE),
       'template' => 'page',
     ),
+    'mock_user_table' => array(
+      'arguments' => array(),
+    ),
+    'mock_assignments_table' => array(
+      'arguments' => array(),
+    ),
   );
 }
 
 function tzintellitime_mock_preprocess_page(&$variables) {
   tzintellitime_include_classes();
+
+  $mock_user = db_fetch_object(db_query('SELECT * FROM {tzintellitime_mock_users} WHERE user_id = %d', $_SESSION['tzintellitime_mock_user_id']));
 
   $firstweek = empty($_GET['DateInWeek']);
   $date = NULL;
@@ -56,7 +90,7 @@ function tzintellitime_mock_preprocess_page(&$variables) {
     $date = date_make_date($_GET['DateInWeek'] . ' 12:00:00');
   }
 
-  $variables['username'] = TZINTELLITIME_MOCK_USERNAME;
+  $variables['username'] = $mock_user->login;
   $variables['comments'] = TZINTELLITIME_MOCK_ENABLE_COMMENTS;
 
   $all_reports = tzintellitime_mock_get_reports();
@@ -183,7 +217,7 @@ function tzintellitime_mock_request() {
     case 'TimeReport.aspx':
       if (tzintellitime_mock_check_cookie()) {
         if(TZINTELLITIME_MOCK_DELAY_MILLIS && ctype_digit(TZINTELLITIME_MOCK_DELAY_MILLIS)) {
-          usleep(TZINTELLITIME_MOCK_DELAY_MILLIS*1000);
+          usleep(TZINTELLITIME_MOCK_DELAY_MILLIS * 1000);
         }
         return '';
       } else {
@@ -203,9 +237,11 @@ function tzintellitime_mock_request() {
 }
 
 function tzintellitime_mock_authenticate($user, $pass) {
-  if($user === TZINTELLITIME_MOCK_USERNAME && $pass === TZINTELLITIME_MOCK_PASSWORD) {
+  $mock_user = db_fetch_object(db_query('SELECT * FROM {tzintellitime_mock_users} WHERE login = \'%s\'', $user));
+  if(!empty($mock_user) && $mock_user->password === $pass) {
     $token = md5($user . microtime() . $pass);
     $_SESSION['tzintellitime_mock_cookie'] = $token;
+    $_SESSION['tzintellitime_mock_user_id'] = $mock_user->user_id;
     // Set a session cookie specific for the mock.
     setcookie('tzintellitime_mock_cookie', $token, time() + 1800, '/IntelliplanWeb');
     return TRUE;
@@ -227,6 +263,7 @@ function tzintellitime_mock_check_cookie() {
 function tzintellitime_mock_logout() {
   // Unset both session and cookie
   unset($_SESSION['tzintellitime_mock_cookie']);
+  unset($_SESSION['tzintellitime_mock_user_id']);
   setcookie('tzintellitime_mock_cookie', '', time() - 3600, '/IntelliplanWeb');
 }
 
@@ -236,8 +273,17 @@ function tzintellitime_mock_get_reports() {
   return unserialize(TZINTELLITIME_MOCK_REPORTS);
 }
 
-function tzintellitime_mock_get_assignments($serialized_value = NULL) {
+function tzintellitime_mock_get_assignments() {
   tzintellitime_include_classes();
+  $assignments = array();
 
-  return unserialize(TZINTELLITIME_MOCK_ASSIGNMENTS);
+  $result = db_query('SELECT data FROM {tzintellitime_mock_data} WHERE user_id = 0 ORDER BY id ASC');
+  while($data = db_result($result)) {
+    $object = unserialize($data);
+    if($object instanceof TZIntellitimeAssignment) {
+      $assignments[] = $object;
+    }
+  }
+
+  return $assignments;
 }

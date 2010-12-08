@@ -1,0 +1,66 @@
+<?php
+
+function tzintellitime_mock_install() {
+  drupal_install_schema('tzintellitime_mock');
+}
+
+function tzintellitime_mock_uninstall() {
+  drupal_uninstall_schema('tzintellitime_mock');
+}
+
+function tzintellitime_mock_update_6000() {
+  return drupal_install_schema('tzintellitime_mock');
+}
+
+function tzintellitime_mock_schema() {
+  $schema['tzintellitime_mock_users'] = array(
+    'description' => t('Stores tzintellitime mock reports and assignments'),
+    'fields' => array(
+      'user_id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => t('Mock user ID'),
+      ),
+      'login' => array(
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'description' => t('The user login name'),
+      ),
+      'password' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => t('The mock-users password'),
+      ),
+    ),
+    'primary key' => array('user_id'),
+  );
+  $schema['tzintellitime_mock_data'] = array(
+    'description' => t('Stores tzintellitime mock reports and assignments'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => t('The object ID'),
+      ),
+      'user_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {tzintellitime_mock_users}.user_id'),
+      ),
+      'data' => array(
+        'type' => 'blob',
+        'size' => 'normal',
+        'not null' => TRUE,
+        'description' => t('Serialized data'),
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  return $schema;
+}
