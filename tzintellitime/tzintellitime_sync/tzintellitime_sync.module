@@ -2,6 +2,7 @@
 
 define('TZINTELLITIME_SYNC_INTERVAL_MINUTES', variable_get('tzintellitime_sync_interval_minutes', 12));
 define('TZINTELLITIME_SYNC_USERS_PER_RUN', variable_get('tzintellitime_sync_users_per_run', 100));
+define('TZINTELLITIME_SYNC_PARALLEL_THREADS', variable_get('tzintellitime_sync_parallel_threads', 2));
 define('TZINTELLITIME_SYNC_WEEKS_FORWARD', variable_get('tzintellitime_sync_weeks_forward', 2));
 
 /** Sync both new users and users with expired session on login */
@@ -127,6 +128,7 @@ function tzintellitime_sync_synchronize_users() {
 }
 
 function tzintellitime_sync_synchronize_user($uid) {
+  tzintellitime_include_classes();
   // Load user account
   $account = user_load(array('uid' => $uid));
   if(!$account) {
@@ -144,7 +146,7 @@ function tzintellitime_sync_synchronize_user($uid) {
              theme('username', $account));
     // User not found or not intellitime user
     user_save($account, array('intellitime_active' => 0));
-    return;
+    return TZIntellitimeSyncController::AUTH_FAILURE;
   }
 
   // Include sync controller class
@@ -154,7 +156,7 @@ function tzintellitime_sync_synchronize_user($uid) {
     $ctrlr = new TZIntellitimeSyncController($account);
     $result = $ctrlr->synchronize();
   } catch (InvalidArgumentException $e) {
-    $result = NULL;
+    return TZIntellitimeSyncController::AUTH_FAILURE;
   }
 
   if(TZIntellitimeSyncController::SYNC_OK === $result) {

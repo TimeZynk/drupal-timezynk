@@ -18,7 +18,35 @@ function jadmaker_uninstall() {
  * First upgrade, from no DB table to single DB table
  */
 function jadmaker_update_6000() {
-  return drupal_install_schema('jadmaker');
+  $ret = array();
+  $schema['jadmaker'] = array(
+    'description' => t('Stores information about downloads from jadmaker'),
+    'fields' => array(
+      'download_id' => array(
+        'description' => 'Download identifier',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'timestamp' => array(
+        'description' => "Timestamp for access",
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'http_data' => array(
+        'description' => "GZIP:ed serialization of request variables",
+        'type' => 'blob',
+        'size' => 'normal',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('download_id'),
+    'indexes' => array('timestamp' => array('timestamp')),
+  );
+
+  db_create_table($ret, 'jadmaker', $schema['jadmaker']);
+
+  return $ret;
 }
 
 /**

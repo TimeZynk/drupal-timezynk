@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TZIntellitime\n"
-"POT-Creation-Date: 2010-10-07 20:12+0200\n"
-"PO-Revision-Date: 2010-10-07 20:13+0100\n"
+"POT-Creation-Date: 2010-12-09 18:59+0100\n"
+"PO-Revision-Date: 2010-12-09 18:59+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: sv <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -39,11 +39,11 @@ msgstr "Ogiltig URL, vänligen mata in en korrekt inloggnings-URL för intellipl
 msgid "We can only handle HTTP or HTTPS connections to intellitime"
 msgstr "Ange en HTTP eller HTTPS länk för anslutning till intellitime"
 
-#: tzintellitime.class.inc:147
+#: tzintellitime.class.inc:150
 msgid "tzintellitime"
 msgstr "tzintellitime"
 
-#: tzintellitime.class.inc:147
+#: tzintellitime.class.inc:150
 msgid "Request failed: @error"
 msgstr "Begäran misslyckades: @error"
 
@@ -55,17 +55,25 @@ msgstr "Intellitime"
 msgid "Sitewide settings for the TimeZynk Intellitime bridge."
 msgstr "Inställningar för TimeZynks intellitime-brygga."
 
-#: tzintellitime.install:30
+#: tzintellitime.install:62
 msgid "Stores extra tzintellitime fields for tzjob and tzreport nodes"
 msgstr "Sparar extra tzintellitime-fält länkade till tzjob- och tzreport-noder"
 
-#: tzintellitime.install:37
+#: tzintellitime.install:69
 msgid "The {node}.nid"
 msgstr "Från {node}.nid"
 
-#: tzintellitime.install:43
+#: tzintellitime.install:76
+msgid "The {node_revision}.vid"
+msgstr "Från {node}.vid"
+
+#: tzintellitime.install:82
 msgid "Node ID in intellitime"
 msgstr "Rapport-ID i Intellitime"
+
+#: tzintellitime.install:89
+msgid "The node has local changes not yet transmitted to intellitime"
+msgstr "Noden har lokala ändringar som ännu ej överförts till intellitime"
 
 #: tzintellitime.info:0
 msgid "TimeZynk intellitime integration"

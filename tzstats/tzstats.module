@@ -14,3 +14,21 @@ function tzstats_tzsms_send($type, $phonenbr) {
   );
   drupal_write_record('tzstats_sms', $record);
 }
+
+function tzstats_synchronized_multiple_users($module, $count, $successful, $before, $after) {
+  watchdog('tzstats', 'Synchronized !successful/!count users in !seconds seconds using @module',
+    array(
+      '@module' => $module,
+      '!successful' => $successful,
+      '!count' => $count,
+      '!seconds' => ($after - $before),
+    )
+  );
+  $record = array(
+    'module' => $module,
+    'count' => $count,
+    'successful' => $successful,
+    'seconds' => ($after - $before),
+  );
+  drupal_write_record('tzstats_sync', $record);
+}

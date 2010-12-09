@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TZIntellitimeSync\n"
-"POT-Creation-Date: 2010-11-10 17:57+0100\n"
-"PO-Revision-Date: 2010-11-10 17:58+0100\n"
+"POT-Creation-Date: 2010-12-09 19:00+0100\n"
+"PO-Revision-Date: 2010-12-09 19:02+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: sv <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -39,103 +39,107 @@ msgid "Maximum number of users to synchronize per session"
 msgstr "Max antal användare att synkronisera i varje omgång."
 
 #: tzintellitime_sync.admin.inc:18
+msgid "Number of synchronization threads"
+msgstr "Antal synkroniseringstrådar"
+
+#: tzintellitime_sync.admin.inc:20
+msgid "Total number of parallel synchronization threads to start"
+msgstr "Totalt antal parallella synkroniseringstrådar att starta"
+
+#: tzintellitime_sync.admin.inc:25
 msgid "Number of weeks forward in time to synchronize"
 msgstr "Antal veckor framåt att synkronisera"
 
-#: tzintellitime_sync.admin.inc:19
+#: tzintellitime_sync.admin.inc:26
 msgid "Enter 0 for only the current week, 1 for the current week and next week, and so on."
 msgstr "Skriv in 0 för endast nuvarande vecka, 1 för nuvarande och nästa vecka, och så vidare."
 
-#: tzintellitime_sync.admin.inc:24
+#: tzintellitime_sync.admin.inc:31
 msgid "Initial synchronization"
 msgstr "Inledande synkronisering"
 
-#: tzintellitime_sync.admin.inc:26
+#: tzintellitime_sync.admin.inc:33
 msgid "Do a full synchronization for both new users and users with a expired session."
 msgstr "Synkronisera direkt för både nya användare och användare med en ogiltig sessionsnyckel."
 
-#: tzintellitime_sync.admin.inc:27
+#: tzintellitime_sync.admin.inc:34
 msgid "Only for new users. Users with expired session are synchronized at the next scheduled synchronization."
 msgstr "Endast nya användare. Användare med ogiltig sessionsnyckel synkroniseras vid nästa schemalagda tillfälle."
 
-#: tzintellitime_sync.admin.inc:28
+#: tzintellitime_sync.admin.inc:35
 msgid "Never do initial synchronization, always defer to the next scheduled synchronization."
 msgstr "Synkronisera aldrig vid inloggning, vänta alltid till nästa schemalagda tillfälle."
 
-#: tzintellitime_sync.admin.inc:30
+#: tzintellitime_sync.admin.inc:37
 msgid "Configure how to handle synchronization on login"
 msgstr "Konfigurera synkronisering vid inloggning"
 
-#: tzintellitime_sync.admin.inc:45
+#: tzintellitime_sync.admin.inc:52
 msgid "Invalid synchronization interval, enter number of minutes."
 msgstr "Ogiltigt synkroniseringsintervall, skriv in antal minuter."
 
-#: tzintellitime_sync.admin.inc:47
-msgid "Synchronization interval must be greater than 1"
-msgstr "Synkroniseringsintervallet måste vara längre än 1 minut"
+#: tzintellitime_sync.admin.inc:54
+msgid "Synchronization interval must be greater than 0"
+msgstr "Synkroniseringsintervallet måste vara längre än 0 minuter"
 
-#: tzintellitime_sync.admin.inc:51
+#: tzintellitime_sync.admin.inc:58
 msgid "Enter number of weeks as a positive integer."
 msgstr "Skriv in antalet veckor att synkronisera som ett positivt heltal."
 
-#: tzintellitime_sync.admin.inc:53
+#: tzintellitime_sync.admin.inc:60
 msgid "Must synchronize at least the current week"
 msgstr "Måste synkronizera åtminstone nuvarande vecka"
 
-#: tzintellitime_sync.class.inc:162
+#: tzintellitime_sync.class.inc:230
 msgid "Absence"
 msgstr "Frånvaro"
 
-#: tzintellitime_sync.class.inc:220;239;272
-#: tzintellitime_sync.module:133;138;163;173;181
+#: tzintellitime_sync.class.inc:196;303;339;395
+#: tzintellitime_sync.module:135;140;165;175;183
 msgid "tzintellitime"
 msgstr ""
 
-#: tzintellitime_sync.class.inc:220
-msgid "Removed !rows reports after sync"
-msgstr "Tog bort !rows rapporter efter synkronisering"
+#: tzintellitime_sync.class.inc:196
+msgid "Removed !nbr reports after sync"
+msgstr "Tog bort !nbr rapporter efter synkronisering"
 
-#: tzintellitime_sync.class.inc:239
-msgid "Sending report with nid !nid to week !week"
-msgstr "Skickar rapport med node-id !nid till vecka !week"
+#: tzintellitime_sync.class.inc:303
+msgid "Sent report with nid !nid to week !week"
+msgstr "Skickade rapport med node-id !nid till vecka !week"
 
-#: tzintellitime_sync.class.inc:272
+#: tzintellitime_sync.class.inc:339
 msgid "No match for \"!title\" in jobmap"
 msgstr "Kunde inte hitta \"!title\" i uppdragslistan"
 
-#: tzintellitime_sync.class.inc:317
-msgid "tzintellitime_sync"
-msgstr ""
-
-#: tzintellitime_sync.class.inc:317
+#: tzintellitime_sync.class.inc:395
 msgid "!operation !type !nid"
 msgstr ""
 
-#: tzintellitime_sync.module:133
+#: tzintellitime_sync.module:135
 msgid "Tried to start synchronization for illegal user id \"@uid\""
 msgstr "Försökte synkronisera ogilitigt användar-id \"@uid\""
 
-#: tzintellitime_sync.module:138
+#: tzintellitime_sync.module:140
 msgid "No session available for user !name (!uid), last sync !interval ago"
 msgstr "Ogiltig session för !name (!uid), senast synkroniserad !interval sen"
 
-#: tzintellitime_sync.module:163
+#: tzintellitime_sync.module:165
 msgid "Synchronized user !name (!uid), last sync !interval ago"
 msgstr "Synkroniserade !name (!uid), senast synkroniserad !interval sen"
 
-#: tzintellitime_sync.module:173
+#: tzintellitime_sync.module:175
 msgid "Expired session for user !name (!uid), last sync !interval ago"
 msgstr "Gammal session för !name (!uid), senast synkroniserad !interval sen"
 
-#: tzintellitime_sync.module:181
+#: tzintellitime_sync.module:183
 msgid "Failed to synchronize user !name (!uid), last sync !interval ago"
 msgstr "Synkronisering för !name (!uid) misslyckades, senast synkroniserad !interval sen"
 
-#: tzintellitime_sync.module:64
+#: tzintellitime_sync.module:65
 msgid "Intellitime Sync"
 msgstr "Intellitimesynk"
 
-#: tzintellitime_sync.module:65
+#: tzintellitime_sync.module:66
 msgid "Data synchronization settings for the TimeZynk Intellitime bridge."
 msgstr "Synkroniseringsinställningar för bryggan mellan TimeZynk och Intellitime."
 

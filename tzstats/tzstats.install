@@ -14,13 +14,51 @@ function tzstats_uninstall() {
   drupal_uninstall_schema('tzstats');
 }
 
+function tzstats_update_6000() {
+  $ret = array();
+
+  $schema['tzstats_sync'] = array(
+      'description' => t('Stores statistics on synchronized users'),
+      'fields' => array(
+        'id' => array(
+          'type' => 'serial',
+          'not null' => TRUE,
+          'unsigned' => TRUE,
+        ),
+        'module' => array(
+          'type' => 'varchar',
+          'length' => '128',
+          'not null' => TRUE,
+          'default' => '',
+        ),
+        'count' => array(
+          'type' => 'int',
+          'not null' => TRUE,
+        ),
+        'successful' => array(
+          'type' => 'int',
+          'not null' => TRUE,
+        ),
+        'seconds' => array(
+          'type' => 'float',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+      ),
+      'primary key' => array('id'),
+    );
+  db_create_table($ret, 'tzstats_sync', $schema['tzstats_sync']);
+
+  return $ret;
+}
+
 /**
  * TZStats database schema
  */
 function tzstats_schema() {
   /* SMS schema keeps track of sent SMS messages */
   $schema['tzstats_sms'] = array(
-    'description' => t('Stores statistics over sent SMS messages'),
+    'description' => t('Stores statistics on sent SMS messages'),
     'fields' => array(
       'uid' => array(
         'type' => 'int',
@@ -47,6 +85,36 @@ function tzstats_schema() {
       ),
     ),
     'indexes' => array('uid' => array('uid')),
+  );
+  $schema['tzstats_sync'] = array(
+    'description' => t('Stores statistics on synchronized users'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'module' => array(
+        'type' => 'varchar',
+        'length' => '128',
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'count' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'successful' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'seconds' => array(
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('id'),
   );
   return $schema;
 }

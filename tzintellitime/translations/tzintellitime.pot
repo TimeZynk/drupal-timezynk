@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-10-07 20:12+0200\n"
+"POT-Creation-Date: 2010-12-09 18:59+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -38,11 +38,11 @@ msgstr ""
 msgid "We can only handle HTTP or HTTPS connections to intellitime"
 msgstr ""
 
-#: tzintellitime.class.inc:147
+#: tzintellitime.class.inc:150
 msgid "tzintellitime"
 msgstr ""
 
-#: tzintellitime.class.inc:147
+#: tzintellitime.class.inc:150
 msgid "Request failed: @error"
 msgstr ""
 
@@ -54,16 +54,24 @@ msgstr ""
 msgid "Sitewide settings for the TimeZynk Intellitime bridge."
 msgstr ""
 
-#: tzintellitime.install:30
+#: tzintellitime.install:62
 msgid "Stores extra tzintellitime fields for tzjob and tzreport nodes"
 msgstr ""
 
-#: tzintellitime.install:37
+#: tzintellitime.install:69
 msgid "The {node}.nid"
 msgstr ""
 
-#: tzintellitime.install:43
+#: tzintellitime.install:76
+msgid "The {node_revision}.vid"
+msgstr ""
+
+#: tzintellitime.install:82
 msgid "Node ID in intellitime"
+msgstr ""
+
+#: tzintellitime.install:89
+msgid "The node has local changes not yet transmitted to intellitime"
 msgstr ""
 
 #: tzintellitime.info:0

@@ -251,7 +251,9 @@ class TZIntellitimeSyncController {
     $seen_reports = array();
     foreach($data['reports'] as $itreport) {
       $tzreport = $this->create_report($itreport, $jobmap, $existing_reports);
-      $seen_reports[] = $tzreport->nid;
+      if(!empty($tzreport)) {
+        $seen_reports[] = $tzreport->nid;
+      }
     }
     return $seen_reports;
   }

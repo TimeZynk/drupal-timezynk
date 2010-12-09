@@ -136,37 +136,55 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
   }
 
   if (!$account || (isset($account->intellitime_user) && !tzintellitime_is_authenticated($account))) {
-    // new user or existing user with expired cookie-jar.
-    if(isset($account->intellitime_session_data)) {
-      TZIntellitimeBot::destroy_session_data($account->intellitime_session_data);
-    }
-    $bot = new TZIntellitimeBot(TZINTELLITIME_BASE_URL);
-    if(!$bot->login($username, $password)) {
-      TZIntellitimeBot::destroy_session_data($bot->get_session_data());
-      return;
-    }
-    $user_data = array(
-      'intellitime_user' => TRUE,
-      'intellitime_session_data' => $bot->get_session_data(),
-    );
-    if (!$account) {
-      $user_data['mail'] = $username;
-      $user_data['init'] = $username;
-      $user_data['name'] = $username;
-      $user_data['pass'] = $password;
-      $user_data['status'] = 1;
-    }
-    $user = user_save($account, $user_data);
+    if(tzintellitime_server_auth($account, $username, $password)) {
+      // Login successful, store in global user object
+      $user = $account;
 
-    unset($bot); // flushes the cookiejar used by sync..
-    // Schedule for sync
-    if(module_exists('tzintellitime_sync')) {
-      tzintellitime_sync_schedule_user($user->uid);
+      // Schedule for sync
+      if(module_exists('tzintellitime_sync')) {
+        tzintellitime_sync_schedule_user($user->uid);
+      }
     }
   } else {
     // Admins and existing users with cookiejars in order authenticate normally.
     user_authenticate($form_state['values']);
   }
+}
+
+/**
+ * Validate username and password against Intellitime Server
+ */
+function tzintellitime_server_auth(&$account, $username, $password) {
+  tzintellitime_include_classes();
+
+  // new user or existing user with expired cookie-jar.
+  if(isset($account->intellitime_session_data)) {
+    TZIntellitimeBot::destroy_session_data($account->intellitime_session_data);
+  }
+
+  $bot = new TZIntellitimeBot(TZINTELLITIME_BASE_URL);
+  if(!$bot->login($username, $password)) {
+    TZIntellitimeBot::destroy_session_data($bot->get_session_data());
+    return FALSE;
+  }
+
+  $user_data = array(
+    'intellitime_user' => TRUE,
+    'intellitime_session_data' => $bot->get_session_data(),
+  );
+
+  if (!$account) {
+    $user_data['mail'] = $username;
+    $user_data['init'] = $username;
+    $user_data['name'] = $username;
+    $user_data['pass'] = $password;
+    $user_data['status'] = 1;
+  }
+
+  $account = user_save($account, $user_data);
+  unset($bot); // flushes the cookiejar used by sync..
+
+  return TRUE;
 }
 
 
