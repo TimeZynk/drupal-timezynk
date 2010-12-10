@@ -101,6 +101,8 @@ function tzintellitime_mock_preprocess_page(&$variables) {
   $reports = array();
   $unfinished_weeks = array();
   $total_duration = 0;
+  // array to match ctl-ids with report-ids. the position matches the ctl number (ctlmapping[0] is ctl0 and so on)
+  $ctlmapping = array();
   foreach($all_reports as $report) {
     if(!$date) {
       if($report->state == TZIntellitimeReport::STATE_OPEN) {
@@ -109,7 +111,6 @@ function tzintellitime_mock_preprocess_page(&$variables) {
         continue;
       }
     }
-
     $reportweek = $report->get_begintime()->format('o\WW');
     $dateweek = $date->format('o\WW');
 
@@ -127,8 +128,11 @@ function tzintellitime_mock_preprocess_page(&$variables) {
       $total_duration += $duration;
       $report->duration_hours = round($duration/3600,2);
       $reports[] = $report;
+      $ctlmapping[] = $report->id;
     }
   }
+  $serializedreportids = serialize($ctlmapping);
+  $variables['ctlmap'] = base64_encode($serializedreportids);
 
   if(!$date) {
     // If date is still null we have no reports, default to this week
@@ -179,6 +183,7 @@ function tzintellitime_mock_compare_reports($first, $second) {
 }
 
 function tzintellitime_mock_request() {
+  tzintellitime_include_classes();
   watchdog('mock', 'Request for path !path', array('!path' => $_SERVER['REQUEST_URI']));
 
   $path = arg();
@@ -222,6 +227,18 @@ function tzintellitime_mock_request() {
         if(TZINTELLITIME_MOCK_DELAY_MILLIS && ctype_digit(TZINTELLITIME_MOCK_DELAY_MILLIS)) {
           usleep(TZINTELLITIME_MOCK_DELAY_MILLIS * 1000);
         }
+        if('POST' === $_SERVER['REQUEST_METHOD']) {
+          if(!empty($_POST['AddDateDropDown']) || !empty($_POST['AddRowDropDown'])) {
+            create_new_report_from_post($_POST);
+          }
+
+          $decodedobject = base64_decode($_POST['__VIEWSTATE']);
+          $idarray = unserialize($decodedobject);
+
+          foreach($idarray as $ctlid => $reportid) {
+            tzintellitime_mock_update_report($_POST, $ctlid, $reportid);
+          }
+        }
         return '';
       } else {
         drupal_goto('IntelliplanWeb/Portal/Login.aspx');
@@ -239,6 +256,29 @@ function tzintellitime_mock_request() {
   }
 }
 
+function tzintellitime_mock_update_report($post, $ctlid, $reportid) {
+  // query to get the report and create a report with information that we cannot from $post
+  if($post['OldRowsRepeater:_ctl' . $ctlid . ':CheckBoxDelete']) {
+    db_query('DELETE FROM {tzintellitime_mock_data} WHERE id=%d', $reportid);
+    return;
+  }
+  $report = tzintellitime_mock_load_object($reportid);
+
+  if($report instanceof TZIntellitimeReport) {
+    if(!empty($post['OldRowsRepeater:_ctl' . $ctlid . ':CheckboxDayDone'])) {
+      $report->state = TZIntellitimeReport::STATE_REPORTED;
+    } else {
+      $report->state = TZIntellitimeReport::STATE_OPEN;
+    }
+
+    $report->begin = $post['OldRowsRepeater:_ctl' . $ctlid . ':TextboxTimeFrom'];
+    $report->end = $post['OldRowsRepeater:_ctl' . $ctlid . ':TextboxTimeTo'];
+    $report->break_duration_minutes = $post['OldRowsRepeater:_ctl' . $ctlid . ':TextboxBreak'];
+    $report->comment = $post['OldRowsRepeater:_ctl' . $ctlid . ':TextboxNote'];
+    tzintellitime_mock_store_object($report);
+  }
+}
+
 function tzintellitime_mock_authenticate($user, $pass) {
   $mock_user = tzintellitime_mock_load_user($user);
   if(!empty($mock_user) && $mock_user->password === $pass) {
@@ -251,6 +291,43 @@ function tzintellitime_mock_authenticate($user, $pass) {
   }
   return FALSE;
 }
+
+/**
+ * creates a TZIntellitimeReport object and saves it to our database.
+ */
+function create_new_report_from_post($post) {
+  tzintellitime_include_classes();
+
+  // Break out year, month and day from the date object.
+  list($year, $month, $day) = explode('-', $post['AddDateDropDown']);
+
+  $report = new TZIntellitimeReport();
+  $report->user_id = $_SESSION['tzintellitime_mock_user_id'];
+  $report->year = intval($year, 10);
+  $report->month = intval($month, 10);
+  $report->day = intval($day, 10);
+  $report->begin = $post['AddTimeFromTextBox'];;
+  $report->end = $post['AddTimeToTextBox'];
+  $report->break_duration_minutes = $post['AddBreakTextBox'];
+
+  // check if commentfield is activated
+  if(!empty($post['AddNoteTextBox'])) {
+    $report->comment = $post['AddNoteTextBox'];
+  }
+  if(!empty($post['AddRowDropDown'])) {
+    $assignment = tzintellitime_mock_load_object($post['AddRowDropDown']);
+    if(!empty($assignment) && $assignment instanceof TZIntellitimeAssignment) {
+      $report->title = $assignment->title;
+      $report->assignment_id = $assignment->id;
+    } else {
+      return;
+    }
+  }
+
+  // Create and save report
+  tzintellitime_mock_store_object($report);
+}
+
 
 function tzintellitime_mock_check_cookie() {
   if(!empty($_SESSION['tzintellitime_mock_cookie']) && !empty($_COOKIE['tzintellitime_mock_cookie']) &&
@@ -273,6 +350,7 @@ function tzintellitime_mock_logout() {
   unset($_SESSION['tzintellitime_mock_user_id']);
   setcookie('tzintellitime_mock_cookie', '', time() - 3600, '/IntelliplanWeb');
 }
+
 
 function tzintellitime_mock_get_reports($mock_user=NULL) {
   tzintellitime_include_classes();
@@ -312,13 +390,6 @@ function tzintellitime_mock_get_assignments() {
   return $assignments;
 }
 
-function tzintellitime_mock_load_object($id) {
-  $result = db_query('SELECT * FROM {tzintellitime_mock_data} WHERE id = %d', $id);
-  $row = db_fetch_object($result);
-  $obj = unserialize($row->data);
-  return _tzintellitime_mock_fill_id($obj, $row);
-}
-
 function _tzintellitime_mock_fill_id(&$object, $row) {
   if($object) {
     $object->user_id = $row->user_id;
@@ -354,4 +425,11 @@ function tzintellitime_mock_store_object($object) {
   }
 
   return $db_object['id'];
+}
+
+function tzintellitime_mock_load_object($id) {
+  $result = db_query('SELECT * FROM {tzintellitime_mock_data} WHERE id = %d', $id);
+  $row = db_fetch_object($result);
+  $obj = unserialize($row->data);
+  return _tzintellitime_mock_fill_id($obj, $row);
 }

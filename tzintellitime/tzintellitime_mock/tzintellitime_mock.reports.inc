@@ -10,13 +10,6 @@ function tzintellitime_mock_setup_reports(&$form_state) {
     '#default_value' => TZINTELLITIME_MOCK_DELAY_MILLIS,
   );
 
-  $form['tzintellitime_mock_reports'] = array(
-    '#title' => t('Serialized timereports'),
-    '#type' => 'textarea',
-    '#description' => t('Serialized array of TZIntellitimeReports'),
-    '#default_value' => TZINTELLITIME_MOCK_REPORTS,
-  );
-
   $form['tzintellitime_mock_enable_comments'] = array(
     '#title' => t('Enable comments'),
     '#type' => 'checkbox',
