@@ -12,6 +12,13 @@ function tzintellitime_sync_drush_command() {
       'users' => 'Comma-separated list of users to synchronize',
     ),
   );
+  $items['intellitime-set-all-active'] = array(
+    'callback' => 'tzintellitime_sync_drush_set_all_active',
+    'description' => dt('Setsintellitime sync active status for all users'),
+    'arguments' => array(
+      'active' => '0 to deactivate, 1 to activate',
+    ),
+  );
   return $items;
 }
 
@@ -63,4 +70,12 @@ function tzintellitime_sync_drush_sync($users) {
   $after = microtime(TRUE);
 
   module_invoke_all('synchronized_multiple_users', 'tzintellitime', $count, $successful, $before, $after);
+}
+
+function tzintellitime_sync_drush_set_all_active($activate) {
+  $active = 0;
+  if($activate) {
+    $active = 1;
+  }
+  db_query('UPDATE {tzintellitime_sync} SET intellitime_active = %d', $active);
 }

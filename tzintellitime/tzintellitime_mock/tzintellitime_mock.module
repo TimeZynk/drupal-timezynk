@@ -1,7 +1,6 @@
 <?php
 
 define('TZINTELLITIME_MOCK_DELAY_MILLIS', variable_get('tzintellitime_mock_delay_millis', '0'));
-define('TZINTELLITIME_MOCK_REPORTS', variable_get('tzintellitime_mock_reports', 'a:0:{}'));
 define('TZINTELLITIME_MOCK_ENABLE_COMMENTS', variable_get('tzintellitime_mock_enable_comments', '1'));
 
 /**
@@ -11,7 +10,7 @@ define('TZINTELLITIME_MOCK_ENABLE_COMMENTS', variable_get('tzintellitime_mock_en
  */
 function tzintellitime_mock_init() {
   // We don't want caching for this module
-  if (drupal_match_path($_GET['q'], 'IntelliplanWeb')) {
+  if (drupal_match_path($_GET['q'], 'IntelliplanWeb*')) {
     $GLOBALS['conf']['cache'] = FALSE;
   }
 }
@@ -80,9 +79,13 @@ function tzintellitime_mock_theme() {
 }
 
 function tzintellitime_mock_preprocess_page(&$variables) {
+  if (!drupal_match_path($_GET['q'], 'IntelliplanWeb*TimeReport*')) {
+    return;
+  }
+
   tzintellitime_include_classes();
 
-  $mock_user = db_fetch_object(db_query('SELECT * FROM {tzintellitime_mock_users} WHERE user_id = %d', $_SESSION['tzintellitime_mock_user_id']));
+  $mock_user = tzintellitime_mock_load_user($_SESSION['tzintellitime_mock_user_id']);
 
   $firstweek = empty($_GET['DateInWeek']);
   $date = NULL;
@@ -93,7 +96,7 @@ function tzintellitime_mock_preprocess_page(&$variables) {
   $variables['username'] = $mock_user->login;
   $variables['comments'] = TZINTELLITIME_MOCK_ENABLE_COMMENTS;
 
-  $all_reports = tzintellitime_mock_get_reports();
+  $all_reports = tzintellitime_mock_get_reports($mock_user);
   usort($all_reports, 'tzintellitime_mock_compare_reports');
   $reports = array();
   $unfinished_weeks = array();
@@ -237,7 +240,7 @@ function tzintellitime_mock_request() {
 }
 
 function tzintellitime_mock_authenticate($user, $pass) {
-  $mock_user = db_fetch_object(db_query('SELECT * FROM {tzintellitime_mock_users} WHERE login = \'%s\'', $user));
+  $mock_user = tzintellitime_mock_load_user($user);
   if(!empty($mock_user) && $mock_user->password === $pass) {
     $token = md5($user . microtime() . $pass);
     $_SESSION['tzintellitime_mock_cookie'] = $token;
@@ -252,9 +255,13 @@ function tzintellitime_mock_authenticate($user, $pass) {
 function tzintellitime_mock_check_cookie() {
   if(!empty($_SESSION['tzintellitime_mock_cookie']) && !empty($_COOKIE['tzintellitime_mock_cookie']) &&
       $_SESSION['tzintellitime_mock_cookie'] == $_COOKIE['tzintellitime_mock_cookie']) {
-    // Set a session cookie specific for the mock.
-    setcookie('tzintellitime_mock_cookie', $_SESSION['tzintellitime_mock_cookie'], time() + 1800, '/IntelliplanWeb');
-    return TRUE;
+    // Check that user_id exists
+    $mock_user = tzintellitime_mock_load_user($_SESSION['tzintellitime_mock_user_id']);
+    if(!empty($mock_user) && !empty($mock_user->login)) {
+      // Set a session cookie specific for the mock.
+      setcookie('tzintellitime_mock_cookie', $_SESSION['tzintellitime_mock_cookie'], time() + 1800, '/IntelliplanWeb');
+      return TRUE;
+    }
   }
   tzintellitime_mock_logout();
   return FALSE;
@@ -267,23 +274,84 @@ function tzintellitime_mock_logout() {
   setcookie('tzintellitime_mock_cookie', '', time() - 3600, '/IntelliplanWeb');
 }
 
-function tzintellitime_mock_get_reports() {
+function tzintellitime_mock_get_reports($mock_user=NULL) {
   tzintellitime_include_classes();
 
-  return unserialize(TZINTELLITIME_MOCK_REPORTS);
+  // Build SQL query
+  $query = 'SELECT * FROM {tzintellitime_mock_data}';
+  $query_args = array();
+  if(!empty($mock_user)) {
+    $query .= ' WHERE user_id = %d';
+    $query_args[] = $mock_user->user_id;
+  }
+  $query .= ' ORDER BY id ASC';
+
+  $reports = array();
+  $result = db_query($query, $query_args);
+  while($row = db_fetch_object($result)) {
+    $object = unserialize($row->data);
+    if($object instanceof TZIntellitimeReport) {
+      $reports[] = _tzintellitime_mock_fill_id($object, $row);
+    }
+  }
+  return $reports;
 }
 
 function tzintellitime_mock_get_assignments() {
   tzintellitime_include_classes();
   $assignments = array();
 
-  $result = db_query('SELECT data FROM {tzintellitime_mock_data} WHERE user_id = 0 ORDER BY id ASC');
-  while($data = db_result($result)) {
-    $object = unserialize($data);
+  $result = db_query('SELECT * FROM {tzintellitime_mock_data} WHERE user_id = 0 ORDER BY id ASC');
+  while($row = db_fetch_object($result)) {
+    $object = unserialize($row->data);
     if($object instanceof TZIntellitimeAssignment) {
-      $assignments[] = $object;
+      $assignments[] = _tzintellitime_mock_fill_id($object, $row);
     }
   }
 
   return $assignments;
+}
+
+function tzintellitime_mock_load_object($id) {
+  $result = db_query('SELECT * FROM {tzintellitime_mock_data} WHERE id = %d', $id);
+  $row = db_fetch_object($result);
+  $obj = unserialize($row->data);
+  return _tzintellitime_mock_fill_id($obj, $row);
+}
+
+function _tzintellitime_mock_fill_id(&$object, $row) {
+  if($object) {
+    $object->user_id = $row->user_id;
+    $object->id = $row->id;
+  }
+  return $object;
+}
+
+function tzintellitime_mock_load_user($user_id) {
+  if(is_numeric($user_id)) {
+    return db_fetch_object(db_query('SELECT * FROM {tzintellitime_mock_users} WHERE user_id = %d', $user_id));
+  } else {
+    return db_fetch_object(db_query('SELECT * FROM {tzintellitime_mock_users} WHERE login = \'%s\'', $user_id));
+  }
+}
+
+function tzintellitime_mock_store_object($object) {
+  $db_object = array(
+    'user_id' => 0,
+    'data' => serialize($object),
+  );
+
+  if(!empty($object->user_id)) {
+    $db_object['user_id'] = $object->user_id;
+  }
+
+  if(!empty($object->id)) {
+    // Existing ID, update instead
+    $db_object['id'] = $object->id;
+    drupal_write_record('tzintellitime_mock_data', $db_object, 'id');
+  } else {
+    drupal_write_record('tzintellitime_mock_data', $db_object);
+  }
+
+  return $db_object['id'];
 }

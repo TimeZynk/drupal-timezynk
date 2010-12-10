@@ -554,9 +554,14 @@ myWindow.focus();
         <option value="<?php print $assignment->id ?>"><?php print $assignment->title ?></option>
         <?php endforeach;?>
         <option value="-1">---</option>
-	<?php foreach($absence_codes as $code):?>
-        <option value="<?php print $code->id ?>"><?php print $code->title ?></option>
-        <?php endforeach;?>
+	<?php
+	if(!empty($absence_codes)):
+	  foreach($absence_codes as $code):?>
+        <option value="<?php print '_AC_' . $code->id ?>"><?php print $code->title ?></option>
+        <?php
+          endforeach;
+        endif;
+        ?>
         <option value="_AC_"></option>
     </select></TD>
                                     <TD class="TimeReportText" width="8"><IMG height="15" src="../Images/trans.gif" width="8" border="0"></TD>

@@ -32,26 +32,15 @@ function tzintellitime_mock_setup_assignments_submit($form, &$form_state) {
   foreach($form_state['values']['assignments'] as $row) {
     if(!empty($row['title'])) {
       $db_object = array();
-      $new_row = FALSE;
-
-      if(empty($row['id'])) {
-        // New record, create new ID
-        $new_row = TRUE;
-        $db_object['data'] = 'new row';
-        drupal_write_record('tzintellitime_mock_data', $db_object);
-        $row['id'] = $db_object['id'];
-      } else {
-        $db_object['id'] = $row['id'];
-      }
+      $new_row = empty($row['id']);
 
       // Create assignment object and serialize to data column
       $assignment = _assignment_from_form($row);
-      $db_object['data'] = serialize($assignment);
+      $id = tzintellitime_mock_store_object($assignment);
 
-      drupal_write_record('tzintellitime_mock_data', $db_object, 'id');
       drupal_set_message(t('@action assignment with mock id @id', array(
           '@action' => $new_row ? 'Created' : 'Updated',
-          '@id' => $row['id']
+          '@id' => $id,
         )
       ));
     } else {
@@ -66,9 +55,7 @@ function tzintellitime_mock_setup_assignments_submit($form, &$form_state) {
 
 function _assignment_from_form($values) {
   $assignment = new TZIntellitimeAssignment();
-  if($values['type'] == TZIntellitimeAssignment::TYPE_ABSENCE) {
-    $assignment->id = '_AC_' . $values['id'] . '_' . substr($values['title'], 0, 10);
-  } else {
+  if(!empty($values['id'])) {
     $assignment->id = $values['id'];
   }
   $assignment->title = trim($values['title']);
@@ -111,7 +98,7 @@ function _mock_assignment_form_entry($db_id='', $assignment=NULL) {
     ),
     'type' => array(
       '#type' => 'select',
-      '#default_value' => $assignment ? $assignment->type : TZIntellitimeAssignment::TYPE_ASSIGNMENT,
+      '#default_value' => isset($assignment->type) ? $assignment->type : TZIntellitimeAssignment::TYPE_ASSIGNMENT,
       '#options' => array(
         TZIntellitimeAssignment::TYPE_ASSIGNMENT => t('Assignment'),
         TZIntellitimeAssignment::TYPE_ABSENCE => t('Absence'),
