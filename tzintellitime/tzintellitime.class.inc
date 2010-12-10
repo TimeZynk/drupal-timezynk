@@ -548,6 +548,7 @@ class TZIntellitimeParser {
       foreach($table_rows as $row) {
         $report = $this->parse_report_row($row);
         $report->set_year($years);
+        $report->calculate_break();
         $reports[] = $report;
       }
     }
@@ -592,6 +593,11 @@ class TZIntellitimeParser {
     $report->begin =  $this->parse_time_field($row->td[7]);
     $report->end =  $this->parse_time_field($row->td[9]);
     $report->break_duration_minutes =  intval($row->td[11]->input[0]['value'],10);
+
+    // parse total hours
+    $hours_string = preg_replace('/,/', '.', (string)$row->td[13]->span);
+    $report->total_hours = floatval($hours_string);
+
     // TODO: find out if overtime is float or int..
     // 15 is overtime. In hours...
     $report->overtime_hours =  intval($row->td[15]->input[0]['value'], 10);
@@ -651,6 +657,7 @@ class TZIntellitimeReport {
   public $end = NULL;
   public $break_duration_minutes = 0;
   public $overtime_hours = 0;
+  public $total_hours = 0;
   public $comment = '';
 
   /**
@@ -725,6 +732,31 @@ class TZIntellitimeReport {
         break;
     }
     return TRUE;
+  }
+
+  public function calculate_break() {
+    /* On days with absence intellitime chooses not to display the break
+     * duration as its own input field. Instead in hides the field completely
+     * and its value can only be computed by comparing the actual times with
+     * the displayed total duration */
+    if(empty($this->break_duration_minutes)) {
+      $begindate = $this->get_begintime();
+      $enddate = $this->get_endtime();
+      if($enddate < $begindate) {
+        $enddate->modify('+1 day');
+      }
+
+      $duration_seconds = $enddate->format('U') - $begindate->format('U');
+      $specified_duration_seconds = $this->total_hours * 3600;
+      $diff_seconds = $duration_seconds - $specified_duration_seconds;
+
+      if($diff_seconds > 72) {
+        /* more than 0,02 hours difference between Intellitimes specified
+         * duration and our calculated duration should mean that there is
+         * a hidden break */
+        $this->break_duration_minutes = floor($diff_seconds / 60);
+      }
+    }
   }
 
   public function get_date_string() {
