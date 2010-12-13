@@ -1,7 +1,9 @@
 <?php
 
-class TZIntellitimeBot {
+class TZNetworkFailureException extends Exception {}
+class TZAuthenticationFailureException extends Exception {}
 
+class TZIntellitimeBot {
   /**
    * the cURL handle used for login.
    * @var a handle or NULL
@@ -44,14 +46,6 @@ class TZIntellitimeBot {
         'cookiejar' => tempnam(file_directory_temp(), 'tzintellitimebot'),
       );
     }
-
-    // Set standard curl options
-    $curl_opt = array(
-      CURLOPT_USERAGENT => "TimeZynk/1.0",
-      CURLOPT_COOKIEFILE => $this->session_data['cookiejar'],
-      CURLOPT_COOKIEJAR => $this->session_data['cookiejar'],
-    );
-    curl_setopt_array($this->handle, $curl_opt);
   }
 
   /**
@@ -73,16 +67,10 @@ class TZIntellitimeBot {
    */
   public function login($username, $password) {
     $parser = $this->request($this->login_url);
-    if (!$parser) {
-      return FALSE;
-    }
     $post = $parser->build_login_post($username, $password);
     $post_url = $this->build_action_url("Portal/" . $post['action']);
     $parser = $this->request($post_url, $post['data']);
-    if ($parser && $parser->is_valid_login()) {
-      return TRUE;
-    }
-    return FALSE;
+    return $parser->is_valid_login();
   }
 
   /**
@@ -102,9 +90,6 @@ class TZIntellitimeBot {
 
     $url = $this->build_action_url($dateaction);
     $parser = $this->request($url);
-    if(!$parser) {
-      return FALSE;
-    }
 
     return $this->week_data($parser);
   }
@@ -124,13 +109,18 @@ class TZIntellitimeBot {
    */
   public function request($url, $post_data = NULL) {
     $curl_opts = array(
+      CURLOPT_USERAGENT => "TimeZynk/1.0",
+      CURLOPT_COOKIEFILE => $this->session_data['cookiejar'],
+      CURLOPT_COOKIEJAR => $this->session_data['cookiejar'],
       CURLOPT_RETURNTRANSFER => TRUE,
       CURLOPT_BINARYTRANSFER => TRUE,
       CURLOPT_FAILONERROR => TRUE,
-      CURLOPT_URL => $url,
       CURLOPT_FOLLOWLOCATION => TRUE,
       CURLOPT_SSL_VERIFYPEER => FALSE, // Turn of SSL verification since intellitime uses a non-standard CA
       CURLOPT_SSL_VERIFYHOST => 2,
+      CURLOPT_TIMEOUT => 30,
+      CURLOPT_CONNECTTIMEOUT => 20,
+      CURLOPT_URL => $url,
     );
 
     if($post_data) {
@@ -147,8 +137,9 @@ class TZIntellitimeBot {
       $this->session_data['last_effective_url'] = curl_getinfo($this->handle, CURLINFO_EFFECTIVE_URL);
       return new TZIntellitimeParser($output);
     }
-    watchdog('tzintellitime', 'Request failed: @error', array('@error' => curl_error($this->handle)), WATCHDOG_WARNING);
-    return FALSE;
+    $error_msg = curl_error($this->handle);
+    watchdog('tzintellitime', 'Request failed: @error', array('@error' => $error_msg), WATCHDOG_WARNING);
+    throw new TZNetworkFailureException($error_msg);
   }
 
   /**
@@ -224,14 +215,16 @@ class TZIntellitimeBot {
    * @return Array array with keys 'assignments', 'reports' and 'unfinished_weeks' or empty array if not logged in
    */
   private function week_data($parser) {
-    $result = array();
-    if($parser->is_valid_login()) {
-      $assignments = $parser->parse_assignments();
-      $absence_types = $parser->parse_absence_types();
-      $result['assignments'] = array_merge($assignments, $absence_types);
-      $result['reports'] = $parser->parse_reports();
-      $result['unfinished_weeks'] = $parser->parse_unfinished_weeks();
+    if(!$parser->is_valid_login()) {
+      throw new TZAuthenticationFailureException();
     }
+
+    $result = array();
+    $assignments = $parser->parse_assignments();
+    $absence_types = $parser->parse_absence_types();
+    $result['assignments'] = array_merge($assignments, $absence_types);
+    $result['reports'] = $parser->parse_reports();
+    $result['unfinished_weeks'] = $parser->parse_unfinished_weeks();
     return $result;
   }
 
@@ -285,6 +278,9 @@ class TZIntellitimeParser {
     $html_string = mb_convert_encoding($html_string, 'HTML-ENTITIES', 'UTF-8');
     @$doc->loadHTML($html_string);
     $this->doc = simplexml_import_dom($doc);
+    if(!$this->doc) {
+      throw new TZNetworkFailureException('Unable to parse document');
+    }
   }
 
   /**
@@ -300,12 +296,10 @@ class TZIntellitimeParser {
    * @return bool TRUE if successful, else FALSE.
    */
   public function is_valid_login() {
-    if (!$this->doc) {
-      return FALSE;
-    }
-
-    $list = $this->doc->xpath('//img[@src="../Images/Img_LogOut.gif"]');
-    if (count($list) === 0) {
+    /* If we can find the login password box, then either our login
+     * failed or the session has expired */
+    $list = $this->doc->xpath('//input[@id="TextBoxPassword"]');
+    if (count($list) > 0) {
       return FALSE;
     }
     return TRUE;
@@ -319,10 +313,6 @@ class TZIntellitimeParser {
    * @return Array All that is needed by TZIntellitimeUtility::build_action_url and $this->post
    */
   public function build_login_post($username, $password) {
-    if(!$this->doc) {
-      return NULL;
-    }
-
     $result['action'] = $this->parse_form_action();
     $result['data'] = $this->parse_form_input_data();
     $result['data']['TextBoxUserName'] = $username;

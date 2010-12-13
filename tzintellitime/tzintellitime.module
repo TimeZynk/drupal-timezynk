@@ -136,17 +136,29 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
   }
 
   if (!$account || (isset($account->intellitime_user) && !tzintellitime_is_authenticated($account))) {
-    if(tzintellitime_server_auth($account, $username, $password)) {
-      // Login successful, store in global user object
-      $user = $account;
+    try {
+      if(tzintellitime_server_auth($account, $username, $password)) {
+        // Login successful, store in global user object
+        $user = $account;
 
-      // Schedule for sync
-      if(module_exists('tzintellitime_sync')) {
-        tzintellitime_sync_schedule_user($user->uid);
+        // Schedule for sync
+        if(module_exists('tzintellitime_sync')) {
+          tzintellitime_sync_schedule_user($user->uid);
+        }
       }
+    } catch(TZNetworkFailureException $e) {
+      watchdog('tzintellitime', 'Network problem when authenticating @user: @msg',
+        array('@user' => $username, '@msg' => $e->getMessage()),
+        WATCHDOG_WARNING);
+    } catch(TZAuthenticationFailureException $e) {
+      watchdog('tzintellitime', 'Failed to authenticate @user',
+        array('@user' => $username),
+        WATCHDOG_WARNING);
     }
-  } else {
-    // Admins and existing users with cookiejars in order authenticate normally.
+  }
+
+  // Fallback to password authentication
+  if(empty($user->uid)) {
     user_authenticate($form_state['values']);
   }
 }

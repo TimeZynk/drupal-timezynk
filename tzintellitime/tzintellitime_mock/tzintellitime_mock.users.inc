@@ -53,11 +53,10 @@ function theme_mock_user_table($element) {
     }
   }
 
-  // Setup headers and output table
+  // Setup headers
   $header = array(t('ID'), t('Username'), t('Password'));
-  $output .= theme('table', $header, $rows);
 
-  return $output;
+  return theme('table', $header, $rows);
 }
 
 function _mock_user_form_entry($user_id='', $login='', $password='') {

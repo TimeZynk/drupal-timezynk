@@ -31,15 +31,19 @@ class TZIntellitimeSyncController {
 
     $this->process_pending_weeks();
 
-    // Check if we could sync anything
-    if(array_search(TZIntellitimeSyncController::NETWORK_FAILURE, $this->week_status)) {
-      // Failed to load some weeks because of network error
-      return TZIntellitimeSyncController::NETWORK_FAILURE;
-    } else if(array_search(TZIntellitimeSyncController::AUTH_FAILURE, $this->week_status)) {
-      // Authentication failed
+    // Check status for the weeks
+
+    // Authentication failed
+    if(array_search(TZIntellitimeSyncController::AUTH_FAILURE, $this->week_status)) {
       return TZIntellitimeSyncController::AUTH_FAILURE;
     }
 
+    // Failed to load some weeks because of network error
+    if(array_search(TZIntellitimeSyncController::NETWORK_FAILURE, $this->week_status)) {
+      return TZIntellitimeSyncController::NETWORK_FAILURE;
+    }
+
+    // All went fine!
     return TZIntellitimeSyncController::SYNC_OK;
   }
 
@@ -164,32 +168,33 @@ class TZIntellitimeSyncController {
         }
       }
 
-      if(!empty($updated_reports)) {
-        $data = $this->send_updated_reports($updated_reports);
-      }
-      if(empty($data)) {
-        $data = $this->bot->load_week($weekdate);
-      }
+      try {
+        if(!empty($updated_reports)) {
+          $data = $this->send_updated_reports($updated_reports);
+        }
+        if(empty($data)) {
+          $data = $this->bot->load_week($weekdate);
+        }
+        $this->week_status[$week] = TZIntellitimeSyncController::SYNC_OK;
 
-      $this->week_status[$week] = $this->check_status($data);
+        // process assignments and merge jobmaps
+        $week_jobmap = $this->convert_assignments($data);
+        $jobmap = array_merge($jobmap, $week_jobmap);
 
-      if($this->week_status[$week] == TZIntellitimeSyncController::AUTH_FAILURE) {
+        $seen_reports = $this->convert_reports($data, $jobmap, $affected_reports);
+
+        $deleted_reports += $this->mark_removed_reports($seen_reports, $epoch_span[0], $epoch_span[1]);
+
+        $this->add_unfinished_weeks($data);
+
+      } catch(TZAuthenticationFailureException $e) {
         // If authentication failed, there is not much point to try another week
+        $this->week_status[$week] = TZIntellitimeSyncController::AUTH_FAILURE;
         break;
-      } else if($this->week_status[$week] == TZIntellitimeSyncController::NETWORK_FAILURE) {
+      } catch(TZNetworkFailureException $e) {
         // No data, try a different week
-        continue;
+        $this->week_status[$week] = TZIntellitimeSyncController::NETWORK_FAILURE;
       }
-
-      // process assignments and merge jobmaps
-      $week_jobmap = $this->convert_assignments($data);
-      $jobmap = array_merge($jobmap, $week_jobmap);
-
-      $seen_reports = $this->convert_reports($data, $jobmap, $affected_reports);
-
-      $deleted_reports += $this->mark_removed_reports($seen_reports, $epoch_span[0], $epoch_span[1]);
-
-      $this->add_unfinished_weeks($data);
     }
 
     if($deleted_reports) {
@@ -198,21 +203,6 @@ class TZIntellitimeSyncController {
                array('!nbr' => $deleted_reports),
                WATCHDOG_NOTICE,
                theme('username', $this->account));
-    }
-  }
-
-
-  /**
-   * Check return status from intellitime bot.
-   * @param $data data from TZIntellitimeBot
-   */
-  function check_status($data) {
-    if($data && isset($data['reports']) && isset($data['assignments'])) {
-      return TZIntellitimeSyncController::SYNC_OK;
-    } elseif(FALSE === $data) {
-      return TZIntellitimeSyncController::NETWORK_FAILURE;
-    } else {
-      return TZIntellitimeSyncController::AUTH_FAILURE;
     }
   }
 
