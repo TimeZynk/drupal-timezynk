@@ -67,7 +67,7 @@ function tzintellitime_mock_theme() {
   return array(
     'page' => array(
       'arguments' => array('content' => NULL, 'show_blocks' => TRUE, 'show_messages' => TRUE),
-      'template' => 'page',
+      'template' => 'page-IntelliplanWeb',
     ),
     'mock_user_table' => array(
       'arguments' => array(),
