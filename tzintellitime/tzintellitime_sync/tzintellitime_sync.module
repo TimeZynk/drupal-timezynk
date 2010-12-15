@@ -74,30 +74,44 @@ function tzintellitime_sync_menu() {
 }
 
 /**
- * Implementation of hook_cron. Checks if there are users to synchronize on each cron run.
+ * Add synchronization option to user operations
  */
-function tzintellitime_sync_cron() {
-  tzintellitime_sync_synchronize_users();
+function tzintellitime_sync_user_operations() {
+  $operations['tzintellitime_sync_schedule'] = array(
+    'label' => t('Synchronize user with Intelliplan'),
+    'callback' => 'tzintellitime_sync_schedule_list',
+  );
+  return $operations;
+}
+
+function tzintellitime_sync_schedule_list($users) {
+  if(!empty($users)) {
+    foreach($users as $uid) {
+      tzintellitime_sync_schedule_user($uid, true);
+    }
+  }
 }
 
 /**
  * Schedule the user with specified uid for synchronizations as soon as possible.
  * @param int $uid user id
  */
-function tzintellitime_sync_schedule_user($uid) {
+function tzintellitime_sync_schedule_user($uid, $force_sync = false) {
   if($uid) {
     $result = db_query('SELECT * FROM {tzintellitime_sync} WHERE uid = %d', $uid);
     if($entry = db_fetch_object($result)) {
       $entry->intellitime_active = 1;
       drupal_write_record('tzintellitime_sync', $entry, 'uid');
 
-      if(TZINTELLITIME_SYNC_INITIAL_SYNC == TZINTELLITIME_SYNC_INITIAL_SYNC_BOTH) {
+      if($force_sync ||
+         TZINTELLITIME_SYNC_INITIAL_SYNC == TZINTELLITIME_SYNC_INITIAL_SYNC_BOTH) {
         tzintellitime_sync_synchronize_user($uid);
       }
     } else {
       $entry = array('uid' => $uid, 'intellitime_active' => 1);
       drupal_write_record('tzintellitime_sync', $entry);
-      if(TZINTELLITIME_SYNC_INITIAL_SYNC == TZINTELLITIME_SYNC_INITIAL_SYNC_BOTH ||
+      if($force_sync ||
+         TZINTELLITIME_SYNC_INITIAL_SYNC == TZINTELLITIME_SYNC_INITIAL_SYNC_BOTH ||
          TZINTELLITIME_SYNC_INITIAL_SYNC == TZINTELLITIME_SYNC_INITIAL_SYNC_NEW) {
         tzintellitime_sync_synchronize_user($uid);
       }
@@ -129,6 +143,8 @@ function tzintellitime_sync_synchronize_users() {
 
 function tzintellitime_sync_synchronize_user($uid) {
   tzintellitime_include_classes();
+  require_once dirname(__FILE__) . '/tzintellitime_sync.class.inc';
+
   // Load user account
   $account = user_load(array('uid' => $uid));
   if(!$account) {
@@ -148,9 +164,6 @@ function tzintellitime_sync_synchronize_user($uid) {
     user_save($account, array('intellitime_active' => 0));
     return TZIntellitimeSyncController::AUTH_FAILURE;
   }
-
-  // Include sync controller class
-  require_once dirname(__FILE__) . '/tzintellitime_sync.class.inc';
 
   try {
     $ctrlr = new TZIntellitimeSyncController($account);

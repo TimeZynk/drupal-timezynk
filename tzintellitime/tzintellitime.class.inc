@@ -455,15 +455,17 @@ class TZIntellitimeParser {
   public function parse_assignments() {
     $result = array();
     $elems = $this->doc->xpath('//select[@id="CustOrdersDropDown"]/option');
-    foreach($elems as $option) {
-      $jobcode = trim((string)$option['value']);
-      $jobtitle = trim((string)$option);
-      if($jobcode && $jobtitle) {
-        $assignment = new TZIntellitimeAssignment();
-        $assignment->id = $jobcode;
-        $assignment->report_key = $jobtitle;
-        $assignment->title = $jobtitle;
-        $result[] = $assignment;
+    if(!empty($elems)) {
+      foreach($elems as $option) {
+        $jobcode = trim((string)$option['value']);
+        $jobtitle = trim((string)$option);
+        if($jobcode && $jobtitle) {
+          $assignment = new TZIntellitimeAssignment();
+          $assignment->id = $jobcode;
+          $assignment->report_key = $jobtitle;
+          $assignment->title = $jobtitle;
+          $result[] = $assignment;
+        }
       }
     }
     return $result;
@@ -523,14 +525,16 @@ class TZIntellitimeParser {
      * This works since we look at one week at a time. */
     $years = array();
     $hrefs = $this->doc->xpath('//a/@href');
-    foreach ($hrefs as $href) {
-      $matches = array();
-      if (preg_match("/TimeReport\.aspx\?DateInWeek=(\d{4})-\d{2}-\d{2}/", (string)$href, $matches)) {
-        $years[$matches[1]] = TRUE;
+    if(!empty($hrefs)) {
+      foreach ($hrefs as $href) {
+        $matches = array();
+        if (preg_match("/TimeReport\.aspx\?DateInWeek=(\d{4})-\d{2}-\d{2}/", (string)$href, $matches)) {
+          $years[$matches[1]] = TRUE;
+        }
       }
+      ksort($years);
+      $years = array_keys($years);
     }
-    ksort($years);
-    $years = array_keys($years);
 
     $reports = array();
     $table_rows = $this->doc->xpath('//select[@id="SelectExpenses"]/../..');
