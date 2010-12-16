@@ -46,6 +46,8 @@ class TZIntellitimeBot {
         'cookiejar' => tempnam(file_directory_temp(), 'tzintellitimebot'),
       );
     }
+
+    $this->setup_default_curl_options();
   }
 
   /**
@@ -102,14 +104,24 @@ class TZIntellitimeBot {
   }
 
   /**
-   * Lowlevel HTTP request. Issues a GET or POST request depending on the value of $post_data
-   * @param string $url URL to request
-   * @param array $post_data optional key => value array of POST parameters
-   * @return TZIntellitimeParser Parser on success, otherwise FALSE
+   * Configure default cURL options.
    */
-  public function request($url, $post_data = NULL) {
+  private function setup_default_curl_options() {
+    global $db_prefix;
+
+    /* This part here is to make us compatible with the way that
+     * simpletest detects if a request comes from a running unit
+     * test. If this is not setup, we will get values from the
+     * host site instead of the test site. */
+    $user_agent = '';
+    if (preg_match('/simpletest\d+/', $db_prefix, $matches)) {
+      $user_agent = drupal_generate_test_ua($matches[0]);
+    } else {
+      $user_agent = "TimeZynk/1.0";
+    }
+
     $curl_opts = array(
-      CURLOPT_USERAGENT => "TimeZynk/1.0",
+      CURLOPT_USERAGENT => $user_agent,
       CURLOPT_COOKIEFILE => $this->session_data['cookiejar'],
       CURLOPT_COOKIEJAR => $this->session_data['cookiejar'],
       CURLOPT_RETURNTRANSFER => TRUE,
@@ -120,10 +132,23 @@ class TZIntellitimeBot {
       CURLOPT_SSL_VERIFYHOST => 2,
       CURLOPT_TIMEOUT => 30,
       CURLOPT_CONNECTTIMEOUT => 20,
+    );
+
+    curl_setopt_array($this->handle, $curl_opts);
+  }
+
+  /**
+   * Lowlevel HTTP request. Issues a GET or POST request depending on the value of $post_data
+   * @param string $url URL to request
+   * @param array $post_data optional key => value array of POST parameters
+   * @return TZIntellitimeParser Parser on success, otherwise FALSE
+   */
+  public function request($url, $post_data = NULL) {
+    $curl_opts = array(
       CURLOPT_URL => $url,
     );
 
-    if($post_data) {
+    if(!empty($post_data)) {
       $curl_opts[CURLOPT_POSTFIELDS] = http_build_query($post_data, '', '&');
       $curl_opts[CURLOPT_POST] = TRUE;
     } else {
@@ -133,7 +158,7 @@ class TZIntellitimeBot {
     curl_setopt_array($this->handle, $curl_opts);
 
     $output = curl_exec($this->handle);
-    if($output) {
+    if(!empty($output)) {
       $this->session_data['last_effective_url'] = curl_getinfo($this->handle, CURLINFO_EFFECTIVE_URL);
       return new TZIntellitimeParser($output);
     }
@@ -352,7 +377,7 @@ class TZIntellitimeParser {
 
     // Check if $report is found among the input rows
     $row = $this->find_row_by_id($report->id);
-    if($row) {
+    if(!empty($row)) {
       // Found! Update fields from $report
       $first_input = $row->xpath('*/input[1]');
       $name_segment = explode(':', (string) $first_input[0]['name']);
@@ -613,7 +638,7 @@ class TZIntellitimeParser {
    * @param SimpleXMLElement $td <td> element containing the <input> fields
    */
   private function parse_time_field($td) {
-    if (!$td) {
+    if (!empty($td)) {
       return NULL;
     }
     return strval($td->input[0]['value']);
@@ -658,7 +683,7 @@ class TZIntellitimeReport {
    * Construct an intellitime report from a tzreport
    */
   public function __construct($tzreport = NULL) {
-    if($tzreport) {
+    if(!empty($tzreport)) {
       if(!empty($tzreport->intellitime_id)) {
         $id = unserialize($tzreport->intellitime_id);
         $this->id = $id[2];
@@ -767,7 +792,7 @@ class TZIntellitimeReport {
   public function convert_to_tzreport($account, $tzreport = NULL) {
     tzbase_include_proto_classes();
 
-    if(!$tzreport) {
+    if(empty($tzreport)) {
       $tzreport = new stdClass();
       $tzreport->type = 'tzreport';
       $tzreport->travelduration = 0;
@@ -851,7 +876,7 @@ class TZIntellitimeAssignment {
   public $type = TZIntellitimeAssignment::TYPE_ASSIGNMENT;
 
   public function convert_to_tzjob($account, $tzjob = NULL) {
-    if (!$tzjob) {
+    if (empty($tzjob)) {
       // New job, set default fields
       $tzjob = new stdClass();
       $tzjob->type = 'tzjob';

@@ -114,7 +114,7 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
    */
   public function setUp() {
     // Enable any modules required for the test.
-    parent::setUp('tzintellitime_mock','tzintellitime');
+    parent::setUp('libraries', 'date_api', 'tzbase', 'tzintellitime', 'tzintellitime_mock', 'tzintellitime_sync');
     require_once dirname(__FILE__) . '/tzintellitime.class.inc';
 
     $admin = $this->drupalCreateUser(array('administer site configuration'));
@@ -123,10 +123,9 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
      'users[0][login]' => 'test user',
      'users[0][password]' => 'test password',
     );
-    $this->drupalPost('admin/settings/tzintellitime_mock/users', $form, t('Save'));
-    $this->drupalLogout();
+    $this->drupalPost('admin/settings/tzintellitime_mock', $form, t('Save'));
 
-    $this->intelli_url = url('IntelliplanWeb/Portal/Login.aspx', array('absolute' => TRUE));
+    $this->intelli_url = $this->getAbsoluteUrl('IntelliplanWeb/Portal/Login.aspx');
     $this->bot = new TZIntellitimeBot($this->intelli_url);
   }
 
@@ -172,16 +171,16 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
     $this->assertNotNull($results['reports'], 'Expected $results["reports"] NOT NULL.');
   }
 
-  public function testFetchingLocalUrl() {
+  public function testRequestUrl() {
+    // Start with a valid URL
     try {
-      $parser = $this->bot->request(url('user', array('absolute' => TRUE)));
+      $parser = $this->bot->request(url('IntelliplanWeb', array('absolute' => TRUE)));
       $this->assertNotNull($parser, 'fetched local URL');
     } catch(Exception $e) {
-      $fail($e->getMessage());
+      $this->fail($e->getMessage());
     }
-  }
 
-  public function testFetchingInvalidUrl() {
+    // Try invalid URL
     try {
       $this->bot->request(url('user', array('absolute' => TRUE)) . '/my_monkeys');
       $this->fail('Fetching invalid URL did not throw exception');
@@ -202,6 +201,39 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
       $this->fail('Should have generated an InvalidArgumentException');
     } catch (InvalidArgumentException $e) {
       $this->pass('Caught exception');
+    }
+  }
+
+  public function testErrorCode() {
+    // First test error code for load_week
+    $ok = $this->bot->login("test user", "test password");
+    $this->assertTrue($ok);
+
+    variable_set('tzintellitime_mock_error_code', '500');
+
+    // Begin with simple request
+    try {
+      $this->bot->request($this->getAbsoluteUrl('IntelliplanWeb/Portal/Login.aspx'));
+      $this->fail('Expected exception');
+    } catch(TZNetworkFailureException $e) {
+      $this->pass('Caught exception: ' . $e->getMessage());
+    }
+
+    // Proceed with load_week
+    try {
+      $result = $this->bot->load_week();
+      $this->fail('Should have thrown exception');
+      $this->assertTrue(empty($result), 'empty result, got: ' . print_r($result, TRUE));
+    } catch(TZNetworkFailureException $e) {
+      $this->pass('Caught exception: ' . $e->getMessage());
+    }
+
+    // Login should also fail.
+    try {
+      $this->bot->login("test user", "test password");
+      $this->fail('Expected exception');
+    } catch(TZNetworkFailureException $e) {
+      $this->pass('Caught exception: ' . $e->getMessage());
     }
   }
 }

@@ -2,6 +2,7 @@
 
 define('TZINTELLITIME_MOCK_DELAY_MILLIS', variable_get('tzintellitime_mock_delay_millis', '0'));
 define('TZINTELLITIME_MOCK_ENABLE_COMMENTS', variable_get('tzintellitime_mock_enable_comments', '1'));
+define('TZINTELLITIME_MOCK_ERROR_CODE', variable_get('tzintellitime_mock_error_code', '200'));
 
 /**
  * Implementation of hook_init
@@ -25,35 +26,10 @@ function tzintellitime_mock_menu() {
     $items['admin/settings/tzintellitime_mock'] = array(
     'title' => 'Intellitime Mock',
     'description' => 'Settings for Intellitime Mockup site',
-    'page callback' => 'tzintellitime_mock_admin_settings_block',
-    'access arguments' => array('administer site configuration'),
-    'type' => MENU_NORMAL_ITEM,
-  );
-  $items['admin/settings/tzintellitime_mock/users'] = array(
-    'title' => 'Users',
-    'description' => 'Setup Intellitime Mockup users',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('tzintellitime_mock_setup_users'),
+    'page arguments' => array('tzintellitime_mock_admin_settings'),
     'access arguments' => array('administer site configuration'),
-    'file' => 'tzintellitime_mock.users.inc',
-    'type' => MENU_NORMAL_ITEM,
-  );
-  $items['admin/settings/tzintellitime_mock/assignments'] = array(
-    'title' => 'Mock assignments',
-    'description' => 'Setup Intellitime Mockup assignments',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('tzintellitime_mock_setup_assignments'),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'tzintellitime_mock.assignments.inc',
-    'type' => MENU_NORMAL_ITEM,
-  );
-  $items['admin/settings/tzintellitime_mock/reports'] = array(
-    'title' => 'Mock reports',
-    'description' => 'Setup Intellitime Mockup reports',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('tzintellitime_mock_setup_reports'),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'tzintellitime_mock.reports.inc',
+    'file' => 'tzintellitime_mock.admin.inc',
     'type' => MENU_NORMAL_ITEM,
   );
   return $items;
@@ -196,6 +172,12 @@ function tzintellitime_mock_request() {
   if(FALSE !== array_search('Images', $path)) {
     drupal_set_header('Content-Type: image/gif');
     print(base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='));
+    return;
+  }
+
+  if(TZINTELLITIME_MOCK_ERROR_CODE !== '200') {
+    drupal_set_header('HTTP/1.1 ' . TZINTELLITIME_MOCK_ERROR_CODE . ' Error');
+    print('Error: ' . TZINTELLITIME_MOCK_ERROR_CODE);
     return;
   }
 
