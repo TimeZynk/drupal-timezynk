@@ -638,7 +638,7 @@ class TZIntellitimeParser {
    * @param SimpleXMLElement $td <td> element containing the <input> fields
    */
   private function parse_time_field($td) {
-    if (!empty($td)) {
+    if (empty($td)) {
       return NULL;
     }
     return strval($td->input[0]['value']);

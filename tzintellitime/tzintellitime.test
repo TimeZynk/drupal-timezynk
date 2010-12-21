@@ -391,6 +391,20 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
     $this->assertEqual('Panda panda panda "test mjauu" hej!*\'112\'', $reports[2]->comment);
   }
 
+  public function testParseTimeFields() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-with-comments.html');
+    $reports = $parser->parse_reports();
+    $this->assertEqual('08:50', $reports[0]->begin);
+    $this->assertEqual('17:00', $reports[0]->end);
+    $this->assertEqual(60, $reports[0]->break_duration_minutes);
+    $this->assertEqual('12:00', $reports[1]->begin);
+    $this->assertEqual('13:00', $reports[1]->end);
+    $this->assertEqual(10, $reports[1]->break_duration_minutes);
+    $this->assertEqual('10:00', $reports[2]->begin);
+    $this->assertEqual('23:59', $reports[2]->end);
+    $this->assertEqual(120, $reports[2]->break_duration_minutes);
+  }
+
   /** Override assertEqual to get nice log prints by default */
   protected function assertEqual($first, $second, $message = '', $group = 'Other') {
     if(!$message) {
