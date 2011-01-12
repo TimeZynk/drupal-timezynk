@@ -549,7 +549,7 @@ class TZIntellitimeParser {
      * which will tell us which of the years to choose.
      * This works since we look at one week at a time. */
     $years = array();
-    $hrefs = $this->doc->xpath('//a/@href');
+    $hrefs = $this->doc->xpath('//a/img[@src="../Images/Btn_ArrowLeft.gif" or @src="../Images/Btn_ArrowRight.gif"]/../@href');
     if(!empty($hrefs)) {
       foreach ($hrefs as $href) {
         $matches = array();
@@ -742,13 +742,14 @@ class TZIntellitimeReport {
             break;
           default:
             // Hilfe, we have New Year's outside of dec-jan. Jumping leap years, Batman!
+            watchdog('tzintellitime', 'Could not set year, code thinks we have new year\'s outside of dec-jan.', WATCHDOG_WARNING);
             return FALSE;
         }
         break;
       default:
         // Please don't pass arrays with count($years) < 1 or > 2.
+        watchdog('tzintellitime', 'Could not set year, too many or few to choose from.', WATCHDOG_WARNING);
         return FALSE;
-        break;
     }
     return TRUE;
   }

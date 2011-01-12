@@ -405,6 +405,37 @@ class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
     $this->assertEqual(120, $reports[2]->break_duration_minutes);
   }
 
+  /**
+   * Absence reports miss a break duration field in intellitime.
+   * We have to infer it from total time and start and end.
+   */
+  public function testInferBreakDurationForAbsence() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-multiple-year-hrefs.html');
+    $reports = $parser->parse_reports();
+    $this->assertEqual('13:00', $reports[3]->begin);
+    $this->assertEqual('19:30', $reports[3]->end);
+    $this->assertEqual(30, $reports[3]->break_duration_minutes);
+    $this->assertEqual('08:00', $reports[4]->begin);
+    $this->assertEqual('17:30', $reports[4]->end);
+    $this->assertEqual(30, $reports[4]->break_duration_minutes);
+    $this->assertEqual('22:00', $reports[5]->begin);
+    $this->assertEqual('08:00', $reports[5]->end);
+    $this->assertEqual(30, $reports[5]->break_duration_minutes);
+  }
+
+  /**
+   * Due to the page containing links to 'unfinished weeks' in both 2010 and 2011,
+   * the old code mistakenly fell in to a mode where it thought new year's eve was in november.
+   * This is a regression test to avoid that particular stupidity again. :)
+   */
+  public function testParseYears() {
+    $parser = $this->loadHTMLFile('intellitime-timereport-multiple-year-hrefs.html');
+    $reports = $parser->parse_reports();
+    foreach ($reports as $report) {
+      $this->assertEqual(2010, $report->year);
+    }
+  }
+
   /** Override assertEqual to get nice log prints by default */
   protected function assertEqual($first, $second, $message = '', $group = 'Other') {
     if(!$message) {
