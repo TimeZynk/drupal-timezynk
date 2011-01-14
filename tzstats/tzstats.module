@@ -29,6 +29,7 @@ function tzstats_synchronized_multiple_users($module, $count, $successful, $befo
     'count' => $count,
     'successful' => $successful,
     'seconds' => ($after - $before),
+    'timestamp' => time(),
   );
   drupal_write_record('tzstats_sync', $record);
 }
