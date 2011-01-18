@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Controller class for handling data synchronization between intellitime and timezynk
  */
 class TZIntellitimeSyncController {
@@ -17,6 +17,7 @@ class TZIntellitimeSyncController {
     tzbase_include_proto_classes();
     tzintellitime_include_classes();
     $this->account = $account;
+    $this->persister = new TZIntellitimePersister($this->account);
     $this->bot = new TZIntellitimeBot(TZINTELLITIME_BASE_URL, $account->intellitime_session_data);
   }
 
@@ -138,7 +139,6 @@ class TZIntellitimeSyncController {
    */
   function process_pending_weeks() {
     $timezone = date_default_timezone(FALSE);
-    $jobmap = array();
     $deleted_reports = 0;
 
     while($week = array_search(TZIntellitimeSyncController::PENDING, $this->week_status)) {
@@ -153,7 +153,6 @@ class TZIntellitimeSyncController {
        * For this scheme to work, we must always create a new revision whenever a user
        * updates a report on our server so that we don't risk user changes being overwritten
        * with old data from the intellitime server. */
-      $affected_reports = array();
       $updated_reports = array();
       $epoch_span = $this->epoch_span($week, $timezone);
       $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE t.assignedto = %d AND t.begintime >= %d AND t.begintime < %d AND t.flags != 255 AND n.status = 1',
@@ -161,7 +160,7 @@ class TZIntellitimeSyncController {
       while($nid = db_result($result)) {
         $node = node_load($nid, NULL, TRUE);
         if(!empty($node->intellitime_id)) {
-          $affected_reports[$node->intellitime_id] = $node;
+          $this->persister->add_existing_report($node);
           if(!empty($node->intellitime_local_changes)) {
             $updated_reports[] = $node;
           }
@@ -177,11 +176,9 @@ class TZIntellitimeSyncController {
         }
         $this->week_status[$week] = TZIntellitimeSyncController::SYNC_OK;
 
-        // process assignments and merge jobmaps
-        $week_jobmap = $this->convert_assignments($data);
-        $jobmap = array_merge($jobmap, $week_jobmap);
-
-        $seen_reports = $this->convert_reports($data, $jobmap, $affected_reports);
+        //
+        $this->persister->convert_assignments($data['assignments']);
+        $seen_reports = $this->persister->convert_reports($data['reports']);
 
         $deleted_reports += $this->mark_removed_reports($seen_reports, $epoch_span[0], $epoch_span[1]);
 
@@ -207,46 +204,6 @@ class TZIntellitimeSyncController {
   }
 
 
-  /**
-   * Convert all TZIntellitimeAssignments in $this->data to tzjobs.
-   * @return Array map from <job key> => <job node id> for use with convert_reports
-   */
-  function convert_assignments($data) {
-    $jobmap = array();
-
-    // Create default absence parent job if needed
-    $absence_assignment = new TZIntellitimeAssignment();
-    $absence_assignment->id = TZINTELLITIME_SYNC_ABSENCE_PARENT_JOB_ID;
-    $absence_assignment->title = t('Absence');
-    $absence_node = $this->create_job($absence_assignment);
-
-    foreach($data['assignments'] as $tzassignment) {
-      $parentid = 0;
-      // Place absence type assignments as children of the absence parent job
-      if ($tzassignment->type == TZIntellitimeAssignment::TYPE_ABSENCE) {
-        $parentid = $absence_node->nid;
-      }
-      $job = $this->create_job($tzassignment, $parentid);
-      $jobmap[$tzassignment->report_key] = $job->nid;
-    }
-    return $jobmap;
-  }
-
-  /**
-   * Convert all TZIntellitimeReports in $this->data to tzreports.
-   * @param Array $jobmap jobmap from convert_assignments()
-   * @return Array array of tzreport->nid for all processed reports.
-   */
-  function convert_reports($data, $jobmap, $existing_reports) {
-    $seen_reports = array();
-    foreach($data['reports'] as $itreport) {
-      $tzreport = $this->create_report($itreport, $jobmap, $existing_reports);
-      if(!empty($tzreport)) {
-        $seen_reports[] = $tzreport->nid;
-      }
-    }
-    return $seen_reports;
-  }
 
   /**
    * Mark reports as deleted if they are in our synchronized date range but was not
@@ -297,20 +254,70 @@ class TZIntellitimeSyncController {
     }
     return $data;
   }
+}
+
+class TZIntellitimePersister {
+
+  public function __construct($account) {
+    $this->account = $account;
+    $this->jobmap = array();
+    $this->existing_reports = array();
+  }
+
+  public function add_existing_report($node) {
+    $this->existing_reports[$node->intellitime_id] = $node;
+  }
+
+  /**
+   * Convert all TZIntellitimeAssignments in $intelli_assignments to tzjobs.
+   * @param Array $intelli_assignments array of TZIntellitimeAssignments.
+   * @return nothing
+   */
+  function convert_assignments($intelli_assignments) {
+    // Create default absence parent job if needed
+    $absence_assignment = new TZIntellitimeAssignment();
+    $absence_assignment->id = TZINTELLITIME_SYNC_ABSENCE_PARENT_JOB_ID;
+    $absence_assignment->title = t('Absence');
+    $absence_node = $this->store_job($absence_assignment);
+
+    foreach($intelli_assignments as $intelli_assignment) {
+      $parentid = 0;
+      // Place absence type assignments as children of the absence parent job
+      if ($intelli_assignment->type == TZIntellitimeAssignment::TYPE_ABSENCE) {
+        $parentid = $absence_node->nid;
+      }
+      $this->store_job($intelli_assignment, $parentid);
+    }
+  }
+
+  /**
+   * Convert all TZIntellitimeReports in $intelli_reports to tzreports.
+   * @param Array $intelli_reports array of TZIntellitimeReports.
+   * @return Array array of tzreport->nid for all processed reports.
+   */
+  function convert_reports($intelli_reports) {
+    $seen_reports = array();
+    foreach($intelli_reports as $itreport) {
+      $tzreport = $this->store_report($itreport);
+      if(!empty($tzreport)) {
+        $seen_reports[] = $tzreport->nid;
+      }
+    }
+    return $seen_reports;
+  }
+
 
   /**
    * Create or update a tzreport from a TZIntellitimeReport
    * @param TZIntellitimeReport $intelli_report
-   * @param Array $job_map as returned from convert_assignments
-   * @param Array $existing_reports existing reports to update
    */
-  function create_report($intelli_report, $job_map = array(), $existing_reports = array()) {
+  function store_report($intelli_report) {
     $intellitime_id = $intelli_report->get_intellitime_id($this->account->uid);
 
     // Try to find existing report
     $tzreport = NULL;
-    if(!empty($existing_reports[$intellitime_id])) {
-      $tzreport = $existing_reports[$intellitime_id];
+    if(!empty($this->existing_reports[$intellitime_id])) {
+      $tzreport = $this->existing_reports[$intellitime_id];
     };
 
     $original_tzreport = NULL;
@@ -321,15 +328,19 @@ class TZIntellitimeSyncController {
     $tzreport = $intelli_report->convert_to_tzreport($this->account, $tzreport);
 
     // Map job to report by searching for matching title
-    $jobid = $this->match_job($job_map, $intelli_report->title);
-    if ($jobid) {
-      $tzreport->jobid = $jobid;
-    } else {
-      // Should not be able to create a report without a valid job.
-      watchdog('tzintellitime', 'No match for "!title" in jobmap', array('!title' => $intelli_report->title), WATCHDOG_WARNING);
-      return NULL;
+    $jobid = $this->match_job($intelli_report->title);
+    if (!$jobid) {
+      // Create placeholder job if needed
+      $placeholder_assignment = new TZIntellitimeAssignment();
+      $placeholder_assignment->id = "PLACEHOLDER_ID_" . md5($intelli_report->title);
+      $placeholder_assignment->title = $intelli_report->title;
+      $placeholder_assignment->report_key = $intelli_report->title;
+
+      $placeholder_node = $this->store_job($placeholder_assignment);
+      $jobid = $placeholder_node->nid;
     }
 
+    $tzreport->jobid = $jobid;
     $tzreport = $this->store_node($tzreport, $original_tzreport);
 
     return $tzreport;
@@ -340,7 +351,7 @@ class TZIntellitimeSyncController {
    * @param TZIntellitimeAssignment $intelli_assignment
    * @param int $parentid optional parentid to set
    */
-  function create_job($intelli_assignment, $parentid = 0) {
+  function store_job($intelli_assignment, $parentid = 0) {
     // Load node if this is an update
     $job = tzintellitime_node_load_by_intellitime_id($intelli_assignment->id);
 
@@ -355,10 +366,19 @@ class TZIntellitimeSyncController {
 
     $job = $this->store_node($job, $original_job);
 
+    /* If the assignment lacks a valid report_key it has been internally created
+     * and should not be used for matching reports. */
+    if (!empty($intelli_assignment->report_key)) {
+      $this->jobmap[$intelli_assignment->report_key] = $job->nid;
+    }
+
     return $job;
   }
 
-  /**
+
+
+
+ /**
    * Does the actual work of storing a node to the drupal database.
    * @param Object $node_data actual node data to save.
    * @param Object $original_node original node data to compare to before saving.
@@ -409,24 +429,15 @@ class TZIntellitimeSyncController {
    * Full version: 'Test Company, My assignment, My task, My reporting code'
    * Abbreviated version: 'Test Com, My assig, My t, My repor'
    *
-   * @param Array $jobmap
    * @param String $jobtitle
    */
-  static function match_job($jobmap, $jobtitle) {
-    /* Use a static cache to avoid doing a full search
-     * every time */
-    static $jobmap_cache = array();
-
-    if(!empty($jobmap[$jobtitle])) {
-      return $jobmap[$jobtitle];
-    }
-
-    if(!empty($jobmap_cache[$jobtitle])) {
-      return $jobmap_cache[$jobtitle];
+  function match_job($jobtitle) {
+    if(!empty($this->jobmap[$jobtitle])) {
+      return $this->jobmap[$jobtitle];
     }
 
     $jobpath = explode(', ', $jobtitle);
-    foreach($jobmap as $key => $jobid) {
+    foreach($this->jobmap as $key => $jobid) {
       $match = TRUE;
       $keypath = explode(', ', $key);
       if(count($jobpath) != count($keypath)) {
@@ -442,7 +453,7 @@ class TZIntellitimeSyncController {
         }
       }
       if($match) {
-        $jobmap_cache[$jobtitle] = $jobid;
+        $this->jobmap[$jobtitle] = $jobid;
         return $jobid;
       }
     }

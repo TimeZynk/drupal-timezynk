@@ -116,7 +116,7 @@ function tzintellitime_mock_drush_list_assignments() {
   }
 }
 
-function tzintellitime_mock_drush_add_report($user_id, $assignment_id, $year, $month, $day, $begin, $end, $break=0, $comment='') {
+function tzintellitime_mock_drush_add_report($user_id, $assignment, $year, $month, $day, $begin, $end, $break=0, $comment='') {
   tzintellitime_include_classes();
 
   $mock_user = tzintellitime_mock_load_user($user_id);
@@ -125,15 +125,23 @@ function tzintellitime_mock_drush_add_report($user_id, $assignment_id, $year, $m
     return;
   }
 
-  $assignment = tzintellitime_mock_load_object($assignment_id);
-  if(empty($assignment)) {
-    drush_log("Illegal assignment id: " . $assignment_id, 'error');
-    return;
+  $report = new TZIntellitimeReport();
+
+  /* As the second argument we accept either a numeric assignment ID or a string to be used
+   * as the assignment title for this report */
+  if (ctype_digit($assignment)) {
+    $intelli_assignment = tzintellitime_mock_load_object($assignment);
+    if(empty($intelli_assignment)) {
+      drush_log("Illegal assignment id: " . $assignment, 'error');
+      return;
+    }
+
+    $report->title = $intelli_assignment->title;
+    $report->assignment_id = $intelli_assignment->id;
+  } else {
+    $report->title = $assignment;
   }
 
-  $report = new TZIntellitimeReport();
-  $report->title = $assignment->title;
-  $report->assignment_id = $assignment_id;
   $report->user_id = $user_id;
   $report->year = intval($year, 10);
   $report->month = intval($month, 10);
@@ -152,8 +160,15 @@ function tzintellitime_mock_drush_add_report($user_id, $assignment_id, $year, $m
 function tzintellitime_mock_drush_list_reports() {
   $reports = tzintellitime_mock_get_reports();
   foreach($reports as $report) {
-    printf("%d %d %d %04d-%02d-%02d %s %s %d '%s'\n", $report->id, $report->user_id,
+    if (empty($report->assignment_id)) {
+      printf("%d %d '%s' %04d-%02d-%02d %s %s %d '%s'\n", $report->id, $report->user_id,
+        $report->title, $report->year, $report->month, $report->day,
+        $report->begin, $report->end, $report->break_duration_minutes, $report->comment);
+
+    } else {
+      printf("%d %d %d %04d-%02d-%02d %s %s %d '%s'\n", $report->id, $report->user_id,
         $report->assignment_id, $report->year, $report->month, $report->day,
         $report->begin, $report->end, $report->break_duration_minutes, $report->comment);
+    }
   }
 }

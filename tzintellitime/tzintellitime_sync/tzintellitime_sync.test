@@ -1,14 +1,5 @@
 <?php
 
-/* THESE TESTS CROSS THE BOUNDARY BETWEEN TEST DB AND REAL DB !
- *
- * There is a patch that possibly fixes this problem, until then
- * we have to test manually.
- *
- * For the patch see: http://drupal.org/node/970564
- * For manual test instructions: https://vpn.timezynk.com/wiki/acceptanstest
- */
-/*
 class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
   public static function getInfo() {
     return array(
@@ -22,183 +13,95 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
     // Enable any modules required for the test.
     parent::setUp('libraries', 'date_api', 'date_timezone', 'tzbase', 'tzintellitime', 'tzintellitime_mock', 'tzintellitime_sync');
 
-    $this->admin_user = $this->drupalCreateUser(array('administer site configuration'));
-    $this->drupalLogin($this->admin_user);
-
-    // Use mock intellitime URL
-    $post = array('tzintellitime_base_url' => url('IntelliplanWeb/Portal/Login.aspx', array('absolute' => TRUE)));
-    $this->drupalPost('admin/settings/timezynk/tzintellitime', $post, t('Save configuration'));
-
-    variable_set('date_default_timezone_name', 'Europe/Stockholm');
-    $this->drupalLogout();
-
     // Include resources
     tzbase_include_proto_classes();
     tzintellitime_include_classes();
     require_once dirname(__FILE__) . '/tzintellitime_sync.class.inc';
 
-
-    // Create and test user
-    $this->account = (object)array('name' => 'test user', 'pass_raw' => 'test password');
-    $this->login_timestamp = time();
+    $this->account = $this->drupalCreateUser(array('access content'));
     $this->drupalLogin($this->account);
-    $this->account += user_load(array('name' => $this->account->name));
-    $this->assertTrue($this->account, 'account created for ' . $this->account->name);
   }
 
-  public function testIsCorrectlySynchronizedOnFirstLogin() {
-    $this->assertTrue($this->login_timestamp <= $this->account->intellitime_last_sync);
-
-    $num_rows = db_result(db_query('SELECT COUNT(*) FROM {tzintellitime_sync}'));
-    $this->assertTrue($num_rows);
+  function testMissingJobs() {
+    $syncPersister = new TZIntellitimePersister($this->account);
+    $intellireport = $this->createReport();
+    $tzreport = $syncPersister->store_report($intellireport);
+    $this->assertNotNull($tzreport);
+    $this->assertTrue($tzreport->nid);
+    $this->assertTrue($tzreport->jobid);
+    $job = node_load($tzreport->jobid);
+    $this->assertEqual($tzreport->title, $job->title);
   }
 
-  public function testCreatingData() {
-    $this->controller = new TZIntellitimeSyncController($this->account);
-    $this->doTestCreatingJob();
-    $this->doTestUpdatingExistingJob();
-    $this->doTestCreatingReport();
-    $this->doTestUpdatingExistingReport();
-    $this->doTestCreateChildJob();
-    $this->doTestCreatingReportWithoutJobShallFail();
+  function testMissingJobExistingReport() {
+    $syncPersister = new TZIntellitimePersister($this->account);
+    $intellireport = $this->createReport();
+    $tzreport = $syncPersister->store_report($intellireport);
+    $jobid = $tzreport->jobid;
+
+    $syncPersister = new TZIntellitimePersister($this->account);
+    $syncPersister->add_existing_report($tzreport);
+    $tzreport2 = $syncPersister->store_report($intellireport);
+    $this->assertEqual($jobid, $tzreport2->jobid);
+    $this->assertIdentical($tzreport, $tzreport2);
   }
 
-  public function doTestCreatingJob() {
+  /*
+   * Makes sure that the normal case, actually having a matching job in the job map works alright.
+   */
+  function testNonMissingJob() {
+    $syncPersister = new TZIntellitimePersister($this->account);
+    $intellireport = $this->createReport();
+    // Make sure that report and job have the same title so that they will match.
+    $job = $syncPersister->store_job($this->createAssignment($intellireport->title));
+    $tzreport = $syncPersister->store_report($intellireport);
+    $this->assertEqual($job->nid, $tzreport->jobid);
+  }
+
+  public function testCreatingJob() {
+    $syncPersister = new TZIntellitimePersister($this->account);
     $assignment = $this->createAssignment();
-    $node = $this->controller->create_job($assignment);
+    $node = $syncPersister->store_job($assignment);
     $this->assertNotNull($node);
     $this->assertTrue($node->nid, "Expected valid drupal ID.");
     $this->assertEqual($assignment->id, $node->intellitime_id, 'Expected same intellitime id.');
     $this->assertEqual($assignment->title, $node->title, 'Expected equal titles');
   }
 
-  public function doTestUpdatingExistingJob() {
+  public function testUpdatingExistingJob() {
+    $syncPersister = new TZIntellitimePersister($this->account);
     $assignment = $this->createAssignment();
-    $nodes[] = $this->controller->create_job($assignment);
+    $nodes[] = $syncPersister->store_job($assignment);
     $assignment->title .= '2';
-    $nodes[] = $this->controller->create_job($assignment);
+    $nodes[] = $syncPersister->store_job($assignment);
     $this->assertEqual($nodes[0]->nid, $nodes[1]->nid, 'Expected same node-id');
     $this->assertEqual($assignment->title, $nodes[1]->title, 'Expected equal titles');
   }
 
-  public function doTestCreateChildJob() {
+  public function testCreateChildJob() {
+    $syncPersister = new TZIntellitimePersister($this->account);
     $parent_job = $this->createAssignment();
-    $parent_node = $this->controller->create_job($parent_job);
+    $parent_node = $syncPersister->store_job($parent_job);
     $assignment = $this->createAssignment();
-    $node = $this->controller->create_job($assignment, $parent_node->nid);
+    $node = $syncPersister->store_job($assignment, $parent_node->nid);
     $this->assertEqual($parent_node->nid, $node->parentid);
     $this->assertEqual(0, $parent_node->parentid);
   }
 
-  public function doTestCreatingReport() {
+  public function testUpdatingExistingReport() {
+    $syncPersister = new TZIntellitimePersister($this->account);
     $report = $this->createReport();
     $assignment = $this->createAssignment($report->title);
-    $job_node = $this->controller->create_job($assignment);
-    $report_node = $this->controller->create_report($report, array($assignment->title => $job_node->nid));
-    $this->assertNotNull($report_node);
-    $this->assertTrue($report_node->nid);
-  }
-
-  public function doTestUpdatingExistingReport() {
-    $report = $this->createReport();
-    $assignment = $this->createAssignment($report->title);
-    $job_node = $this->controller->create_job($assignment);
-    $report_node = $this->controller->create_report($report, array($assignment->title => $job_node->nid));
+    $job_node = $syncPersister->store_job($assignment);
+    $report_node = $syncPersister->store_report($report);
 
     // Update report and create again
     $report->break_duration_minutes = 35;
-    $report_map[$report_node->intellitime_id] = $report_node;
-    $report_node2 = $this->controller->create_report($report, array($assignment->title => $job_node->nid), $report_map);
+    $syncPersister->add_existing_report($report_node);
+    $report_node2 = $syncPersister->store_report($report);
 
     $this->assertEqual($report_node->nid, $report_node2->nid, 'Expected equal NID after update');
     $this->assertEqual($report->break_duration_minutes*60, $report_node2->breakduration, 'Expected updated breakduration');
-  }
-
-  public function doTestCreatingReportWithoutJobShallFail() {
-    $report = $this->createReport();
-    $report_node = $this->controller->create_report($report);
-    $this->assertNull($report_node);
-  }
-
-  public function testFullSync() {
-    // Add a basic assignment to the mock
-    $assignments[] = $this->createAssignment('Test Company, Test Assignment, Test Task');
-
-    // Add a couple booked reports
-    $expected_title = 'Test Company, Test Assignment, Test Task';
-    $reports = array();
-    for($i = 1; $i < 11; $i++) {
-      $reports[] = $this->createReport($expected_title, 2010, 11, $i);
-    }
-
-    // Post the new data to the mock
-    $this->setupMockData($reports, $assignments);
-
-    $before_sync = time();
-    $this->assertTrue(tzintellitime_is_authenticated($this->account));
-    $this->assertEqual(TZIntellitimeSyncController::SYNC_OK, tzintellitime_sync_synchronize_user($this->account->uid));
-    $this->account = user_load($this->account->uid);
-
-    $this->assertTrue($before_sync <= $this->account->intellitime_last_sync);
-
-    // Update one report before checking results to make sure they are independant
-    $reports[3]->begin = '00:00';
-    $reports[3]->end = '08:00';
-    $reports[3]->state = TZIntellitimeReport::STATE_REPORTED;
-    $reports[] = $this->createReport($expected_title, 2010, 11, 11);
-    $this->setupMockData($reports, $assignments);
-
-    // Check reports
-    $result = db_query('SELECT nid FROM {tzreport} ORDER BY begintime ASC');
-    $i = 1;
-    while($nid = db_result($result)) {
-      $report = node_load($nid, NULL, TRUE);
-      $this->assertEqual($expected_title, $report->title);
-      $this->assertEqual("Report on 2010-11-$i", $report->body);
-      $begintime = tzbase_make_date($report->begintime);
-      $endtime = tzbase_make_date($report->endtime);
-      $this->assertEqual("2010-11-$i 08:00:00", $begintime->format('Y-m-j H:i:s'));
-      $this->assertEqual("2010-11-$i 18:00:00", $endtime->format('Y-m-j H:i:s'));
-      $this->assertEqual(TZFlags::CREATED, $report->flags);
-      $i++;
-    }
-    $this->assertEqual(11, $i);
-
-    tzintellitime_sync_synchronize_user($this->account->uid);
-
-    // Check reports
-    $result = db_query('SELECT nid FROM {tzreport} ORDER BY begintime ASC');
-    $i = 1;
-    while($nid = db_result($result)) {
-      $report = node_load($nid, NULL, TRUE);
-      $this->verbose(print_r($report, TRUE));
-      $this->assertEqual($expected_title, $report->title);
-      $this->assertEqual("Report on 2010-11-$i", $report->body);
-      $begintime = tzbase_make_date($report->begintime);
-      $endtime = tzbase_make_date($report->endtime);
-      if($i == 4) {
-        $this->assertEqual("2010-11-$i 00:00:00", $begintime->format('Y-m-j H:i:s'));
-        $this->assertEqual("2010-11-$i 08:00:00", $endtime->format('Y-m-j H:i:s'));
-        $this->assertEqual(TZFlags::REPORTED, $report->flags);
-      } else {
-        $this->assertEqual("2010-11-$i 08:00:00", $begintime->format('Y-m-j H:i:s'));
-        $this->assertEqual("2010-11-$i 18:00:00", $endtime->format('Y-m-j H:i:s'));
-        $this->assertEqual(TZFlags::CREATED, $report->flags);
-      }
-      $i++;
-    }
-    $this->assertEqual(12, $i);
-
-  }
-
-  function setupMockData($reports, $assignments) {
-    $this->drupalLogin($this->admin_user);
-    $post = array(
-      'tzintellitime_mock_reports' => serialize($reports),
-      'tzintellitime_mock_assignments' => serialize($assignments),
-    );
-    $this->drupalPost('admin/settings/timezynk/tzintellitime_mock', $post, t('Save configuration'));
-    $this->drupalLogin($this->account);
   }
 
   function createAssignment($title = "A very nice job..") {
@@ -224,7 +127,6 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
     return $report;
   }
 
-
   protected function assertEqual($first, $second, $message = '', $group = 'Other') {
     if(!$message) {
       $message = 'Expected "' . $first . '", got "' . $second . '"';
@@ -232,7 +134,6 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
     parent::assertEqual($first, $second, $message, $group);
   }
 }
-*/
 
 class TZIntellitimeSyncUnitTestCase extends DrupalUnitTestCase {
   public static function getInfo() {
@@ -245,10 +146,11 @@ class TZIntellitimeSyncUnitTestCase extends DrupalUnitTestCase {
 
   public function setUp() {
     require_once dirname(__FILE__) . '/tzintellitime_sync.class.inc';
+    $this->persister = new TZIntellitimePersister(NULL);
   }
 
-public function testMatchJobShouldFindNid() {
-    $jobmap = array(
+  public function testMatchJobShouldFindNid() {
+    $this->persister->jobmap = array(
       'Axis Commun, Lagerarbeta, Q6032, spec' => 1,
       'Axis Communic, Lagerarbeta, "Heating"' => 2,
       'Axis Communicatio, Lagerarbeta, P553' => 3,
@@ -264,13 +166,13 @@ public function testMatchJobShouldFindNid() {
     $count = sizeof($titles);
     for ($i = 0; $i < $count; $i++) {
       $title = $titles[$i];
-      $nid = TZIntellitimeSyncController::match_job($jobmap, $title);
+      $nid = $this->persister->match_job($title);
       $this->assertEqual($nid, $i+1);
     }
   }
 
   public function testMatchJobShouldReturnFalse() {
-    $jobmap = array(
+    $this->persister->jobmap = array(
       'Axis Commun, Lagerarbeta, Q6032, spec' => 1,
       'Axis Communic, Lagerarbeta, "Heating"' => 2,
       'Axis Communicatio, Lagerarbeta, P553' => 3,
@@ -286,7 +188,7 @@ public function testMatchJobShouldFindNid() {
     $count = sizeof($titles);
     for ($i = 0; $i < $count; $i++) {
       $title = $titles[$i];
-      $nid = TZIntellitimeSyncController::match_job($jobmap, $title);
+      $nid = $this->persister->match_job($title);
       $this->assertFalse($nid, t('Expected titles to not match'));
     }
   }
