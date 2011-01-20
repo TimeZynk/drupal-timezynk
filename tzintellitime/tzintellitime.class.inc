@@ -132,6 +132,7 @@ class TZIntellitimeBot {
       CURLOPT_SSL_VERIFYHOST => 2,
       CURLOPT_TIMEOUT => 30,
       CURLOPT_CONNECTTIMEOUT => 20,
+      CURLOPT_HTTPHEADER => array('Accept-Language: sv-SE'),
     );
 
     curl_setopt_array($this->handle, $curl_opts);
@@ -323,8 +324,12 @@ class TZIntellitimeParser {
   public function is_valid_login() {
     /* If we can find the login password box, then either our login
      * failed or the session has expired */
-    $list = $this->doc->xpath('//input[@id="TextBoxPassword"]');
-    if (count($list) > 0) {
+    if (!$this->doc) {
+      return FALSE;
+    }
+
+    $list = $this->doc->xpath('//img[@src="../Images/Img_LogOut.gif"]');
+    if (count($list) === 0) {
       return FALSE;
     }
     return TRUE;
