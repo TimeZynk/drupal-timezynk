@@ -415,7 +415,8 @@ function tzproto_fill_from_node(&$proto, $node, $protocol_version = 0) {
      * special access rules to check if _this_ node and user combo
      * allows creating children/reports et c. ... */
     $proto->set_may_create_child(node_access('create', $node->type));
-    $proto->set_may_create_report(node_access('create', 'tzreport'));
+    $proto->set_may_create_report(node_access('create', 'tzreport') &&
+        $node->flags == TZJobFlags::ACTIVE);
     $proto->set_may_edit(node_access('update', $node));
   } else if($node->type == 'tzreport') {
     $proto->set_vid($node->vid);
