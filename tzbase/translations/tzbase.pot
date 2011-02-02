@@ -3,6 +3,7 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
+#  tzbase.drush.inc: n/a
 #  tzbase.module: n/a
 #  tzbase.info: n/a
 #  includes/views/tzbase.views.inc: n/a
@@ -10,12 +11,13 @@
 #  includes/tzbase.admin.inc: n/a
 #  includes/views/handlers/tzbase_handler_argument_begintime.inc: n/a
 #  includes/views/handlers/tzbase_handler_field_date.inc: n/a
+#  includes/views/handlers/tzbase_handler_field_tzjob_flags.inc: n/a
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-11-11 10:23+0100\n"
+"POT-Creation-Date: 2011-02-02 11:02+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -23,6 +25,14 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: tzbase.drush.inc:81
+msgid "tzproto"
+msgstr ""
+
+#: tzbase.drush.inc:81
+msgid "Created revision !vid of report !nid via drush"
+msgstr ""
 
 #: tzbase.module:17;19 tzbase.info:0
 msgid "Provides TimeZynk data types and relations"
@@ -44,7 +54,7 @@ msgstr ""
 msgid "Comments"
 msgstr ""
 
-#: tzbase.module:63 includes/views/tzbase.views.inc:139
+#: tzbase.module:63 includes/views/tzbase.views.inc:135
 msgid "Job"
 msgstr ""
 
@@ -80,15 +90,15 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
-#: tzbase.module:262 includes/views/tzbase.views.inc:67
+#: tzbase.module:262 includes/views/tzbase.views.inc:63
 msgid "Start time"
 msgstr ""
 
-#: tzbase.module:276 includes/views/tzbase.views.inc:87
+#: tzbase.module:276 includes/views/tzbase.views.inc:83
 msgid "End time"
 msgstr ""
 
-#: tzbase.module:286 includes/views/tzbase.views.inc:98
+#: tzbase.module:286 includes/views/tzbase.views.inc:94
 msgid "Break duration"
 msgstr ""
 
@@ -192,75 +202,75 @@ msgstr ""
 msgid "Configure TimeZynk modules."
 msgstr ""
 
-#: tzbase.install:42
+#: tzbase.install:48
 msgid "pb4php installed under %path."
 msgstr ""
 
-#: tzbase.install:45
+#: tzbase.install:51
 msgid "Not found"
 msgstr ""
 
-#: tzbase.install:46
+#: tzbase.install:52
 msgid "Please install pb4php under sites/all/libraries/pb4php."
 msgstr ""
 
-#: tzbase.install:63;117
+#: tzbase.install:69;123
 msgid "The {user}.uid that is assigned to this report"
 msgstr ""
 
-#: tzbase.install:80;145
+#: tzbase.install:86;151
 msgid "Total duration in seconds"
 msgstr ""
 
-#: tzbase.install:91;181
+#: tzbase.install:97;187
 msgid "Stores a TimeZynk time report connected to a specific assignment"
 msgstr ""
 
-#: tzbase.install:98;188
+#: tzbase.install:104;194
 msgid "The {node}.nid"
 msgstr ""
 
-#: tzbase.install:105;195
+#: tzbase.install:111;201
 msgid "The {node_revision}.vid"
 msgstr ""
 
-#: tzbase.install:111
+#: tzbase.install:117
 msgid "The {tzjob}.nid"
 msgstr ""
 
-#: tzbase.install:124
+#: tzbase.install:130
 msgid "Timestamp for the beginning"
 msgstr ""
 
-#: tzbase.install:131
+#: tzbase.install:137
 msgid "Timestamp for the end"
 msgstr ""
 
-#: tzbase.install:138
+#: tzbase.install:144
 msgid "Total break time in seconds"
 msgstr ""
 
-#: tzbase.install:152
+#: tzbase.install:158
 msgid "Total travel time in seconds"
 msgstr ""
 
-#: tzbase.install:159
+#: tzbase.install:165
 msgid "Total travel length in kilometers"
 msgstr ""
 
-#: tzbase.install:165
+#: tzbase.install:171
 msgid "Signature text"
 msgstr ""
 
-#: tzbase.install:172;214
+#: tzbase.install:178;220
 msgid "Bit-combined flags"
 msgstr ""
 
-#: tzbase.install:201
+#: tzbase.install:207
 msgid "Account code for this job"
 msgstr ""
 
-#: tzbase.install:207
+#: tzbase.install:213
 msgid "The {tzjob}.nid of the parent job"
 msgstr ""
 
@@ -276,40 +286,44 @@ msgstr ""
 msgid "Perform operation"
 msgstr ""
 
-#: includes/views/tzbase.views.inc:30
+#: includes/views/tzbase.views.inc:26
 msgid "The ID of the linked Job"
 msgstr ""
 
-#: includes/views/tzbase.views.inc:48
+#: includes/views/tzbase.views.inc:44
 msgid "Assigned user"
 msgstr ""
 
-#: includes/views/tzbase.views.inc:49
+#: includes/views/tzbase.views.inc:45
 msgid "The user assigned to this report"
 msgstr ""
 
-#: includes/views/tzbase.views.inc:68
+#: includes/views/tzbase.views.inc:64
 msgid "Time Report start time"
 msgstr ""
 
-#: includes/views/tzbase.views.inc:88
+#: includes/views/tzbase.views.inc:84
 msgid "Time Report end time"
 msgstr ""
 
-#: includes/views/tzbase.views.inc:99
+#: includes/views/tzbase.views.inc:95
 msgid "Time Report break duration"
 msgstr ""
 
-#: includes/views/tzbase.views.inc:109
+#: includes/views/tzbase.views.inc:105
 msgid "Total duration"
 msgstr ""
 
-#: includes/views/tzbase.views.inc:110
+#: includes/views/tzbase.views.inc:106
 msgid "Time Report total duration"
 msgstr ""
 
-#: includes/views/tzbase.views.inc:121
+#: includes/views/tzbase.views.inc:117;166
 msgid "Status flags"
+msgstr ""
+
+#: includes/views/tzbase.views.inc:147
+msgid "The ID of the parent Job"
 msgstr ""
 
 #: includes/views/handlers/tzbase_handler_argument_begintime.inc:22
@@ -342,5 +356,13 @@ msgstr ""
 
 #: includes/views/handlers/tzbase_handler_field_date.inc:39
 msgid "See <a href=\"http://us.php.net/manual/en/function.date.php\" target=\"_blank\">the PHP docs</a> for date formats."
+msgstr ""
+
+#: includes/views/handlers/tzbase_handler_field_tzjob_flags.inc:15
+msgid "Active"
+msgstr ""
+
+#: includes/views/handlers/tzbase_handler_field_tzjob_flags.inc:17
+msgid "Inactive"
 msgstr ""
 

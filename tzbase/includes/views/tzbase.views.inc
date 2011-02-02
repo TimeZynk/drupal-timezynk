@@ -116,7 +116,6 @@ function tzbase_views_data() {
     'title' => 'Flags',
     'help' => t('Status flags'),
 
-    // Basic numeric display
     'field' => array(
       'handler' => 'tzbase_handler_field_tzreport_flags',
       'click sortable' => TRUE,
@@ -141,6 +140,41 @@ function tzbase_views_data() {
     ),
   );
 
+  // parentid field
+  $data['tzjob']['parentid'] = array(
+    'title' => 'Parent Job ID',
+    'help' => t('The ID of the parent Job'),
+
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+
+    // Link to {node}.nid
+    'relationship' => array(
+      'handler' => 'views_handler_relationship',
+      'base' => 'node',
+      'base field' => 'nid',
+    )
+  );
+
+  // flags field
+  $data['tzjob']['flags'] = array(
+    'title' => 'Flags',
+    'help' => t('Status flags'),
+
+    'field' => array(
+      'handler' => 'tzbase_handler_field_tzjob_flags',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    )
+  );
+
   return $data;
 }
 
@@ -163,6 +197,10 @@ function tzbase_views_handlers() {
       ),
 
       'tzbase_handler_field_tzreport_flags' => array(
+        'parent' => 'views_handler_field',
+      ),
+
+      'tzbase_handler_field_tzjob_flags' => array(
         'parent' => 'views_handler_field',
       ),
 

@@ -9,7 +9,7 @@
  */
 class tzbase_handler_field_tzreport_flags extends views_handler_field {
   function render($values) {
-    $duration = $values->{$this->field_alias};
-    return tzbase_format_tzreport_flags($duration);
+    $flags = $values->{$this->field_alias};
+    return tzbase_format_tzreport_flags($flags);
   }
 }

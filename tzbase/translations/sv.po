@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Drupal 6.x\n"
-"POT-Creation-Date: 2010-11-11 10:23+0100\n"
-"PO-Revision-Date: 2010-11-11 10:24+0100\n"
+"POT-Creation-Date: 2011-02-02 11:02+0100\n"
+"PO-Revision-Date: 2011-02-02 11:04+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: TimeZynk AB <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -21,6 +21,14 @@ msgstr ""
 "X-Poedit-Language: Swedish\n"
 "X-Poedit-Country: SWEDEN\n"
 "X-Poedit-SourceCharset: utf-8\n"
+
+#: tzbase.drush.inc:81
+msgid "tzproto"
+msgstr ""
+
+#: tzbase.drush.inc:81
+msgid "Created revision !vid of report !nid via drush"
+msgstr "Skapade revision !vid av rapport !nid via drush"
 
 #: tzbase.module:17;19
 #: tzbase.info:0
@@ -45,7 +53,7 @@ msgid "Comments"
 msgstr "Kommentarer"
 
 #: tzbase.module:63
-#: includes/views/tzbase.views.inc:139
+#: includes/views/tzbase.views.inc:135
 msgid "Job"
 msgstr "Uppdrag"
 
@@ -82,17 +90,17 @@ msgid "Time"
 msgstr "Tid"
 
 #: tzbase.module:262
-#: includes/views/tzbase.views.inc:67
+#: includes/views/tzbase.views.inc:63
 msgid "Start time"
 msgstr "Starttid"
 
 #: tzbase.module:276
-#: includes/views/tzbase.views.inc:87
+#: includes/views/tzbase.views.inc:83
 msgid "End time"
 msgstr "Sluttid"
 
 #: tzbase.module:286
-#: includes/views/tzbase.views.inc:98
+#: includes/views/tzbase.views.inc:94
 msgid "Break duration"
 msgstr "Rastlängd"
 
@@ -197,75 +205,75 @@ msgstr ""
 msgid "Configure TimeZynk modules."
 msgstr "Konfigurera TimeZynk-moduler"
 
-#: tzbase.install:42
+#: tzbase.install:48
 msgid "pb4php installed under %path."
 msgstr "pb4php är installerad under %path"
 
-#: tzbase.install:45
+#: tzbase.install:51
 msgid "Not found"
 msgstr "Kunde inte hittas"
 
-#: tzbase.install:46
+#: tzbase.install:52
 msgid "Please install pb4php under sites/all/libraries/pb4php."
 msgstr "Installera pb4php under sites/all/libraries/pb4php"
 
-#: tzbase.install:63;117
+#: tzbase.install:69;123
 msgid "The {user}.uid that is assigned to this report"
 msgstr ""
 
-#: tzbase.install:80;145
+#: tzbase.install:86;151
 msgid "Total duration in seconds"
 msgstr "Totaltid"
 
-#: tzbase.install:91;181
+#: tzbase.install:97;187
 msgid "Stores a TimeZynk time report connected to a specific assignment"
 msgstr "Sparar en TimeZynk-tidrapport kopplad till ett specifikt uppdrag"
 
-#: tzbase.install:98;188
+#: tzbase.install:104;194
 msgid "The {node}.nid"
 msgstr ""
 
-#: tzbase.install:105;195
+#: tzbase.install:111;201
 msgid "The {node_revision}.vid"
 msgstr ""
 
-#: tzbase.install:111
+#: tzbase.install:117
 msgid "The {tzjob}.nid"
 msgstr ""
 
-#: tzbase.install:124
+#: tzbase.install:130
 msgid "Timestamp for the beginning"
 msgstr ""
 
-#: tzbase.install:131
+#: tzbase.install:137
 msgid "Timestamp for the end"
 msgstr ""
 
-#: tzbase.install:138
+#: tzbase.install:144
 msgid "Total break time in seconds"
 msgstr ""
 
-#: tzbase.install:152
+#: tzbase.install:158
 msgid "Total travel time in seconds"
 msgstr ""
 
-#: tzbase.install:159
+#: tzbase.install:165
 msgid "Total travel length in kilometers"
 msgstr ""
 
-#: tzbase.install:165
+#: tzbase.install:171
 msgid "Signature text"
 msgstr ""
 
-#: tzbase.install:172;214
+#: tzbase.install:178;220
 msgid "Bit-combined flags"
 msgstr ""
 
-#: tzbase.install:201
+#: tzbase.install:207
 msgid "Account code for this job"
 msgstr "Uppdragskod för det här uppdraget"
 
-#: tzbase.install:207
+#: tzbase.install:213
 msgid "The {tzjob}.nid of the parent job"
 msgstr ""
 
@@ -281,41 +289,45 @@ msgstr "Ta bort allt TimeZynk-innehåll"
 msgid "Perform operation"
 msgstr "Utför"
 
-#: includes/views/tzbase.views.inc:30
+#: includes/views/tzbase.views.inc:26
 msgid "The ID of the linked Job"
 msgstr "ID-nummer för länkat uppdrag"
 
-#: includes/views/tzbase.views.inc:48
+#: includes/views/tzbase.views.inc:44
 msgid "Assigned user"
 msgstr "Tilldelad till"
 
-#: includes/views/tzbase.views.inc:49
+#: includes/views/tzbase.views.inc:45
 msgid "The user assigned to this report"
 msgstr "Tilldelad användare"
 
-#: includes/views/tzbase.views.inc:68
+#: includes/views/tzbase.views.inc:64
 msgid "Time Report start time"
 msgstr "Starttid för tidrapport"
 
-#: includes/views/tzbase.views.inc:88
+#: includes/views/tzbase.views.inc:84
 msgid "Time Report end time"
 msgstr "Sluttid för tidrapport"
 
-#: includes/views/tzbase.views.inc:99
+#: includes/views/tzbase.views.inc:95
 msgid "Time Report break duration"
 msgstr "Rastlängd i tidrapport"
 
-#: includes/views/tzbase.views.inc:109
+#: includes/views/tzbase.views.inc:105
 msgid "Total duration"
 msgstr "Totaltid"
 
-#: includes/views/tzbase.views.inc:110
+#: includes/views/tzbase.views.inc:106
 msgid "Time Report total duration"
 msgstr "Totaltid för tidrapport"
 
-#: includes/views/tzbase.views.inc:121
+#: includes/views/tzbase.views.inc:117;166
 msgid "Status flags"
 msgstr "Statusflaggor"
+
+#: includes/views/tzbase.views.inc:147
+msgid "The ID of the parent Job"
+msgstr "ID-nummer för överliggande uppdrag"
 
 #: includes/views/handlers/tzbase_handler_argument_begintime.inc:22
 msgid "Select comparison"
@@ -348,6 +360,14 @@ msgstr "Anpassat datumformat"
 #: includes/views/handlers/tzbase_handler_field_date.inc:39
 msgid "See <a href=\"http://us.php.net/manual/en/function.date.php\" target=\"_blank\">the PHP docs</a> for date formats."
 msgstr "Se <a href=\"http://us.php.net/manual/en/function.date.php\" target=\"_blank\">PHP dokumentationen</a> för tillgängliga datumformat."
+
+#: includes/views/handlers/tzbase_handler_field_tzjob_flags.inc:15
+msgid "Active"
+msgstr "Aktiv"
+
+#: includes/views/handlers/tzbase_handler_field_tzjob_flags.inc:17
+msgid "Inactive"
+msgstr "Inaktiv"
 
 #~ msgid "Import legacy nodes"
 #~ msgstr "Importera kvarlämnat innehåll"
