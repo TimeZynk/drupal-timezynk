@@ -79,7 +79,7 @@ function tzintellitime_mock_preprocess_page(&$variables) {
   $ctlmapping = array();
   foreach($all_reports as $report) {
     if(!$date) {
-      if($report->state == TZIntellitimeReport::STATE_OPEN) {
+      if($report->state <= TZIntellitimeReport::STATE_OPEN) {
         $date = clone $report->get_begintime();
       } else {
         continue;
@@ -88,7 +88,7 @@ function tzintellitime_mock_preprocess_page(&$variables) {
     $reportweek = $report->get_begintime()->format('o\WW');
     $dateweek = $date->format('o\WW');
 
-    if($report->state == TZIntellitimeReport::STATE_OPEN) {
+    if($report->state <= TZIntellitimeReport::STATE_OPEN) {
       $unfinished_weeks[$reportweek] = $report->get_begintime()->format('Y-m-d');
     }
 
@@ -237,7 +237,7 @@ function tzintellitime_mock_request() {
 
 function tzintellitime_mock_update_report($post, $ctlid, $reportid) {
   // query to get the report and create a report with information that we cannot from $post
-  if($post['OldRowsRepeater:_ctl' . $ctlid . ':CheckBoxDelete']) {
+  if(!empty($post['OldRowsRepeater:_ctl' . $ctlid . ':CheckBoxDelete'])) {
     db_query('DELETE FROM {tzintellitime_mock_data} WHERE id=%d', $reportid);
     return;
   }

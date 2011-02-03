@@ -23,14 +23,15 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
       $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $serverInterface, NULL, $this->account);
       $this->fail("Should have caught exception.");
     } catch (InvalidArgumentException $e) {
-      //PASS.
+      $this->assertNotNull($e);
     }
   }
 
-  public function testConstructorNoThrowOnEmptyReports() {
+  public function testConstructorDoesNotThrowOnEmptyReports() {
     try {
       $serverInterface = $this->getMock('TZIntellitimeServerInterface');
       $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $serverInterface, array(), $this->account);
+      $this->assertInstanceOf('TZIntellitimeWeek', $week);
     } catch (InvalidArgumentException $e) {
       $this->fail('Caught unexpected exception');
     }
@@ -59,8 +60,8 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $syncResult = $week->sync();
     $this->assertNotNull($syncResult);
 
-    $this->assertEquals(1, count($syncResult->reports));
-    $this->assertReportUpdatedCorrectly($reports[0], $syncResult->reports[0]);
+    $this->assertEquals(1, count($syncResult->tzreports));
+    $this->assertReportUpdatedCorrectly($reports[0], $syncResult->tzreports[0]);
     $this->assertReportTitlesInAssignments($syncResult);
   }
 
@@ -83,10 +84,10 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $syncResult = $week->sync();
     $this->assertNotNull($syncResult);
 
-    $this->assertEquals(1, count($syncResult->reports));
-    $report = $syncResult->reports[0];
-    $this->assertNull($report->jobid);
-    $this->assertNotNull($syncResult->assignments);
+    $this->assertEquals(1, count($syncResult->tzreports));
+    $report = $syncResult->tzreports[0];
+    $this->assertFalse(isset($report->jobid));
+    $this->assertNotNull($syncResult->tzjobs);
     $this->assertReportTitlesInAssignments($syncResult);
   }
 
@@ -114,14 +115,14 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $syncResult = $week->sync();
     $this->assertNotNull($syncResult);
 
-    $this->assertEquals(3, count($syncResult->reports));
-    $this->assertReportUpdatedCorrectly($reports[0], $syncResult->reports[0]);
+    $this->assertEquals(3, count($syncResult->tzreports));
+    $this->assertReportUpdatedCorrectly($reports[0], $syncResult->tzreports[0]);
 
 
-    $this->assertEquals(TZFlags::LOCKED, $syncResult->reports[1]->flags);
-    $this->assertEquals(TZFlags::LOCKED, $syncResult->reports[2]->flags);
-    $this->assertNull($syncResult->reports[1]->nid);
-    $this->assertNull($syncResult->reports[2]->nid);
+    $this->assertEquals(TZFlags::LOCKED, $syncResult->tzreports[1]->flags);
+    $this->assertEquals(TZFlags::LOCKED, $syncResult->tzreports[2]->flags);
+    $this->assertFalse(isset($syncResult->tzreports[1]->nid));
+    $this->assertFalse(isset($syncResult->tzreports[2]->nid));
     $this->assertReportTitlesInAssignments($syncResult);
   }
 
@@ -166,7 +167,7 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
         }, $syncResult->unfinishedWeeks)
     );
     for($i = 0; $i < count($reports); $i++) {
-      $this->assertReportUpdatedCorrectly($reports[$i], $syncResult->reports[$i], TRUE);
+      $this->assertReportUpdatedCorrectly($reports[$i], $syncResult->tzreports[$i], TRUE);
     }
     $this->assertReportTitlesInAssignments($syncResult);
   }
@@ -196,7 +197,7 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $syncResult = $week->sync();
     $this->assertNotNull($syncResult);
 
-    $this->assertEquals(3, count($syncResult->reports));
+    $this->assertEquals(3, count($syncResult->tzreports));
     $this->assertEquals(
       array('2010W47', '2011W01', '2011W02', '2011W03'),
       array_map(function($datetime) {
@@ -204,9 +205,9 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
         }, $syncResult->unfinishedWeeks)
     );
 
-    $this->assertReportUpdatedCorrectly($reports[1], $syncResult->reports[1]);
-    $this->assertEquals(TZFlags::DELETED, $syncResult->reports[0]->flags);
-    $this->assertEquals(TZFlags::DELETED, $syncResult->reports[2]->flags);
+    $this->assertReportUpdatedCorrectly($reports[1], $syncResult->tzreports[1]);
+    $this->assertEquals(TZFlags::DELETED, $syncResult->tzreports[0]->flags);
+    $this->assertEquals(TZFlags::DELETED, $syncResult->tzreports[2]->flags);
     $this->assertReportTitlesInAssignments($syncResult);
   }
 
@@ -218,7 +219,7 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     );
 
     $serverInterface = $this->getMock('TZIntellitimeServerInterface');
-    $serverInterface->expects($this->once())
+    $serverInterface->expects($this->at(0))
         ->method('refreshWeek')
         ->will($this->returnValue($weekData[0]));
 
@@ -247,20 +248,20 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $this->assertInstanceOf('TZNetworkFailureException', $syncResult->exception);
 
     foreach($reports as $i => $report) {
-      $updatedReport = $syncResult->reports[$i];
+      $updatedReport = $syncResult->tzreports[$i];
       $this->assertEquals($report->vid, $updatedReport->vid);
       $this->assertEquals($report->begintime, $updatedReport->begintime);
       $this->assertEquals($report->endtime, $updatedReport->endtime);
       $this->assertEquals($report->breakduration, $updatedReport->breakduration);
     }
 
-    $this->assertEquals(0, $syncResult->reports[0]->intellitime_local_changes);
-    $this->assertEquals(1, $syncResult->reports[1]->intellitime_local_changes);
-    $this->assertEquals(0, $syncResult->reports[2]->intellitime_local_changes);
+    $this->assertEquals(0, $syncResult->tzreports[0]->intellitime_local_changes);
+    $this->assertEquals(1, $syncResult->tzreports[1]->intellitime_local_changes);
+    $this->assertEquals(0, $syncResult->tzreports[2]->intellitime_local_changes);
 
-    $this->assertEquals(TZIntellitimeReport::STATE_REPORTED, $syncResult->reports[0]->intellitime_last_state);
-    $this->assertEquals(TZIntellitimeReport::STATE_OPEN, $syncResult->reports[1]->intellitime_last_state);
-    $this->assertEquals(TZIntellitimeReport::STATE_OPEN, $syncResult->reports[2]->intellitime_last_state);
+    $this->assertEquals(TZIntellitimeReport::STATE_REPORTED, $syncResult->tzreports[0]->intellitime_last_state);
+    $this->assertEquals(TZIntellitimeReport::STATE_OPEN, $syncResult->tzreports[1]->intellitime_last_state);
+    $this->assertEquals(TZIntellitimeReport::STATE_OPEN, $syncResult->tzreports[2]->intellitime_last_state);
   }
 
   private function assertReportUpdatedCorrectly($report, $updatedReport, $checkTimes = FALSE) {
@@ -281,19 +282,19 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
    * $return bool
    */
   private function assertReportTitlesInAssignments($syncResult) {
-    foreach ($syncResult->reports as $report) {
-      if($report->flags == TZFlags::DELETED) {
+    foreach ($syncResult->tzreports as $report) {
+      if ($report->flags == TZFlags::DELETED) {
         continue;
       }
       $match = FALSE;
-      foreach ($syncResult->assignments as $assignment) {
-        if ($report->title == $assignment->report_key) {
+      foreach ($syncResult->tzjobs as $tzjob) {
+        if ($report->title == $tzjob->jobcode) {
           $match = TRUE;
           break;
         }
       }
       if (!$match) {
-        $this->fail('Could not find a match for report title ' . $report->title);
+        $this->fail('Could not find a match for report title "' . $report->title . '"');
       }
     }
     $this->assertTrue(TRUE, "All reports match");

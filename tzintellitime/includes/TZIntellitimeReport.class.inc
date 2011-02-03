@@ -1,14 +1,13 @@
 <?php
 
 class TZIntellitimeReport {
-  const STATE_UNDEFINED = -1;
   const STATE_OPEN = 0;
   const STATE_REPORTED = 1;
   const STATE_LOCKED = 2;
   const STATE_DELETED = 255;
 
   public $id = NULL;
-  public $state = TZIntellitimeReport::STATE_UNDEFINED;
+  public $state = TZIntellitimeReport::STATE_OPEN;
   public $year = NULL;
   public $month = NULL;
   public $day = NULL;
@@ -34,8 +33,7 @@ class TZIntellitimeReport {
       throw new InvalidArgumentException('No intellitime_id set in tzreport ' . $tzreport->nid);
     }
 
-    $id = unserialize($tzreport->intellitime_id);
-    $this->id = $id[2];
+    $this->id = tzintellitime_get_intellitime_id($tzreport);
 
     if($tzreport->flags < TZFlags::REPORTED) {
       $this->state = TZIntellitimeReport::STATE_OPEN;
@@ -43,9 +41,12 @@ class TZIntellitimeReport {
       $this->state = TZIntellitimeReport::STATE_REPORTED;
     } elseif($tzreport->flags == TZFlags::DELETED) {
       $this->state = TZIntellitimeReport::STATE_DELETED;
-    } else {
+    } elseif($tzreport->flags == TZFlags::APPROVED ||
+        $tzreport->flags == TZFlags::LOCKED) {
       $this->state = TZIntellitimeReport::STATE_LOCKED;
       $this->stateImmutable = TRUE;
+    } else {
+      throw new InvalidArgumentException('Unknown flag ' . $tzreport->flags . ' in tzreport ' . $tzreport->nid);
     }
 
     $begindate = tzbase_make_date($tzreport->begintime);
@@ -109,7 +110,9 @@ class TZIntellitimeReport {
 
     switch($this->state) {
       case TZIntellitimeReport::STATE_OPEN:
-        if($newTZReport || !$this->stateImmutable || $tzreport->intellitime_last_state != TZIntellitimeReport::STATE_OPEN) {
+        if($newTZReport ||
+            !$this->stateImmutable ||
+            (isset($tzreport->intellitime_last_state) && $tzreport->intellitime_last_state != TZIntellitimeReport::STATE_OPEN)) {
           $tzreport->flags = TZFlags::CREATED;
           $tzreport->intellitime_last_state = $this->state;
         }

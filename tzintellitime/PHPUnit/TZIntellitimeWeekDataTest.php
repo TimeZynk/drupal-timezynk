@@ -33,9 +33,18 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
     $unfinishedWeeks = $weekData->getUnfinishedWeeks();
     $this->assertEquals(4, count($unfinishedWeeks));
 
-    $assignments = $weekData->getAssignments();
+    $tzjobs = $weekData->getTZJobs();
     // Assignments are filtered by actual use on the week, so we should get 0
-    $this->assertEquals(0, count($assignments));
+    $this->assertEquals(0, count($tzjobs));
+  }
+
+  function testNoParserThrows() {
+    try {
+      $weekData = new TZIntellitimeWeekData(NULL);
+      $this->fail("Should not be able to pass NULL parsers..");
+    } catch (InvalidArgumentException $e) {
+      $this->assertNotNull($e);
+    }
   }
 
   function testV9CloseWeekWithWeekDoneForSingleReport() {
@@ -47,7 +56,7 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
 
     $postData = $weekData->buildPost($reports);
 
-    $this->assertEquals('TimeReport.aspx?DateInWeek=2011-01-28', $postData->getPostAction());
+    $this->assertEquals('TimeReport/TimeReport.aspx?DateInWeek=2011-01-28', $postData->getPostAction());
 
     $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
     rawurlencode('dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb2hhbiBIZWFuZGVyOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjtpPDI+Oz47bDxwPCBbVmlzYSBhbGxhIHVwcGRyYWddIDswPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw1Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwxPjs+PjtsPGk8MD47PjtsPHQ8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxcZTtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMztFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMzs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcPG9wdGlvblw+W0tsaWNrYSBow6RyXVw8L29wdGlvblw+Oz47Oz47Pj47Pj47Pj47dDw7bDxpPDEzPjtpPDE1Pjs+O2w8dDx0PDtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0PjtpPDU+O2k8Nj47aTw3Pjs+O2w8cDxtw6UsIDI0LzAxIDsyMDExLTAxLTI0PjtwPHRpLCAyNS8wMSA7MjAxMS0wMS0yNT47cDxvbiwgMjYvMDEgOzIwMTEtMDEtMjY+O3A8dG8sIDI3LzAxIDsyMDExLTAxLTI3PjtwPGZyLCAyOC8wMSA7MjAxMS0wMS0yOD47cDxsw7YsIDI5LzAxIDsyMDExLTAxLTI5PjtwPHPDtiwgMzAvMDEgOzIwMTEtMDEtMzA+Oz4+Oz47Oz47dDx0PDtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0Pjs+O2w8cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIFRydWNrZsO2cmFyZTs2MjAwPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgTGFnZXJhcmJldGFyZTs1OTgzPjtwPC0tLTstMT47cDxcZTtfQUNfPjs+Pjs+Ozs+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8VXBwZGF0ZXJhOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxWZWNrYSBLbGFyOz4+Oz47Oz47dDxwPHA8bDxUZXh0O1Zpc2libGU7PjtsPMOEbmRyYSB2ZWNrYTtvPGY+Oz4+Oz47Oz47Pj47Pj47bDxPbGRSb3dzUmVwZWF0ZXI6X2N0bDA6Q2hlY2tib3hEYXlEb25lO09sZFJvd3NSZXBlYXRlcjpfY3RsMDpDaGVja0JveERlbGV0ZTtGdWxsRGF5Q2hlY2tCb3g7Pj4=') . '&DoPost=true&CustOrdersDropDown=0&OldRowsRepeater%3A_ctl0%3ATextboxTimeFrom=08%3A30&OldRowsRepeater%3A_ctl0%3ADateFromHidden=08%3A00&OldRowsRepeater%3A_ctl0%3ATextboxTimeTo=17%3A30&OldRowsRepeater%3A_ctl0%3ADateToHidden=17%3A00&OldRowsRepeater%3A_ctl0%3ATextboxBreak=60&OldRowsRepeater%3A_ctl0%3ABreakHidden=none&OldRowsRepeater%3A_ctl0%3ATextboxExplicitOvertime=0&OldRowsRepeater%3A_ctl0%3AOverTimeHidden=none&OldRowsRepeater%3A_ctl0%3ATextboxNote=&OldRowsRepeater%3A_ctl0%3ACheckboxDayDone=on&AddDateDropDown=&AddRowDropDown=&AddTimeFromTextBox=&AddTimeToTextBox=&AddBreakTextBox=&AddExplicitOvertimeTextBox=&AddNoteTextBox=&DoneButton=Vecka+Klar';
@@ -64,7 +73,7 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
 
     $postData = $weekData->buildPost($reports);
 
-    $this->assertEquals('TimeReport.aspx?DateInWeek=2011-01-28', $postData->getPostAction());
+    $this->assertEquals('TimeReport/TimeReport.aspx?DateInWeek=2011-01-28', $postData->getPostAction());
 
     $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
       rawurlencode('dDwtMTg1NjE4NzIxO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8Nz47aTw4PjtpPDk+O2k8MTA+O2k8MTE+O2k8MTI+O2k8MTM+Oz47bDx0PDtsPGk8MD47PjtsPHQ8O2w8aTwxPjtpPDM+O2k8Nz47PjtsPHQ8cDxwPGw8SW1hZ2VVcmw7PjtsPH4vQ3VzdG9tZXJzL2ludGVsbGlwbGFuX2xvZ28uZ2lmOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb25hcyAgU3VuZGluOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjs+O2w8cDwgW1Zpc2EgYWxsYSB1cHBkcmFnXSA7MD47cDxXYWx0ZXIgJiBDTyAsIEtvY2ssIFNwZWNpYWx1cHBkcmFnIGVmOzIwMj47Pj47bDxpPDA+Oz4+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDI+Oz4+Ozs+O3Q8cDxsPFZpc2libGU7PjtsPG88dD47Pj47Oz47dDxwPGw8VmlzaWJsZTs+O2w8bzx0Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwxPjs+PjtsPGk8MD47PjtsPHQ8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxcZTtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDJPek10NnFKa3NzQSUzZCUzZDtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDJPek10NnFKa3NzQSUzZCUzZDs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcPG9wdGlvblw+W0tsaWNrYSBow6RyXVw8L29wdGlvblw+Oz47Oz47Pj47Pj47Pj47dDw7bDxpPDEzPjtpPDE1PjtpPDE3PjtpPDE5PjtpPDIxPjtpPDIzPjtpPDI3PjtpPDI5PjtpPDMzPjs+O2w8dDx0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47cDxsPGk8MT47aTwyPjtpPDM+O2k8ND47aTw1PjtpPDY+O2k8Nz47PjtsPHA8bcOlLCAyNC8wMSA7MjAxMS0wMS0yND47cDx0aSwgMjUvMDEgOzIwMTEtMDEtMjU+O3A8b24sIDI2LzAxIDsyMDExLTAxLTI2PjtwPHRvLCAyNy8wMSA7MjAxMS0wMS0yNz47cDxmciwgMjgvMDEgOzIwMTEtMDEtMjg+O3A8bMO2LCAyOS8wMSA7MjAxMS0wMS0yOT47cDxzw7YsIDMwLzAxIDsyMDExLTAxLTMwPjs+Pjs+Ozs+O3Q8dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+O3A8bDxpPDE+O2k8Mj47aTwzPjs+O2w8cDxXYWx0ZXIgJiBDTyAsIEtvY2ssIFNwZWNpYWx1cHBkcmFnIGVmOzIwMj47cDwtLS07LTE+O3A8S29uc3VsdGVucyBsZWRpZ2EgZGFnIGVubC4gw7Z2ZXJlbnNrb21tZXQgc2NoZW1hLjtfQUNfTEVESUcgRU5MLiBTQ0hFTUE+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPGw8VmlzaWJsZTs+O2w8bzxmPjs+PjtsPGk8MT47PjtsPHQ8O2w8aTwxPjs+O2w8dDxwPHA8bDxUZXh0Oz47bDxcZTs+Pjs+Ozs+Oz4+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8VXBwZGF0ZXJhOz4+Oz47Oz47dDxwPHA8bDxUZXh0O1Zpc2libGU7PjtsPFZlY2thIEtsYXI7bzx0Pjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDtWaXNpYmxlOz47bDzDhG5kcmEgdmVja2E7bzxmPjs+Pjs+Ozs+Oz4+Oz4+O2w8T2xkUm93c1JlcGVhdGVyOl9jdGwwOkNoZWNrQm94RGVsZXRlO0Z1bGxEYXlDaGVja0JveDs+Pg==')
@@ -82,7 +91,7 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
 
     $postData = $weekData->buildPost($reports);
 
-    $this->assertEquals('TimeReport.aspx?DateInWeek=2011-01-28', $postData->getPostAction());
+    $this->assertEquals('TimeReport/TimeReport.aspx?DateInWeek=2011-01-28', $postData->getPostAction());
 
     $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
       rawurlencode('dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb2hhbiBIZWFuZGVyOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjtpPDI+Oz47bDxwPCBbVmlzYSBhbGxhIHVwcGRyYWddIDswPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw0Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwxPjs+PjtsPGk8MD47PjtsPHQ8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxkaXNhYmxlZDtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMztFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMzs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcZTs+Ozs+Oz4+Oz4+Oz4+O3Q8O2w8aTwxMz47aTwxNT47aTwxNz47aTwxOT47aTwyMT47aTwyMz47aTwyNz47aTwyOT47aTwzMz47PjtsPHQ8dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+O3A8bDxpPDE+O2k8Mj47aTwzPjtpPDQ+O2k8NT47aTw2PjtpPDc+Oz47bDxwPG3DpSwgMjQvMDEgOzIwMTEtMDEtMjQ+O3A8dGksIDI1LzAxIDsyMDExLTAxLTI1PjtwPG9uLCAyNi8wMSA7MjAxMS0wMS0yNj47cDx0bywgMjcvMDEgOzIwMTEtMDEtMjc+O3A8ZnIsIDI4LzAxIDsyMDExLTAxLTI4PjtwPGzDtiwgMjkvMDEgOzIwMTEtMDEtMjk+O3A8c8O2LCAzMC8wMSA7MjAxMS0wMS0zMD47Pj47Pjs7Pjt0PHQ8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47PjtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0Pjs+O2w8cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIFRydWNrZsO2cmFyZTs2MjAwPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgTGFnZXJhcmJldGFyZTs1OTgzPjtwPC0tLTstMT47cDxcZTtfQUNfPjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxsPFZpc2libGU7PjtsPG88Zj47Pj47bDxpPDE+Oz47bDx0PDtsPGk8MT47PjtsPHQ8cDxwPGw8VGV4dDs+O2w8XGU7Pj47Pjs7Pjs+Pjs+Pjs+Pjt0PHA8cDxsPFRleHQ7PjtsPFVwcGRhdGVyYTs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDtWaXNpYmxlOz47bDxWZWNrYSBLbGFyO288Zj47Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7VmlzaWJsZTs+O2w8w4RuZHJhIHZlY2thO288dD47Pj47Pjs7Pjs+Pjs+PjtsPE9sZFJvd3NSZXBlYXRlcjpfY3RsMDpDaGVja2JveERheURvbmU7RnVsbERheUNoZWNrQm94Oz4+')
@@ -100,7 +109,7 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
 
     $postData = $weekData->buildPost($reports);
 
-    $this->assertEquals('TimeReport.aspx?DateInWeek=2011-01-28', $postData->getPostAction());
+    $this->assertEquals('TimeReport/TimeReport.aspx?DateInWeek=2011-01-28', $postData->getPostAction());
 
     $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
       rawurlencode('dDwtMTg1NjE4NzIxO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8Nz47aTw4PjtpPDk+O2k8MTA+O2k8MTE+O2k8MTI+O2k8MTM+Oz47bDx0PDtsPGk8MD47PjtsPHQ8O2w8aTwxPjtpPDM+O2k8Nz47PjtsPHQ8cDxwPGw8SW1hZ2VVcmw7PjtsPH4vQ3VzdG9tZXJzL2ludGVsbGlwbGFuX2xvZ28uZ2lmOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb25hcyAgU3VuZGluOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjs+O2w8cDwgW1Zpc2EgYWxsYSB1cHBkcmFnXSA7MD47cDxXYWx0ZXIgJiBDTyAsIEtvY2ssIFNwZWNpYWx1cHBkcmFnIGVmOzIwMj47Pj47bDxpPDA+Oz4+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDE+Oz4+Ozs+O3Q8cDxsPFZpc2libGU7PjtsPG88dD47Pj47Oz47dDxwPGw8VmlzaWJsZTs+O2w8bzx0Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwxPjs+PjtsPGk8MD47PjtsPHQ8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxkaXNhYmxlZDtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDJPek10NnFKa3NzQSUzZCUzZDtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDJPek10NnFKa3NzQSUzZCUzZDs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcPG9wdGlvblw+W0tsaWNrYSBow6RyXVw8L29wdGlvblw+Oz47Oz47Pj47Pj47Pj47dDw7bDxpPDEzPjtpPDE1PjtpPDE3PjtpPDE5PjtpPDIxPjtpPDIzPjtpPDI3PjtpPDI5PjtpPDMzPjs+O2w8dDx0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47cDxsPGk8MT47aTwyPjtpPDM+O2k8ND47aTw1PjtpPDY+O2k8Nz47PjtsPHA8bcOlLCAyNC8wMSA7MjAxMS0wMS0yND47cDx0aSwgMjUvMDEgOzIwMTEtMDEtMjU+O3A8b24sIDI2LzAxIDsyMDExLTAxLTI2PjtwPHRvLCAyNy8wMSA7MjAxMS0wMS0yNz47cDxmciwgMjgvMDEgOzIwMTEtMDEtMjg+O3A8bMO2LCAyOS8wMSA7MjAxMS0wMS0yOT47cDxzw7YsIDMwLzAxIDsyMDExLTAxLTMwPjs+Pjs+Ozs+O3Q8dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+O3A8bDxpPDE+O2k8Mj47aTwzPjs+O2w8cDxXYWx0ZXIgJiBDTyAsIEtvY2ssIFNwZWNpYWx1cHBkcmFnIGVmOzIwMj47cDwtLS07LTE+O3A8S29uc3VsdGVucyBsZWRpZ2EgZGFnIGVubC4gw7Z2ZXJlbnNrb21tZXQgc2NoZW1hLjtfQUNfTEVESUcgRU5MLiBTQ0hFTUE+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPGw8VmlzaWJsZTs+O2w8bzxmPjs+PjtsPGk8MT47PjtsPHQ8O2w8aTwxPjs+O2w8dDxwPHA8bDxUZXh0Oz47bDxcZTs+Pjs+Ozs+Oz4+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8VXBwZGF0ZXJhOz4+Oz47Oz47dDxwPHA8bDxUZXh0O1Zpc2libGU7PjtsPFZlY2thIEtsYXI7bzxmPjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDtWaXNpYmxlOz47bDzDhG5kcmEgdmVja2E7bzx0Pjs+Pjs+Ozs+Oz4+Oz4+O2w8RnVsbERheUNoZWNrQm94Oz4+')
@@ -230,7 +239,7 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
 
     $postData = $weekData->buildPost($reports);
 
-    $this->assertEquals('TimeReport.aspx?DateInWeek=2011-01-24', $postData->getPostAction());
+    $this->assertEquals('TimeReport/TimeReport.aspx?DateInWeek=2011-01-24', $postData->getPostAction());
 
     $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
       rawurlencode('dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb2hhbiBIZWFuZGVyOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjtpPDI+Oz47bDxwPCBbVmlzYSBhbGxhIHVwcGRyYWddIDswPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw1Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwzPjs+PjtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8ZGlzYWJsZWQ7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgyWm12UG1BNCUyZlowTTRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgyWm12UG1BNCUyZlowTTRoYmt1NUVpaTM7Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwwPjs+Pjs7Pjt0PEA8XGU7Pjs7Pjs+Pjs+Pjt0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8ZGlzYWJsZWQ7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgzaUgwNVJZSCUyZk9sTTRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgzaUgwNVJZSCUyZk9sTTRoYmt1NUVpaTM7Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwwPjs+Pjs7Pjt0PEA8XGU7Pjs7Pjs+Pjs+Pjt0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8XGU7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgwNHhWdmtXQ0ZsODg0aGJrdTVFaWkzO0V4cGVuc2UuYXNweD9taGJMUDk2aXFIMDR4VnZrV0NGbDg4NGhia3U1RWlpMzs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcPG9wdGlvblw+W0tsaWNrYSBow6RyXVw8L29wdGlvblw+Oz47Oz47Pj47Pj47Pj47dDw7bDxpPDEzPjtpPDE1PjtpPDE3PjtpPDE5PjtpPDIxPjtpPDIzPjtpPDI3PjtpPDI5PjtpPDMzPjs+O2w8dDx0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47cDxsPGk8MT47aTwyPjtpPDM+O2k8ND47aTw1PjtpPDY+O2k8Nz47PjtsPHA8bcOlLCAyNC8wMSA7MjAxMS0wMS0yND47cDx0aSwgMjUvMDEgOzIwMTEtMDEtMjU+O3A8b24sIDI2LzAxIDsyMDExLTAxLTI2PjtwPHRvLCAyNy8wMSA7MjAxMS0wMS0yNz47cDxmciwgMjgvMDEgOzIwMTEtMDEtMjg+O3A8bMO2LCAyOS8wMSA7MjAxMS0wMS0yOT47cDxzw7YsIDMwLzAxIDsyMDExLTAxLTMwPjs+Pjs+Ozs+O3Q8dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+O3A8bDxpPDE+O2k8Mj47aTwzPjtpPDQ+Oz47bDxwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+O3A8LS0tOy0xPjtwPFxlO19BQ18+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPGw8VmlzaWJsZTs+O2w8bzxmPjs+PjtsPGk8MT47PjtsPHQ8O2w8aTwxPjs+O2w8dDxwPHA8bDxUZXh0Oz47bDxcZTs+Pjs+Ozs+Oz4+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8VXBwZGF0ZXJhOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxWZWNrYSBLbGFyOz4+Oz47Oz47dDxwPHA8bDxUZXh0O1Zpc2libGU7PjtsPMOEbmRyYSB2ZWNrYTtvPGY+Oz4+Oz47Oz47Pj47Pj47bDxPbGRSb3dzUmVwZWF0ZXI6X2N0bDA6Q2hlY2tib3hEYXlEb25lO09sZFJvd3NSZXBlYXRlcjpfY3RsMTpDaGVja2JveERheURvbmU7T2xkUm93c1JlcGVhdGVyOl9jdGwyOkNoZWNrYm94RGF5RG9uZTtPbGRSb3dzUmVwZWF0ZXI6X2N0bDI6Q2hlY2tCb3hEZWxldGU7RnVsbERheUNoZWNrQm94Oz4+')
@@ -252,7 +261,7 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
 
     $postData = $weekData->buildPost($reports);
 
-    $this->assertEquals('TimeReport.aspx?DateInWeek=2011-01-24', $postData->getPostAction());
+    $this->assertEquals('TimeReport/TimeReport.aspx?DateInWeek=2011-01-24', $postData->getPostAction());
 
     $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
       rawurlencode('dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb2hhbiBIZWFuZGVyOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjtpPDI+Oz47bDxwPCBbVmlzYSBhbGxhIHVwcGRyYWddIDswPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw1Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwzPjs+PjtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8ZGlzYWJsZWQ7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgyWm12UG1BNCUyZlowTTRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgyWm12UG1BNCUyZlowTTRoYmt1NUVpaTM7Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwwPjs+Pjs7Pjt0PEA8XGU7Pjs7Pjs+Pjs+Pjt0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8XGU7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgzaUgwNVJZSCUyZk9sTTRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgzaUgwNVJZSCUyZk9sTTRoYmt1NUVpaTM7Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwwPjs+Pjs7Pjt0PEA8XDxvcHRpb25cPltLbGlja2EgaMOkcl1cPC9vcHRpb25cPjs+Ozs+Oz4+Oz4+O3Q8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxcZTtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDA0eFZ2a1dDRmw4ODRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgwNHhWdmtXQ0ZsODg0aGJrdTVFaWkzOz47Oz47dDxwPGw8XyFJdGVtQ291bnQ7PjtsPGk8MD47Pj47Oz47dDxAPFw8b3B0aW9uXD5bS2xpY2thIGjDpHJdXDwvb3B0aW9uXD47Pjs7Pjs+Pjs+Pjs+Pjt0PDtsPGk8MTM+O2k8MTU+O2k8MTc+O2k8MTk+O2k8MjE+O2k8MjM+O2k8Mjc+O2k8Mjk+O2k8MzM+Oz47bDx0PHQ8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47PjtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0PjtpPDU+O2k8Nj47aTw3Pjs+O2w8cDxtw6UsIDI0LzAxIDsyMDExLTAxLTI0PjtwPHRpLCAyNS8wMSA7MjAxMS0wMS0yNT47cDxvbiwgMjYvMDEgOzIwMTEtMDEtMjY+O3A8dG8sIDI3LzAxIDsyMDExLTAxLTI3PjtwPGZyLCAyOC8wMSA7MjAxMS0wMS0yOD47cDxsw7YsIDI5LzAxIDsyMDExLTAxLTI5PjtwPHPDtiwgMzAvMDEgOzIwMTEtMDEtMzA+Oz4+Oz47Oz47dDx0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47cDxsPGk8MT47aTwyPjtpPDM+O2k8ND47PjtsPHA8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBUcnVja2bDtnJhcmU7NjIwMD47cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIExhZ2VyYXJiZXRhcmU7NTk4Mz47cDwtLS07LTE+O3A8XGU7X0FDXz47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+O2w8aTwxPjs+O2w8dDw7bDxpPDE+Oz47bDx0PHA8cDxsPFRleHQ7PjtsPFxlOz4+Oz47Oz47Pj47Pj47Pj47dDxwPHA8bDxUZXh0Oz47bDxVcHBkYXRlcmE7Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7PjtsPFZlY2thIEtsYXI7Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7VmlzaWJsZTs+O2w8w4RuZHJhIHZlY2thO288Zj47Pj47Pjs7Pjs+Pjs+PjtsPE9sZFJvd3NSZXBlYXRlcjpfY3RsMDpDaGVja2JveERheURvbmU7T2xkUm93c1JlcGVhdGVyOl9jdGwxOkNoZWNrYm94RGF5RG9uZTtPbGRSb3dzUmVwZWF0ZXI6X2N0bDE6Q2hlY2tCb3hEZWxldGU7T2xkUm93c1JlcGVhdGVyOl9jdGwyOkNoZWNrYm94RGF5RG9uZTtPbGRSb3dzUmVwZWF0ZXI6X2N0bDI6Q2hlY2tCb3hEZWxldGU7RnVsbERheUNoZWNrQm94Oz4+')
@@ -275,7 +284,7 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
 
     $postData = $weekData->buildPost($reports);
 
-    $this->assertEquals('TimeReport.aspx?DateInWeek=2011-01-24', $postData->getPostAction());
+    $this->assertEquals('TimeReport/TimeReport.aspx?DateInWeek=2011-01-24', $postData->getPostAction());
 
     $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
       rawurlencode('dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb2hhbiBIZWFuZGVyOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjs+O2w8cDwgW1Zpc2EgYWxsYSB1cHBkcmFnXSA7MD47cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIFRydWNrZsO2cmFyZTs2MjAwPjs+PjtsPGk8MD47Pj47Oz47dDxwPGw8XyFJdGVtQ291bnQ7PjtsPGk8NT47Pj47Oz47dDxwPGw8XyFJdGVtQ291bnQ7PjtsPGk8Mz47Pj47bDxpPDA+O2k8MT47aTwyPjs+O2w8dDw7bDxpPDM3Pjs+O2w8dDw7bDxpPDA+O2k8MT47aTwyPjs+O2w8dDxAPFxlO0V4cGVuc2UuYXNweD9taGJMUDk2aXFIMlptdlBtQTQlMmZaME00aGJrdTVFaWkzO0V4cGVuc2UuYXNweD9taGJMUDk2aXFIMlptdlBtQTQlMmZaME00aGJrdTVFaWkzOz47Oz47dDxwPGw8XyFJdGVtQ291bnQ7PjtsPGk8MD47Pj47Oz47dDxAPFw8b3B0aW9uXD5bS2xpY2thIGjDpHJdXDwvb3B0aW9uXD47Pjs7Pjs+Pjs+Pjt0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8XGU7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgzaUgwNVJZSCUyZk9sTTRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgzaUgwNVJZSCUyZk9sTTRoYmt1NUVpaTM7Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwwPjs+Pjs7Pjt0PEA8XDxvcHRpb25cPltLbGlja2EgaMOkcl1cPC9vcHRpb25cPjs+Ozs+Oz4+Oz4+O3Q8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxcZTtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDA0eFZ2a1dDRmw4ODRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgwNHhWdmtXQ0ZsODg0aGJrdTVFaWkzOz47Oz47dDxwPGw8XyFJdGVtQ291bnQ7PjtsPGk8MD47Pj47Oz47dDxAPFw8b3B0aW9uXD5bS2xpY2thIGjDpHJdXDwvb3B0aW9uXD47Pjs7Pjs+Pjs+Pjs+Pjt0PDtsPGk8MTM+O2k8MTU+O2k8MTc+O2k8MTk+O2k8MjE+O2k8MjM+O2k8Mjc+O2k8Mjk+O2k8MzM+Oz47bDx0PHQ8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47PjtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0PjtpPDU+O2k8Nj47aTw3Pjs+O2w8cDxtw6UsIDI0LzAxIDsyMDExLTAxLTI0PjtwPHRpLCAyNS8wMSA7MjAxMS0wMS0yNT47cDxvbiwgMjYvMDEgOzIwMTEtMDEtMjY+O3A8dG8sIDI3LzAxIDsyMDExLTAxLTI3PjtwPGZyLCAyOC8wMSA7MjAxMS0wMS0yOD47cDxsw7YsIDI5LzAxIDsyMDExLTAxLTI5PjtwPHPDtiwgMzAvMDEgOzIwMTEtMDEtMzA+Oz4+Oz47Oz47dDx0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47cDxsPGk8MT47aTwyPjtpPDM+Oz47bDxwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8LS0tOy0xPjtwPFxlO19BQ18+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPGw8VmlzaWJsZTs+O2w8bzxmPjs+PjtsPGk8MT47PjtsPHQ8O2w8aTwxPjs+O2w8dDxwPHA8bDxUZXh0Oz47bDxcZTs+Pjs+Ozs+Oz4+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8VXBwZGF0ZXJhOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxWZWNrYSBLbGFyOz4+Oz47Oz47dDxwPHA8bDxUZXh0O1Zpc2libGU7PjtsPMOEbmRyYSB2ZWNrYTtvPGY+Oz4+Oz47Oz47Pj47Pj47bDxPbGRSb3dzUmVwZWF0ZXI6X2N0bDA6Q2hlY2tib3hEYXlEb25lO09sZFJvd3NSZXBlYXRlcjpfY3RsMDpDaGVja0JveERlbGV0ZTtPbGRSb3dzUmVwZWF0ZXI6X2N0bDE6Q2hlY2tib3hEYXlEb25lO09sZFJvd3NSZXBlYXRlcjpfY3RsMTpDaGVja0JveERlbGV0ZTtPbGRSb3dzUmVwZWF0ZXI6X2N0bDI6Q2hlY2tib3hEYXlEb25lO09sZFJvd3NSZXBlYXRlcjpfY3RsMjpDaGVja0JveERlbGV0ZTtGdWxsRGF5Q2hlY2tCb3g7Pj4=')
@@ -344,7 +353,7 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
 
     $postData = $weekData->buildPost($reports);
 
-    $this->assertEquals('TimeReport.aspx?DateInWeek=2011-01-24', $postData->getPostAction());
+    $this->assertEquals('TimeReport/TimeReport.aspx?DateInWeek=2011-01-24', $postData->getPostAction());
 
     $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
       rawurlencode('dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb2hhbiBIZWFuZGVyOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjtpPDI+Oz47bDxwPCBbVmlzYSBhbGxhIHVwcGRyYWddIDswPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw1Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwzPjs+PjtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8ZGlzYWJsZWQ7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgyWm12UG1BNCUyZlowTTRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgyWm12UG1BNCUyZlowTTRoYmt1NUVpaTM7Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwwPjs+Pjs7Pjt0PEA8XGU7Pjs7Pjs+Pjs+Pjt0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8XGU7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgzaUgwNVJZSCUyZk9sTTRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgzaUgwNVJZSCUyZk9sTTRoYmt1NUVpaTM7Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwwPjs+Pjs7Pjt0PEA8XDxvcHRpb25cPltLbGlja2EgaMOkcl1cPC9vcHRpb25cPjs+Ozs+Oz4+Oz4+O3Q8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxcZTtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDA0eFZ2a1dDRmw4ODRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgwNHhWdmtXQ0ZsODg0aGJrdTVFaWkzOz47Oz47dDxwPGw8XyFJdGVtQ291bnQ7PjtsPGk8MD47Pj47Oz47dDxAPFw8b3B0aW9uXD5bS2xpY2thIGjDpHJdXDwvb3B0aW9uXD47Pjs7Pjs+Pjs+Pjs+Pjt0PDtsPGk8MTM+O2k8MTU+O2k8MTc+O2k8MTk+O2k8MjE+O2k8MjM+O2k8Mjc+O2k8Mjk+O2k8MzM+Oz47bDx0PHQ8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47PjtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0PjtpPDU+O2k8Nj47aTw3Pjs+O2w8cDxtw6UsIDI0LzAxIDsyMDExLTAxLTI0PjtwPHRpLCAyNS8wMSA7MjAxMS0wMS0yNT47cDxvbiwgMjYvMDEgOzIwMTEtMDEtMjY+O3A8dG8sIDI3LzAxIDsyMDExLTAxLTI3PjtwPGZyLCAyOC8wMSA7MjAxMS0wMS0yOD47cDxsw7YsIDI5LzAxIDsyMDExLTAxLTI5PjtwPHPDtiwgMzAvMDEgOzIwMTEtMDEtMzA+Oz4+Oz47Oz47dDx0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47cDxsPGk8MT47aTwyPjtpPDM+O2k8ND47PjtsPHA8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBUcnVja2bDtnJhcmU7NjIwMD47cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIExhZ2VyYXJiZXRhcmU7NTk4Mz47cDwtLS07LTE+O3A8XGU7X0FDXz47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+O2w8aTwxPjs+O2w8dDw7bDxpPDE+Oz47bDx0PHA8cDxsPFRleHQ7PjtsPFxlOz4+Oz47Oz47Pj47Pj47Pj47dDxwPHA8bDxUZXh0Oz47bDxVcHBkYXRlcmE7Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7PjtsPFZlY2thIEtsYXI7Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7VmlzaWJsZTs+O2w8w4RuZHJhIHZlY2thO288Zj47Pj47Pjs7Pjs+Pjs+PjtsPE9sZFJvd3NSZXBlYXRlcjpfY3RsMDpDaGVja2JveERheURvbmU7T2xkUm93c1JlcGVhdGVyOl9jdGwxOkNoZWNrYm94RGF5RG9uZTtPbGRSb3dzUmVwZWF0ZXI6X2N0bDE6Q2hlY2tCb3hEZWxldGU7T2xkUm93c1JlcGVhdGVyOl9jdGwyOkNoZWNrYm94RGF5RG9uZTtPbGRSb3dzUmVwZWF0ZXI6X2N0bDI6Q2hlY2tCb3hEZWxldGU7RnVsbERheUNoZWNrQm94Oz4+')
@@ -519,57 +528,75 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
     // Third row, REPORTED 08:30 -> 17:30 -60
     $this->assertEquals(TZFlags::REPORTED, $updatedReports[2]->flags);
     /* This report has local changes and since it is a mock and has not yet been synced its last_state is null */
-    $this->assertNull($updatedReports[2]->intellitime_last_state);
+    $this->assertFalse(isset($updatedReports[2]->intellitime_last_state));
     $this->assertReportTimes('2010-09-11', '08:30', '17:30', 60, $updatedReports[2]);
 
     $postData = $weekData->buildPost($updatedReports);
     $this->assertNotNull($postData);
   }
 
+  function testReportsHaveJobIDReferences() {
+    $weekData = $this->loadHTMLFile('intellitime-v9-timereport-administrator-absence-all-marked-done.txt');
+
+    $reports = array(
+      createMockReport('mhbLP96iqH3ZMQKVB6I6Qc4hbku5Eii3', '2011-01-10', '08:00', '17:00', 60),
+      createMockReport('mhbLP96iqH0993oUoX8OKM4hbku5Eii3', '2011-01-11', '08:15', '17:30', 60),
+      createMockReport('mhbLP96iqH2xpPwR07B5Nc4hbku5Eii3', '2011-01-12', '08:00', '17:10', 60),
+      createMockReport('mhbLP96iqH1AhkChU548NM4hbku5Eii3', '2011-01-13', '08:00', '17:30', 30),
+    );
+
+    $updatedReports = $weekData->updateReports($reports, $this->account, TRUE);
+
+    $this->assertEquals('5983', $updatedReports[0]->intellitime_jobid);
+    $this->assertEquals('PLACEHOLDER_ID_' . md5('Tjänstledig <6 dgr'), $updatedReports[1]->intellitime_jobid);
+    $this->assertEquals('5983', $updatedReports[2]->intellitime_jobid);
+    $this->assertEquals('6200', $updatedReports[3]->intellitime_jobid);
+  }
+
   public function testListAssignmentsHaveID() {
     $weekData = $this->loadHTMLFile('intellitime-v9-timereport-shortened-jobtitles.txt');
-    $assignments = $weekData->getAssignments();
+    $tzjobs = $weekData->getTZJobs();
 
-    $this->assertEquals(5, count($assignments));
+    $this->assertEquals(5, count($tzjobs));
 
-    $this->assertEquals('Axis Communic, Lagerarbeta, "Heating"', $assignments[0]->title);
-    $this->assertEquals('Axis Communication AB, Lagerarbetare, "Heating"', $assignments[0]->report_key);
-    $this->assertEquals('5194', $assignments[0]->id);
+    $this->assertEquals('Axis Communic, Lagerarbeta, "Heating"', $tzjobs[0]->title);
+    $this->assertEquals('Axis Communication AB, Lagerarbetare, "Heating"', $tzjobs[0]->jobcode);
+    $this->assertEquals('5194', $tzjobs[0]->intellitime_id);
 
-    $this->assertEquals('Sjukfrånvaro kollektivare månadsanställd', $assignments[1]->title);
-    $this->assertEquals('Sjuk arb (mån.lön)', $assignments[1]->report_key);
-    $this->assertEquals('_AC_Sjuk arb (mån.lön)', $assignments[1]->id);
+    $this->assertEquals('Sjukfrånvaro kollektivare månadsanställd', $tzjobs[1]->title);
+    $this->assertEquals('Sjuk arb (mån.lön)', $tzjobs[1]->jobcode);
+    $this->assertEquals('_AC_Sjuk arb (mån.lön)', $tzjobs[1]->intellitime_id);
 
-    $this->assertEquals('Axis Communicatio, Lagerarbeta, P5534', $assignments[2]->title);
-    $this->assertEquals('Axis Communication AB, Lagerarbetare, P5534', $assignments[2]->report_key);
-    $this->assertEquals('6056', $assignments[2]->id);
+    $this->assertEquals('Axis Communicatio, Lagerarbeta, P5534', $tzjobs[2]->title);
+    $this->assertEquals('Axis Communication AB, Lagerarbetare, P5534', $tzjobs[2]->jobcode);
+    $this->assertEquals('6056', $tzjobs[2]->intellitime_id);
 
-    $this->assertEquals('Axis Commun, Lagerarbeta, Q6032, spec', $assignments[3]->title);
-    $this->assertEquals('Axis Communication AB, Lagerarbetare, Q6032, spec. prod.', $assignments[3]->report_key);
-    $this->assertEquals('5093', $assignments[3]->id);
+    $this->assertEquals('Axis Commun, Lagerarbeta, Q6032, spec', $tzjobs[3]->title);
+    $this->assertEquals('Axis Communication AB, Lagerarbetare, Q6032, spec. prod.', $tzjobs[3]->jobcode);
+    $this->assertEquals('5093', $tzjobs[3]->intellitime_id);
 
-    $this->assertEquals('Uttag arbetstidsförkortning', $assignments[4]->title);
-    $this->assertEquals('Utt. arbetstidsförk.', $assignments[4]->report_key);
-    $this->assertEquals('_AC_Utt. arbetstidsförk.', $assignments[4]->id);
+    $this->assertEquals('Uttag arbetstidsförkortning', $tzjobs[4]->title);
+    $this->assertEquals('Utt. arbetstidsförk.', $tzjobs[4]->jobcode);
+    $this->assertEquals('_AC_Utt. arbetstidsförk.', $tzjobs[4]->intellitime_id);
   }
 
   public function testListAssignmentsNoID() {
     $weekData = $this->loadHTMLFile('intellitime-v9-timereport-one-absence-two-done-one-open.txt');
-    $assignments = $weekData->getAssignments();
+    $tzjobs = $weekData->getTZJobs();
 
-    $this->assertEquals(3, count($assignments));
+    $this->assertEquals(3, count($tzjobs));
 
-    $this->assertEquals('Testföretaget Effekt, Lagerarbetare', $assignments[0]->title);
-    $this->assertEquals('Testföretaget Effekt, Lagerarbetare', $assignments[0]->report_key);
-    $this->assertEquals('5983', $assignments[0]->id);
+    $this->assertEquals('Testföretaget Effekt, Lagerarbetare', $tzjobs[0]->title);
+    $this->assertEquals('Testföretaget Effekt, Lagerarbetare', $tzjobs[0]->jobcode);
+    $this->assertEquals('5983', $tzjobs[0]->intellitime_id);
 
-    $this->assertEquals('Tjänstledig <6 dgr', $assignments[1]->title);
-    $this->assertEquals('Tjänstledig <6 dgr', $assignments[1]->report_key);
-    $this->assertEquals(md5('Tjänstledig <6 dgr'), $assignments[1]->id);
+    $this->assertEquals('Tjänstledig <6 dgr', $tzjobs[1]->title);
+    $this->assertEquals('Tjänstledig <6 dgr', $tzjobs[1]->jobcode);
+    $this->assertEquals('PLACEHOLDER_ID_' . md5('Tjänstledig <6 dgr'), $tzjobs[1]->intellitime_id);
 
-    $this->assertEquals('Testföretaget Effekt, Truckförare', $assignments[2]->title);
-    $this->assertEquals('Testföretaget Effekt, Truckförare', $assignments[2]->report_key);
-    $this->assertEquals('6200', $assignments[2]->id);
+    $this->assertEquals('Testföretaget Effekt, Truckförare', $tzjobs[2]->title);
+    $this->assertEquals('Testföretaget Effekt, Truckförare', $tzjobs[2]->jobcode);
+    $this->assertEquals('6200', $tzjobs[2]->intellitime_id);
   }
 
   public function testV8ParseUnfinishedWeeks() {
@@ -580,6 +607,24 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('2011W03', $unfinishedWeeks[1]->format('o\WW'));
     $this->assertEquals('2011W04', $unfinishedWeeks[2]->format('o\WW'));
     $this->assertEquals('2011W05', $unfinishedWeeks[3]->format('o\WW'));
+  }
+
+  public function testUpdateLastStatesWithDeletedReportPassesReportUnchanged() {
+    $weekData =  $this->loadHTMLFile('intellitime-v9-timereport-one-absence-two-done-one-open.txt');
+    $tzreports = array(
+      createMockReport("klasdanmlksd", "2011-01-10", "08:00", "12:00"),
+    );
+    $updated_reports = $weekData->updateLastStates($tzreports);
+    $this->assertEquals($tzreports, $updated_reports);
+  }
+
+  public function testThrowOnErrorPage() {
+    try {
+      $weekData = $this->loadHTMLFile('WeekData_ThrowOnErrorPage.txt');
+      $this->fail('Expected exception');
+    } catch(TZIntellitimeErrorPageException $e) {
+      $this->assertNotNull($e);
+    }
   }
 
   private function assertReportTimes($date, $starttime, $endtime, $breakminutes, $tzreport) {

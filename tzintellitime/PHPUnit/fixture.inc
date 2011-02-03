@@ -16,8 +16,9 @@ foreach($files as $file) {
   require_once($file);
 }
 tzbase_include_proto_classes();
+cache_clear_all();
 
-function createMockReport($id, $date, $begintime, $endtime, $breakminutes = 60) {
+function createMockReport($id, $date, $begintime, $endtime, $breakminutes = 60, $localchanges = 1) {
   tzbase_include_proto_classes();
   $begindate = new DateTime($date . 'T' . $begintime);
   $enddate = new DateTime($date . 'T' . $endtime);
@@ -29,7 +30,7 @@ function createMockReport($id, $date, $begintime, $endtime, $breakminutes = 60) 
     'nid' => 23,
     'uid'=> 42,
     'vid' => 54,
-    'title'=>"title",
+    'title'=> "title",
     'body' => '',
     'jobid'=> 342,
     'assignedto' => 63,
@@ -38,10 +39,22 @@ function createMockReport($id, $date, $begintime, $endtime, $breakminutes = 60) 
     'breakduration'=> 60 * $breakminutes,
     'flags'=> TZFlags::REPORTED, // reported
     'intellitime_id' => 0,
-    'intellitime_local_changes' => 1,
+    'intellitime_local_changes' => $localchanges,
   );
 
   $date = tzbase_make_date($mockReport->begintime);
   $mockReport->intellitime_id = serialize(array($date->format('Y-m-d'), (string) $mockReport->assignedto, (string) $id));
   return $mockReport;
+}
+
+function createMockAssignment($title, $report_key) {
+  tzbase_include_proto_classes();
+
+  $mockAssignment = (object) array(
+    'title'=> $title,
+    'intellitime_id' => rand(1000,10000),
+    'intellitime_report_key' => $report_key,
+  );
+
+  return $mockAssignment;
 }

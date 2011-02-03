@@ -659,4 +659,33 @@ function tzbase_list_jobs($parentjobid = 0, $prefix = '', $trail = 'nid:') {
   return $list;
 }
 
-// TODO: add a field to login-form containing phone-number?
+function tzbase_watchdog_with_data($tag, $message, $data) {
+  $actual_filename = 0;
+
+  if(!empty($data)) {
+    $path = file_create_path('tzbase_debug');
+    file_check_directory($path, FILE_CREATE_DIRECTORY);
+
+    $date = tzbase_make_date();
+    $filename = $date->format('c') . '.txt';
+    $actual_filename = file_save_data($data, $path . '/' . $filename, FILE_EXISTS_RENAME);
+  }
+
+  if($actual_filename !== 0) {
+    watchdog($tag, $message, array(), WATCHDOG_DEBUG,
+      l('View', file_create_url($actual_filename)));
+  } else {
+    watchdog($tag, $message, array(), WATCHDOG_DEBUG);
+  }
+}
+
+function tzbase_watchdog_node_operation($tag, $node, $operation, $account) {
+  watchdog($tag, '!operation !type !nid',
+             array(
+               '!operation' => $operation,
+               '!type' => $node->type,
+               '!nid' => $node->nid
+             ),
+             WATCHDOG_NOTICE,
+             l('Node', 'node/' . $node->nid) . ', ' . theme('username', $account));
+}

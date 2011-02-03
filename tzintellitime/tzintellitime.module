@@ -166,21 +166,21 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
  * Validate username and password against Intellitime Server
  */
 function tzintellitime_server_auth(&$account, $username, $password) {
-
   // new user or existing user with expired cookie-jar.
   if(isset($account->intellitime_session_data)) {
-    TZIntellitimeBot::destroy_session_data($account->intellitime_session_data);
+    TZCurl::destroySessionData($account->intellitime_session_data);
   }
 
-  $bot = new TZIntellitimeBot(TZINTELLITIME_BASE_URL);
+  $curl = new TZCurl();
+  $bot = new TZIntellitimeBot($curl, TZINTELLITIME_BASE_URL);
   if(!$bot->login($username, $password)) {
-    TZIntellitimeBot::destroy_session_data($bot->get_session_data());
+    TZCurl::destroySessionData($curl->getSessionData());
     return FALSE;
   }
 
   $user_data = array(
     'intellitime_user' => TRUE,
-    'intellitime_session_data' => $bot->get_session_data(),
+    'intellitime_session_data' => $curl->getSessionData(),
   );
 
   if (!$account) {
@@ -192,7 +192,6 @@ function tzintellitime_server_auth(&$account, $username, $password) {
   }
 
   $account = user_save($account, $user_data);
-  unset($bot); // flushes the cookiejar used by sync..
 
   return TRUE;
 }
@@ -207,6 +206,11 @@ function tzintellitime_node_load_by_intellitime_id($intellitime_id) {
   return node_load(db_result(db_query("SELECT nid FROM {tzintellitime} WHERE intellitime_id = '%s' ORDER BY vid DESC LIMIT 1", $intellitime_id)), NULL, TRUE);
 }
 
+function tzintellitime_get_intellitime_id($tzreport) {
+  $id = unserialize($tzreport->intellitime_id);
+  return $id[2];
+}
+
 /**
  *
  * Private function to check if an account that has already
@@ -216,6 +220,23 @@ function tzintellitime_node_load_by_intellitime_id($intellitime_id) {
 function tzintellitime_is_authenticated($account) {
   return ($account && $account->intellitime_user &&
     isset($account->intellitime_session_data) &&
-    TZIntellitimeBot::is_valid_session_data($account->intellitime_session_data)
+    TZCurl::isValidSessionData($account->intellitime_session_data)
   );
+}
+
+/**
+ * Make an array containing the boundaries for the week.
+ * @param $date a date in the week to check
+ * @return Array (first second of week, first second of next week)
+ */
+function tzintellitime_week_span($date) {
+  $weekSpan = array();
+  $timezone = date_default_timezone(FALSE);
+  // Find beginning and end of week
+  $weekString = $date->format('o\WW');
+  $weekSpan[0] = new DateTime($weekString, $timezone);
+  $weekSpan[0]->modify('midnight');
+  $weekSpan[1] = clone($weekSpan[0]);
+  $weekSpan[1]->modify('+7 days');
+  return $weekSpan;
 }

@@ -3,13 +3,23 @@ description = Provides TimeZynk intellitime integration
 core = 6.x
 package = TimeZynk
 
+files[] = includes/TZCurl.class.inc
+files[] = includes/TZIntellitimeAssignment.class.inc
 files[] = includes/TZIntellitimeBot.class.inc
+files[] = includes/TZIntellitimeDBReportStorage.class.inc
+files[] = includes/TZIntellitimeDefaultWeekFactory.class.inc
+files[] = includes/TZIntellitimeParser.class.inc
+files[] = includes/TZIntellitimePostData.class.inc
+files[] = includes/TZIntellitimeReport.class.inc
+files[] = includes/TZIntellitimeReportStorage.class.inc
+files[] = includes/TZIntellitimeServerInterface.class.inc
+files[] = includes/TZIntellitimeSimpleSyncPolicy.class.inc
+files[] = includes/TZIntellitimeSyncController.class.inc
+files[] = includes/TZIntellitimeSyncPolicy.class.inc
 files[] = includes/TZIntellitimeWeek.class.inc
 files[] = includes/TZIntellitimeWeekData.class.inc
-files[] = includes/TZIntellitimeParser.class.inc
-files[] = includes/TZIntellitimeAssignment.class.inc
-files[] = includes/TZIntellitimeReport.class.inc
-files[] = includes/TZIntellitimePostData.class.inc
+files[] = includes/TZIntellitimeWeekFactory.class.inc
+
 files[] = tzintellitime.module
 files[] = tzintellitime.test
 

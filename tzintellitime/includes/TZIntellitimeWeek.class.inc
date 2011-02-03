@@ -1,31 +1,17 @@
 <?php
 
-
-class TZIntellitimeServerException extends Exception {}
-class TZNetworkFailureException extends TZIntellitimeServerException {}
 class TZAuthenticationFailureException extends TZIntellitimeServerException {}
-
-interface TZIntellitimeServerInterface {
-  /**
-   * @return TZIntellitimeWeekData
-   */
-  public function refreshWeek($date);
-  /**
-   * @return TZIntellitimeWeekData
-   */
-  public function postWeek($postData);
-}
 
 class TZIntellitimeWeekSyncResult {
   /**
-   * @var array TZIntellitimeReport array
+   * @var array TZReport array
    */
-  public $reports;
+  public $tzreports;
 
   /**
-   * @var array TZIntellitimeAssignment array
+   * @var array TZJob array
    */
-  public $assignments;
+  public $tzjobs;
 
   /**
    *
@@ -67,7 +53,7 @@ class TZIntellitimeWeek {
   /**
    * Synchronize this week with Intellitime. Check result for
    * reports and assignments that needs to be saved to the database.
-   * 
+   *
    * @return TZIntellitimeWeekSyncResult Result from synchronization
    * @throws TZNetworkFailureException on network problems
    * @throws TZAuthenticationFailureException when session is not authenticated
@@ -97,15 +83,15 @@ class TZIntellitimeWeek {
 
       $updatedReports = $weekData->updateReports($updatedReports, $this->account, TRUE);
     } catch(TZIntellitimeServerException $e) {
-      /* We must return the result since even if some of the POSTs have failed,
-       * the reports have still been updated with intellitime_last_state and
-       * need to be saved by the caller.
+      /* We must return the exceptions instead of throwing them. Since even if
+       * some of the POSTs have failed, the reports have still been updated with
+       * intellitime_last_state and need to be saved by the caller.
        */
       $result->exception = $e;
     }
 
-    $result->reports = $updatedReports;
-    $result->assignments = $weekData->getAssignments();
+    $result->tzreports = $updatedReports;
+    $result->tzjobs = $weekData->getTZJobs();
     $result->unfinishedWeeks = $weekData->getUnfinishedWeeks();
     return $result;
   }

@@ -14,6 +14,9 @@ class TZIntellitimeParser {
    * @param string $html_string Raw HTML string in UTF-8 encoding
    */
   public function __construct($html_string) {
+    if (empty($html_string)) {
+      throw new InvalidArgumentException("Empty HTML");
+    }
     $doc = new DOMDocument();
     /* The time report document contains some horrible misencodings
      * if adding absence rows containing '<' or '>'. They are printed
@@ -28,9 +31,6 @@ class TZIntellitimeParser {
     $html_string = mb_convert_encoding($html_string, 'HTML-ENTITIES', 'UTF-8');
     @$doc->loadHTML($html_string);
     $this->doc = simplexml_import_dom($doc);
-    if(!$this->doc) {
-      throw new TZNetworkFailureException('Unable to parse document');
-    }
   }
 
   /**
@@ -41,16 +41,16 @@ class TZIntellitimeParser {
     return ' ' . ($matches[1] == '<' ? '&lt;' : '&gt;') . $matches[2];
   }
 
+  public function __toString() {
+    return $this->doc->asXML();
+  }
+
   /**
    * Just checks that if we have managed to login or not.
    * @return bool TRUE if successful, else FALSE.
    */
   public function is_valid_login() {
     /* Look for the LogOut link as proof that the login succeeded */
-    if (!$this->doc) {
-      return FALSE;
-    }
-
     $list = $this->doc->xpath('//img[@src="../Images/Img_LogOut.gif"]');
     if (count($list) === 0) {
       return FALSE;
@@ -59,15 +59,34 @@ class TZIntellitimeParser {
   }
 
   /**
-   * Returns the value of the "action" attribute in the login form.
-   * @return the value of the "action" attribute in the login form if successful, else NULL.
+   * Returns the value of the "action" attribute in the page form.
+   * @return the value of the "action" attribute in the page form if successful, else NULL.
    */
   public function parse_form_action() {
     // Extract form action
     $actionlist = $this->doc->xpath("//form/@action");
-    if(count($actionlist) === 1) {
+    if(!empty($actionlist) && count($actionlist) === 1) {
       return (string)$actionlist[0]['action'];
     }
+    return NULL;
+  }
+
+  /**
+   * Parse any page error strings.
+   * @return string error string or NULL if no errors found.
+   */
+  public function parse_page_error() {
+    $action = $this->parse_form_action();
+    if(FALSE === strstr($action, 'Error.aspx')) {
+      return NULL;
+    }
+
+    $error = 'Unknown TZIntellitime Error';
+    $errorLabels = $this->doc->xpath('//*[@id="LabelErrortext"]');
+    if($errorLabels) {
+      $error = (string)$errorLabels[0];
+    }
+    return $error;
   }
 
   /**
@@ -77,19 +96,22 @@ class TZIntellitimeParser {
   public function parse_assignments() {
     $result = array();
     $elems = $this->doc->xpath('//select[@id="CustOrdersDropDown"]/option');
-    if(!empty($elems)) {
-      foreach($elems as $option) {
-        $jobcode = trim((string)$option['value']);
-        $jobtitle = trim((string)$option);
-        if($jobcode && $jobtitle) {
-          $assignment = new TZIntellitimeAssignment();
-          $assignment->id = $jobcode;
-          $assignment->report_key = $jobtitle;
-          $assignment->title = $jobtitle;
-          $result[] = $assignment;
-        }
+    if(empty($elems)) {
+      return $result;
+    }
+
+    foreach($elems as $option) {
+      $jobcode = trim((string)$option['value']);
+      $jobtitle = trim((string)$option);
+      if($jobcode && $jobtitle) {
+        $assignment = new TZIntellitimeAssignment();
+        $assignment->id = $jobcode;
+        $assignment->report_key = $jobtitle;
+        $assignment->title = $jobtitle;
+        $result[] = $assignment;
       }
     }
+
     return $result;
   }
 
@@ -100,21 +122,24 @@ class TZIntellitimeParser {
   public function parse_absence_types() {
     $result = array();
     $elems = $this->doc->xpath('//select[@id="AddRowDropDown"]/option');
-    if(!empty($elems)) {
-      foreach($elems as $option) {
-        $jobcode = trim((string)$option['value']);
-        $jobtitle = trim((string)$option);
-        $matches = array();
-        if($jobcode && $jobtitle && preg_match('/^_AC_(.+)/', $jobcode, $matches)) {
-          $assignment = new TZIntellitimeAssignment();
-          $assignment->id = $jobcode;
-          $assignment->report_key = $matches[1];
-          $assignment->title = $jobtitle;
-          $assignment->type = TZIntellitimeAssignment::TYPE_ABSENCE;
-          $result[] = $assignment;
-        }
+    if(empty($elems)) {
+      return $result;
+    }
+
+    foreach($elems as $option) {
+      $jobcode = trim((string)$option['value']);
+      $jobtitle = trim((string)$option);
+      $matches = array();
+      if($jobcode && $jobtitle && preg_match('/^_AC_(.+)/', $jobcode, $matches)) {
+        $assignment = new TZIntellitimeAssignment();
+        $assignment->id = $jobcode;
+        $assignment->report_key = $matches[1];
+        $assignment->title = $jobtitle;
+        $assignment->type = TZIntellitimeAssignment::TYPE_ABSENCE;
+        $result[] = $assignment;
       }
     }
+
     return $result;
   }
 
@@ -125,6 +150,10 @@ class TZIntellitimeParser {
   public function parse_unfinished_weeks() {
     $unfinishedWeeks = array();
     $elems = $this->doc->xpath('//a[@class="WeeksNav"]');
+    if(empty($elems)) {
+      return $unfinishedWeeks;
+    }
+
     foreach($elems as $a) {
       $unfinishedWeeks[] = $this->make_date_from_link($a['href']);
     }
@@ -145,14 +174,17 @@ class TZIntellitimeParser {
 
     $reports = array();
     $table_rows = $this->get_report_rows();
-    if(!empty($table_rows)) {
-      foreach($table_rows as $row) {
-        $report = $this->parse_report_row($row);
-        $report->year = $this->calculate_report_year($report, $adjacentWeeks);
-        $report->break_duration_minutes = $this->calculate_report_breakduration($report);
-        $reports[] = $report;
-      }
+    if(empty($table_rows)) {
+      return $reports;
     }
+
+    foreach($table_rows as $row) {
+      $report = $this->parse_report_row($row);
+      $report->year = $this->calculate_report_year($report, $adjacentWeeks);
+      $report->break_duration_minutes = $this->calculate_report_breakduration($report);
+      $reports[] = $report;
+    }
+
     return $reports;
   }
 
@@ -171,7 +203,7 @@ class TZIntellitimeParser {
     return $result;
   }
 
-  public function build_update_reports_post(array $itreports, $allReportsDone) {
+  public function build_update_reports_post(array $itreports, $allReportsDone = FALSE) {
     $post = $this->build_raw_post();
 
     foreach($itreports as $itreport) {
@@ -239,13 +271,18 @@ class TZIntellitimeParser {
   }
 
   /**
-   * Process all form inputs and build a POST:able array containing the new data
-   * from $report
+   * Process all form inputs and build a POST:able array containing their
+   * name and current value from DOM.
    *
    * @return Array HTTP POST fields
    */
   private function build_inputs() {
+    $result = array();
     $inputs = $this->doc->xpath("//input");
+    if(empty($inputs)) {
+      return $result;
+    }
+
     foreach ($inputs as $input) {
       if (!$input['disabled']) {
         if ($input['type'] != "checkbox") {
@@ -321,24 +358,22 @@ class TZIntellitimeParser {
   private function set_report_fields(&$post, $report) {
     $control_prefix = $this->find_report_control_prefix($report);
 
-    if (isset($post[$control_prefix . "TextboxTimeFrom"])) {
-      $post[$control_prefix . "TextboxTimeFrom"] = $report->begin;
-    }
+    $fields_map = array(
+      "TextboxTimeFrom" => $report->begin,
+      "TextboxTimeTo" => $report->end,
+      "TextboxBreak" => $report->break_duration_minutes,
+      "TextboxExplicitOvertime" => $report->overtime_hours,
+      "TextboxNote" => $report->comment,
+    );
 
-    if (isset($post[$control_prefix . "TextboxTimeTo"])) {
-      $post[$control_prefix . "TextboxTimeTo"] = $report->end;
+    foreach($fields_map as $key => $value) {
+      $this->set_key_if_exists($post, $control_prefix . $key, $value);
     }
+  }
 
-    if (isset($post[$control_prefix . "TextboxBreak"])) {
-      $post[$control_prefix . "TextboxBreak"] = $report->break_duration_minutes;
-    }
-
-    if (isset($post[$control_prefix . "TextboxExplicitOvertime"])) {
-      $post[$control_prefix . "TextboxExplicitOvertime"] = $report->overtime_hours;
-    }
-
-    if (isset($post[$control_prefix . "TextboxNote"])) {
-      $post[$control_prefix . "TextboxNote"] = $report->comment;
+  private function set_key_if_exists(&$post, $key, $value) {
+    if (isset($post[$key])) {
+      $post[$key] = $value;
     }
   }
 
@@ -385,7 +420,6 @@ class TZIntellitimeParser {
    * @return the populated report or NULL if parsing failed.
    */
   private function parse_report_row($row) {
-    // Find this rows unique id..
     $report = new TZIntellitimeReport();
 
     $report->id = $this->get_row_id($row);
@@ -450,7 +484,7 @@ class TZIntellitimeParser {
     /* Index 1 has either a "done" checkbox, the "locked" icon, nothing at all,
      * or a 'check mark' icon. */
     $td = $row->td[1];
-    if (!empty($td->input)) {
+    if ($td->input) {
       if($td->input['checked']) {
         return TZIntellitimeReport::STATE_REPORTED;
       }
@@ -500,9 +534,6 @@ class TZIntellitimeParser {
   }
 
   private function calculate_report_year($report, $adjacentWeeks) {
-    if ($report->month === NULL) {
-      return FALSE;
-    }
     $years = array(
       intval($adjacentWeeks[0]->format('Y'), 10),
       intval($adjacentWeeks[1]->format('Y'), 10),

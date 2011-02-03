@@ -1,13 +1,15 @@
 <?php
 
+class TZIntellitimeErrorPageException extends TZIntellitimeServerException {}
+
 class TZIntellitimeWeekData {
 
   /**
    * @var TZIntellitimeParser
    */
   private $parser;
-  private $rows;
-  private $assignments;
+  private $rows = array();
+  private $tzjobs;
 
   /**
    * @param TZIntellitimeParser $parser
@@ -19,22 +21,33 @@ class TZIntellitimeWeekData {
 
     $this->parser = $parser;
 
+    $error = $parser->parse_page_error();
+    if($error) {
+      throw new TZIntellitimeErrorPageException($error, (string)$parser);
+    }
+
+    if(!$parser->is_valid_login()) {
+      throw new TZAuthenticationFailureException('Session expired', (string)$parser);
+    }
+
     $reports = $parser->parse_reports();
     foreach($reports as $report) {
       $this->rows[$report->id] = $report;
     }
 
-    $assignments = $parser->parse_assignments();
-    $absence = $parser->parse_absence_types();
-    $assignments = array_merge($assignments, $absence);
-    $this->assignments = $this->addImplicitAssignments($reports, $assignments);
+    $assignments = array_merge(
+        $parser->parse_assignments(),
+        $parser->parse_absence_types()
+    );
+
+    $this->tzjobs = $this->createTZJobs($reports, $assignments);
   }
 
   /**
    * @return array TZIntellitimeAssignment array
    */
-  function getAssignments() {
-    return array_values($this->assignments);
+  function getTZJobs() {
+    return array_values($this->tzjobs);
   }
 
   /**
@@ -82,23 +95,25 @@ class TZIntellitimeWeekData {
             $unlockImmutable = TRUE;
           }
         }
-      } else if($itreport->state != $row->state && !$row->stateImmutable) {
+      } else if($this->stateChangedAndCanModify($itreport, $row)) {
         $needsUpdating[] = $itreport;
       }
     }
 
-    if($allReportsDone) {
-      $allReportsDone = $this->checkIfReportRowsDone($seenReportIDs);
-    }
+    /* The code above has checked if the reports stored in our database are
+     * all done. However, to be able to say that everything is done we must
+     * also check any new rows on the page and see if they are done.
+     */
+    $allReportsDone = $allReportsDone && $this->checkIfReportRowsDone($seenReportIDs);
 
     if(!empty($needsUnlocking)) {
       $postData = new TZIntellitimePostData();
-      $postData->setPostAction($this->parser->parse_form_action());
+      $postData->setPostAction('TimeReport/' . $this->parser->parse_form_action());
       $postData->setPostData($this->parser->build_unlock_post($needsUnlocking, $unlockImmutable));
       $postData->setIntermediate(TRUE);
     } elseif (!empty($needsUpdating)) {
       $postData = new TZIntellitimePostData();
-      $postData->setPostAction($this->parser->parse_form_action());
+      $postData->setPostAction('TimeReport/' . $this->parser->parse_form_action());
       $postData->setPostData($this->parser->build_update_reports_post($needsUpdating, $allReportsDone));
     }
 
@@ -117,17 +132,7 @@ class TZIntellitimeWeekData {
    * @return array $tzreports with updates and additions
    */
   public function updateReports($tzreports, $account, $finalPost = FALSE) {
-    $updatedReports = array();
-
-    foreach($tzreports as $tzreport) {
-      $row = $this->findReportRow($tzreport);
-      $tzreport_clone = clone($tzreport);
-      if(empty($row)) {
-        $tzreport_clone->flags = TZFlags::DELETED;
-        $tzreport_clone->intellitime_local_changes = 0;
-      }
-      $updatedReports[$this->getIntellitimeID($tzreport)] = $tzreport_clone;
-    }
+    $updatedReports = $this->buildReportMapWithDeletionsMarked($tzreports);
 
     foreach($this->rows as $intellitime_id => $row) {
       if(isset($updatedReports[$intellitime_id])) {
@@ -150,8 +155,14 @@ class TZIntellitimeWeekData {
       }
     }
 
+    if($finalPost) {
+      $this->mapIntellitimeJobIdToReport($updatedReports);
+    }
+
     return array_values($updatedReports);
   }
+
+
 
   /**
    * Creates a new array where the reports in $tzreports have updated
@@ -178,9 +189,46 @@ class TZIntellitimeWeekData {
     return $updatedReports;
   }
 
+  /**
+   * Builds a array map using intellitime_id as keys and the
+   * tzreports as values. Any reports not found on the page
+   * are marked as DELETED.
+   *
+   * @param array $tzreports
+   * @return array TZReport->intellitime_id => TZReport
+   */
+  private function buildReportMapWithDeletionsMarked($tzreports) {
+    $updatedReports = array();
+
+    foreach($tzreports as $tzreport) {
+      $row = $this->findReportRow($tzreport);
+      $tzreport_clone = clone($tzreport);
+      if(empty($row)) {
+        $tzreport_clone->flags = TZFlags::DELETED;
+        $tzreport_clone->intellitime_local_changes = 0;
+      }
+      $updatedReports[tzintellitime_get_intellitime_id($tzreport)] = $tzreport_clone;
+    }
+
+    return $updatedReports;
+  }
+
+  private function mapIntellitimeJobIdToReport($tzreports) {
+    foreach($tzreports as $tzreport) {
+      $report_key = $tzreport->title;
+      if(isset($this->tzjobs[$report_key])) {
+        $tzreport->intellitime_jobid = $this->tzjobs[$report_key]->intellitime_id;
+      }
+    }
+  }
+
+  private function stateChangedAndCanModify($itreport, $row) {
+    return $itreport->state != $row->state && !$row->stateImmutable;
+  }
+
   private function checkIfReportRowsDone($skipReportIDs) {
     foreach($this->rows as $intellitime_id => $itreport) {
-      if($skipReportIDs[$intellitime_id]) {
+      if(!empty($skipReportIDs[$intellitime_id])) {
         continue;
       }
       if($itreport->state == TZIntellitimeReport::STATE_OPEN) {
@@ -190,21 +238,18 @@ class TZIntellitimeWeekData {
     return TRUE;
   }
 
-  private function getIntellitimeID($tzreport) {
-    $id = unserialize($tzreport->intellitime_id);
-    return $id[2];
-  }
+
 
   private function findReportRow($tzreport) {
-    $id = $this->getIntellitimeID($tzreport);
+    $id = tzintellitime_get_intellitime_id($tzreport);
     if(isset($this->rows[$id])) {
       return $this->rows[$id];
     }
     return NULL;
   }
 
-  private function addImplicitAssignments($reports, $assignments) {
-    $updatedAssignments = array();
+  private function createTZJobs($reports, $assignments) {
+    $tzjobs = array();
 
     foreach($reports as $report) {
       $title = $report->title;
@@ -216,10 +261,10 @@ class TZIntellitimeWeekData {
         $assignment = new TZIntellitimeAssignment($title);
       }
 
-      $updatedAssignments[$assignment->id] = $assignment;
+      $tzjobs[$assignment->report_key] = $assignment->convert_to_tzjob();
     }
 
-    return $updatedAssignments;
+    return $tzjobs;
   }
 
   /**

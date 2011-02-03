@@ -1,6 +1,8 @@
 <?php
+
+autoload_registry_rebuild();
+
 function loadHTMLFile($filename) {
-    autoload_registry_update();
     $full_name = dirname(__FILE__) . "/$filename";
     $handle = fopen($full_name, "r");
     $contents = fread($handle, filesize($full_name));
@@ -20,7 +22,12 @@ if($_SERVER['argc'] > 4) {
 $parser = loadHTMLFile($file);
 $reports = $parser->parse_reports();
 print_r ($reports);
-print("Unfinshed: ");
+
+$assignments = $parser->parse_assignments();
+$assignments += $parser->parse_absence_types();
+print_r($assignments);
+
+print("Unfinished: ");
 foreach($parser->parse_unfinished_weeks() as $unfinishedDate) {
    print($unfinishedDate->format('\'o\WW\'') . ", ");
 }

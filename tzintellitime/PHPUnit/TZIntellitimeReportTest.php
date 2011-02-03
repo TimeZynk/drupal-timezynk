@@ -4,8 +4,6 @@ class TZIntellitimeReportTest extends PHPUnit_Framework_TestCase {
   private $report = NULL;
 
   public function setUp() {
-    // Enable any modules required for the test.
-    parent::setUp('autoload', 'date_api', 'date_timezone', 'tzbase', 'tzintellitime');
     $this->originalTimeZone = date_default_timezone_name();
     date_default_timezone_set('Europe/Stockholm');
     $this->report = new TZIntellitimeReport();
@@ -46,6 +44,21 @@ class TZIntellitimeReportTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($this->report->break_duration_minutes*60, $tzreport->breakduration, "Expected break durations to match");
   }
 
+  public function testConvertToTZReportWithEndTimeOnNextDay() {
+    _tzintellitime_populate_report($this->report);
+    $mockaccount = (object)array('uid' => '1234', 'name' => 'Mock User');
+    $this->report->begin="12:00";
+    $this->report->end="11:00";
+    $tzreport = $this->report->convert_to_tzreport($mockaccount);
+    $this->assertNotNull($tzreport, 'Expected $tzreport not NULL.');
+    $this->assertEquals($this->report->title, $tzreport->title, "Expected equal titles");
+    $this->assertEquals($this->report->comment, $tzreport->body, "Expected equal comments");
+    $this->assertEquals(1284544800, $tzreport->begintime);
+    $this->assertEquals(1284627600, $tzreport->endtime);
+    $this->assertEquals($this->report->break_duration_minutes*60, $tzreport->breakduration, "Expected break durations to match");
+  }
+
+
   public function testUpdateTZReport() {
     _tzintellitime_populate_report($this->report);
     $mockaccount = (object)array('uid' => '1234', 'name' => 'Mock User');
@@ -59,6 +72,25 @@ class TZIntellitimeReportTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(1284530400, $tzreport->begintime, 'Expected 1284530400 as begintime, got ' . $tzreport->begintime);
     $this->assertEquals(1284566400, $tzreport->endtime, 'Expected 1284566400 as endtime, got ' . $tzreport->endtime);
     $this->assertEquals($this->report->break_duration_minutes*60, $tzreport->breakduration, "Expected break durations to match");
+  }
+
+  function testNoIntellitimeIdInReport() {
+    try {
+      $tzReport = createMockReport(NULL, "2010-10-10", "10:10", "22:10");
+      unset($tzReport->intellitime_id);
+
+      new TZIntellitimeReport($tzReport);
+      $this->fail("No id, no report!");
+    } catch (InvalidArgumentException $e) {
+      $this->assertNotNull($e);
+    }
+  }
+
+  function testConstructorHandlesDELETED() {
+    $tzreport = createMockReport(NULL, "2010-10-10", "10:10", "22:10");
+    $tzreport->flags = TZFlags::DELETED;
+    $itreport = new TZIntellitimeReport($tzreport);
+    $this->assertEquals(TZIntellitimeReport::STATE_DELETED, $itreport->state);
   }
 }
 

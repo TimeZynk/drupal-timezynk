@@ -108,6 +108,7 @@ class TZIntellitimeTestCase extends DrupalWebTestCase {
 class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   private $intelli_url = NULL;
   private $bot = NULL;
+  private $curl = NULL;
 
   public static function getInfo() {
     return array(
@@ -133,14 +134,16 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
     $this->drupalPost('admin/settings/tzintellitime_mock', $form, t('Save'));
 
     $this->intelli_url = $this->getAbsoluteUrl('IntelliplanWeb/Portal/Login.aspx');
-    $this->bot = new TZIntellitimeBot($this->intelli_url);
+    $this->curl = new TZCurl();
+    $this->bot = new TZIntellitimeBot($this->curl, $this->intelli_url);
   }
 
   public function tearDown() {
     parent::tearDown();
     if(isset($this->bot)) {
-      TZIntellitimeBot::destroy_session_data($this->bot->get_session_data());
+      TZCurl::destroySessionData($this->curl->getSessionData());
       unset($this->bot);
+      unset($this->curl);
     }
   }
 
@@ -161,50 +164,35 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   public function testDestructorDoesNotRemoveCookiejar() {
      $ok = $this->bot->login("test user", "test password");
      $this->assertTrue($ok);
-     $session_data = $this->bot->get_session_data();
+     $session_data = $this->curl->getSessionData();
      unset($this->bot);
-     $this->assertTrue(TZIntellitimeBot::is_valid_session_data($session_data), "Expected valid session data.");
+     unset($this->curl);
+     $this->assertTrue(TZCurl::isValidSessionData($session_data), "Expected valid session data.");
   }
 
   public function testResumeSession() {
     $ok = $this->bot->login("test user", "test password");
     $this->assertTrue($ok);
-    $session_data = $this->bot->get_session_data();
+    $session_data = $this->curl->getSessionData();
     unset($this->bot);
-    $this->bot = new TZIntellitimeBot($this->intelli_url, $session_data);
-    $results = $this->bot->load_week();
+    unset($this->curl);
+    $this->curl = new TZCurl($session_data);
+    $this->bot = new TZIntellitimeBot($this->curl, $this->intelli_url);
+    $results = $this->bot->refreshWeek(NULL);
+    $this->assertTrue($results instanceof TZIntellitimeWeekData);
     $this->assertNotNull($results, 'Expected $results NOT NULL.');
-    $this->assertNotNull($results['assignments'], 'Expected $results["assignments"] NOT NULL.');
-    $this->assertNotNull($results['reports'], 'Expected $results["reports"] NOT NULL.');
-  }
-
-  public function testRequestUrl() {
-    // Start with a valid URL
-    try {
-      $parser = $this->bot->request(url('IntelliplanWeb', array('absolute' => TRUE)));
-      $this->assertNotNull($parser, 'fetched local URL');
-    } catch(Exception $e) {
-      $this->fail($e->getMessage());
-    }
-
-    // Try invalid URL
-    try {
-      $this->bot->request(url('user', array('absolute' => TRUE)) . '/my_monkeys');
-      $this->fail('Fetching invalid URL did not throw exception');
-    } catch(TZNetworkFailureException $e) {
-      $this->pass('Caught exeception when fetching invalid URL');
-    }
   }
 
   public function testCheckIfCookieFileIsEmpty() {
     $ok = $this->bot->login("test user", "test password");
     $this->assertTrue($ok);
-    $session_data = $this->bot->get_session_data();
+    $session_data = $this->curl->getSessionData();
     unset($this->bot);
+    unset($this->curl);
     unlink($session_data['cookiejar']);
     $session_data['cookiejar'] = tempnam(file_directory_temp(), 'testtzintellitimebot');
     try {
-      $this->bot = new TZIntellitimeBot($this->intelli_url, $session_data);
+      $this->curl = new TZCurl($session_data);
       $this->fail('Should have generated an InvalidArgumentException');
     } catch (InvalidArgumentException $e) {
       $this->pass('Caught exception');
@@ -212,32 +200,9 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   }
 
   public function testErrorCode() {
-    // First test error code for load_week
-    $ok = $this->bot->login("test user", "test password");
-    $this->assertTrue($ok);
-
     variable_set('tzintellitime_mock_error_code', '500');
-
-    // Begin with simple request
     try {
-      $this->bot->request($this->getAbsoluteUrl('IntelliplanWeb/Portal/Login.aspx'));
-      $this->fail('Expected exception');
-    } catch(TZNetworkFailureException $e) {
-      $this->pass('Caught exception: ' . $e->getMessage());
-    }
-
-    // Proceed with load_week
-    try {
-      $result = $this->bot->load_week();
-      $this->fail('Should have thrown exception');
-      $this->assertTrue(empty($result), 'empty result, got: ' . print_r($result, TRUE));
-    } catch(TZNetworkFailureException $e) {
-      $this->pass('Caught exception: ' . $e->getMessage());
-    }
-
-    // Login should also fail.
-    try {
-      $this->bot->login("test user", "test password");
+      $this->curl->request($this->getAbsoluteUrl('IntelliplanWeb/Portal/Login.aspx'));
       $this->fail('Expected exception');
     } catch(TZNetworkFailureException $e) {
       $this->pass('Caught exception: ' . $e->getMessage());

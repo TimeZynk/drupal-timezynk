@@ -141,8 +141,6 @@ function tzintellitime_sync_synchronize_users() {
 }
 
 function tzintellitime_sync_synchronize_user($uid) {
-  require_once dirname(__FILE__) . '/tzintellitime_sync.class.inc';
-
   // Load user account
   $account = user_load(array('uid' => $uid));
   if(!$account) {
@@ -151,52 +149,67 @@ function tzintellitime_sync_synchronize_user($uid) {
   }
 
   if(!tzintellitime_is_authenticated($account)) {
-    watchdog('tzintellitime',
-             'No session available for user !name (!uid), last sync !interval ago',
-             array('!name' => $account->name,
-                   '!uid' => $account->uid,
-                   '!interval' => format_interval(time() - $account->intellitime_last_sync)),
-             WATCHDOG_WARNING,
-             theme('username', $account));
     // User not found or not intellitime user
+    tzintellitime_sync_warning('No session available', $account);
     user_save($account, array('intellitime_active' => 0));
     return TZIntellitimeSyncController::AUTH_FAILURE;
   }
 
   try {
-    $ctrlr = new TZIntellitimeSyncController($account);
+    // SyncPolicy starting today
+    $startDate = tzbase_make_date();
+    $syncPolicy = new TZIntellitimeSimpleSyncPolicy($account, $startDate, TZINTELLITIME_SYNC_WEEKS_FORWARD);
+
+    $curl = new TZCurl($account->intellitime_session_data);
+    $serverInterface = new TZIntellitimeBot($curl, TZINTELLITIME_BASE_URL);
+
+    $weekFactory = new TZIntellitimeDefaultWeekFactory($serverInterface, $account);
+
+    $reportStorage = new TZIntellitimeDBReportStorage($account);
+
+    $ctrlr = new TZIntellitimeSyncController($syncPolicy, $weekFactory, $reportStorage);
     $result = $ctrlr->synchronize();
   } catch (InvalidArgumentException $e) {
     return TZIntellitimeSyncController::AUTH_FAILURE;
   }
 
   if(TZIntellitimeSyncController::SYNC_OK === $result) {
-    $last_sync = $account->intellitime_last_sync;
+    tzintellitime_sync_notice('Synchronized', $account);
     $account = user_save($account, array('intellitime_last_sync' => time()));
-    watchdog('tzintellitime', 'Synchronized user !name (!uid), last sync !interval ago',
-             array('!name' => $account->name,
-                   '!uid' => $account->uid,
-                   '!interval' => format_interval($account->intellitime_last_sync - $last_sync)),
-             WATCHDOG_NOTICE,
-             theme('username', $account));
   } elseif(TZIntellitimeSyncController::AUTH_FAILURE === $result) {
     // Failed authentication, unschedule user
-    TZIntellitimeBot::destroy_session_data($account->intellitime_session_data);
+    tzintellitime_sync_warning('Expired session', $account);
+    TZCurl::destroySessionData($account->intellitime_session_data);
     user_save($account, array('intellitime_session_data' => NULL, 'intellitime_active' => 0));
-    watchdog('tzintellitime', 'Expired session for user !name (!uid), last sync !interval ago',
-             array('!name' => $account->name,
-                   '!uid' => $account->uid,
-                   '!interval' => format_interval(time() - $account->intellitime_last_sync)),
-             WATCHDOG_WARNING,
-             theme('username', $account));
   } else {
     // Hopefully a temporary failure, log
-    watchdog('tzintellitime', 'Failed to synchronize user !name (!uid), last sync !interval ago',
-             array('!name' => $account->name,
-                   '!uid' => $account->uid,
-                   '!interval' => format_interval(time() - $account->intellitime_last_sync)),
-             WATCHDOG_WARNING,
-             theme('username', $account));
+    tzintellitime_sync_warning('Failed to synchronize', $account);
   }
   return $result;
+}
+
+function tzintellitime_sync_notice($message, $account) {
+  tzintellitime_sync_log($message, $account, WATCHDOG_NOTICE);
+}
+
+function tzintellitime_sync_warning($message, $account) {
+  tzintellitime_sync_log($message, $account, WATCHDOG_WARNING);
+}
+
+function tzintellitime_sync_log($message, $account, $severity) {
+  $session_age = time();
+  if(!empty($account->intellitime_session_data['created'])) {
+    $session_age -= $account->intellitime_session_data['created'];
+  }
+
+  watchdog('tzintellitime', '@message, @name (@uid), last sync @interval ago, session created @age ago',
+         array(
+           '@message' => $message,
+           '@name' => $account->name,
+           '@uid' => $account->uid,
+           '@interval' => format_interval(time() - $account->intellitime_last_sync),
+           '@age' => format_interval($session_age),
+         ),
+         WATCHDOG_NOTICE,
+         theme('username', $account));
 }

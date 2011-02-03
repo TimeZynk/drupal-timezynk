@@ -233,6 +233,35 @@ class TZIntellitimeParserTest extends PHPUnit_Framework_TestCase {
       $this->fail('Should have thrown exception');
     } catch(TZIntellitimeReportRowNotFound $e) {
       // PASS
+      $this->assertNotNull($e);
     }
+  }
+
+  public function testV9HandleMultipleYearsInSameWeek() {
+    $parser = $this->loadHTMLFile('Parser_v9HandleMultipleYearsInSameWeek.txt');
+    $reports = $parser->parse_reports();
+    $this->assertEquals(2, count($reports));
+    $this->assertEquals("2010-12-31", $reports[0]->get_date_string());
+    $this->assertEquals("2011-01-01", $reports[1]->get_date_string());
+  }
+
+  public function testCrapForBreakfast() {
+    try {
+      $parser = new TZIntellitimeParser("");
+      $this->fail("Expected exception when feeding crap to parser.");
+    } catch (InvalidArgumentException $e) {
+      $this->assertNotNull($e);
+    }
+  }
+
+  public function testNoActionPresent() {
+    $parser = new TZIntellitimeParser("<html><head/><body>apa</body></hmtl>");
+    $this->assertNull($parser->parse_form_action());
+  }
+
+  public function testParseErrorString() {
+    $parser = $this->loadHTMLFile('WeekData_ThrowOnErrorPage.txt');
+    $error = $parser->parse_page_error();
+    $this->assertEquals('Unexpected error', $error);
   }
 }

@@ -20,7 +20,7 @@ function tzbase_drush_command() {
 
 function tzbase_drush_list_reports() {
   global $user;
-  $query="SELECT DISTINCT nid FROM {tzreport} WHERE flags != 255";
+  $query="SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE t.flags != 255";
   $query_args = array();
   if (!empty($user->uid)) {
     $query .= " AND assignedto = %d";
