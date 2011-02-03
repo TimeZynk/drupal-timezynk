@@ -1,7 +1,5 @@
 <?php
 
-tzintellitime_include_classes();
-
 $date = date_make_date('now');
 if($_SERVER['argc'] == 5) {
   $date = date_make_date($_SERVER['argv'][4]);

@@ -59,8 +59,6 @@ function tzintellitime_mock_preprocess_page(&$variables) {
     return;
   }
 
-  tzintellitime_include_classes();
-
   $mock_user = tzintellitime_mock_load_user($_SESSION['tzintellitime_mock_user_id']);
 
   $firstweek = empty($_GET['DateInWeek']);
@@ -159,7 +157,6 @@ function tzintellitime_mock_compare_reports($first, $second) {
 }
 
 function tzintellitime_mock_request() {
-  tzintellitime_include_classes();
   watchdog('mock', 'Request for path !path', array('!path' => $_SERVER['REQUEST_URI']));
 
   $path = arg();
@@ -278,7 +275,6 @@ function tzintellitime_mock_authenticate($user, $pass) {
  * creates a TZIntellitimeReport object and saves it to our database.
  */
 function create_new_report_from_post($post) {
-  tzintellitime_include_classes();
 
   // Break out year, month and day from the date object.
   list($year, $month, $day) = explode('-', $post['AddDateDropDown']);
@@ -335,7 +331,6 @@ function tzintellitime_mock_logout() {
 
 
 function tzintellitime_mock_get_reports($mock_user=NULL) {
-  tzintellitime_include_classes();
 
   // Build SQL query
   $query = 'SELECT * FROM {tzintellitime_mock_data}';
@@ -358,7 +353,6 @@ function tzintellitime_mock_get_reports($mock_user=NULL) {
 }
 
 function tzintellitime_mock_get_assignments() {
-  tzintellitime_include_classes();
   $assignments = array();
 
   $result = db_query('SELECT * FROM {tzintellitime_mock_data} WHERE user_id = 0 ORDER BY id ASC');

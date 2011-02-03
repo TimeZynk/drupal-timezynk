@@ -5,7 +5,6 @@
  * It boots drupal, inserts our intellitime module, and tries to login to intellitime using that module.
  */
 
-tzintellitime_include_classes();
 
 //$intelli_url = "http://my2.intelliplan.se/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d";
 $intelli_url = "http://localhost/IntelliplanWeb/Portal/Login.aspx";

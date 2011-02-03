@@ -2,7 +2,6 @@
 
 global $user;
 tzbase_include_proto_classes();
-tzintellitime_include_classes();
 
 $account = user_load(array('name' => 'Johan Heander'));
 if($account) {

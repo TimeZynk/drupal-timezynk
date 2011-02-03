@@ -1,7 +1,6 @@
 <?php
 
 function tzintellitime_mock_setup_reports(&$form_state) {
-  tzintellitime_include_classes();
 
   $form['tzintellitime_mock_delay_millis'] = array(
     '#type' => 'textfield',

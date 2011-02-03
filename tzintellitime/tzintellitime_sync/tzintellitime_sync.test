@@ -15,7 +15,6 @@ class TZIntellitimeSyncTestCase extends DrupalWebTestCase {
 
     // Include resources
     tzbase_include_proto_classes();
-    tzintellitime_include_classes();
     require_once dirname(__FILE__) . '/tzintellitime_sync.class.inc';
 
     $this->account = $this->drupalCreateUser(array('access content'));

@@ -94,8 +94,6 @@ function tzintellitime_mock_drush_list_users() {
 }
 
 function tzintellitime_mock_drush_add_assignment($title) {
-  tzintellitime_include_classes();
-
   $assignment = new TZIntellitimeAssignment();
   $assignment->title = $title;
   $assignment->type = TZIntellitimeAssignment::TYPE_ASSIGNMENT;
@@ -105,8 +103,6 @@ function tzintellitime_mock_drush_add_assignment($title) {
 }
 
 function tzintellitime_mock_drush_list_assignments() {
-  tzintellitime_include_classes();
-
   $result = db_query('SELECT * FROM {tzintellitime_mock_data} WHERE user_id = 0 ORDER BY id ASC');
   while($row = db_fetch_object($result)) {
     $obj = unserialize($row->data);
@@ -117,8 +113,6 @@ function tzintellitime_mock_drush_list_assignments() {
 }
 
 function tzintellitime_mock_drush_add_report($user_id, $assignment, $year, $month, $day, $begin, $end, $break=0, $comment='') {
-  tzintellitime_include_classes();
-
   $mock_user = tzintellitime_mock_load_user($user_id);
   if(empty($mock_user)) {
     drush_log("Illegal user id: " . $user_id, 'error');

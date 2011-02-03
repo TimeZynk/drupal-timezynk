@@ -1,5 +1,12 @@
 <?php
 
+require_once dirname(__FILE__) . '/includes/TZIntellitimeAssignment.class.inc';
+require_once dirname(__FILE__) . '/includes/TZIntellitimeBot.class.inc';
+require_once dirname(__FILE__) . '/includes/TZIntellitimeParser.class.inc';
+require_once dirname(__FILE__) . '/includes/TZIntellitimeReport.class.inc';
+require_once dirname(__FILE__) . '/includes/TZIntellitimeWeek.class.inc';
+require_once dirname(__FILE__) . '/includes/TZIntellitimeWeekData.class.inc';
+tzbase_include_proto_classes();
 /**
  * @file
  * TimeZynk intellitime integration tests.
@@ -19,8 +26,9 @@ class TZIntellitimeTestCase extends DrupalWebTestCase {
    */
   public function setUp() {
     // Enable any modules required for the test.
-    parent::setUp('tzintellitime');
-    tzintellitime_include_classes();
+    parent::setUp('autoload', 'tzintellitime');
+    autoload_registry_update();
+
     $this->account = $this->drupalCreateUser(array('access content'));
     $this->drupalLogin($this->account);
   }
@@ -114,9 +122,8 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
    */
   public function setUp() {
     // Enable any modules required for the test.
-    parent::setUp('libraries', 'date_api', 'tzbase', 'tzintellitime', 'tzintellitime_mock', 'tzintellitime_sync');
-    require_once dirname(__FILE__) . '/tzintellitime.class.inc';
-
+    parent::setUp('libraries', 'date_api', 'autoload', 'tzbase', 'tzintellitime', 'tzintellitime_mock', 'tzintellitime_sync');
+    autoload_registry_update();
     $admin = $this->drupalCreateUser(array('administer site configuration'));
     $this->drupalLogin($admin);
     $form = array(
@@ -238,345 +245,6 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   }
 }
 
-
-class TZIntellitimeParserTestCase extends DrupalUnitTestCase {
-  private $login_view_state = "dDwyNDA3MjczMzc7dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw1PjtpPDE1PjtpPDE5Pjs+O2w8dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9DdXN0b21lcnMvaW50ZWxsaXBsYW5fbG9nby5naWY7Pj47Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDx+L0ltYWdlcy9JbWdfSW50ZWxsaXBsYW5Mb2dvV2hpdGUuZ2lmOz4+Oz47Oz47Pj47Pj47dDxwPHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxMb2dnYSBpbjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8R2zDtm10IGzDtnNlbm9yZGV0Pzs+Pjs+Ozs+Oz4+Oz4+Oz5ngNWIe5WIW3O3prUuG7wbptC3jg==";
-
-  public static function getInfo() {
-    return array(
-      'name' => 'TZIntellitimeParser test suite',
-      'description' => '',
-      'group' => 'TZIntellitime',
-    );
-  }
-
-  public function setUp() {
-    // Enable any modules required for the test.
-    parent::setUp('tzintellitime');
-    require_once dirname(__FILE__) . '/tzintellitime.class.inc';
-  }
-
-  public function tearDown() {
-    parent::tearDown();
-  }
-
-  private function loadHTMLFile($filename) {
-    $full_name = dirname(__FILE__) . "/tests/$filename";
-    $handle = fopen($full_name, "r");
-    $contents = fread($handle, filesize($full_name));
-    fclose($handle);
-    return new TZIntellitimeParser($contents);
-  }
-
-  public function testBuildLoginPost() {
-    $parser = $this->loadHTMLFile("intellitime-login-page.html");
-    $post = $parser->build_login_post("monkeyname", "monkeypass");
-    $this->assertEqual('Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d', $post['action'], "correct action parsed");
-    $this->assertEqual($this->login_view_state, $post['data']['__VIEWSTATE'], "Found viewstate");
-    $this->assertEqual("monkeyname", $post['data']['TextBoxUserName'], "username correct");
-    $this->assertEqual("monkeypass", $post['data']['TextBoxPassword'], "password correct");
-    $this->assertEqual("Logga in", $post['data']['ButtonLogin'], "parsed submit button");
-  }
-
-  public function testLoginCheckerCatchesFailedLogin() {
-    $parser = $this->loadHTMLFile('intellitime-login-page.html');
-    $this->assertFalse($parser->is_valid_login(), "detected failed login");
-  }
-
-  public function testLoginCheckerCatchesSuccessfulLogin() {
-    $parser = $this->loadHTMLFile('intellitime-main-page.html');
-    $this->assertTrue($parser->is_valid_login(), "detected successful login");
-  }
-
-  public function testBuildInputWithComments() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-with-comments.html');
-    $reports = $parser->parse_reports();
-    $tzreport = $reports[0];
-
-    $tzreport->id = 'mhbLP96iqH3xps0bh7%2fZv84hbku5Eii3';
-    $tzreport->begin = '09:31';
-    $tzreport->end = '17:43';
-    $tzreport->comment = 'I did all I could!';
-
-    $result = $parser->build_inputs($tzreport);
-    $this->assertNotNull($result, "expect not NULL");
-    $this->assertEqual($tzreport->comment, $result['OldRowsRepeater:_ctl0:TextboxNote']);
-    $this->assertEqual($tzreport->begin, $result['OldRowsRepeater:_ctl0:TextboxTimeFrom']);
-    $this->assertEqual($tzreport->end, $result['OldRowsRepeater:_ctl0:TextboxTimeTo']);
-    $this->assertEqual($tzreport->break_duration_minutes, $result['OldRowsRepeater:_ctl0:TextboxBreak']);
-  }
-
-  public function testBuildInputWithoutComments() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
-    $reports = $parser->parse_reports();
-    $tzreport = $reports[4];
-
-    $tzreport->id = 'mhbLP96iqH2aeWvSjjSDX84hbku5Eii3';
-    $tzreport->begin = '09:31';
-    $tzreport->end = '17:43';
-    $tzreport->comment = 'I did all I could!';
-
-    $result = $parser->build_inputs($tzreport);
-    $this->assertNotNull($result, "expect not NULL");
-    $this->assertTrue(!isset($result['OldRowsRepeater:_ctl4:TextboxNote']));
-    $this->assertEqual($tzreport->begin, $result['OldRowsRepeater:_ctl4:TextboxTimeFrom']);
-    $this->assertEqual($tzreport->end, $result['OldRowsRepeater:_ctl4:TextboxTimeTo']);
-    $this->assertEqual($tzreport->break_duration_minutes, $result['OldRowsRepeater:_ctl4:TextboxBreak']);
-  }
-
-  public function testParseAssignments() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
-    $assignments = $parser->parse_assignments();
-    $this->assertEqual(1, count($assignments), "only one assignment");
-    $this->assertEqual("5983", $assignments[0]->id, "assignment code 5983");
-  }
-
-  public function testParseAssignmentsUTF8Encoding() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
-    $assignments = $parser->parse_assignments();
-    $this->assertEqual("Testföretaget Effekt, Lagerarbetare", $assignments[0]->title, "expect UTF-8 encoding");
-  }
-
-  public function testParseAbsenceTypes() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
-    $absence_types = $parser->parse_absence_types();
-    $this->assertEqual(28, count($absence_types));
-    $this->assertEqual("_AC_Uttag extra fridag", $absence_types[4]->id);
-  }
-
-  public function testParseReportsCorrectCount() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
-    $reports = $parser->parse_reports();
-    $this->assertEqual(7, count($reports), "expect seven reports");
-  }
-
-  public function testParseReportsOnlyUniqueIDs() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
-    $reports = $parser->parse_reports();
-    foreach($reports as $report) {
-      $id[$report->id] = TRUE;
-    }
-    $this->assertEqual(count($reports), count($id), "all IDs unique");
-  }
-
-  public function testParseReportsUTF8Encoding() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
-    $reports = $parser->parse_reports();
-    $this->assertEqual("Testföretaget Effekt, Lagerarbetare", $reports[3]->title, "expect UTF-8 encoding");
-  }
-
-  public function testFindRowById() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
-    $row = $parser->find_row_by_id('mhbLP96iqH1DQyNUuxAbvM4hbku5Eii3');
-    $this->assertEqual('OldRowsRepeater__ctl5_td1', (string) $row->td[0]['id'], "expect OldRowsRepeater__ctl5_td1");
-  }
-  public function testFindRowByIdShouldNotFindThis() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
-    $row = $parser->find_row_by_id('Expense.aspx?');
-    $this->assertFalse($row, "expect FALSE caused by illegal ID.");
-  }
-
-  public function testBuildSelects() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
-    $selects = $parser->build_selects();
-    $expected_array["CustOrdersDropDown"] = 0;
-    $this->assertEqual($expected_array, $selects, "Expect CustOrdersDropDown = 0");
-  }
-
-  public function testReadComments() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-with-comments.html');
-    $reports = $parser->parse_reports();
-    $this->assertEqual('asda', $reports[0]->comment);
-    $this->assertEqual('', $reports[1]->comment);
-    $this->assertEqual('Panda panda panda "test mjauu" hej!*\'112\'', $reports[2]->comment);
-  }
-
-  public function testParseTimeFields() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-with-comments.html');
-    $reports = $parser->parse_reports();
-    $this->assertEqual('08:50', $reports[0]->begin);
-    $this->assertEqual('17:00', $reports[0]->end);
-    $this->assertEqual(60, $reports[0]->break_duration_minutes);
-    $this->assertEqual('12:00', $reports[1]->begin);
-    $this->assertEqual('13:00', $reports[1]->end);
-    $this->assertEqual(10, $reports[1]->break_duration_minutes);
-    $this->assertEqual('10:00', $reports[2]->begin);
-    $this->assertEqual('23:59', $reports[2]->end);
-    $this->assertEqual(120, $reports[2]->break_duration_minutes);
-  }
-
-  /**
-   * Absence reports miss a break duration field in intellitime.
-   * We have to infer it from total time and start and end.
-   */
-  public function testInferBreakDurationForAbsence() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-multiple-year-hrefs.html');
-    $reports = $parser->parse_reports();
-    $this->assertEqual('13:00', $reports[3]->begin);
-    $this->assertEqual('19:30', $reports[3]->end);
-    $this->assertEqual(30, $reports[3]->break_duration_minutes);
-    $this->assertEqual('08:00', $reports[4]->begin);
-    $this->assertEqual('17:30', $reports[4]->end);
-    $this->assertEqual(30, $reports[4]->break_duration_minutes);
-    $this->assertEqual('22:00', $reports[5]->begin);
-    $this->assertEqual('08:00', $reports[5]->end);
-    $this->assertEqual(30, $reports[5]->break_duration_minutes);
-  }
-
-  /**
-   * Due to the page containing links to 'unfinished weeks' in both 2010 and 2011,
-   * the old code mistakenly fell in to a mode where it thought new year's eve was in november.
-   * This is a regression test to avoid that particular stupidity again. :)
-   */
-  public function testParseYears() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-multiple-year-hrefs.html');
-    $reports = $parser->parse_reports();
-    foreach ($reports as $report) {
-      $this->assertEqual(2010, $report->year);
-    }
-  }
-
-  /** Override assertEqual to get nice log prints by default */
-  protected function assertEqual($first, $second, $message = '', $group = 'Other') {
-    if(!$message) {
-      $message = 'Expected "' . $first . '", got "' . $second . '"';
-    }
-    parent::assertEqual($first, $second, $message, $group);
-  }
-}
-
-class TZIntellitimeReportTestCase extends DrupalWebTestCase {
-
-  private $report = NULL;
-
-  public static function getInfo() {
-    return array(
-      'name' => 'TZIntellitimeReport test suite',
-      'description' => '',
-      'group' => 'TZIntellitime',
-    );
-  }
-
-  public function setUp() {
-    // Enable any modules required for the test.
-    parent::setUp('date_api', 'date_timezone', 'tzbase', 'tzintellitime');
-    variable_set('date_default_timezone_name', 'Europe/Stockholm');
-    tzintellitime_include_classes();
-
-    $this->report = new TZIntellitimeReport();
-  }
-
-  public function tearDown() {
-    parent::tearDown();
-    $this->report = NULL;
-  }
-
-  public function testSetYearForReportWithNoMonth() {
-    $years[0] = 2009;
-    $this->assertFalse($this->report->set_year($years), "expected FALSE from ::set_year");
-    $this->assertNull($this->report->year, 'Expected $report->year to be NULL');
-  }
-
-  public function testSetYearForReportWithMonthNotDecOrJan() {
-    $this->report->month=11;
-    $years[0] = 2009;
-    $years[1] = 2010;
-    $this->assertFalse($this->report->set_year($years), "expected FALSE from ::set_year");
-    $this->assertNull($this->report->year, 'Expected $report->year to be NULL');
-  }
-
-  public function testSetYearWithTooFewYears() {
-    $this->report->month = 1;
-    $years = array();
-    $this->assertFalse($this->report->set_year($years), 'Expected FALSE from::set_year called with empty $years');
-    $this->assertNull($this->report->year, 'Expected $report->year to be NULL');
-  }
-
-  public function testSetYearWithTooManyYears() {
-    $this->report->month = 1;
-    $years[] = 2009;
-    $years[] = 2010;
-    $years[] = 2011;
-    $this->assertFalse($this->report->set_year($years), 'Expected FALSE from::set_year called with too large $years');
-    $this->assertNull($this->report->year, 'Expected $report->year to be NULL');
-  }
-
-  public function testSetYear() {
-    $this->report->month = 1;
-    $years[] = 2009;
-    $this->assertTrue($this->report->set_year($years), 'Expected true');
-    $this->assertEqual($years[0], $this->report->year, 'Expected year to be 2009, it was ' . $this->report->year);
-  }
-
-  public function testSetYearForFirstMonth() {
-    $this->report->month = 1;
-    $years[] = 2009;
-    $years[] = 2010;
-    $this->assertTrue($this->report->set_year($years), 'Expected true');
-    $this->assertEqual($years[1], $this->report->year, 'Expected year to be 2010, it was ' . $this->report->year);
-  }
-
-  public function testSetYearForLastMonth() {
-    $this->report->month = 12;
-    $years[] = 2009;
-    $years[] = 2010;
-    $this->assertTrue($this->report->set_year($years), 'Expected true');
-    $this->assertEqual($years[0], $this->report->year, 'Expected year to be 2009, it was ' . $this->report->year);
-  }
-
-  public function testComparisonIdentical() {
-    $other_report = new TZIntellitimeReport();
-    _tzintellitime_populate_report($this->report);
-    _tzintellitime_populate_report($other_report);
-
-    $this->assertEqual($this->report, $other_report, 'Expected the two reports to be considered equal.');
-  }
-
-  public function testComparisonDifferent() {
-    $other_report = new TZIntellitimeReport();
-    _tzintellitime_populate_report($this->report);
-    _tzintellitime_populate_report($other_report);
-    $other_report->overtime_hours = 6;
-
-    $this->assertNotEqual($this->report, $other_report, 'Expected the two reports to not be considered equal.');
-  }
-
-  public function testConvertToTZReport() {
-    _tzintellitime_populate_report($this->report);
-    $mockaccount = (object)array('uid' => '1234', 'name' => 'Mock User');
-    $tzreport = $this->report->convert_to_tzreport($mockaccount);
-    $this->assertNotNull($tzreport, 'Expected $tzreport not NULL.');
-    $this->assertEqual($this->report->title, $tzreport->title, "Expected equal titles");
-    $this->assertEqual($this->report->comment, $tzreport->body, "Expected equal comments");
-    $this->assertEqual(1284530400, $tzreport->begintime, 'Expected 1284530400 as begintime, got ' . $tzreport->begintime);
-    $this->assertEqual(1284566400, $tzreport->endtime, 'Expected 1284566400 as endtime, got ' . $tzreport->endtime);
-    $this->assertEqual($this->report->break_duration_minutes*60, $tzreport->breakduration, "Expected break durations to match");
-  }
-
-  public function testUpdateTZReport() {
-    _tzintellitime_populate_report($this->report);
-    $mockaccount = (object)array('uid' => '1234', 'name' => 'Mock User');
-    $tzreport = $this->report->convert_to_tzreport($mockaccount);
-    $tzreport->nid = 12345;
-    $this->report->break_duration_minutes = 35;
-    $tzreport = $this->report->convert_to_tzreport($mockaccount, $tzreport);
-    $this->assertNotNull($tzreport, 'Expected $tzreport not NULL.');
-    $this->assertEqual(12345, $tzreport->nid);
-    $this->assertEqual($this->report->title, $tzreport->title, "Expected equal titles");
-    $this->assertEqual(1284530400, $tzreport->begintime, 'Expected 1284530400 as begintime, got ' . $tzreport->begintime);
-    $this->assertEqual(1284566400, $tzreport->endtime, 'Expected 1284566400 as endtime, got ' . $tzreport->endtime);
-    $this->assertEqual($this->report->break_duration_minutes*60, $tzreport->breakduration, "Expected break durations to match");
-  }
-
-  /** Override assertEqual to get nice log prints by default */
-  protected function assertEqual($first, $second, $message = '', $group = 'Other') {
-    if(!$message) {
-      $message = 'Expected "' . $first . '", got "' . $second . '"';
-    }
-    parent::assertEqual($first, $second, $message, $group);
-  }
-}
-
 class TZIntellitimeAdminPageTests extends DrupalWebTestCase {
 
   public static function getInfo() {
@@ -589,10 +257,11 @@ class TZIntellitimeAdminPageTests extends DrupalWebTestCase {
 
   public function setUp() {
     // Enable any modules required for the test.
-   parent::setUp('tzintellitime');
-   // Create and login user
-   $admin_user = $this->drupalCreateUser(array('administer site configuration'));
-   $this->drupalLogin($admin_user);
+    parent::setUp('autoload', 'tzintellitime');
+    autoload_registry_update();
+    // Create and login user
+    $admin_user = $this->drupalCreateUser(array('administer site configuration'));
+    $this->drupalLogin($admin_user);
   }
 
   public function testSetHTTPSBaseUrl() {
@@ -626,16 +295,4 @@ class TZIntellitimeAdminPageTests extends DrupalWebTestCase {
 
 }
 
-function _tzintellitime_populate_report(&$report) {
-    $report->id = 'mhbLP96iqH2Zr7CDtWyWb84hbku5Eii3';
-    $report->done = FALSE;
-    $report->year = 2010;
-    $report->month = 9;
-    $report->day = 15;
-    $report->title = "En dag i livet för en apa.";
-    $report->begin = "08:00";
-    $report->end = "18:00";
-    $report->break_duration_minutes = 24;
-    $report->overtime_hours = 4;
-    $report->comment = 'TimeZynk';
-}
+

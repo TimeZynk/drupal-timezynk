@@ -54,6 +54,18 @@ function tzintellitime_update_6001() {
   return $ret;
 }
 
+function tzintellitime_update_6002() {
+  $ret = array();
+  db_add_field($ret, 'tzintellitime', 'intellitime_last_state',
+    array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'default' => NULL,
+    )
+  );
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
@@ -87,6 +99,12 @@ function tzintellitime_schema() {
         'not null' => TRUE,
         'default' => 0,
         'description' => t('The node has local changes not yet transmitted to intellitime'),
+      ),
+      'intellitime_last_state' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'default' => NULL,
+        'description' => 'Latest successfully synchronized TZIntellitimeReport::STATE_* for this report row',
       ),
     ),
     'primary key' => array('vid'),

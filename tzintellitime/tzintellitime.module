@@ -120,7 +120,6 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
     return;
   }
 
-  tzintellitime_include_classes();
   $username = $form_state['values']['name'];
   $password = $form_state['values']['pass'];
 
@@ -167,7 +166,6 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
  * Validate username and password against Intellitime Server
  */
 function tzintellitime_server_auth(&$account, $username, $password) {
-  tzintellitime_include_classes();
 
   // new user or existing user with expired cookie-jar.
   if(isset($account->intellitime_session_data)) {
@@ -207,13 +205,6 @@ function tzintellitime_server_auth(&$account, $username, $password) {
  */
 function tzintellitime_node_load_by_intellitime_id($intellitime_id) {
   return node_load(db_result(db_query("SELECT nid FROM {tzintellitime} WHERE intellitime_id = '%s' ORDER BY vid DESC LIMIT 1", $intellitime_id)), NULL, TRUE);
-}
-
-/**
- * Include tzintellitime class files
- */
-function tzintellitime_include_classes() {
-  require_once dirname(__FILE__) . '/tzintellitime.class.inc';
 }
 
 /**

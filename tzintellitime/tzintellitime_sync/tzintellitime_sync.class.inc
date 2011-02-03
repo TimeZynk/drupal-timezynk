@@ -12,12 +12,12 @@ class TZIntellitimeSyncController {
   private $account = NULL;
   private $bot = NULL;
   private $week_status = array();
+  private $weekDataPersister;
 
   function __construct($account) {
     tzbase_include_proto_classes();
-    tzintellitime_include_classes();
     $this->account = $account;
-    $this->persister = new TZIntellitimePersister($this->account);
+    $this->weekDataPersister = new TZIntellitimePersister($account);
     $this->bot = new TZIntellitimeBot(TZINTELLITIME_BASE_URL, $account->intellitime_session_data);
   }
 
@@ -29,7 +29,6 @@ class TZIntellitimeSyncController {
     $this->add_standard_weeks();
     $this->add_unlocked_weeks();
     $this->add_updated_weeks();
-
     $this->process_pending_weeks();
 
     // Check status for the weeks
@@ -65,10 +64,10 @@ class TZIntellitimeSyncController {
    * @param $timezone timezone to use
    * @return Array (first second of week, first second of next week)
    */
-  function epoch_span($week, $timezone) {
+  function epoch_span($date) {
     $epoch_span = array();
-    $date = new DateTime($week, $timezone);
       // Find beginning and end of week
+    $date = clone($date);
     $date->modify('midnight');
     $epoch_span[0] = $date->format('U');
     $date->modify('+7 days');
@@ -122,15 +121,42 @@ class TZIntellitimeSyncController {
    * Checks for new unfinished weeks and adds them as pending.
    * @param $data data from TZIntellitimeBot
    */
-  function add_unfinished_weeks($data) {
-    if($data && !empty($data['unfinished_weeks'])) {
-      foreach($data['unfinished_weeks'] as $weekdate) {
-        $weekstr = $this->week_key($weekdate);
-        if(!isset($this->week_status[$weekstr])) {
-          $this->week_status[$weekstr] = TZIntellitimeSyncController::PENDING;
-        }
+  function schedule_unfinished_weeks($unfinished_weeks) {
+    foreach($unfinished_weeks as $weekdate) {
+      $weekstr = $this->week_key($weekdate);
+      if(!isset($this->week_status[$weekstr])) {
+        $this->week_status[$weekstr] = TZIntellitimeSyncController::PENDING;
       }
     }
+  }
+
+  private function load_tzreports_for_week($weekdate) {
+    /* To avoid race conditions with the user, we start by fetching current copies of
+     * all local reports. We then contact the intellitime server and fetches its version
+     * of the reports. Afterwards, the reports are compared and if we find any changes
+     * from the server they are saved as an updated to the originally fetched revision.
+     * For this scheme to work, we must always create a new revision whenever a user
+     * updates a report on our server so that we don't risk user changes being overwritten
+     * with old data from the intellitime server. */
+    $reports = array();
+    $epoch_span = $this->epoch_span($weekdate);
+    $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE t.assignedto = %d AND t.begintime >= %d AND t.begintime < %d AND t.flags != 255 AND n.status = 1',
+                       $this->account->uid, $epoch_span[0], $epoch_span[1]);
+    while($nid = db_result($result)) {
+      $node = node_load($nid, NULL, TRUE);
+      if(!empty($node->intellitime_id)) {
+        $reports[$node->intellitime_id] = $node;
+      }
+    }
+    return $reports;
+  }
+
+  private function synchronize_week($weekdate) {
+    $reports = $this->load_tzreports_for_week($weekdate);
+    $weekSync = new TZIntellitimeWeek($weekdate, $this->weekDataPersister, $this->bot, $reports);
+    $weekSync->sync();
+    $this->save_reports($weekSync->getModifiedReports());
+    $this->schedule_unfinished_weeks($weekSync->getUnfinishedWeeks());
   }
 
   /**
@@ -139,51 +165,14 @@ class TZIntellitimeSyncController {
    */
   function process_pending_weeks() {
     $timezone = date_default_timezone(FALSE);
-    $deleted_reports = 0;
 
     while($week = array_search(TZIntellitimeSyncController::PENDING, $this->week_status)) {
       $data = NULL;
 
       $weekdate = new DateTime($week, $timezone);
-
-      /* To avoid race conditions with the user, we start by fetching current copies of
-       * all local reports. We then contact the intellitime server and fetches its version
-       * of the reports. Afterwards, the reports are compared and if we find any changes
-       * from the server they are saved as an updated to the originally fetched revision.
-       * For this scheme to work, we must always create a new revision whenever a user
-       * updates a report on our server so that we don't risk user changes being overwritten
-       * with old data from the intellitime server. */
-      $updated_reports = array();
-      $epoch_span = $this->epoch_span($week, $timezone);
-      $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE t.assignedto = %d AND t.begintime >= %d AND t.begintime < %d AND t.flags != 255 AND n.status = 1',
-                         $this->account->uid, $epoch_span[0], $epoch_span[1]);
-      while($nid = db_result($result)) {
-        $node = node_load($nid, NULL, TRUE);
-        if(!empty($node->intellitime_id)) {
-          $this->persister->add_existing_report($node);
-          if(!empty($node->intellitime_local_changes)) {
-            $updated_reports[] = $node;
-          }
-        }
-      }
-
       try {
-        if(!empty($updated_reports)) {
-          $data = $this->send_updated_reports($updated_reports);
-        }
-        if(empty($data)) {
-          $data = $this->bot->load_week($weekdate);
-        }
+        $this->synchronize_week($weekdate);
         $this->week_status[$week] = TZIntellitimeSyncController::SYNC_OK;
-
-        //
-        $this->persister->convert_assignments($data['assignments']);
-        $seen_reports = $this->persister->convert_reports($data['reports']);
-
-        $deleted_reports += $this->mark_removed_reports($seen_reports, $epoch_span[0], $epoch_span[1]);
-
-        $this->add_unfinished_weeks($data);
-
       } catch(TZAuthenticationFailureException $e) {
         // If authentication failed, there is not much point to try another week
         $this->week_status[$week] = TZIntellitimeSyncController::AUTH_FAILURE;
@@ -193,66 +182,22 @@ class TZIntellitimeSyncController {
         $this->week_status[$week] = TZIntellitimeSyncController::NETWORK_FAILURE;
       }
     }
+  }
+}
 
-    if($deleted_reports) {
-      watchdog('tzintellitime',
-               'Removed !nbr reports after sync',
-               array('!nbr' => $deleted_reports),
-               WATCHDOG_NOTICE,
-               theme('username', $this->account));
-    }
+class TZIntellitimeWeekDataPersister implements TZIntellitimeWeekDataPersister {
+  private $account;
+
+  public function __construct($account) {
+    $this->account = $account;
   }
 
-
-
-  /**
-   * Mark reports as deleted if they are in our synchronized date range but was not
-   * found on the server.
-   * @param Array $seen_reports lists of all reports found in the date span
-   * @param int $begin Epoch timestamp for the beginning of the date span
-   * @param int $end Epoch timestamp for the end for the date span
-   * @return number of deleted reports
-   */
-  function mark_removed_reports($seen_reports, $begin, $end) {
-    $seenquery = array();
-    foreach($seen_reports as $nid) {
-      $seenquery[] = 'n.nid != %d';
-    }
-    $seenquery = implode(' AND ', $seenquery);
-
-    // Select reports in range
-    $queryargs = array(time(), TZFlags::DELETED, TZFlags::DELETED, $begin, $end, $this->account->uid);
-    $queryargs = array_merge($queryargs, $seen_reports);
-    $query = 'UPDATE {node} n INNER JOIN {tzreport} t ON n.nid = t.nid SET changed = %d, flags = %d WHERE flags != %d AND begintime >= %d AND begintime < %d AND assignedto = %d';
-    if(!empty($seen_reports)) {
-      // Update tzreport->flags to TZFlags::DELETED if the node ID is not found in the $seen_reports array
-      $query .= ' AND ' . $seenquery;
-    }
-    db_query($query, $queryargs);
-
-    return db_affected_rows();
+  public function loadWeekData($date) {
+    return NULL;
   }
 
-  /**
-   * Send updated reports to server
-   */
-  function send_updated_reports($reports) {
-    $data = array();
-    foreach($reports as $tzreport) {
-
-      /* TODO: Since we send reports per week anyway we might as well
-               implement the batching in bot->update_report instead. */
-      $begindate = tzbase_make_date($tzreport->begintime);
-      // Convert and post report
-      $itreport = new TZIntellitimeReport($tzreport);
-      $data = $this->bot->update_report($itreport);
-
-      watchdog('tzintellitime', 'Sent report with nid !nid to week !week',
-        array('!nid' => $tzreport->nid, '!itid' => $tzreport->intellitime_id, '!week' => $begindate->format('o\WW')),
-        WATCHDOG_NOTICE,
-        l('Node', 'node/' . $tzreport->nid) . ', ' . theme('username', $this->account));
-    }
-    return $data;
+  public function saveWeekData($weekData) {
+    ;
   }
 }
 

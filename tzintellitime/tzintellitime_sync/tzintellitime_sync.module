@@ -133,7 +133,6 @@ function tzintellitime_sync_unschedule_user($uid) {
  * Synchronize users that have exceeded the current synchronization interval.
  */
 function tzintellitime_sync_synchronize_users() {
-  tzintellitime_include_classes();
   $sync_limit = time() - TZINTELLITIME_SYNC_INTERVAL_MINUTES*60;
   $result = db_query_range('SELECT uid FROM {tzintellitime_sync} WHERE intellitime_active = 1 AND intellitime_last_sync <= %d ORDER BY intellitime_last_sync ASC', $sync_limit, 0, TZINTELLITIME_SYNC_USERS_PER_RUN);
   while($uid = db_result($result)) {
@@ -142,7 +141,6 @@ function tzintellitime_sync_synchronize_users() {
 }
 
 function tzintellitime_sync_synchronize_user($uid) {
-  tzintellitime_include_classes();
   require_once dirname(__FILE__) . '/tzintellitime_sync.class.inc';
 
   // Load user account

@@ -107,10 +107,10 @@ href="../css/Style.css" type=text/css rel=STYLESHEET>
     </script>
   </HEAD>
   <body ms_positioning="FlowLayout">
-    <form name="TimeReport" method="post" action="TimeReport.aspx?MId=TReport" id="TimeReport" onkeydown="OnKeyDown();" onsubmit="return PostForm();">
+    <form name="TimeReport" method="post" action="TimeReport.aspx?DateInWeek=2011-01-14" id="TimeReport" onkeydown="OnKeyDown();" onsubmit="return PostForm();">
 <input type="hidden" name="__EVENTTARGET" value="" />
 <input type="hidden" name="__EVENTARGUMENT" value="" />
-<input type="hidden" name="__VIEWSTATE" value="dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxNaWthZWwgT2hsc29uOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDY7Pj47Pjs7Pjt0PHQ8O3A8bDxpPDA+O2k8MT47PjtsPHA8IFtWaXNhIGFsbGEgdXBwZHJhZ10gOzA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwzPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw2Pjs+PjtsPGk8MD47aTwxPjtpPDI+O2k8Mz47aTw0PjtpPDU+Oz47bDx0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8ZGlzYWJsZWQ7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgxUGJIaGx0WUxDJTJiTTRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgxUGJIaGx0WUxDJTJiTTRoYmt1NUVpaTM7Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwwPjs+Pjs7Pjt0PEA8XGU7Pjs7Pjs+Pjs+Pjt0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8ZGlzYWJsZWQ7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgydE5BQlY3N2lJNzg0aGJrdTVFaWkzO0V4cGVuc2UuYXNweD9taGJMUDk2aXFIMnROQUJWNzdpSTc4NGhia3U1RWlpMzs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcZTs+Ozs+Oz4+Oz4+O3Q8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxkaXNhYmxlZDtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDBhY2NVT2VkeE1yODRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgwYWNjVU9lZHhNcjg0aGJrdTVFaWkzOz47Oz47dDxwPGw8XyFJdGVtQ291bnQ7PjtsPGk8MD47Pj47Oz47dDxAPFxlOz47Oz47Pj47Pj47dDw7bDxpPDM3Pjs+O2w8dDw7bDxpPDA+O2k8MT47aTwyPjs+O2w8dDxAPFxlO0V4cGVuc2UuYXNweD9taGJMUDk2aXFIM3dCQ2xKSyUyYndiQXM0aGJrdTVFaWkzO0V4cGVuc2UuYXNweD9taGJMUDk2aXFIM3dCQ2xKSyUyYndiQXM0aGJrdTVFaWkzOz47Oz47dDxwPGw8XyFJdGVtQ291bnQ7PjtsPGk8MD47Pj47Oz47dDxAPFw8b3B0aW9uXD5bS2xpY2thIGjDpHJdXDwvb3B0aW9uXD47Pjs7Pjs+Pjs+Pjt0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8ZGlzYWJsZWQ7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgyT0k3WkNGS1lkcHM0aGJrdTVFaWkzO0V4cGVuc2UuYXNweD9taGJMUDk2aXFIMk9JN1pDRktZZHBzNGhia3U1RWlpMzs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcPG9wdGlvblw+W0tsaWNrYSBow6RyXVw8L29wdGlvblw+Oz47Oz47Pj47Pj47dDw7bDxpPDM3Pjs+O2w8dDw7bDxpPDA+O2k8MT47aTwyPjs+O2w8dDxAPGRpc2FibGVkO0V4cGVuc2UuYXNweD9taGJMUDk2aXFIM2pNQ1VjbUg2OGJNNGhia3U1RWlpMztFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNqTUNVY21INjhiTTRoYmt1NUVpaTM7Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwwPjs+Pjs7Pjt0PEA8XGU7Pjs7Pjs+Pjs+Pjs+Pjt0PDtsPGk8MTM+O2k8MTU+Oz47bDx0PHQ8O3A8bDxpPDE+O2k8Mj47aTwzPjtpPDQ+O2k8NT47aTw2PjtpPDc+Oz47bDxwPG3DpSwgMTUvMTEgOzIwMTAtMTEtMTU+O3A8dGksIDE2LzExIDsyMDEwLTExLTE2PjtwPG9uLCAxNy8xMSA7MjAxMC0xMS0xNz47cDx0bywgMTgvMTEgOzIwMTAtMTEtMTg+O3A8ZnIsIDE5LzExIDsyMDEwLTExLTE5PjtwPGzDtiwgMjAvMTEgOzIwMTAtMTEtMjA+O3A8c8O2LCAyMS8xMSA7MjAxMC0xMS0yMT47Pj47Pjs7Pjt0PHQ8O3A8bDxpPDE+O2k8Mj47aTwzPjs+O2w8cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIExhZ2VyYXJiZXRhcmU7NTk4Mz47cDwtLS07LTE+O3A8XGU7X0FDXz47Pj47Pjs7Pjs+Pjt0PHA8cDxsPFRleHQ7PjtsPFVwcGRhdGVyYTs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8VmVja2EgS2xhcjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDtWaXNpYmxlOz47bDzDhG5kcmEgdmVja2E7bzxmPjs+Pjs+Ozs+Oz4+Oz4+O2w8T2xkUm93c1JlcGVhdGVyOl9jdGwwOkNoZWNrYm94RGF5RG9uZTtPbGRSb3dzUmVwZWF0ZXI6X2N0bDE6Q2hlY2tib3hEYXlEb25lO09sZFJvd3NSZXBlYXRlcjpfY3RsMjpDaGVja2JveERheURvbmU7T2xkUm93c1JlcGVhdGVyOl9jdGwzOkNoZWNrYm94RGF5RG9uZTtPbGRSb3dzUmVwZWF0ZXI6X2N0bDM6Q2hlY2tCb3hEZWxldGU7T2xkUm93c1JlcGVhdGVyOl9jdGw0OkNoZWNrYm94RGF5RG9uZTtPbGRSb3dzUmVwZWF0ZXI6X2N0bDQ6Q2hlY2tCb3hEZWxldGU7T2xkUm93c1JlcGVhdGVyOl9jdGw1OkNoZWNrYm94RGF5RG9uZTtGdWxsRGF5Q2hlY2tCb3g7Pj4=" />
+<input type="hidden" name="__VIEWSTATE" value="dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxNaWthZWwgT2hsc29uOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8Mjs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjtpPDI+Oz47bDxwPCBbVmlzYSBhbGxhIHVwcGRyYWddIDswPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgTGFnZXJhcmJldGFyZTs1OTgzPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw0Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw0Pjs+PjtsPGk8MD47aTwxPjtpPDI+O2k8Mz47PjtsPHQ8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxkaXNhYmxlZDtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNaTVFLVkI2STZRYzRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgzWk1RS1ZCNkk2UWM0aGJrdTVFaWkzOz47Oz47dDxwPGw8XyFJdGVtQ291bnQ7PjtsPGk8MD47Pj47Oz47dDxAPFxlOz47Oz47Pj47Pj47dDw7bDxpPDM3Pjs+O2w8dDw7bDxpPDA+O2k8MT47aTwyPjs+O2w8dDxAPGRpc2FibGVkO0V4cGVuc2UuYXNweD9taGJMUDk2aXFIMDk5M29Vb1g4T0tNNGhia3U1RWlpMztFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDA5OTNvVW9YOE9LTTRoYmt1NUVpaTM7Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwwPjs+Pjs7Pjt0PEA8XGU7Pjs7Pjs+Pjs+Pjt0PDtsPGk8Mzc+Oz47bDx0PDtsPGk8MD47aTwxPjtpPDI+Oz47bDx0PEA8ZGlzYWJsZWQ7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgyeHBQd1IwN0I1TmM0aGJrdTVFaWkzO0V4cGVuc2UuYXNweD9taGJMUDk2aXFIMnhwUHdSMDdCNU5jNGhia3U1RWlpMzs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcZTs+Ozs+Oz4+Oz4+O3Q8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxkaXNhYmxlZDtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDFBaGtDaFU1NDhOTTRoYmt1NUVpaTM7RXhwZW5zZS5hc3B4P21oYkxQOTZpcUgxQWhrQ2hVNTQ4Tk00aGJrdTVFaWkzOz47Oz47dDxwPGw8XyFJdGVtQ291bnQ7PjtsPGk8MD47Pj47Oz47dDxAPFxlOz47Oz47Pj47Pj47Pj47dDw7bDxpPDEzPjtpPDE1Pjs+O2w8dDx0PDtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0PjtpPDU+O2k8Nj47aTw3Pjs+O2w8cDxtw6UsIDEwLzAxIDsyMDExLTAxLTEwPjtwPHRpLCAxMS8wMSA7MjAxMS0wMS0xMT47cDxvbiwgMTIvMDEgOzIwMTEtMDEtMTI+O3A8dG8sIDEzLzAxIDsyMDExLTAxLTEzPjtwPGZyLCAxNC8wMSA7MjAxMS0wMS0xND47cDxsw7YsIDE1LzAxIDsyMDExLTAxLTE1PjtwPHPDtiwgMTYvMDEgOzIwMTEtMDEtMTY+Oz4+Oz47Oz47dDx0PDtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0Pjs+O2w8cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIExhZ2VyYXJiZXRhcmU7NTk4Mz47cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIFRydWNrZsO2cmFyZTs2MjAwPjtwPC0tLTstMT47cDxcZTtfQUNfPjs+Pjs+Ozs+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8VXBwZGF0ZXJhOz4+Oz47Oz47dDxwPHA8bDxUZXh0O1Zpc2libGU7PjtsPFZlY2thIEtsYXI7bzxmPjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8w4RuZHJhIHZlY2thOz4+Oz47Oz47Pj47Pj47bDxPbGRSb3dzUmVwZWF0ZXI6X2N0bDA6Q2hlY2tib3hEYXlEb25lO09sZFJvd3NSZXBlYXRlcjpfY3RsMjpDaGVja2JveERheURvbmU7T2xkUm93c1JlcGVhdGVyOl9jdGwzOkNoZWNrYm94RGF5RG9uZTtGdWxsRGF5Q2hlY2tCb3g7Pj4=" />
 
 <script language="javascript" type="text/javascript">
 <!--
@@ -296,18 +296,19 @@ myWindow.focus();
               <tr>
                 <td width="5"><IMG height="24" src="../Images/Trans.gif" width="5" border="0"></td>
                 <!-- Previous week -->
-                <td width="13"><A href="TimeReport.aspx?DateInWeek=2010-11-12" ><IMG height="13" src="../Images/Btn_ArrowLeft.gif" width="13" border="0"></A>
+                <td width="13"><A href="TimeReport.aspx?DateInWeek=2011-01-07" ><IMG height="13" src="../Images/Btn_ArrowLeft.gif" width="13" border="0"></A>
                 </td>
                 <td width="5"><IMG height="1" src="../Images/Trans.gif" width="5" border="0"></td>
-                <td class="WeeksNav" align="center" width="70"><b><span id="LabelWeek"><span id="Translatedlabel2">Vecka</span></span> <span id="LabelWeekNumber">46</span></b></td>
+                <td class="WeeksNav" align="center" width="70"><b><span id="LabelWeek"><span id="Translatedlabel2">Vecka</span></span> <span id="LabelWeekNumber">2</span></b></td>
                 <td width="5"><IMG height="1" src="../Images/Trans.gif" width="5" border="0"></td>
                 <!-- Next week -->
-                <td width="13"><A href="TimeReport.aspx?DateInWeek=2010-11-26" ><IMG height="13" src="../Images/Btn_ArrowRight.gif" width="13" border="0"></A>
+                <td width="13"><A href="TimeReport.aspx?DateInWeek=2011-01-21" ><IMG height="13" src="../Images/Btn_ArrowRight.gif" width="13" border="0"></A>
                 </td>
                 <td width="40"><IMG height="1" src="../Images/Trans.gif" width="40" border="0"></td>
                 <td class="NavigationMedium" width="*"><select name="CustOrdersDropDown" onchange="__doPostBack('CustOrdersDropDown','')" language="javascript" id="CustOrdersDropDown" class="TimeReportListBox">
   <option selected="selected" value="0"> [Visa alla uppdrag] </option>
   <option value="5983">Testf&#246;retaget Effekt, Lagerarbetare</option>
+  <option value="6200">Testf&#246;retaget Effekt, Truckf&#246;rare</option>
 
 </select><IMG height="1" src="../Images/Trans.gif" width="20" border="0">
                   <b><span id="Translatedlabel3">Ej klar-rapporterade veckor: </span>
@@ -315,11 +316,14 @@ myWindow.focus();
                       <a id="NotPrepWeeksRepeater__ctl0_WeekNotPrep" class="WeeksNav" href="TimeReport.aspx?DateInWeek=2010-11-15">46</a>
                       <span id="NotPrepWeeksRepeater__ctl0_LabelWeekNotPrepComma">,</span>
                     
-                      <a id="NotPrepWeeksRepeater__ctl1_WeekNotPrep" class="WeeksNav" href="TimeReport.aspx?DateInWeek=2011-01-10">2</a>
+                      <a id="NotPrepWeeksRepeater__ctl1_WeekNotPrep" class="WeeksNav" href="TimeReport.aspx?DateInWeek=2011-01-03">1</a>
                       <span id="NotPrepWeeksRepeater__ctl1_LabelWeekNotPrepComma">,</span>
                     
                       <a id="NotPrepWeeksRepeater__ctl2_WeekNotPrep" class="WeeksNav" href="TimeReport.aspx?DateInWeek=2011-01-17">3</a>
-                      <span id="NotPrepWeeksRepeater__ctl2_LabelWeekNotPrepComma"></span>
+                      <span id="NotPrepWeeksRepeater__ctl2_LabelWeekNotPrepComma">,</span>
+                    
+                      <a id="NotPrepWeeksRepeater__ctl3_WeekNotPrep" class="WeeksNav" href="TimeReport.aspx?DateInWeek=2011-01-24">4</a>
+                      <span id="NotPrepWeeksRepeater__ctl3_LabelWeekNotPrepComma"></span>
                     
                   </b>
                 </td>
@@ -378,7 +382,7 @@ myWindow.focus();
                     <td id="OldRowsRepeater__ctl0_td3" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl0_td4" width="70" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl0_LabelDate"><b>må</b>, 15/11 </span></td>
+                      <span id="OldRowsRepeater__ctl0_LabelDate"><b>må</b>, 10/01 </span></td>
 
                     <td id="OldRowsRepeater__ctl0_td5" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
@@ -388,7 +392,7 @@ myWindow.focus();
                     <td id="OldRowsRepeater__ctl0_td7" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl0_td8" width="50" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl0:TextboxTimeFrom" type="text" value="08:30" size="5" id="OldRowsRepeater__ctl0_TextboxTimeFrom" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl0:DateFromHidden" id="OldRowsRepeater__ctl0_DateFromHidden" type="hidden" value="08:30" /></td>
+                      <input name="OldRowsRepeater:_ctl0:TextboxTimeFrom" type="text" value="08:00" size="5" id="OldRowsRepeater__ctl0_TextboxTimeFrom" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl0:DateFromHidden" id="OldRowsRepeater__ctl0_DateFromHidden" type="hidden" value="08:00" /></td>
 
                     <td id="OldRowsRepeater__ctl0_td9" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
@@ -398,7 +402,7 @@ myWindow.focus();
                     <td id="OldRowsRepeater__ctl0_td11" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl0_td12" width="40" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl0:TextboxBreak" type="text" value="30" size="3" id="OldRowsRepeater__ctl0_TextboxBreak" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl0:BreakHidden" id="OldRowsRepeater__ctl0_BreakHidden" type="hidden" value="none" /></td>
+                      <input name="OldRowsRepeater:_ctl0:TextboxBreak" type="text" value="60" size="3" id="OldRowsRepeater__ctl0_TextboxBreak" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl0:BreakHidden" id="OldRowsRepeater__ctl0_BreakHidden" type="hidden" value="none" /></td>
 
                     <td id="OldRowsRepeater__ctl0_td13" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
@@ -414,7 +418,7 @@ myWindow.focus();
                     <td id="OldRowsRepeater__ctl0_td17" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl0_td18" width="120" rowspan="2" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3" disabled class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH1PbHhltYLC%2bM4hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH1PbHhltYLC%2bM4hbku5Eii3');">
+                      <select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3" disabled class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH3ZMQKVB6I6Qc4hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH3ZMQKVB6I6Qc4hbku5Eii3');">
                         
                         
                       </select>
@@ -461,93 +465,93 @@ myWindow.focus();
                   </tr>
                 
                   <tr>
-                    <td id="OldRowsRepeater__ctl1_td0" colspan="20" bgcolor="#ffffff"><img src="../Images/trans.gif" width="1" height="3" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td0" colspan="20" bgcolor="#f0f0a0"><img src="../Images/trans.gif" width="1" height="3" border="0"></td>
 
                   </tr>
                   <tr>
-                    <td id="OldRowsRepeater__ctl1_td1" width="5" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="5" height="18" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td1" width="5" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="5" height="18" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td2" width="68" class="TimeReportOldRow" valign="middle" bgcolor="#ffffff">
+                    <td id="OldRowsRepeater__ctl1_td2" width="68" class="TimeReportOldRow" valign="middle" bgcolor="#f0f0a0">
                       <img id="OldRowsRepeater__ctl1_ImageStatus" src="../Images/Trans.gif" alt="" border="0" />
-                      <input id="OldRowsRepeater__ctl1_CheckboxDayDone" type="checkbox" name="OldRowsRepeater:_ctl1:CheckboxDayDone" checked="checked" /></td>
+                      </td>
 
-                    <td id="OldRowsRepeater__ctl1_td3" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td3" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td4" width="70" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl1_LabelDate"><b>ti</b>, 16/11 </span></td>
+                    <td id="OldRowsRepeater__ctl1_td4" width="70" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
+                      <span id="OldRowsRepeater__ctl1_LabelDate"><b>ti</b>, 11/01 </span></td>
 
-                    <td id="OldRowsRepeater__ctl1_td5" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td5" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td6" width="*" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl1_LabelCustom">Testföretaget Effekt, Lagerarbetare</span></td>
+                    <td id="OldRowsRepeater__ctl1_td6" width="*" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
+                      <span id="OldRowsRepeater__ctl1_LabelCustom">Tjänstledig <6 dgr </span></td>
 
-                    <td id="OldRowsRepeater__ctl1_td7" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td7" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td8" width="50" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl1:TextboxTimeFrom" type="text" value="08:30" size="5" id="OldRowsRepeater__ctl1_TextboxTimeFrom" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl1:DateFromHidden" id="OldRowsRepeater__ctl1_DateFromHidden" type="hidden" value="08:30" /></td>
+                    <td id="OldRowsRepeater__ctl1_td8" width="50" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
+                      <input name="OldRowsRepeater:_ctl1:TextboxTimeFrom" type="text" value="08:15" size="5" id="OldRowsRepeater__ctl1_TextboxTimeFrom" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl1:DateFromHidden" id="OldRowsRepeater__ctl1_DateFromHidden" type="hidden" value="08:15" /></td>
 
-                    <td id="OldRowsRepeater__ctl1_td9" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td9" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td10" width="50" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl1:TextboxTimeTo" type="text" value="17:00" size="5" id="OldRowsRepeater__ctl1_TextboxTimeTo" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl1:DateToHidden" id="OldRowsRepeater__ctl1_DateToHidden" type="hidden" value="17:00" /></td>
+                    <td id="OldRowsRepeater__ctl1_td10" width="50" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
+                      <input name="OldRowsRepeater:_ctl1:TextboxTimeTo" type="text" value="17:30" size="5" id="OldRowsRepeater__ctl1_TextboxTimeTo" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl1:DateToHidden" id="OldRowsRepeater__ctl1_DateToHidden" type="hidden" value="17:30" /></td>
 
-                    <td id="OldRowsRepeater__ctl1_td11" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td11" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td12" width="40" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl1:TextboxBreak" type="text" value="30" size="3" id="OldRowsRepeater__ctl1_TextboxBreak" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl1:BreakHidden" id="OldRowsRepeater__ctl1_BreakHidden" type="hidden" value="none" /></td>
+                    <td id="OldRowsRepeater__ctl1_td12" width="40" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
+                      <input name="OldRowsRepeater:_ctl1:BreakHidden" id="OldRowsRepeater__ctl1_BreakHidden" type="hidden" value="none" /></td>
 
-                    <td id="OldRowsRepeater__ctl1_td13" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td13" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td14" width="47" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl1_LabelHours">8</span></td>
+                    <td id="OldRowsRepeater__ctl1_td14" width="47" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#f0f0a0">
+                      <span id="OldRowsRepeater__ctl1_LabelHours">8,25</span></td>
 
-                    <td id="OldRowsRepeater__ctl1_td15" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td15" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td16" width="50" class="TimeReportOldRow" align="center" valign="top" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="1" height="1" border="0">
+                    <td id="OldRowsRepeater__ctl1_td16" width="50" class="TimeReportOldRow" align="center" valign="top" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="1" height="1" border="0">
                       
-                      <input name="OldRowsRepeater:_ctl1:TextboxExplicitOvertime" type="text" value="0" size="3" id="OldRowsRepeater__ctl1_TextboxExplicitOvertime" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl1:OverTimeHidden" id="OldRowsRepeater__ctl1_OverTimeHidden" type="hidden" value="none" /></td>
+                      <input name="OldRowsRepeater:_ctl1:OverTimeHidden" id="OldRowsRepeater__ctl1_OverTimeHidden" type="hidden" value="none" /></td>
 
-                    <td id="OldRowsRepeater__ctl1_td17" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td17" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td18" width="120" rowspan="2" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3" disabled class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH2tNABV77iI784hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH2tNABV77iI784hbku5Eii3');">
+                    <td id="OldRowsRepeater__ctl1_td18" width="120" rowspan="2" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
+                      <select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3" disabled class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH0993oUoX8OKM4hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH0993oUoX8OKM4hbku5Eii3');">
                         
                         
                       </select>
                     </td>
 
-                    <td id="OldRowsRepeater__ctl1_td19" width="8" rowspan="2" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td19" width="8" rowspan="2" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td20" width="50" rowspan="2" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="1" height="1" border="0">
+                    <td id="OldRowsRepeater__ctl1_td20" width="50" rowspan="2" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="1" height="1" border="0">
                       </td>
 
                   </tr>
                   <tr>
-                    <td id="OldRowsRepeater__ctl1_td21" width="5" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="5" height="1" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td21" width="5" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="5" height="1" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td22" width="45" class="TimeReportOldRow" valign="top" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="1" height="1" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td22" width="45" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="1" height="1" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td23" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="1" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td23" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="1" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td24" width="70" class="TimeReportOldRow" valign="middle" align="right" bgcolor="#ffffff">
+                    <td id="OldRowsRepeater__ctl1_td24" width="70" class="TimeReportOldRow" valign="middle" align="right" bgcolor="#f0f0a0">
                       <span id="OldRowsRepeater__ctl1_Translatedlabel14">Not:</span></td>
 
-                    <td id="OldRowsRepeater__ctl1_td25" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="1" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td25" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="1" border="0"></td>
 
-                    <td id="OldRowsRepeater__ctl1_td26" width="*" colspan="2" class="TimeReportOldRow" bgcolor="#ffffff">
+                    <td id="OldRowsRepeater__ctl1_td26" width="*" colspan="2" class="TimeReportOldRow" bgcolor="#f0f0a0">
                       <input name="OldRowsRepeater:_ctl1:TextboxNote" type="text" size="40" id="OldRowsRepeater__ctl1_TextboxNote" disabled="disabled" class="TimeReportListBox" /></td>
 
-                    <td id="OldRowsRepeater__ctl1_Td27" width="*" colspan="2" class="TimeReportOldRow" bgcolor="#ffffff">
+                    <td id="OldRowsRepeater__ctl1_Td27" width="*" colspan="2" class="TimeReportOldRow" bgcolor="#f0f0a0">
                       <span id="OldRowsRepeater__ctl1_AbsencePeriodFromLabel"></span></td>
 
-                    <td id="OldRowsRepeater__ctl1_Td28" width="*" colspan="1" class="TimeReportOldRow" bgcolor="#ffffff">
+                    <td id="OldRowsRepeater__ctl1_Td28" width="*" colspan="1" class="TimeReportOldRow" bgcolor="#f0f0a0">
                       <span id="OldRowsRepeater__ctl1_AbsencePeriodToLabel"></span></td>
 
-                    <td id="OldRowsRepeater__ctl1_Td29" width="*" colspan="11" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/trans.gif" width="1" height="3" border="0"></asp:textbox></td>
+                    <td id="OldRowsRepeater__ctl1_Td29" width="*" colspan="11" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/trans.gif" width="1" height="3" border="0"></asp:textbox></td>
 
                   </tr>
                   <tr>
-                    <td id="OldRowsRepeater__ctl1_td30" bgcolor="#ffffff" colspan="20"><img src="../Images/trans.gif" width="1" height="3" border="0"></td>
+                    <td id="OldRowsRepeater__ctl1_td30" bgcolor="#f0f0a0" colspan="20"><img src="../Images/trans.gif" width="1" height="3" border="0"></td>
 
                   </tr>
                   
@@ -570,7 +574,7 @@ myWindow.focus();
                     <td id="OldRowsRepeater__ctl2_td3" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl2_td4" width="70" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl2_LabelDate"><b>on</b>, 17/11 </span></td>
+                      <span id="OldRowsRepeater__ctl2_LabelDate"><b>on</b>, 12/01 </span></td>
 
                     <td id="OldRowsRepeater__ctl2_td5" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
@@ -580,22 +584,22 @@ myWindow.focus();
                     <td id="OldRowsRepeater__ctl2_td7" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl2_td8" width="50" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl2:TextboxTimeFrom" type="text" value="08:50" size="5" id="OldRowsRepeater__ctl2_TextboxTimeFrom" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl2:DateFromHidden" id="OldRowsRepeater__ctl2_DateFromHidden" type="hidden" value="08:50" /></td>
+                      <input name="OldRowsRepeater:_ctl2:TextboxTimeFrom" type="text" value="08:00" size="5" id="OldRowsRepeater__ctl2_TextboxTimeFrom" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl2:DateFromHidden" id="OldRowsRepeater__ctl2_DateFromHidden" type="hidden" value="08:00" /></td>
 
                     <td id="OldRowsRepeater__ctl2_td9" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl2_td10" width="50" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl2:TextboxTimeTo" type="text" value="17:45" size="5" id="OldRowsRepeater__ctl2_TextboxTimeTo" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl2:DateToHidden" id="OldRowsRepeater__ctl2_DateToHidden" type="hidden" value="17:45" /></td>
+                      <input name="OldRowsRepeater:_ctl2:TextboxTimeTo" type="text" value="17:10" size="5" id="OldRowsRepeater__ctl2_TextboxTimeTo" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl2:DateToHidden" id="OldRowsRepeater__ctl2_DateToHidden" type="hidden" value="17:10" /></td>
 
                     <td id="OldRowsRepeater__ctl2_td11" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl2_td12" width="40" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl2:TextboxBreak" type="text" value="30" size="3" id="OldRowsRepeater__ctl2_TextboxBreak" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl2:BreakHidden" id="OldRowsRepeater__ctl2_BreakHidden" type="hidden" value="none" /></td>
+                      <input name="OldRowsRepeater:_ctl2:TextboxBreak" type="text" value="60" size="3" id="OldRowsRepeater__ctl2_TextboxBreak" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl2:BreakHidden" id="OldRowsRepeater__ctl2_BreakHidden" type="hidden" value="none" /></td>
 
                     <td id="OldRowsRepeater__ctl2_td13" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl2_td14" width="47" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl2_LabelHours">8,42</span></td>
+                      <span id="OldRowsRepeater__ctl2_LabelHours">8,17</span></td>
 
                     <td id="OldRowsRepeater__ctl2_td15" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
@@ -606,7 +610,7 @@ myWindow.focus();
                     <td id="OldRowsRepeater__ctl2_td17" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl2_td18" width="120" rowspan="2" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3" disabled class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH0accUOedxMr84hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH0accUOedxMr84hbku5Eii3');">
+                      <select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3" disabled class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH2xpPwR07B5Nc4hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH2xpPwR07B5Nc4hbku5Eii3');">
                         
                         
                       </select>
@@ -661,57 +665,57 @@ myWindow.focus();
 
                     <td id="OldRowsRepeater__ctl3_td2" width="68" class="TimeReportOldRow" valign="middle" bgcolor="#ffffff">
                       <img id="OldRowsRepeater__ctl3_ImageStatus" src="../Images/Trans.gif" alt="" border="0" />
-                      <input id="OldRowsRepeater__ctl3_CheckboxDayDone" type="checkbox" name="OldRowsRepeater:_ctl3:CheckboxDayDone" /></td>
+                      <input id="OldRowsRepeater__ctl3_CheckboxDayDone" type="checkbox" name="OldRowsRepeater:_ctl3:CheckboxDayDone" checked="checked" /></td>
 
                     <td id="OldRowsRepeater__ctl3_td3" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl3_td4" width="70" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl3_LabelDate"><b>to</b>, 18/11 </span></td>
+                      <span id="OldRowsRepeater__ctl3_LabelDate"><b>to</b>, 13/01 </span></td>
 
                     <td id="OldRowsRepeater__ctl3_td5" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl3_td6" width="*" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl3_LabelCustom">Testföretaget Effekt, Lagerarbetare</span></td>
+                      <span id="OldRowsRepeater__ctl3_LabelCustom">Testföretaget Effekt, Truckförare</span></td>
 
                     <td id="OldRowsRepeater__ctl3_td7" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl3_td8" width="50" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl3:TextboxTimeFrom" type="text" value="08:30" size="5" id="OldRowsRepeater__ctl3_TextboxTimeFrom" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl3:DateFromHidden" id="OldRowsRepeater__ctl3_DateFromHidden" type="hidden" value="08:30" /></td>
+                      <input name="OldRowsRepeater:_ctl3:TextboxTimeFrom" type="text" value="08:00" size="5" id="OldRowsRepeater__ctl3_TextboxTimeFrom" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl3:DateFromHidden" id="OldRowsRepeater__ctl3_DateFromHidden" type="hidden" value="08:00" /></td>
 
                     <td id="OldRowsRepeater__ctl3_td9" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl3_td10" width="50" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl3:TextboxTimeTo" type="text" value="10:00" size="5" id="OldRowsRepeater__ctl3_TextboxTimeTo" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl3:DateToHidden" id="OldRowsRepeater__ctl3_DateToHidden" type="hidden" value="10:00" /></td>
+                      <input name="OldRowsRepeater:_ctl3:TextboxTimeTo" type="text" value="17:30" size="5" id="OldRowsRepeater__ctl3_TextboxTimeTo" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl3:DateToHidden" id="OldRowsRepeater__ctl3_DateToHidden" type="hidden" value="17:30" /></td>
 
                     <td id="OldRowsRepeater__ctl3_td11" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl3_td12" width="40" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl3:TextboxBreak" type="text" value="0" size="3" id="OldRowsRepeater__ctl3_TextboxBreak" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl3:BreakHidden" id="OldRowsRepeater__ctl3_BreakHidden" type="hidden" value="none" /></td>
+                      <input name="OldRowsRepeater:_ctl3:TextboxBreak" type="text" value="30" size="3" id="OldRowsRepeater__ctl3_TextboxBreak" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl3:BreakHidden" id="OldRowsRepeater__ctl3_BreakHidden" type="hidden" value="none" /></td>
 
                     <td id="OldRowsRepeater__ctl3_td13" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl3_td14" width="47" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl3_LabelHours">1,5</span></td>
+                      <span id="OldRowsRepeater__ctl3_LabelHours">9</span></td>
 
                     <td id="OldRowsRepeater__ctl3_td15" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl3_td16" width="50" class="TimeReportOldRow" align="center" valign="top" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="1" height="1" border="0">
                       
-                      <input name="OldRowsRepeater:_ctl3:TextboxExplicitOvertime" type="text" value="0" size="3" id="OldRowsRepeater__ctl3_TextboxExplicitOvertime" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl3:OverTimeHidden" id="OldRowsRepeater__ctl3_OverTimeHidden" type="hidden" value="none" /></td>
+                      <input name="OldRowsRepeater:_ctl3:TextboxExplicitOvertime" type="text" value="0" size="3" id="OldRowsRepeater__ctl3_TextboxExplicitOvertime" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl3:OverTimeHidden" id="OldRowsRepeater__ctl3_OverTimeHidden" type="hidden" value="none" /></td>
 
                     <td id="OldRowsRepeater__ctl3_td17" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl3_td18" width="120" rowspan="2" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3"  class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH3wBClJK%2bwbAs4hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH3wBClJK%2bwbAs4hbku5Eii3');">
+                      <select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3" disabled class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH1AhkChU548NM4hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH1AhkChU548NM4hbku5Eii3');">
                         
-                        <option>[Klicka här]</option>
+                        
                       </select>
                     </td>
 
                     <td id="OldRowsRepeater__ctl3_td19" width="8" rowspan="2" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl3_td20" width="50" rowspan="2" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="1" height="1" border="0">
-                      <input id="OldRowsRepeater__ctl3_CheckBoxDelete" type="checkbox" name="OldRowsRepeater:_ctl3:CheckBoxDelete" /></td>
+                      </td>
 
                   </tr>
                   <tr>
@@ -727,7 +731,7 @@ myWindow.focus();
                     <td id="OldRowsRepeater__ctl3_td25" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="1" border="0"></td>
 
                     <td id="OldRowsRepeater__ctl3_td26" width="*" colspan="2" class="TimeReportOldRow" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl3:TextboxNote" type="text" size="40" id="OldRowsRepeater__ctl3_TextboxNote" class="TimeReportListBox" /></td>
+                      <input name="OldRowsRepeater:_ctl3:TextboxNote" type="text" size="40" id="OldRowsRepeater__ctl3_TextboxNote" disabled="disabled" class="TimeReportListBox" /></td>
 
                     <td id="OldRowsRepeater__ctl3_Td27" width="*" colspan="2" class="TimeReportOldRow" bgcolor="#ffffff">
                       <span id="OldRowsRepeater__ctl3_AbsencePeriodFromLabel"></span></td>
@@ -745,200 +749,6 @@ myWindow.focus();
                   
                   <tr>
                     <td id="OldRowsRepeater__ctl3_td34" colspan="20" bgcolor="#aca899"><img src="../Images/trans.gif" width="1" height="1" border="0"></td>
-
-                  </tr>
-                
-                  <tr>
-                    <td id="OldRowsRepeater__ctl4_td0" colspan="20" bgcolor="#f0f0a0"><img src="../Images/trans.gif" width="1" height="3" border="0"></td>
-
-                  </tr>
-                  <tr>
-                    <td id="OldRowsRepeater__ctl4_td1" width="5" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="5" height="18" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td2" width="68" class="TimeReportOldRow" valign="middle" bgcolor="#f0f0a0">
-                      <img id="OldRowsRepeater__ctl4_ImageStatus" src="../Images/Trans.gif" alt="" border="0" />
-                      <input id="OldRowsRepeater__ctl4_CheckboxDayDone" type="checkbox" name="OldRowsRepeater:_ctl4:CheckboxDayDone" /></td>
-
-                    <td id="OldRowsRepeater__ctl4_td3" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td4" width="70" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
-                      <span id="OldRowsRepeater__ctl4_LabelDate"><b>to</b>, 18/11 </span></td>
-
-                    <td id="OldRowsRepeater__ctl4_td5" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td6" width="*" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
-                      <span id="OldRowsRepeater__ctl4_LabelCustom">Studieledig utan lön</span></td>
-
-                    <td id="OldRowsRepeater__ctl4_td7" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td8" width="50" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
-                      <input name="OldRowsRepeater:_ctl4:TextboxTimeFrom" type="text" value="10:00" size="5" id="OldRowsRepeater__ctl4_TextboxTimeFrom" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl4:DateFromHidden" id="OldRowsRepeater__ctl4_DateFromHidden" type="hidden" value="10:00" /></td>
-
-                    <td id="OldRowsRepeater__ctl4_td9" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td10" width="50" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
-                      <input name="OldRowsRepeater:_ctl4:TextboxTimeTo" type="text" value="17:00" size="5" id="OldRowsRepeater__ctl4_TextboxTimeTo" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl4:DateToHidden" id="OldRowsRepeater__ctl4_DateToHidden" type="hidden" value="17:00" /></td>
-
-                    <td id="OldRowsRepeater__ctl4_td11" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td12" width="40" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
-                      <input name="OldRowsRepeater:_ctl4:BreakHidden" id="OldRowsRepeater__ctl4_BreakHidden" type="hidden" value="none" /></td>
-
-                    <td id="OldRowsRepeater__ctl4_td13" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td14" width="47" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#f0f0a0">
-                      <span id="OldRowsRepeater__ctl4_LabelHours">6,5</span></td>
-
-                    <td id="OldRowsRepeater__ctl4_td15" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td16" width="50" class="TimeReportOldRow" align="center" valign="top" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="1" height="1" border="0">
-                      
-                      <input name="OldRowsRepeater:_ctl4:OverTimeHidden" id="OldRowsRepeater__ctl4_OverTimeHidden" type="hidden" value="none" /></td>
-
-                    <td id="OldRowsRepeater__ctl4_td17" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td18" width="120" rowspan="2" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0">
-                      <select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3" disabled class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH2OI7ZCFKYdps4hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH2OI7ZCFKYdps4hbku5Eii3');">
-                        
-                        <option>[Klicka här]</option>
-                      </select>
-                    </td>
-
-                    <td id="OldRowsRepeater__ctl4_td19" width="8" rowspan="2" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td20" width="50" rowspan="2" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="1" height="1" border="0">
-                      <input id="OldRowsRepeater__ctl4_CheckBoxDelete" type="checkbox" name="OldRowsRepeater:_ctl4:CheckBoxDelete" /></td>
-
-                  </tr>
-                  <tr>
-                    <td id="OldRowsRepeater__ctl4_td21" width="5" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="5" height="1" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td22" width="45" class="TimeReportOldRow" valign="top" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="1" height="1" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td23" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="1" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td24" width="70" class="TimeReportOldRow" valign="middle" align="right" bgcolor="#f0f0a0">
-                      <span id="OldRowsRepeater__ctl4_Translatedlabel14">Not:</span></td>
-
-                    <td id="OldRowsRepeater__ctl4_td25" width="8" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/Trans.gif" width="8" height="1" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl4_td26" width="*" colspan="2" class="TimeReportOldRow" bgcolor="#f0f0a0">
-                      <input name="OldRowsRepeater:_ctl4:TextboxNote" type="text" size="40" id="OldRowsRepeater__ctl4_TextboxNote" disabled="disabled" class="TimeReportListBox" /></td>
-
-                    <td id="OldRowsRepeater__ctl4_Td27" width="*" colspan="2" class="TimeReportOldRow" bgcolor="#f0f0a0">
-                      <span id="OldRowsRepeater__ctl4_AbsencePeriodFromLabel"></span></td>
-
-                    <td id="OldRowsRepeater__ctl4_Td28" width="*" colspan="1" class="TimeReportOldRow" bgcolor="#f0f0a0">
-                      <span id="OldRowsRepeater__ctl4_AbsencePeriodToLabel"></span></td>
-
-                    <td id="OldRowsRepeater__ctl4_Td29" width="*" colspan="11" class="TimeReportOldRow" bgcolor="#f0f0a0"><img src="../Images/trans.gif" width="1" height="3" border="0"></asp:textbox></td>
-
-                  </tr>
-                  <tr>
-                    <td id="OldRowsRepeater__ctl4_td30" bgcolor="#f0f0a0" colspan="20"><img src="../Images/trans.gif" width="1" height="3" border="0"></td>
-
-                  </tr>
-                  
-                  <tr>
-                    <td id="OldRowsRepeater__ctl4_td34" colspan="20" bgcolor="#aca899"><img src="../Images/trans.gif" width="1" height="1" border="0"></td>
-
-                  </tr>
-                
-                  <tr>
-                    <td id="OldRowsRepeater__ctl5_td0" colspan="20" bgcolor="#ffffff"><img src="../Images/trans.gif" width="1" height="3" border="0"></td>
-
-                  </tr>
-                  <tr>
-                    <td id="OldRowsRepeater__ctl5_td1" width="5" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="5" height="18" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td2" width="68" class="TimeReportOldRow" valign="middle" bgcolor="#ffffff">
-                      <img id="OldRowsRepeater__ctl5_ImageStatus" src="../Images/Trans.gif" alt="" border="0" />
-                      <input id="OldRowsRepeater__ctl5_CheckboxDayDone" type="checkbox" name="OldRowsRepeater:_ctl5:CheckboxDayDone" checked="checked" /></td>
-
-                    <td id="OldRowsRepeater__ctl5_td3" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td4" width="70" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl5_LabelDate"><b>fr</b>, 19/11 </span></td>
-
-                    <td id="OldRowsRepeater__ctl5_td5" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td6" width="*" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl5_LabelCustom">Testföretaget Effekt, Lagerarbetare</span></td>
-
-                    <td id="OldRowsRepeater__ctl5_td7" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td8" width="50" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl5:TextboxTimeFrom" type="text" value="08:30" size="5" id="OldRowsRepeater__ctl5_TextboxTimeFrom" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl5:DateFromHidden" id="OldRowsRepeater__ctl5_DateFromHidden" type="hidden" value="08:30" /></td>
-
-                    <td id="OldRowsRepeater__ctl5_td9" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td10" width="50" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl5:TextboxTimeTo" type="text" value="17:00" size="5" id="OldRowsRepeater__ctl5_TextboxTimeTo" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl5:DateToHidden" id="OldRowsRepeater__ctl5_DateToHidden" type="hidden" value="17:00" /></td>
-
-                    <td id="OldRowsRepeater__ctl5_td11" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td12" width="40" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl5:TextboxBreak" type="text" value="30" size="3" id="OldRowsRepeater__ctl5_TextboxBreak" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl5:BreakHidden" id="OldRowsRepeater__ctl5_BreakHidden" type="hidden" value="none" /></td>
-
-                    <td id="OldRowsRepeater__ctl5_td13" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td14" width="47" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl5_LabelHours">8</span></td>
-
-                    <td id="OldRowsRepeater__ctl5_td15" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td16" width="50" class="TimeReportOldRow" align="center" valign="top" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="1" height="1" border="0">
-                      
-                      <input name="OldRowsRepeater:_ctl5:TextboxExplicitOvertime" type="text" value="0" size="3" id="OldRowsRepeater__ctl5_TextboxExplicitOvertime" disabled="disabled" class="TimeReportTextBox" /><input name="OldRowsRepeater:_ctl5:OverTimeHidden" id="OldRowsRepeater__ctl5_OverTimeHidden" type="hidden" value="none" /></td>
-
-                    <td id="OldRowsRepeater__ctl5_td17" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td18" width="120" rowspan="2" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                      <select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3" disabled class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH3jMCUcmH68bM4hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH3jMCUcmH68bM4hbku5Eii3');">
-                        
-                        
-                      </select>
-                    </td>
-
-                    <td id="OldRowsRepeater__ctl5_td19" width="8" rowspan="2" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td20" width="50" rowspan="2" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="1" height="1" border="0">
-                      </td>
-
-                  </tr>
-                  <tr>
-                    <td id="OldRowsRepeater__ctl5_td21" width="5" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="5" height="1" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td22" width="45" class="TimeReportOldRow" valign="top" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="1" height="1" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td23" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="1" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td24" width="70" class="TimeReportOldRow" valign="middle" align="right" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl5_Translatedlabel14">Not:</span></td>
-
-                    <td id="OldRowsRepeater__ctl5_td25" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="1" border="0"></td>
-
-                    <td id="OldRowsRepeater__ctl5_td26" width="*" colspan="2" class="TimeReportOldRow" bgcolor="#ffffff">
-                      <input name="OldRowsRepeater:_ctl5:TextboxNote" type="text" value="för att veta
-en kommentar
-blir den läst?" size="40" id="OldRowsRepeater__ctl5_TextboxNote" disabled="disabled" class="TimeReportListBox" /></td>
-
-                    <td id="OldRowsRepeater__ctl5_Td27" width="*" colspan="2" class="TimeReportOldRow" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl5_AbsencePeriodFromLabel"></span></td>
-
-                    <td id="OldRowsRepeater__ctl5_Td28" width="*" colspan="1" class="TimeReportOldRow" bgcolor="#ffffff">
-                      <span id="OldRowsRepeater__ctl5_AbsencePeriodToLabel"></span></td>
-
-                    <td id="OldRowsRepeater__ctl5_Td29" width="*" colspan="11" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/trans.gif" width="1" height="3" border="0"></asp:textbox></td>
-
-                  </tr>
-                  <tr>
-                    <td id="OldRowsRepeater__ctl5_td30" bgcolor="#ffffff" colspan="20"><img src="../Images/trans.gif" width="1" height="3" border="0"></td>
-
-                  </tr>
-                  
-                  <tr>
-                    <td id="OldRowsRepeater__ctl5_td34" colspan="20" bgcolor="#aca899"><img src="../Images/trans.gif" width="1" height="1" border="0"></td>
 
                   </tr>
                 
@@ -983,13 +793,13 @@ blir den läst?" size="40" id="OldRowsRepeater__ctl5_TextboxNote" disabled="disa
                   <TD class="TimeReportText" align="right" width="123" colSpan="3">
                     <select name="AddDateDropDown" id="AddDateDropDown" class="TimeReportListBox">
     <option value=""></option>
-    <option value="2010-11-15">m&#229;, 15/11 </option>
-    <option value="2010-11-16">ti, 16/11 </option>
-    <option value="2010-11-17">on, 17/11 </option>
-    <option value="2010-11-18">to, 18/11 </option>
-    <option value="2010-11-19">fr, 19/11 </option>
-    <option value="2010-11-20">l&#246;, 20/11 </option>
-    <option value="2010-11-21">s&#246;, 21/11 </option>
+    <option value="2011-01-10">m&#229;, 10/01 </option>
+    <option value="2011-01-11">ti, 11/01 </option>
+    <option value="2011-01-12">on, 12/01 </option>
+    <option value="2011-01-13">to, 13/01 </option>
+    <option value="2011-01-14">fr, 14/01 </option>
+    <option value="2011-01-15">l&#246;, 15/01 </option>
+    <option value="2011-01-16">s&#246;, 16/01 </option>
 
   </select></TD>
                   <TD class="TimeReportText" width="8"><IMG height="15" src="../Images/trans.gif" width="8" border="0"></TD>
@@ -997,6 +807,7 @@ blir den läst?" size="40" id="OldRowsRepeater__ctl5_TextboxNote" disabled="disa
                     <select name="AddRowDropDown" id="AddRowDropDown" class="TimeReportListBox">
     <option value=""></option>
     <option value="5983">Testf&#246;retaget Effekt, Lagerarbetare</option>
+    <option value="6200">Testf&#246;retaget Effekt, Truckf&#246;rare</option>
     <option value="-1">---</option>
     <option value="_AC_"></option>
 
@@ -1052,11 +863,11 @@ blir den läst?" size="40" id="OldRowsRepeater__ctl5_TextboxNote" disabled="disa
                   <table border="0">
                     <tr>
                       <td width="10"><IMG height="5" src="../Images/Trans.gif" width="10" border="0"></td>
-                      <td vAlign="middle" align="left" width="30%"><input type="submit" name="UpdateButton" value="Uppdatera" id="UpdateButton" /><input type="submit" name="DoneButton" value="Vecka Klar" id="DoneButton" /></td>
+                      <td vAlign="middle" align="left" width="30%"><input type="submit" name="UpdateButton" value="Uppdatera" id="UpdateButton" /><input type="submit" name="ChangeButton" value="Ändra vecka" id="ChangeButton" /></td>
                       <td width="5"><IMG height="30" src="../Images/Trans.gif" width="10" border="0"></td>
                       <td class="SubjectRow" vAlign="middle" align="right" width="30%"><b><span id="Translatedlabel22">Summa timmar:</span></b></td>
                       <td width="5"><IMG height="30" src="../Images/Trans.gif" width="5" border="0"></td>
-                      <td class="SubjectRow" align="left"><b>40,42</b></td>
+                      <td class="SubjectRow" align="left"><b>33,42</b></td>
                     </tr>
                   </table>
                 </td>
