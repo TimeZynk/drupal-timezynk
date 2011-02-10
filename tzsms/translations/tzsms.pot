@@ -3,7 +3,8 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  tzsms_ui.number.inc: n/a
+#  tzsms_ui.install.inc: n/a
+#  tzsms_ui.send.inc: n/a
 #  tzsms_ui.module: n/a
 #  tzsms.module: n/a
 #  tzsms.info: n/a
@@ -13,7 +14,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-11-03 18:16+0100\n"
+"POT-Creation-Date: 2011-02-11 17:12+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -22,44 +23,68 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzsms_ui.number.inc:15;60
+#: tzsms_ui.install.inc:15;60
 msgid "Add more numbers"
 msgstr ""
 
-#: tzsms_ui.number.inc:23
+#: tzsms_ui.install.inc:23
 msgid "To send TimeZynk installation SMS, fill in mobile phone numbers in the form below and then press send. If you need more rows use the <em>Add more numbers</em> button."
 msgstr ""
 
-#: tzsms_ui.number.inc:70;152 tzsms_ui.module:8
+#: tzsms_ui.install.inc:70;152
 msgid "Send installation SMS"
 msgstr ""
 
-#: tzsms_ui.number.inc:74
+#: tzsms_ui.install.inc:74
 msgid "Reset"
 msgstr ""
 
-#: tzsms_ui.number.inc:108
+#: tzsms_ui.install.inc:108
 msgid "Mobile number"
 msgstr ""
 
-#: tzsms_ui.number.inc:108
+#: tzsms_ui.install.inc:108
 msgid "Username"
 msgstr ""
 
-#: tzsms_ui.number.inc:108
+#: tzsms_ui.install.inc:108
 msgid "Password"
 msgstr ""
 
-#: tzsms_ui.number.inc:128
+#: tzsms_ui.install.inc:128
 msgid "Please enter a valid mobile number"
 msgstr ""
 
-#: tzsms_ui.number.inc:135
+#: tzsms_ui.install.inc:135
 msgid "Number entered twice"
 msgstr ""
 
-#: tzsms_ui.number.inc:155
+#: tzsms_ui.install.inc:155
 msgid "Sent install SMS to number %number"
+msgstr ""
+
+#: tzsms_ui.send.inc:10
+msgid "SMS Message"
+msgstr ""
+
+#: tzsms_ui.send.inc:11
+msgid "Enter any text you want to send as SMS"
+msgstr ""
+
+#: tzsms_ui.send.inc:19 tzsms_ui.module:16
+msgid "Send"
+msgstr ""
+
+#: tzsms_ui.send.inc:50
+msgid "Sent message to @count mobiles"
+msgstr ""
+
+#: tzsms_ui.send.inc:44 tzsms.module:159;201
+msgid "tzsms"
+msgstr ""
+
+#: tzsms_ui.send.inc:44
+msgid "Sent custom message to @number (!user)"
 msgstr ""
 
 #: tzsms.module:22
@@ -126,10 +151,6 @@ msgstr ""
 msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username."
 msgstr ""
 
-#: tzsms.module:159;201
-msgid "tzsms"
-msgstr ""
-
 #: tzsms.module:159
 msgid "Requested new password over SMS"
 msgstr ""
@@ -138,8 +159,36 @@ msgstr ""
 msgid "Sending install SMS to !nbr"
 msgstr ""
 
-#: tzsms_ui.module:23
+#: tzsms_ui.module:71
+msgid "Recipients"
+msgstr ""
+
+#: tzsms_ui.module:77
+msgid "Select recipients"
+msgstr ""
+
+#: tzsms_ui.module:79
+msgid "Send ONLY to the users marked below"
+msgstr ""
+
+#: tzsms_ui.module:80
+msgid "Send to EVERYONE, except the users marked below"
+msgstr ""
+
+#: tzsms_ui.module:39
+msgid "send sms"
+msgstr ""
+
+#: tzsms_ui.module:39
 msgid "send installation sms"
+msgstr ""
+
+#: tzsms_ui.module:8
+msgid "SMS"
+msgstr ""
+
+#: tzsms_ui.module:22
+msgid "Installation SMS"
 msgstr ""
 
 #: tzsms.info:0

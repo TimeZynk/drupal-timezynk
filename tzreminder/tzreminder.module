@@ -1,1 +1,147 @@
 <?php
+
+
+function tzreminder_menu() {
+  $items['tzsms/reminder'] = array(
+    'title' => 'Reminders',
+    'access arguments' => array('configure reminders'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzreminder_config_form'),
+    'file' => 'includes/tzreminder.form.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm()
+ * Define available permissions.
+ */
+function tzreminder_perm() {
+  return array('configure reminders');
+}
+
+function tzreminder_cron() {
+  $config = tzreminder_get_config();
+  if(empty($config->delay_minutes)) {
+    return;
+  }
+
+  $now = tzbase_make_date();
+  if (_tzreminder_is_in_quiet_period($config, $now)) {
+    return;
+  }
+
+  $delayPolicy = new TZDelayedReminderPolicy($config->delay_minutes);
+  $query = $delayPolicy->getQuery($now);
+  if(!$query) {
+    return;
+  }
+
+  $userFilter = new TZUserFilter($config->delay_user_policy, $config->delay_user_list);
+
+  $result = db_query($query->getQueryString(), $query->getQueryArgs());
+  $reportCountForUser = array();
+  while($tzreport = db_fetch_object($result)) {
+    $uid = $tzreport->assignedto;
+    if (!$userFilter->isIncluded($uid)) {
+      continue;
+    }
+
+    if(!isset($reportCountForUser[$uid])) {
+      $reportCountForUser[$uid] = 0;
+    }
+    $reportCountForUser[$uid]++;
+  }
+
+  foreach($reportCountForUser as $uid => $count) {
+    if(_tzreminder_send_reminder($delayPolicy, $now, $config, $uid, $count)) {
+      $config->last_call[$uid]['delay'] = $now->format('U');
+    }
+  }
+
+  tzreminder_set_config($config);
+}
+
+function tzreminder_get_config() {
+  $config = variable_get('tzreminder_config', new stdClass());
+  return tzreminder_fill_default_config($config);
+}
+
+function tzreminder_set_config($config) {
+  variable_set('tzreminder_config', $config);
+}
+
+function tzreminder_fill_default_config($config) {
+  if(!isset($config->quiet_start)) {
+    $config->quiet_start = '';
+  }
+
+  if(!isset($config->quiet_end)) {
+    $config->quiet_end = '';
+  }
+
+  if(!isset($config->delay_user_policy)) {
+    $config->delay_user_policy = 'include';
+  }
+
+  if(!isset($config->delay_user_list)) {
+    $config->delay_user_list = array();
+  }
+
+  if(!isset($config->delay_minutes)) {
+    $config->delay_minutes = '';
+  }
+
+  if(!isset($config->last_call)) {
+    $config->last_call = array();
+  }
+
+  return $config;
+}
+
+/**
+ * Get a datetime object for the last time this user was sent a reminder
+ * from the specified reminder policy
+ * @param object $config config object
+ * @param string $policy policy id
+ * @param int $uid user ID
+ * @return DateTime
+ */
+function _tzreminder_get_last_call($config, $policy, $uid) {
+  $last_call = NULL;
+  if(empty($config->last_call[$uid][$policy])) {
+    $last_call = tzbase_make_date(0);
+  } else {
+    $last_call = tzbase_make_date($config->last_call[$uid][$policy]);
+  }
+  return $last_call;
+}
+
+function _tzreminder_is_in_quiet_period($config, $time) {
+  if(!empty($config->quiet_start)) {
+    $span = new TZTimeOfDaySpan($config->quiet_start, $config->quiet_end);
+    return $span->isInsideSpan($time);
+  }
+  return FALSE;
+}
+
+function _tzreminder_send_reminder($delayPolicy, $now, $config, $uid, $count) {
+  $account = user_load($uid);
+  if(empty($account->tzuser['mobile'])) {
+    return FALSE;
+  }
+
+  $last_call = _tzreminder_get_last_call($config, 'delay', $uid);
+  if(!$delayPolicy->shouldSendMessage($now, $last_call)) {
+    return FALSE;
+  }
+
+  $message = $delayPolicy->getMessage($count);
+  watchdog('tzreminder', 'Sending reminder to @mobile',
+      array('@mobile' => $account->tzuser['mobile']),
+      WATCHDOG_INFO,
+      theme('username', $account));
+  tzsms_send(TZSMS_TYPE_USER_SMS, $account->tzuser['mobile'], $message);
+  return TRUE;
+}

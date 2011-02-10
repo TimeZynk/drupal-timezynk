@@ -1,0 +1,115 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  tzreminder.module: n/a
+#  tzreminder.info: n/a
+#  includes/TZDelayedReminderPolicy.class.inc: n/a
+#  includes/tzreminder.form.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2011-02-11 17:02+0100\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: tzreminder.module:21
+msgid "configure reminders"
+msgstr ""
+
+#: tzreminder.module:6
+msgid "Reminders"
+msgstr ""
+
+#: tzreminder.info:0
+msgid "TimeZynk Reminder"
+msgstr ""
+
+#: tzreminder.info:0
+msgid "Send reminders to our users"
+msgstr ""
+
+#: tzreminder.info:0
+msgid "TimeZynk"
+msgstr ""
+
+#: includes/TZDelayedReminderPolicy.class.inc:40
+msgid "Hi! We are waiting for @count of your time reports. Please fill !third-person-personal-pronoun in!"
+msgstr ""
+
+#: includes/TZDelayedReminderPolicy.class.inc:42
+msgid "one"
+msgid_plural "@count"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/TZDelayedReminderPolicy.class.inc:43
+msgid "it"
+msgid_plural "them"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/tzreminder.form.inc:11
+msgid "Quiet period"
+msgstr ""
+
+#: includes/tzreminder.form.inc:12
+msgid "Configure a time of day when no reminders are sent"
+msgstr ""
+
+#: includes/tzreminder.form.inc:16
+msgid "From (HH:MM)"
+msgstr ""
+
+#: includes/tzreminder.form.inc:17
+msgid "Start of the quiet period, written as HH:MM"
+msgstr ""
+
+#: includes/tzreminder.form.inc:22
+msgid "To (HH:MM)"
+msgstr ""
+
+#: includes/tzreminder.form.inc:23
+msgid "End of the quiet period, written as HH:MM"
+msgstr ""
+
+#: includes/tzreminder.form.inc:31
+msgid "Delayed reminder settings"
+msgstr ""
+
+#: includes/tzreminder.form.inc:34
+msgid "Delay in minutes"
+msgstr ""
+
+#: includes/tzreminder.form.inc:35
+msgid "Delay in minutes before the reminder is sent. Leave empty for no reminder."
+msgstr ""
+
+#: includes/tzreminder.form.inc:42
+msgid "Save"
+msgstr ""
+
+#: includes/tzreminder.form.inc:50
+msgid "Could not understand time format, please use HH:MM"
+msgstr ""
+
+#: includes/tzreminder.form.inc:55
+msgid "Please specify end of quiet period"
+msgstr ""
+
+#: includes/tzreminder.form.inc:59
+msgid "Please specify delay in minutes as a positive integer value"
+msgstr ""
+
+#: includes/tzreminder.form.inc:75
+msgid "New configuration stored"
+msgstr ""
+

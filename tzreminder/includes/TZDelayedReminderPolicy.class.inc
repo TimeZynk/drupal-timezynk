@@ -1,10 +1,12 @@
 <?php
 
+tzbase_include_proto_classes();
+
 class TZDelayedReminderPolicy implements TZReminderPolicy {
 
   /**
    *
-   * @var int how much the report is may be overdue by. 
+   * @var int how much the report may be overdue by.
    */
   private $minutes = 0;
 
@@ -22,8 +24,6 @@ class TZDelayedReminderPolicy implements TZReminderPolicy {
   }
 
   public function getQuery($time) {
-
-
     $queryBuilder = new TZReportQueryBuilder(TZFlags::REPORTED);
     $endtime = clone($time);
     $endtime->modify("-$this->minutes minute");

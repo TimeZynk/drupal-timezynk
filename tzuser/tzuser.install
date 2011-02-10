@@ -1,0 +1,48 @@
+<?php
+/**
+ * @file Installation file for TimeZynk data types
+ */
+
+/**
+ * Implementation of hook_install()
+ */
+function tzuser_install() {
+  drupal_install_schema('tzuser');
+}
+
+/**
+ * Implementation of hook_uninstall()
+ */
+function tzuser_uninstall() {
+  drupal_uninstall_schema('tzuser');
+}
+
+/**
+ * Implementation of hook_schema()
+ */
+function tzuser_schema() {
+  $schema['tzuser'] = array(
+    'description' => t('Stores TimeZynk user data'),
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'User ID from {users}.uid.',
+      ),
+      'fullname' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => 'Full user name',
+      ),
+      'mobile' => array(
+        'type' => 'varchar',
+        'length' => '32',
+        'description' => 'Mobile Phone number for user',
+      ),
+    ),
+    'primary key' => array('uid'),
+  );
+
+  return $schema;
+}

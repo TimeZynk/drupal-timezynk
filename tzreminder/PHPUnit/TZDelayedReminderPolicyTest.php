@@ -7,14 +7,14 @@ class TZDelayedReminderPolicyTest extends PHPUnit_Framework_TestCase {
    * @var integer
    */
   private $expectedDelay = 23;
-  
+
   public function setUp() {
     $this->nowTimestamp = 1234567890;
     $this->expectedDueTimestamp = $this->nowTimestamp - ($this->expectedDelay*60);
     $this->now = tzbase_make_date($this->nowTimestamp);
     $this->policy = new TZDelayedReminderPolicy($this->expectedDelay);
   }
-  
+
   function testConstructorNoMinutesThrows() {
     try {
       new TZDelayedReminderPolicy();
@@ -35,7 +35,7 @@ class TZDelayedReminderPolicyTest extends PHPUnit_Framework_TestCase {
 
   function testGetQuery() {
     $expectedQuery = 'SELECT * FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE t.flags < %d AND t.endtime < %d';
-    $expectedQueryArgs = array( 
+    $expectedQueryArgs = array(
       TZFlags::REPORTED,
       $this->expectedDueTimestamp,
     );
@@ -88,6 +88,7 @@ class TZDelayedReminderPolicyTest extends PHPUnit_Framework_TestCase {
 
   function testShouldSendMessageThrowsOnMissingLastCalled() {
     try {
+      $timeNow = clone($this->now);
       $this->policy->shouldSendMessage($timeNow);
       $this->fail();
     } catch (InvalidArgumentException $e) {

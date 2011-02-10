@@ -1,0 +1,6 @@
+name = TimeZynk Base User
+description = Provides TimeZynk user data
+package = TimeZynk
+files[] = includes/TZUserFilter.class.inc
+dependencies[] = autoload
+core = 6.x

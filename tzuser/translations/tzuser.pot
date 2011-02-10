@@ -1,0 +1,58 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  tzuser.module: n/a
+#  tzuser.install: n/a
+#  tzuser.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2011-02-11 17:11+0100\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: tzuser.module:26;65
+msgid "Full name"
+msgstr ""
+
+#: tzuser.module:31;71
+msgid "Mobile number"
+msgstr ""
+
+#: tzuser.module:61
+msgid "TimeZynk Information"
+msgstr ""
+
+#: tzuser.module:66
+msgid "The users full name"
+msgstr ""
+
+#: tzuser.module:72
+msgid "The users mobile number without country code"
+msgstr ""
+
+#: tzuser.install:25
+msgid "Stores TimeZynk user data"
+msgstr ""
+
+#: tzuser.info:0
+msgid "TimeZynk Base User"
+msgstr ""
+
+#: tzuser.info:0
+msgid "Provides TimeZynk user data"
+msgstr ""
+
+#: tzuser.info:0
+msgid "TimeZynk"
+msgstr ""
+

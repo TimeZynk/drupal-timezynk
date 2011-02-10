@@ -1,0 +1,76 @@
+<?php
+
+function tzuser_user($op, &$edit, &$account, $category = NULL) {
+  switch($op) {
+    case 'delete':
+      db_query('DELETE FROM {tzuser} WHERE uid = %d', $account->uid);
+      break;
+
+    case 'insert':
+      _tzuser_save_entry($edit, $account);
+      break;
+
+    case 'load':
+      $account->tzuser = db_fetch_array(db_query('SELECT * FROM {tzuser} WHERE uid = %d', $account->uid));
+      unset($account->tzuser['uid']);
+      break;
+
+    case 'update':
+      _tzuser_save_entry($edit, $account);
+      break;
+
+    case 'view':
+      if (!empty($account->tzuser)) {
+        $account->content['fullname'] = array(
+          '#type' => 'user_profile_item',
+          '#title' => t('Full name'),
+          '#value' => $account->tzuser['fullname'],
+        );
+        $account->content['mobile'] = array(
+          '#type' => 'user_profile_item',
+          '#title' => t('Mobile number'),
+          '#value' => $account->tzuser['mobile'],
+        );
+      }
+      break;
+
+    case 'form':
+    case 'register':
+      return _tzuser_user_form($account);
+  }
+}
+
+function _tzuser_save_entry(&$edit, $account) {
+  if (!isset($edit['tzuser'])) {
+    return;
+  }
+
+  $entry = array_merge(array('uid' => $account->uid), $edit['tzuser']);
+  if(empty($account->tzuser)) {
+    drupal_write_record('tzuser', $entry);
+  } else {
+    drupal_write_record('tzuser', $entry, 'uid');
+  }
+  $edit['tzuser'] = NULL;
+}
+
+function _tzuser_user_form($account) {
+  $form['tzuser'] = array(
+    '#tree' => TRUE,
+    '#type' => 'fieldset',
+    '#title' => t('TimeZynk Information'),
+  );
+  $form['tzuser']['fullname'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Full name'),
+    '#description' => t('The users full name'),
+    '#default_value' => empty($account->tzuser['fullname']) ? '' : $account->tzuser['fullname'],
+  );
+  $form['tzuser']['mobile'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Mobile number'),
+    '#description' => t('The users mobile number without country code'),
+    '#default_value' => empty($account->tzuser['mobile']) ? '' : $account->tzuser['mobile'],
+  );
+  return $form;
+}

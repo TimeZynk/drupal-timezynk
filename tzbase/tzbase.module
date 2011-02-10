@@ -604,6 +604,10 @@ function tzbase_make_date($timestamp = NULL) {
     $timestamp = time();
   }
 
+  if($timestamp === 0) {
+    return new DateTime('@0', $timezone);
+  }
+
   return date_make_date($timestamp, $timezone, DATE_UNIX);
 }
 
