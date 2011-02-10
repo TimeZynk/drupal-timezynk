@@ -1,0 +1,9 @@
+name = TimeZynk Reminder
+description = Send reminders to our users
+package = TimeZynk
+
+files[] = includes/TZReminderPolicy.class.inc
+files[] = includes/TZDelayedReminderPolicy.class.inc
+dependencies[] = tzbase
+dependencies[] = autoload
+core = 6.x

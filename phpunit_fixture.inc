@@ -11,7 +11,7 @@ error_reporting(E_ALL);
 include_once './includes/bootstrap.inc';
 drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
 
-$files = glob(dirname(__FILE__) . '/../includes/*.class.inc');
+$files = glob(dirname(__FILE__) . '/*/includes/*.class.inc');
 foreach($files as $file) {
   require_once($file);
 }
