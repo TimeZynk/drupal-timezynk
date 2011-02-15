@@ -49,6 +49,7 @@ class TZDelayedReminderPolicy implements TZReminderPolicy {
       throw new InvalidArgumentException('You must specify when the policy was last invoked and what the time is now.');
     }
     $lastCalled = clone($timeLastCalled);
-    return $timeNow >= ($lastCalled->modify("+$this->minutes minutes"));
+    $lastCalled->modify("+$this->minutes minutes");
+    return $timeNow >= $lastCalled;
   }
 }
