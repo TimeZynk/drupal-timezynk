@@ -1,0 +1,264 @@
+.TimeReportPrintRTHeader
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+.TimeReportPrintRT
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	color: black;
+	text-decoration: none;
+}
+
+.TimeReportPrintSign
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 8px;
+	color: black;
+	text-decoration: none;
+}
+
+.TimeReportPrintTitle
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 22px;
+	color: black;
+	text-decoration: none;
+}
+
+.TimeReportPrintSum
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+	text-decoration: none;
+}
+
+
+.TimeReportPrintHeaderLabel
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 8px;
+	color: black;
+	text-decoration: none;
+}
+
+.TimeReportPrintHeaderContent
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+	text-decoration: none;
+}
+
+.TopBarBig
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-weight: bold;
+	font-size: 14px;
+	color: white;
+	text-decoration: none;
+}
+
+.TopBarMedium
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: white;
+	text-decoration: none;
+}
+
+.TopBarSmall
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	color: white;
+	text-decoration: none;
+}
+
+.NavigationMedium
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+	text-decoration: none;
+}
+
+.SubjectRow
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+	text-decoration: none;
+}
+
+.TimeReportText
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+	text-decoration: none;
+	background-color: white;
+}
+
+.TimeReportOldRow
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+	text-decoration: none;
+}
+
+.TimeReportTextBox
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+}
+
+.TimeReportListBox
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+}
+
+.TimeReportDropDown
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+}
+
+.TimeReportLabel
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+}
+
+.TimeReportButton
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+}
+
+.WeeksNav
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: #B22222;
+	text-decoration: none;
+}
+
+.MainMenuSmall
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	color: black;
+	text-decoration: none;
+}
+
+.HelpContent
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+	text-decoration: none;
+	text-align:justify
+}
+
+.PrintSettings
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+	text-decoration: none;
+}
+
+.ContentMedium
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: black;
+	text-decoration: none;
+}
+
+.ContentSmall
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	color: black;
+	text-decoration: none;
+}
+
+.LinkSmall
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	color: black;
+	text-decoration: underline;
+}
+
+.ErrorMedium
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 12px;
+	color: red;
+	text-decoration: none;
+}
+.AvailabilityDate
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: black;
+	text-decoration: none;
+	background-color:White
+}
+.AvailabilityShortDayName
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	color: black;
+	text-decoration: none;
+	background-color:White
+}
+.AvailabilityHeader
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: black;
+	text-decoration: none;
+	background-color:#FFFFCC
+}
+
+.AvailabilityCheckBoxList
+{
+	text-align:center;
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: black;
+	text-decoration: none;
+}
+
+.AvailabilitySymbolDescription
+{
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: black;
+	text-decoration: none;
+}
+
+#_ctl24_MenuItems td {
+    text-align: center;
+}

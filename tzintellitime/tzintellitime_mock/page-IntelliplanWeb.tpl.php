@@ -176,74 +176,15 @@ myWindow.focus();
                         <table border="0" cellpadding="0" cellspacing="0">
                             <tr id="_ctl24_MenuItems">
     <td>
-
 <table cellspacing="0" cellpadding="0" border="0">
     <tr>
         <td align="middle">
-            <a id="_ctl24__ctl1_HyperlinkImage" href="../Portal/Main.aspx?MId=MyPage"><img id="_ctl24__ctl1_MenuItemImage" src="../Images/Img_MyPageIco.gif" alt="" border="0" /></a>
-        </td>
-    </tr>
-    <tr>
-        <td><a id="_ctl24__ctl1_MenuItemHyperlink" class="MainMenuSmall" href="../Portal/Main.aspx?MId=MyPage">Min Sida</a></td>
-    </tr>
-
-</table>
-</td>
-    <td><img src="../Images/trans.gif" width="10" height="1" border="0"></td>
-    <td>
-<table cellspacing="0" cellpadding="0" border="0">
-    <tr>
-        <td align="middle">
-            <a id="_ctl24__ctl4_HyperlinkImage" href="../WebCV/WebCV.aspx?SequenceNr=1&amp;MId=WebCV" target="_blank"><img id="_ctl24__ctl4_MenuItemImage" src="../Images/Img_MyPageIco.gif" alt="" border="0" /></a>
+            <a id="_ctl24__ctl4_HyperlinkImage" href="../TimeReport/ReSync.aspx?DateInWeek=<? print $DateInWeek ?>"><img id="_ctl24__ctl4_MenuItemImage" src="../Images/Img_ReSync.png" alt="" border="0" /></a>
         </td>
     </tr>
 
     <tr>
-        <td><a id="_ctl24__ctl4_MenuItemHyperlink" class="MainMenuSmall" href="../WebCV/WebCV.aspx?SequenceNr=1&amp;MId=WebCV" target="_blank">CV</a></td>
-    </tr>
-</table>
-</td>
-    <td><img src="../Images/trans.gif" width="10" height="1" border="0"></td>
-    <td>
-<table cellspacing="0" cellpadding="0" border="0">
-    <tr>
-        <td align="middle">
-
-            <a id="_ctl24__ctl7_HyperlinkImage" href="TimeReport.aspx?MId=TReport"><img id="_ctl24__ctl7_MenuItemImage" src="../Images/Img_CalenderIco.gif" alt="" border="0" /></a>
-        </td>
-    </tr>
-    <tr>
-        <td><a id="_ctl24__ctl7_MenuItemHyperlink" class="MainMenuSmall" href="TimeReport.aspx?MId=TReport">Tidrapportering</a></td>
-    </tr>
-</table>
-</td>
-    <td><img src="../Images/trans.gif" width="10" height="1" border="0"></td>
-
-    <td>
-<table cellspacing="0" cellpadding="0" border="0">
-    <tr>
-        <td align="middle">
-            <a id="_ctl24__ctl10_HyperlinkImage" href="javascript:OpenPrintWindow();"><img id="_ctl24__ctl10_MenuItemImage" src="../Images/Img_PrinterIco.gif" alt="" border="0" /></a>
-        </td>
-    </tr>
-    <tr>
-        <td><a id="_ctl24__ctl10_MenuItemHyperlink" class="MainMenuSmall" href="javascript:OpenPrintWindow();">Skriv ut</a></td>
-
-    </tr>
-</table>
-
-</td>
-    <td><img src="../Images/trans.gif" width="10" height="1" border="0"></td>
-    <td>
-<table cellspacing="0" cellpadding="0" border="0">
-    <tr>
-        <td align="middle">
-            <a id="_ctl24__ctl13_HyperlinkImage" href="javascript:OpenHelpWindow();"><img id="_ctl24__ctl13_MenuItemImage" src="../Images/Img_Help.gif" alt="" border="0" /></a>
-        </td>
-
-    </tr>
-    <tr>
-        <td><a id="_ctl24__ctl13_MenuItemHyperlink" class="MainMenuSmall" href="javascript:OpenHelpWindow();">Hjälp</a></td>
+        <td><a id="_ctl24__ctl4_MenuItemHyperlink" class="MainMenuSmall" href="../TimeReport/ReSync.aspx?DateInWeek=<? print $DateInWeek ?>">Uppdatera</a></td>
     </tr>
 </table>
 </td>

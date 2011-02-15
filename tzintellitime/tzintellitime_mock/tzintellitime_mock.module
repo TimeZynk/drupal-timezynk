@@ -157,19 +157,16 @@ function tzintellitime_mock_compare_reports($first, $second) {
 }
 
 function tzintellitime_mock_request() {
-  watchdog('mock', 'Request for path !path', array('!path' => $_SERVER['REQUEST_URI']));
-
   $path = arg();
   if(count($path) < 3 && FALSE !== strpos(end($path), '.aspx')) {
     array_splice($path, -1, 0, 'Portal');
     drupal_goto(implode('/', $path));
   }
 
-  // handle image requests
-  if(FALSE !== array_search('Images', $path)) {
-    drupal_set_header('Content-Type: image/gif');
-    print(base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='));
-    return;
+  $filename = end($path);
+
+  if(_tzintellitime_mock_serve_static($filename)) {
+    exit();
   }
 
   if(TZINTELLITIME_MOCK_ERROR_CODE !== '200') {
@@ -182,22 +179,13 @@ function tzintellitime_mock_request() {
     case 'Login.aspx':
       if('POST' === $_SERVER['REQUEST_METHOD']) {
         if(tzintellitime_mock_authenticate($_POST['TextBoxUserName'], $_POST['TextBoxPassword'])) {
-          array_pop($path);
-          $path[] = 'Main.aspx';
+          array_splice($path, -2, 2, array('TimeReport', 'TimeReport.aspx'));
           drupal_goto(implode('/', $path));
         } else {
           drupal_goto('IntelliplanWeb/Portal/Login.aspx');
         }
       } else {
         readfile(dirname(__FILE__) . '/../tests/intellitime-login-page.html');
-      }
-      break;
-
-    case 'Main.aspx':
-      if (tzintellitime_mock_check_cookie()) {
-        readfile(dirname(__FILE__) . '/../tests/intellitime-main-page.html');
-      } else {
-        drupal_goto('IntelliplanWeb/Portal/Login.aspx');
       }
       break;
 
@@ -224,15 +212,52 @@ function tzintellitime_mock_request() {
       }
       break;
 
+    case 'ReSync.aspx':
+      if(!tzintellitime_mock_check_cookie()) {
+        drupal_goto('IntelliplanWeb/Portal/Login.aspx');
+        break;
+      }
+      $query = array();
+      if(!empty($_GET['DateInWeek'])) {
+        $query['DateInWeek'] = $_GET['DateInWeek'];
+      }
+      drupal_goto('IntelliplanWeb/TimeReport/TimeReport.aspx', $query);
+      break;
+
     case 'LogOut.aspx':
       tzintellitime_mock_logout();
       drupal_goto('IntelliplanWeb/Portal/Login.aspx');
       break;
 
     default:
-      drupal_goto('IntelliplanWeb/Portal/Login.aspx');
+      drupal_not_found();
       break;
   }
+}
+
+function _tzintellitime_mock_serve_static($filename) {
+  $basedir = dirname(__FILE__);
+  $filename = strtolower($filename);
+  $expires = tzbase_make_date();
+  $expires->modify('+10 years');
+
+  // Check for static files
+  $dirs = array('images', 'style');
+  foreach($dirs as $dir) {
+    $path = "$basedir/$dir/$filename";
+    if(file_exists($path)) {
+      $mime_type = file_get_mimetype($path);
+      if(!empty($mime_type)) {
+        drupal_set_header('Content-Type: ' . $mime_type);
+      }
+      drupal_set_header('Expires: ' . $expires->format('r'));
+      drupal_set_header('Cache-Control: store, public');
+      readfile($path);
+      return TRUE;
+    }
+  }
+
+  return FALSE;
 }
 
 function tzintellitime_mock_update_report($post, $ctlid, $reportid) {
