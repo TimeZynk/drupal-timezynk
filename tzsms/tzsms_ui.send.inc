@@ -32,7 +32,7 @@ function tzsms_ui_send_sms_form_submit($form, $form_state) {
   );
 
   $count = 0;
-  $result = db_query('SELECT uid FROM {users} WHERE status = 1');
+  $result = db_query('SELECT uid FROM {users} WHERE status = 1 AND uid != 0');
   while($uid = db_result($result)) {
     if(!$userFilter->isIncluded($uid)) {
       continue;
@@ -44,8 +44,9 @@ function tzsms_ui_send_sms_form_submit($form, $form_state) {
     watchdog('tzsms', 'Sent custom message to @number (!user)',
         array('@number' => $account->tzuser['mobile'],
           '!user' => theme('username', $account)));
-    tzsms_send(TZSMS_TYPE_USER_SMS, $account->tzuser['mobile'], $form_state['values']['message']);
-    $count++;
+    if(tzsms_send(TZSMS_TYPE_USER_SMS, $account->tzuser['mobile'], $form_state['values']['message'])) {
+      $count++;
+    }
   }
   drupal_set_message(t('Sent message to @count mobiles', array('@count' => $count)));
 }

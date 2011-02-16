@@ -27,15 +27,16 @@ class TZStatsTestCase extends DrupalWebTestCase {
 
     // Trigger send hook a couple of times
     for($i = 0; $i < 256; $i++) {
-      module_invoke_all('tzsms_send', 0, '0777888999' . $i);
+      module_invoke_all('tzsms_send', TZSMS_TYPE_USER_SMS, '0777888999' . $i, 1 + $i);
     }
 
     $result = db_query('SELECT * FROM {tzstats_sms}');
     $i = 0;
     while($row = db_fetch_object($result)) {
-      $this->assertEqual(0, $row->sms_type);
+      $this->assertEqual(TZSMS_TYPE_USER_SMS, $row->sms_type);
       $this->assertEqual('0777888999' . $i, $row->destination);
       $this->assertTrue($row->timestamp >= $before);
+      $this->assertEqual(1 + $i, $row->length);
       $i++;
     }
     $this->assertEqual(256, $i);

@@ -1,5 +1,21 @@
 <?php
 
+function tzuser_menu() {
+  $items['admin/user/tzuser/ajax/autocomplete/user'] = array(
+    'page callback' => 'tzuser_ajax_autocomplete_user',
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+function tzuser_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'tzuser') . '/includes',
+  );
+}
+
 function tzuser_user($op, &$edit, &$account, $category = NULL) {
   switch($op) {
     case 'delete':
@@ -11,8 +27,7 @@ function tzuser_user($op, &$edit, &$account, $category = NULL) {
       break;
 
     case 'load':
-      $account->tzuser = db_fetch_array(db_query('SELECT * FROM {tzuser} WHERE uid = %d', $account->uid));
-      unset($account->tzuser['uid']);
+      $account->tzuser = _tzuser_load_entry($account);
       break;
 
     case 'update':
@@ -25,11 +40,13 @@ function tzuser_user($op, &$edit, &$account, $category = NULL) {
           '#type' => 'user_profile_item',
           '#title' => t('Full name'),
           '#value' => $account->tzuser['fullname'],
+          '#weight' => -10,
         );
         $account->content['mobile'] = array(
           '#type' => 'user_profile_item',
           '#title' => t('Mobile number'),
           '#value' => $account->tzuser['mobile'],
+          '#weight' => -9,
         );
       }
       break;
@@ -38,6 +55,76 @@ function tzuser_user($op, &$edit, &$account, $category = NULL) {
     case 'register':
       return _tzuser_user_form($account);
   }
+}
+
+/**
+ * Implements hook_theme_registry_alter()
+ *
+ * Swap in our own replacement for theme_username().
+ **/
+function tzuser_theme_registry_alter(&$theme_registry) {
+  if (!empty($theme_registry['form_element'])) {
+    $path = drupal_get_path('module', 'tzuser');
+    $theme_registry['username']['function'] = 'tzuser_username';
+    $theme_registry['username']['file'] = $path . '/tzuser.theme.inc';
+    $theme_registry['username']['theme path'] = $path;
+    $theme_registry['username']['theme paths'][0] = $path;
+  }
+}
+
+/**
+ * AJAX callback for autocompleting user names. Groked from user.module.
+ * This code is hard to read, but the requirements for autocomplete
+ * functions are poorly documented so I'm not sure about how to
+ * rewrite it.
+ */
+function tzuser_ajax_autocomplete_user($string = '') {
+  // The user enters a comma-separated list of tags. We only autocomplete the last tag.
+  $array = drupal_explode_tags($string);
+
+  // Fetch last tag
+  $last_string = trim(array_pop($array));
+  $matches = array();
+  if ($last_string != '') {
+    $prefix = count($array) ? implode(', ', $array) . ', ' : '';
+
+    if (strpos('anonymous', strtolower($last_string)) !== FALSE) {
+      $matches[$prefix . 'Anonymous'] = 'Anonymous';
+    }
+    $result = db_query_range("SELECT fullname FROM {tzuser} WHERE LOWER(fullname) LIKE LOWER('%s%%')", $last_string, 0, 10);
+
+    while ($account = db_fetch_object($result)) {
+      $n = $account->fullname;
+      // Commas and quotes in terms are special cases, so encode 'em.
+      if (strpos($account->fullname, ',') !== FALSE || strpos($account->fullname, '"') !== FALSE) {
+        $n = '"' . str_replace('"', '""', $account->fullname) . '"';
+      }
+      $matches[$prefix . $n] = check_plain($account->fullname);
+    }
+  }
+
+  drupal_json($matches);
+}
+
+function _tzuser_load_entry($account) {
+  $entry = array();
+
+  $db_entry = db_fetch_array(db_query('SELECT * FROM {tzuser} WHERE uid = %d', $account->uid));
+  if(is_array($db_entry)) {
+    $entry = array_merge($entry, $db_entry);
+  }
+
+  if(empty($entry['fullname'])) {
+    $entry['fullname'] = $account->name;
+  }
+
+  if(empty($entry['mobile'])) {
+    $entry['mobile'] = $account->name;
+  }
+
+  unset($entry['uid']);
+
+  return $entry;
 }
 
 function _tzuser_save_entry(&$edit, $account) {

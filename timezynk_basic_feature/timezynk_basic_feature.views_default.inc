@@ -6,6 +6,272 @@
 function timezynk_basic_feature_views_default_views() {
   $views = array();
 
+  // Exported view: assignments
+  $view = new view;
+  $view->name = 'assignments';
+  $view->description = 'Assignments';
+  $view->tag = '';
+  $view->view_php = '';
+  $view->base_table = 'node';
+  $view->is_cacheable = FALSE;
+  $view->api_version = 2;
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+  $handler = $view->new_display('default', 'Default', 'default');
+  $handler->override_option('relationships', array(
+    'parentid' => array(
+      'label' => 'Parent',
+      'required' => 0,
+      'id' => 'parentid',
+      'table' => 'tzjob',
+      'field' => 'parentid',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
+    ),
+  ));
+  $handler->override_option('fields', array(
+    'title' => array(
+      'label' => 'Title',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'link_to_node' => 0,
+      'exclude' => 0,
+      'id' => 'title',
+      'table' => 'node',
+      'field' => 'title',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
+    ),
+    'flags' => array(
+      'label' => 'State',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'exclude' => 0,
+      'id' => 'flags',
+      'table' => 'tzjob',
+      'field' => 'flags',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
+    ),
+    'edit_node' => array(
+      'label' => '',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'text' => '',
+      'exclude' => 0,
+      'id' => 'edit_node',
+      'table' => 'node',
+      'field' => 'edit_node',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
+    ),
+    'title_1' => array(
+      'label' => 'Parent assignment',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => 'Top level',
+      'hide_empty' => 1,
+      'empty_zero' => 0,
+      'link_to_node' => 0,
+      'exclude' => 1,
+      'id' => 'title_1',
+      'table' => 'node',
+      'field' => 'title',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'parentid',
+    ),
+  ));
+  $handler->override_option('sorts', array(
+    'title' => array(
+      'order' => 'ASC',
+      'id' => 'title',
+      'table' => 'node',
+      'field' => 'title',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
+    ),
+  ));
+  $handler->override_option('filters', array(
+    'type' => array(
+      'operator' => 'in',
+      'value' => array(
+        'tzjob' => 'tzjob',
+      ),
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
+      ),
+      'id' => 'type',
+      'table' => 'node',
+      'field' => 'type',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
+    ),
+    'status' => array(
+      'operator' => '=',
+      'value' => '1',
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
+      ),
+      'id' => 'status',
+      'table' => 'node',
+      'field' => 'status',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
+    ),
+  ));
+  $handler->override_option('access', array(
+    'type' => 'perm',
+    'perm' => 'use timezynk report generator',
+  ));
+  $handler->override_option('cache', array(
+    'type' => 'none',
+  ));
+  $handler->override_option('title', 'Assignments');
+  $handler->override_option('items_per_page', 0);
+  $handler->override_option('style_plugin', 'table');
+  $handler->override_option('style_options', array(
+    'grouping' => 'title_1',
+    'override' => 1,
+    'sticky' => 0,
+    'order' => 'asc',
+    'columns' => array(
+      'title' => 'title',
+      'flags' => 'flags',
+      'edit_node' => 'edit_node',
+      'title_1' => 'title_1',
+    ),
+    'info' => array(
+      'title' => array(
+        'sortable' => 0,
+        'separator' => '',
+      ),
+      'flags' => array(
+        'sortable' => 0,
+        'separator' => '',
+      ),
+      'edit_node' => array(
+        'separator' => '',
+      ),
+      'title_1' => array(
+        'sortable' => 0,
+        'separator' => '',
+      ),
+    ),
+    'default' => '-1',
+  ));
+  $handler = $view->new_display('page', 'Sida', 'page_1');
+  $handler->override_option('path', 'assignments');
+  $handler->override_option('menu', array(
+    'type' => 'normal',
+    'title' => 'List assignments',
+    'description' => 'Show and edit available assignments',
+    'weight' => '0',
+    'name' => 'navigation',
+  ));
+  $handler->override_option('tab_options', array(
+    'type' => 'none',
+    'title' => '',
+    'description' => '',
+    'weight' => 0,
+    'name' => 'navigation',
+  ));
+
+  $views[$view->name] = $view;
+
   // Exported view: invoice_report
   $view = new view;
   $view->name = 'invoice_report';
@@ -36,36 +302,10 @@ function timezynk_basic_feature_views_default_views() {
     ),
   ));
   $handler->override_option('fields', array(
-    'realname' => array(
-      'label' => 'Name',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'link_to_user' => 0,
-      'overwrite_anonymous' => 0,
-      'anonymous_text' => '',
-      'exclude' => 0,
-      'id' => 'realname',
-      'table' => 'realname',
-      'field' => 'realname',
+    'fullname' => array(
+      'id' => 'fullname',
+      'table' => 'tzuser',
+      'field' => 'fullname',
       'relationship' => 'assignedto',
     ),
     'body' => array(
@@ -593,174 +833,6 @@ function timezynk_basic_feature_views_default_views() {
 
   $views[$view->name] = $view;
 
-  // Exported view: jad
-  $view = new view;
-  $view->name = 'jad';
-  $view->description = 'Jad Downloads';
-  $view->tag = '';
-  $view->view_php = '';
-  $view->base_table = 'jadmaker';
-  $view->is_cacheable = FALSE;
-  $view->api_version = 2;
-  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
-  $handler = $view->new_display('default', 'Defaults', 'default');
-  $handler->override_option('fields', array(
-    'download_id' => array(
-      'label' => 'ID',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'set_precision' => FALSE,
-      'precision' => 0,
-      'decimal' => '.',
-      'separator' => ',',
-      'prefix' => '',
-      'suffix' => '',
-      'exclude' => 0,
-      'id' => 'download_id',
-      'table' => 'jadmaker',
-      'field' => 'download_id',
-      'relationship' => 'none',
-      'override' => array(
-        'button' => 'Override',
-      ),
-    ),
-    'timestamp' => array(
-      'label' => 'Timestamp',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'date_format' => 'small',
-      'custom_date_format' => '',
-      'exclude' => 0,
-      'id' => 'timestamp',
-      'table' => 'jadmaker',
-      'field' => 'timestamp',
-      'relationship' => 'none',
-      'override' => array(
-        'button' => 'Override',
-      ),
-    ),
-    'http_data' => array(
-      'label' => 'HTTP Variables',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 1,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'exclude' => 0,
-      'id' => 'http_data',
-      'table' => 'jadmaker',
-      'field' => 'http_data',
-      'relationship' => 'none',
-    ),
-  ));
-  $handler->override_option('access', array(
-    'type' => 'perm',
-    'perm' => 'administer site configuration',
-  ));
-  $handler->override_option('cache', array(
-    'type' => 'none',
-  ));
-  $handler->override_option('items_per_page', 20);
-  $handler->override_option('use_pager', '1');
-  $handler->override_option('style_plugin', 'table');
-  $handler->override_option('style_options', array(
-    'grouping' => '',
-    'override' => 1,
-    'sticky' => 0,
-    'order' => 'desc',
-    'columns' => array(
-      'download_id' => 'download_id',
-      'timestamp' => 'timestamp',
-      'http_data' => 'http_data',
-    ),
-    'info' => array(
-      'download_id' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'timestamp' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'http_data' => array(
-        'separator' => '',
-      ),
-    ),
-    'default' => 'download_id',
-  ));
-  $handler = $view->new_display('page', 'Page', 'page_1');
-  $handler->override_option('path', 'jad_downloads');
-  $handler->override_option('menu', array(
-    'type' => 'normal',
-    'title' => 'JAD Downloads',
-    'description' => '',
-    'weight' => '10',
-    'name' => 'navigation',
-  ));
-  $handler->override_option('tab_options', array(
-    'type' => 'none',
-    'title' => '',
-    'description' => '',
-    'weight' => 0,
-    'name' => 'navigation',
-  ));
-
-  $views[$view->name] = $view;
-
   // Exported view: salary_report
   $view = new view;
   $view->name = 'salary_report';
@@ -791,8 +863,8 @@ function timezynk_basic_feature_views_default_views() {
     ),
   ));
   $handler->override_option('fields', array(
-    'realname' => array(
-      'label' => 'Name',
+    'fullname' => array(
+      'label' => 'Full name',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -814,17 +886,55 @@ function timezynk_basic_feature_views_default_views() {
       'empty' => '',
       'hide_empty' => 0,
       'empty_zero' => 0,
-      'link_to_user' => 0,
+      'link_to_user' => 1,
       'overwrite_anonymous' => 0,
       'anonymous_text' => '',
       'exclude' => 0,
-      'id' => 'realname',
-      'table' => 'realname',
-      'field' => 'realname',
+      'id' => 'fullname',
+      'table' => 'tzuser',
+      'field' => 'fullname',
       'relationship' => 'assignedto',
       'override' => array(
         'button' => 'Override',
       ),
+    ),
+    'assignedto' => array(
+      'label' => 'Assigned user',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'set_precision' => FALSE,
+      'precision' => 0,
+      'decimal' => '.',
+      'separator' => ',',
+      'prefix' => '',
+      'suffix' => '',
+      'exclude' => 1,
+      'id' => 'assignedto',
+      'table' => 'tzreport',
+      'field' => 'assignedto',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
     ),
     'title_1' => array(
       'label' => 'Job',
@@ -832,7 +942,7 @@ function timezynk_basic_feature_views_default_views() {
         'alter_text' => 0,
         'text' => '',
         'make_link' => 0,
-        'path' => '',
+        'path' => 'reports/[jobid]',
         'link_class' => '',
         'alt' => '',
         'prefix' => '',
@@ -855,6 +965,9 @@ function timezynk_basic_feature_views_default_views() {
       'table' => 'node',
       'field' => 'title',
       'relationship' => 'jobid',
+      'override' => array(
+        'button' => 'Override',
+      ),
     ),
     'begintime_1' => array(
       'label' => 'Date',
@@ -1048,6 +1161,53 @@ function timezynk_basic_feature_views_default_views() {
       'relationship' => 'none',
     ),
   ));
+  $handler->override_option('arguments', array(
+    'nid' => array(
+      'default_action' => 'ignore',
+      'style_plugin' => 'default_summary',
+      'style_options' => array(),
+      'wildcard' => 'all',
+      'wildcard_substitution' => 'All',
+      'title' => 'Time Reports for %1',
+      'breadcrumb' => 'Time Reports',
+      'default_argument_type' => 'fixed',
+      'default_argument' => '',
+      'validate_type' => 'node',
+      'validate_fail' => 'ignore',
+      'break_phrase' => 0,
+      'not' => 0,
+      'id' => 'nid',
+      'table' => 'node',
+      'field' => 'nid',
+      'validate_user_argument_type' => 'uid',
+      'validate_user_roles' => array(
+        '2' => 0,
+      ),
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'jobid',
+      'default_options_div_prefix' => '',
+      'default_argument_fixed' => '',
+      'default_argument_user' => 0,
+      'default_argument_php' => '',
+      'validate_argument_node_type' => array(
+        'tzjob' => 'tzjob',
+        'profile' => 0,
+        'tzreport' => 0,
+        'timereport' => 0,
+      ),
+      'validate_argument_node_access' => 0,
+      'validate_argument_nid_type' => 'nid',
+      'validate_argument_vocabulary' => array(
+        '1' => 0,
+      ),
+      'validate_argument_type' => 'tid',
+      'validate_argument_transform' => 0,
+      'validate_user_restrict_roles' => 0,
+      'validate_argument_php' => '',
+    ),
+  ));
   $handler->override_option('filters', array(
     'type' => array(
       'operator' => 'in',
@@ -1139,32 +1299,66 @@ function timezynk_basic_feature_views_default_views() {
       ),
       'relationship' => 'none',
     ),
+    'title' => array(
+      'operator' => 'contains',
+      'value' => '',
+      'group' => '0',
+      'exposed' => TRUE,
+      'expose' => array(
+        'use_operator' => 0,
+        'operator' => 'title_op',
+        'identifier' => 'assignment',
+        'label' => 'Assignment',
+        'optional' => 1,
+        'remember' => 0,
+      ),
+      'case' => 0,
+      'id' => 'title',
+      'table' => 'node',
+      'field' => 'title',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'jobid',
+    ),
     'uid' => array(
+      'operator' => 'in',
+      'value' => '',
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
+      ),
+      'id' => 'uid',
+      'table' => 'users',
+      'field' => 'uid',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'assignedto',
+    ),
+    'uid_1' => array(
       'operator' => 'in',
       'value' => '',
       'group' => '0',
       'exposed' => TRUE,
       'expose' => array(
         'use_operator' => 0,
-        'operator' => 'uid_op',
-        'identifier' => 'uid',
+        'operator' => 'uid_1_op',
+        'identifier' => 'uid_1',
         'label' => 'Assigned user',
         'optional' => 1,
         'remember' => 0,
         'reduce' => 0,
       ),
-      'id' => 'uid',
-      'table' => 'realname',
+      'id' => 'uid_1',
+      'table' => 'tzuser',
       'field' => 'uid',
       'relationship' => 'assignedto',
       'override' => array(
         'button' => 'Override',
       ),
-    ),
-    'uid_1' => array(
-      'id' => 'uid_1',
-      'table' => 'users',
-      'field' => 'uid',
     ),
   ));
   $handler->override_option('access', array(
@@ -1178,12 +1372,13 @@ function timezynk_basic_feature_views_default_views() {
   $handler->override_option('items_per_page', 0);
   $handler->override_option('style_plugin', 'views_calc');
   $handler->override_option('style_options', array(
-    'grouping' => 'realname',
+    'grouping' => 'assignedto',
     'override' => 1,
     'sticky' => 0,
     'order' => 'asc',
     'columns' => array(
-      'realname' => 'realname',
+      'fullname' => 'fullname',
+      'assignedto' => 'assignedto',
       'title_1' => 'title_1',
       'begintime_1' => 'begintime_1',
       'begintime' => 'begintime',
@@ -1194,8 +1389,15 @@ function timezynk_basic_feature_views_default_views() {
       'edit_node' => 'edit_node',
     ),
     'info' => array(
-      'realname' => array(
-        'sortable' => 1,
+      'fullname' => array(
+        'sortable' => 0,
+        'separator' => '',
+        'justification' => 'views_calc_justify_none',
+        'has_calc' => 0,
+        'calc' => array(),
+      ),
+      'assignedto' => array(
+        'sortable' => 0,
         'separator' => '',
         'justification' => 'views_calc_justify_none',
         'has_calc' => 0,

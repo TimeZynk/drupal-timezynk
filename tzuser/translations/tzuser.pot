@@ -3,15 +3,18 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
+#  tzuser.theme.inc: n/a
 #  tzuser.module: n/a
 #  tzuser.install: n/a
 #  tzuser.info: n/a
+#  includes/tzuser.views.inc: n/a
+#  includes/tzuser_handler_filter_user_name.inc: n/a
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-02-11 17:11+0100\n"
+"POT-Creation-Date: 2011-02-17 09:49+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -20,23 +23,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzuser.module:26;65
+#: tzuser.theme.inc:18
+msgid "View user profile."
+msgstr ""
+
+#: tzuser.module:41;154
 msgid "Full name"
 msgstr ""
 
-#: tzuser.module:31;71
+#: tzuser.module:47;160
 msgid "Mobile number"
 msgstr ""
 
-#: tzuser.module:61
+#: tzuser.module:150
 msgid "TimeZynk Information"
 msgstr ""
 
-#: tzuser.module:66
+#: tzuser.module:155
 msgid "The users full name"
 msgstr ""
 
-#: tzuser.module:72
+#: tzuser.module:161
 msgid "The users mobile number without country code"
 msgstr ""
 
@@ -55,4 +62,30 @@ msgstr ""
 #: tzuser.info:0
 msgid "TimeZynk"
 msgstr ""
+
+#: includes/tzuser.views.inc:5
+msgid "User"
+msgstr ""
+
+#: includes/tzuser.views.inc:25
+msgid "Users full name"
+msgstr ""
+
+#: includes/tzuser.views.inc:40
+msgid "Users mobile number"
+msgstr ""
+
+#: includes/tzuser_handler_filter_user_name.inc:25
+msgid "Full names"
+msgstr ""
+
+#: includes/tzuser_handler_filter_user_name.inc:26
+msgid "Enter a comma separated list of full user names."
+msgstr ""
+
+#: includes/tzuser_handler_filter_user_name.inc:68
+msgid "Unable to find user: @users"
+msgid_plural "Unable to find users: @users"
+msgstr[0] ""
+msgstr[1] ""
 

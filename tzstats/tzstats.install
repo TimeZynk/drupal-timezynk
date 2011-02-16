@@ -63,14 +63,16 @@ function tzstats_update_6001() {
   return $ret;
 }
 
-/**
- * TZStats database schema
- */
-function tzstats_schema() {
-  /* SMS schema keeps track of sent SMS messages */
-  $schema['tzstats_sms'] = array(
+function tzstats_update_6002() {
+  $ret = array();
+  db_create_table($ret, 'tzstats_sms_temp', array(
     'description' => t('Stores statistics on sent SMS messages'),
     'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
       'uid' => array(
         'type' => 'int',
         'not null' => TRUE,
@@ -87,6 +89,11 @@ function tzstats_schema() {
         'not null' => TRUE,
         'description' => 'SMS type as defined by the tzsms module',
       ),
+      'length' => array(
+        'type' => 'int',
+        'default' => 0,
+        'description' => 'SMS length in characters',
+      ),
       'destination' => array(
         'type' => 'varchar',
         'length' => '32',
@@ -95,7 +102,57 @@ function tzstats_schema() {
         'description' => 'SMS destination phone number',
       ),
     ),
-    'indexes' => array('uid' => array('uid')),
+    'primary key' => array('id'),
+  ));
+  db_query('INSERT IGNORE INTO {tzstats_sms_temp} (uid, timestamp, sms_type, destination) SELECT uid, timestamp, sms_type, destination FROM {tzstats_sms}');
+  db_drop_table($ret, 'tzstats_sms');
+  db_rename_table($ret, 'tzstats_sms_temp', 'tzstats_sms');
+  return $ret;
+}
+
+/**
+ * TZStats database schema
+ */
+function tzstats_schema() {
+  /* SMS schema keeps track of sent SMS messages */
+  $schema['tzstats_sms'] = array(
+    'description' => t('Stores statistics on sent SMS messages'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Sending user's {users}.uid.",
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp when this SMS was sent",
+      ),
+      'sms_type' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'SMS type as defined by the tzsms module',
+      ),
+      'length' => array(
+        'type' => 'int',
+        'default' => 0,
+        'description' => 'SMS length in characters',
+      ),
+      'destination' => array(
+        'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'SMS destination phone number',
+      ),
+    ),
+    'primary key' => array('id'),
   );
   $schema['tzstats_sync'] = array(
     'description' => t('Stores statistics on synchronized users'),

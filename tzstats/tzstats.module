@@ -4,13 +4,14 @@
  * Implements hook_tzsms_send.
  * Logs sms sending to the statistics database
  */
-function tzstats_tzsms_send($type, $phonenbr) {
+function tzstats_tzsms_send($type, $phonenbr, $length) {
   global $user;
   $record = array(
     'uid' => $user->uid,
     'timestamp' => time(),
     'sms_type' => $type,
-    'destination' => $phonenbr
+    'destination' => $phonenbr,
+    'length' => $length,
   );
   drupal_write_record('tzstats_sms', $record);
 }

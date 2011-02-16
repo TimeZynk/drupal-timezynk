@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tzsms\n"
-"POT-Creation-Date: 2011-02-11 17:12+0100\n"
-"PO-Revision-Date: 2011-02-11 17:15+0100\n"
+"POT-Creation-Date: 2011-02-17 09:48+0100\n"
+"PO-Revision-Date: 2011-02-17 09:49+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: sv <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Bookmarks: -1,-1,13,-1,-1,-1,-1,25,-1,8\n"
+"X-Poedit-Bookmarks: -1,-1,32,-1,-1,-1,-1,25,-1,8\n"
 "X-Poedit-Language: Swedish\n"
 "X-Poedit-Country: SWEDEN\n"
 "X-Poedit-SourceCharset: utf-8\n"
@@ -67,12 +67,12 @@ msgstr "Skriv in text att skicka som SMS"
 msgid "Send"
 msgstr "Skicka"
 
-#: tzsms_ui.send.inc:50
+#: tzsms_ui.send.inc:51
 msgid "Sent message to @count mobiles"
 msgstr "Skickade meddelandet till @count mobiler"
 
 #: tzsms_ui.send.inc:44
-#: tzsms.module:159;201
+#: tzsms.module:60;166;208
 msgid "tzsms"
 msgstr "tzsms"
 
@@ -88,83 +88,87 @@ msgstr "Skapa nytt TimeZynk-lösenord och skicka via installations-SMS"
 msgid "Send new TimeZynk installation SMS"
 msgstr "Skicka nytt installations-SMS för TimeZynk"
 
-#: tzsms.module:75
+#: tzsms.module:82
 msgid "TimeZynk SMS settings"
 msgstr "Inställningar för TimeZynk SMS"
 
-#: tzsms.module:76
+#: tzsms.module:83
 msgid "TimeZynk sends out installation instructions via SMS, configure the settings here!"
 msgstr "TimeZynk skickar ut installationsinstruktioner via SMS, konfigurera inställningarna här!"
 
-#: tzsms.module:80
+#: tzsms.module:87
 msgid "Default country code for this site"
 msgstr "Standardlandskod för att skicka SMS"
 
-#: tzsms.module:82
+#: tzsms.module:89
 msgid "The country code will be used to send installation SMS to the users registered on this site"
 msgstr "Landskoden kommer att användas för att skicka installations-SMS till användarna"
 
-#: tzsms.module:86
+#: tzsms.module:93
 msgid "The content of the SMS"
 msgstr "Mall för installatiosmeddelande"
 
-#: tzsms.module:88
+#: tzsms.module:95
 msgid "The available variables are: !url, !username and !password"
 msgstr "Tillgängliga variabler är: !url, !username och !password"
 
-#: tzsms.module:92
+#: tzsms.module:99
 msgid "The content of the SMS when keeping the same password"
 msgstr "Text för installations-SMS utan lösenordsfält"
 
-#: tzsms.module:94
+#: tzsms.module:101
 msgid "The available variables are: !url and !username"
 msgstr "Tillgängliga variabler är: !url och !username"
 
-#: tzsms.module:112
+#: tzsms.module:119
 msgid "You must enter a numeric country code (e.g. 46 for Sweden)!"
 msgstr "Du måste skriva en numerisk landskod (t.ex. 46 för Sverige)!"
 
-#: tzsms.module:148
+#: tzsms.module:155
 msgid "Your mobile phone number or e-mail address"
 msgstr "Skriv ditt mobilnummer eller din e-postadress"
 
-#: tzsms.module:149
+#: tzsms.module:156
 msgid "Send new password over SMS"
 msgstr "Skicka nytt lösenord över SMS"
 
-#: tzsms.module:160
+#: tzsms.module:167
 msgid "New password has been sent to you over SMS"
 msgstr "Ditt nya lösenord har skickats till dig över SMS"
 
-#: tzsms.module:229
+#: tzsms.module:236
 msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username and \"!password\" as password."
 msgstr "Välkommen till TimeZynk! Besök !url för att installera och logga sedan in med \"!username\" som användarnamn och \"!password\" som lösenord."
 
-#: tzsms.module:243
+#: tzsms.module:250
 msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username."
 msgstr "Välkommen till TimeZynk! Besök !url för att installera och logga sedan in med \"!username\" som användarnamn."
 
-#: tzsms.module:159
+#: tzsms.module:60
+msgid "Failed to send SMS to invalid number: @number"
+msgstr "Kunde inte skicka SMS till ogiltigt nummer: @number"
+
+#: tzsms.module:166
 msgid "Requested new password over SMS"
 msgstr "Begärde nytt lösenord över SMS"
 
-#: tzsms.module:201
+#: tzsms.module:208
 msgid "Sending install SMS to !nbr"
 msgstr "Skicka installations-SMS till !nbr"
 
-#: tzsms_ui.module:71
+#: tzsms_ui.module:74
 msgid "Recipients"
 msgstr "Mottagare"
 
-#: tzsms_ui.module:77
+#: tzsms_ui.module:80
 msgid "Select recipients"
 msgstr "Välj mottagare"
 
-#: tzsms_ui.module:79
+#: tzsms_ui.module:82
 msgid "Send ONLY to the users marked below"
 msgstr "Skicka ENDAST till användare markerade nedan"
 
-#: tzsms_ui.module:80
+#: tzsms_ui.module:83
 msgid "Send to EVERYONE, except the users marked below"
 msgstr "Skicka till ALLA, utom användare markerade nedan"
 

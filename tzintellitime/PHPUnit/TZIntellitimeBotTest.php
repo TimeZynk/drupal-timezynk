@@ -132,8 +132,8 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
         ->will($this->returnValue($this->loadHTMLFile('intellitime-main-page.html')));
 
     $bot = new TZIntellitimeBot($curlInterface, $login_url);
-    $loginSuccess = $bot->login($expectedUsername, $expectedPassword);
-    $this->assertTrue($loginSuccess);
+    $loginName = $bot->login($expectedUsername, $expectedPassword);
+    $this->assertEquals('Johan Heander', $loginName);
   }
 
   public function testLogout() {

@@ -11,26 +11,6 @@ function timezynk_basic_feature_ctools_plugin_api() {
 }
 
 /**
- * Implementation of hook_node_info().
- */
-function timezynk_basic_feature_node_info() {
-  $items = array(
-    'profile' => array(
-      'name' => t('Profil'),
-      'module' => 'features',
-      'description' => t('A user profile built as content.'),
-      'has_title' => '1',
-      'title_label' => t('Titel'),
-      'has_body' => '0',
-      'body_label' => '',
-      'min_word_count' => '0',
-      'help' => '',
-    ),
-  );
-  return $items;
-}
-
-/**
  * Implementation of hook_views_api().
  */
 function timezynk_basic_feature_views_api() {

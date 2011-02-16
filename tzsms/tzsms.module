@@ -55,12 +55,19 @@ function tzsms_validate_phone_number($number) {
  * @param string $msg message to send
  */
 function tzsms_send($type, $phonenbr, $msg) {
+  $valid_number = tzsms_validate_phone_number($phonenbr);
+  if(FALSE === $valid_number) {
+    watchdog('tzsms', 'Failed to send SMS to invalid number: @number', array('@number' => $phonenbr));
+    return FALSE;
+  }
+
   // Invoke tzsms_send hook to allow modules to collect statistics or billing info
-  module_invoke_all('tzsms_send', $type, $phonenbr);
+  module_invoke_all('tzsms_send', $type, $valid_number, strlen($msg));
 
   // Load country code and send SMS
   $country_code = intval(variable_get('tzsms_default_country_code', '46'));
-  sms_send($phonenbr, $msg, array('country' => $country_code));
+  sms_send($valid_number, $msg, array('country' => $country_code));
+  return TRUE;
 }
 
 

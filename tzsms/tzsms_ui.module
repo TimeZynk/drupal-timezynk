@@ -52,11 +52,14 @@ function tzsms_ui_theme() {
 }
 
 function tzsms_ui_list_users() {
-  $query = db_query('SELECT uid FROM {users} WHERE status = 1');
+  $query = db_query('SELECT uid FROM {users} WHERE status = 1 AND uid != 0');
   $users = array();
   while($uid = db_result($query)) {
     $account = user_load($uid);
     if(empty($account->tzuser['mobile'])) {
+      continue;
+    }
+    if(FALSE === tzsms_validate_phone_number($account->tzuser['mobile'])) {
       continue;
     }
     $users[] = $account;
@@ -85,7 +88,7 @@ function tzsms_ui_recipient_form($default_policy = 'include', $default_selection
   $accounts = tzsms_ui_list_users();
   $userlist = array();
   foreach($accounts as $account) {
-    $userlist[$account->uid] = check_plain($account->name);
+    $userlist[$account->uid] = check_plain($account->tzuser['fullname']);
   }
   asort($userlist);
 

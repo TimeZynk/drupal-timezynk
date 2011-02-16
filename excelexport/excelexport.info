@@ -1,8 +1,7 @@
 name = TimeZynk Excel Exporter
-description = Exports time reports to excel 
+description = Exports time reports to excel
 core = 6.x
 dependencies[] = tzbase
-depencencies[] = realname
 dependencies[] = libraries
 dependencies[] = date_api
 package = TimeZynk

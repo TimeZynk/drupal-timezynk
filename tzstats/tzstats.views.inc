@@ -2,7 +2,7 @@
 
 function tzstats_views_data() {
   $data['tzstats_sync']['table'] = array(
-    'group' => t('TZSTats'),
+    'group' => t('Intellitime'),
     'base' => array(
       'field' => 'id',
       'title' => t('Intellitime Synchronizations'),
@@ -77,6 +77,79 @@ function tzstats_views_data() {
      ),
   );
 
+  $data['tzstats_sms']['table'] = array(
+    'group' => t('SMS'),
+    'base' => array(
+      'field' => 'id',
+      'title' => t('SMS statistics'),
+      'help' => t('Statistics over SMS'),
+      'weight' => 10,
+    ),
+  );
+
+  $data['tzstats_sms']['uid'] = array(
+    'title' => t('User ID'),
+    'help' => t('User ID'),
+
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'relationship' => array(
+      'handler' => 'views_handler_relationship',
+      'base' => 'users',
+      'base field' => 'uid',
+    )
+  );
+
+  $data['tzstats_sms']['timestamp'] = array(
+    'title' => t('Timestamp'),
+    'help' => t('Date and time for SMS.'),
+
+    'field' => array(
+      'handler' => 'views_handler_field_date',
+      'click sortable' => TRUE,
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort_date',
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_date',
+    ),
+  );
+
+  $data['tzstats_sms']['sms_type'] = array(
+    'title' => t('SMS Type'),
+    'help' => t('SMS Type'),
+
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+  );
+
+  $data['tzstats_sms']['length'] = array(
+    'title' => t('SMS length'),
+    'help' => t('SMS length'),
+
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+  );
+
+  $data['tzstats_sms']['destination'] = array(
+    'title' => t('Destination'),
+    'help' => t('Destination mobile number'),
+
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+  );
 
   return $data;
 }
