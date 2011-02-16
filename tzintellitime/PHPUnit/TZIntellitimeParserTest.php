@@ -264,4 +264,16 @@ class TZIntellitimeParserTest extends PHPUnit_Framework_TestCase {
     $error = $parser->parse_page_error();
     $this->assertEquals('Unexpected error', $error);
   }
+
+  public function testParseUserNameFromMainPage() {
+    $parser = $this->loadHTMLFile('intellitime-main-page.html');
+    $username = $parser->parse_username();
+    $this->assertEquals('Johan Heander', $username);
+  }
+
+  public function testParseUserNameFromTimereportPage() {
+    $parser = $this->loadHTMLFile('intellitime-v9-timereport-three-open.txt');
+    $username = $parser->parse_username();
+    $this->assertEquals('Johan Heander', $username);
+  }
 }

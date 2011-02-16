@@ -71,6 +71,18 @@ class TZIntellitimeParser {
     return NULL;
   }
 
+  public function parse_username() {
+    $username = NULL;
+    $spans = $this->doc->xpath('//td/font/span');
+    foreach($spans as $span) {
+      if(preg_match('/LabeUserName$/', $span['id'])) {
+        $username = trim(strval($span));
+        break;
+      }
+    }
+    return $username;
+  }
+
   /**
    * Parse any page error strings.
    * @return string error string or NULL if no errors found.

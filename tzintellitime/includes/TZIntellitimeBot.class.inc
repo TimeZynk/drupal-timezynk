@@ -51,14 +51,24 @@ class TZIntellitimeBot implements TZIntellitimeServerInterface {
    * @param string $url the customer specific login URL.
    * @param string $username the user to login as
    * @param string $password the password to login with
-   * @return bool TRUE if successful, otherwise FALSE.
+   * @return bool Users full name if sucessful, otherwise FALSE.
    */
   public function login($username, $password) {
     $parser = $this->request($this->login_url);
     $post = $parser->build_login_post($username, $password);
     $post_url = $this->build_action_url("Portal/" . $post['action']);
     $parser = $this->request($post_url, $post['data']);
-    return $parser->is_valid_login();
+
+    if(!$parser->is_valid_login()) {
+      return FALSE;
+    }
+
+    $fullname = $parser->parse_username();
+    if(empty($fullname)) {
+      return $username;
+    } else {
+      return $fullname;
+    }
   }
 
   /**

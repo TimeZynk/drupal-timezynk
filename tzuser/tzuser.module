@@ -45,7 +45,12 @@ function _tzuser_save_entry(&$edit, $account) {
     return;
   }
 
-  $entry = array_merge(array('uid' => $account->uid), $edit['tzuser']);
+  $entry = array('uid' => $account->uid);
+  if(!empty($account->tzuser)) {
+    $entry = array_merge($entry, $account->tzuser);
+  }
+  $entry = array_merge($entry, $edit['tzuser']);
+
   if(empty($account->tzuser)) {
     drupal_write_record('tzuser', $entry);
   } else {

@@ -129,6 +129,7 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
     $this->drupalLogin($admin);
     $form = array(
      'users[0][login]' => 'test user',
+     'users[0][fullname]' => 'Test von Tester',
      'users[0][password]' => 'test password',
     );
     $this->drupalPost('admin/settings/tzintellitime_mock', $form, t('Save'));
@@ -158,7 +159,7 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
 
     // Correct username and password
     $ok = $this->bot->login("test user", "test password");
-    $this->assertTrue($ok);
+    $this->assertEqual('Test von Tester', $ok);
   }
 
   public function testDestructorDoesNotRemoveCookiejar() {
