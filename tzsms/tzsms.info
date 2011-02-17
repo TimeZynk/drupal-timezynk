@@ -3,4 +3,5 @@ description = Provides TimeZynk SMS services
 package = TimeZynk
 dependencies[] = sms
 dependencies[] = genpass
+dependencies[] = tzuser
 core = 6.x

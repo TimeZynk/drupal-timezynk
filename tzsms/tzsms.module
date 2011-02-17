@@ -30,22 +30,6 @@ function tzsms_user_operations() {
 }
 
 /**
- * Validate a mobile phone number and strip out all extra characters
- * @param string $number phone number to validate
- * @return all-numeric phone number if success, otherwise FALSE
- */
-function tzsms_validate_phone_number($number) {
-  // Remove characters like '+', '-', ' ' and '/'
-  $mobile_number = preg_replace('/[\+\- \/]/', '', $number);
-  // There should be only digits left now
-  if(!ctype_digit($mobile_number) || strlen($mobile_number) < 6) {
-    return FALSE;
-  }
-  return $mobile_number;
-}
-
-
-/**
  * Send a SMS message to phonenbr. This is the lowest level function you
  * should call to send a SMS. Do not use the SMS Framework module
  * directly since it would bypass the statistics functions.
@@ -55,7 +39,7 @@ function tzsms_validate_phone_number($number) {
  * @param string $msg message to send
  */
 function tzsms_send($type, $phonenbr, $msg) {
-  $valid_number = tzsms_validate_phone_number($phonenbr);
+  $valid_number = tzuser_validate_phone_number($phonenbr);
   if(FALSE === $valid_number) {
     watchdog('tzsms', 'Failed to send SMS to invalid number: @number', array('@number' => $phonenbr));
     return FALSE;
@@ -68,6 +52,14 @@ function tzsms_send($type, $phonenbr, $msg) {
   $country_code = intval(variable_get('tzsms_default_country_code', '46'));
   sms_send($valid_number, $msg, array('country' => $country_code));
   return TRUE;
+}
+
+function tzsms_tzuser_add_user_notify($account, $password = '') {
+  tzsms_send_new_user_sms(
+      $account->tzuser['mobile'],
+      $account->name,
+      $password
+  );
 }
 
 
@@ -142,9 +134,10 @@ function tzsms_form_user_register_alter(&$form, &$form_state) {
  * @param $form_state form state with current values
  */
 function tzsms_form_user_register_submit($form, &$form_state) {
+  $mobile = $form_state['values']['tzuser']['mobile'];
   $username = $form_state['values']['name'];
   $password = $form_state['values']['pass'];
-  tzsms_send_new_user_sms($username, $username, $password);
+  tzsms_send_new_user_sms($mobile, $username, $password);
 }
 
 
@@ -179,7 +172,7 @@ function tzsms_reset_pw_and_send_install_sms($users) {
     $new_pass = genpass_generate();
     $user = user_save($user, array('pass' => $new_pass));
     if($user) {
-      tzsms_send_new_user_sms($user->name, $user->name, $new_pass);
+      tzsms_send_new_user_sms($user->tzuser['mobile'], $user->name, $new_pass);
     }
   }
 }
@@ -191,7 +184,7 @@ function tzsms_send_install_sms($users) {
   foreach($users as $uid) {
     $user = user_load($uid);
     if($user) {
-      tzsms_send_new_user_sms($user->name, $user->name);
+      tzsms_send_new_user_sms($user->tzuser['mobile'], $user->name);
     }
   }
 }

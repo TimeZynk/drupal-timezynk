@@ -7,8 +7,48 @@ function tzuser_menu() {
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
+  $items['tzuser'] = array(
+    'title' => 'Employees',
+    'access arguments' => array('view employees'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzuser_user_overview'),
+    'file' => 'includes/tzuser.overview.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['tzuser/overview'] = array(
+    'title' => 'Employee overview',
+    'access arguments' => array('view employees'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  $items['tzuser/add'] = array(
+    'title' => 'Add employees',
+    'access arguments' => array('manage employees'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzuser_add_users_form'),
+    'file' => 'includes/tzuser.add.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -9,
+  );
   return $items;
 }
+
+function tzuser_perm() {
+  return array('view employees', 'manage employees');
+}
+
+/**
+ * Implementation of hook_theme().
+ * Declares the theme function for formatting the add user form rows.
+ */
+function tzuser_theme() {
+  return array(
+    'tzuser_add_users_rows' => array(
+      'arguments' => array(),
+    ),
+  );
+}
+
 function tzuser_views_api() {
   return array(
     'api' => 2,
@@ -35,20 +75,11 @@ function tzuser_user($op, &$edit, &$account, $category = NULL) {
       break;
 
     case 'view':
-      if (!empty($account->tzuser)) {
-        $account->content['fullname'] = array(
-          '#type' => 'user_profile_item',
-          '#title' => t('Full name'),
-          '#value' => $account->tzuser['fullname'],
-          '#weight' => -10,
-        );
-        $account->content['mobile'] = array(
-          '#type' => 'user_profile_item',
-          '#title' => t('Mobile number'),
-          '#value' => $account->tzuser['mobile'],
-          '#weight' => -9,
-        );
-      }
+      _tzuser_show_entry($account);
+      break;
+
+    case 'validate':
+      _tzuser_validate_entry($edit);
       break;
 
     case 'form':
@@ -69,6 +100,18 @@ function tzuser_theme_registry_alter(&$theme_registry) {
     $theme_registry['username']['file'] = $path . '/tzuser.theme.inc';
     $theme_registry['username']['theme path'] = $path;
     $theme_registry['username']['theme paths'][0] = $path;
+  }
+}
+
+function tzuser_form_alter(&$form, &$form_state, $form_id) {
+  /* Hide e-mail field in the user registration and user edit forms,
+   * since we don't really care about it and it is cumbersome to
+   * have to enter it just to satisfy drupal.
+   */
+  if ($form_id == 'user_register' ||
+      $form_id == 'user_profile_form') {
+    $form['account']['mail']['#type'] = 'hidden';
+    $form['account']['mail']['#value'] = _tzuser_generate_fake_email();
   }
 }
 
@@ -106,29 +149,88 @@ function tzuser_ajax_autocomplete_user($string = '') {
   drupal_json($matches);
 }
 
+/**
+ * Add a new user
+ * @param string $fullname Users full name
+ * @param string $mobile_number Users mobile number
+ * @param string $username Users username
+ * @param string $password Users
+ * @param Array $extra_data Extra fields to save in the user object
+ * @return object Fully loaded user object on success, otherwise FALSE
+ */
+function tzuser_add_user($fullname, $username, $password = '', $mobile_number = '', $extra_data = array()) {
+  if(empty($fullname) || empty($username)) {
+    return FALSE;
+  }
+
+  if(empty($password)) {
+    /* Generate a password if none is provided. This can be changed by the admin
+     * or when the user is authenticated remotely for the first time.
+     */
+    $password = uniqid('passwd');
+  }
+
+  // Try to load account
+  $account = user_load(array('name' => $username));
+
+  if(!is_array($extra_data)) {
+    $extra_data = array();
+  }
+  $user_data = $extra_data;
+  $user_data['status'] = 1;
+  $user_data['pass'] = $password;
+  $user_data['tzuser'] = array(
+    'fullname' => $fullname,
+    'mobile' => tzuser_validate_phone_number($mobile_number),
+  );
+
+  if (!$account) {
+    $mail = _tzuser_generate_fake_email();
+    $user_data['mail'] = $mail;
+    $user_data['init'] = $mail;
+    $user_data['name'] = $username;
+  }
+
+  drupal_alter('tzuser_add_user_data', $user_data);
+
+  $account = user_save($account, $user_data);
+  if (!$account) {
+    return FALSE;
+  }
+
+  return $account;
+}
+
+/**
+ * Validate a mobile phone number and strip out all extra characters
+ * @param string $number phone number to validate
+ * @return all-numeric phone number if success, otherwise FALSE
+ */
+function tzuser_validate_phone_number($number) {
+  // Remove characters like '+', '-', ' ' and '/'
+  $mobile_number = preg_replace('/[\+\- \/]/', '', $number);
+  // There should be only digits left now
+  if(!ctype_digit($mobile_number) || strlen($mobile_number) < 6) {
+    return FALSE;
+  }
+  return $mobile_number;
+}
+
 function _tzuser_load_entry($account) {
   $entry = array();
 
   $db_entry = db_fetch_array(db_query('SELECT * FROM {tzuser} WHERE uid = %d', $account->uid));
   if(is_array($db_entry)) {
     $entry = array_merge($entry, $db_entry);
+    // unset uid since we don't need it in both $account->uid and $account->tzuser[uid]
+    unset($entry['uid']);
   }
-
-  if(empty($entry['fullname'])) {
-    $entry['fullname'] = $account->name;
-  }
-
-  if(empty($entry['mobile'])) {
-    $entry['mobile'] = $account->name;
-  }
-
-  unset($entry['uid']);
 
   return $entry;
 }
 
 function _tzuser_save_entry(&$edit, $account) {
-  if (!isset($edit['tzuser'])) {
+  if (empty($edit['tzuser'])) {
     return;
   }
 
@@ -146,7 +248,42 @@ function _tzuser_save_entry(&$edit, $account) {
   $edit['tzuser'] = NULL;
 }
 
+function _tzuser_show_entry(&$account) {
+  if (!empty($account->tzuser['fullname'])) {
+    $account->content['fullname'] = array(
+      '#type' => 'user_profile_item',
+      '#title' => t('Full name'),
+      '#value' => $account->tzuser['fullname'],
+      '#weight' => -10,
+    );
+  }
+  if (!empty($account->tzuser['mobile'])) {
+    $account->content['mobile'] = array(
+      '#type' => 'user_profile_item',
+      '#title' => t('Mobile number'),
+      '#value' => $account->tzuser['mobile'],
+      '#weight' => -9,
+    );
+  }
+}
+
+function _tzuser_validate_entry($edit) {
+  if(!isset($edit['tzuser'])) {
+    return;
+  }
+
+  $mobile = tzuser_validate_phone_number($edit['tzuser']['mobile']);
+  if(empty($mobile)) {
+    form_set_error('tzuser][mobile', t('Please enter a valid phone number'));
+  }
+}
+
 function _tzuser_user_form($account) {
+  if($account->uid == 1) {
+    // Don't add anything to the admin user
+    return array();
+  }
+
   $form['tzuser'] = array(
     '#tree' => TRUE,
     '#type' => 'fieldset',
@@ -154,15 +291,21 @@ function _tzuser_user_form($account) {
   );
   $form['tzuser']['fullname'] = array(
     '#type' => 'textfield',
+    '#required' => TRUE,
     '#title' => t('Full name'),
     '#description' => t('The users full name'),
     '#default_value' => empty($account->tzuser['fullname']) ? '' : $account->tzuser['fullname'],
   );
   $form['tzuser']['mobile'] = array(
     '#type' => 'textfield',
+    '#required' => TRUE,
     '#title' => t('Mobile number'),
     '#description' => t('The users mobile number without country code'),
     '#default_value' => empty($account->tzuser['mobile']) ? '' : $account->tzuser['mobile'],
   );
   return $form;
+}
+
+function _tzuser_generate_fake_email() {
+  return uniqid('user', TRUE) . '@' . $_SERVER['HTTP_HOST'];
 }

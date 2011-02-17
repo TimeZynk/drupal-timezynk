@@ -5,6 +5,7 @@
 # Generated from files:
 #  tzuser.theme.inc: n/a
 #  tzuser.module: n/a
+#  includes/tzuser.add.inc: n/a
 #  tzuser.install: n/a
 #  tzuser.info: n/a
 #  includes/tzuser.views.inc: n/a
@@ -14,7 +15,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-02-17 09:49+0100\n"
+"POT-Creation-Date: 2011-02-17 12:27+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -27,24 +28,48 @@ msgstr ""
 msgid "View user profile."
 msgstr ""
 
-#: tzuser.module:41;154
+#: tzuser.module:247;287
 msgid "Full name"
 msgstr ""
 
-#: tzuser.module:47;160
+#: tzuser.module:255;294 includes/tzuser.add.inc:108
 msgid "Mobile number"
 msgstr ""
 
-#: tzuser.module:150
+#: tzuser.module:269
+msgid "Please enter a valid phone number"
+msgstr ""
+
+#: tzuser.module:282
 msgid "TimeZynk Information"
 msgstr ""
 
-#: tzuser.module:155
+#: tzuser.module:288
 msgid "The users full name"
 msgstr ""
 
-#: tzuser.module:161
+#: tzuser.module:295
 msgid "The users mobile number without country code"
+msgstr ""
+
+#: tzuser.module:37
+msgid "view employees"
+msgstr ""
+
+#: tzuser.module:37
+msgid "manage employees"
+msgstr ""
+
+#: tzuser.module:11
+msgid "Employees"
+msgstr ""
+
+#: tzuser.module:19
+msgid "Employee overview"
+msgstr ""
+
+#: tzuser.module:25 includes/tzuser.add.inc:70;156
+msgid "Add employees"
 msgstr ""
 
 #: tzuser.install:25
@@ -61,6 +86,42 @@ msgstr ""
 
 #: tzuser.info:0
 msgid "TimeZynk"
+msgstr ""
+
+#: includes/tzuser.add.inc:15;60
+msgid "Add more rows"
+msgstr ""
+
+#: includes/tzuser.add.inc:23
+msgid "To add more users to TimeZynk, fill in their mobile numbers and usernames below. If you need more rows use the <em>Add more rows</em> button."
+msgstr ""
+
+#: includes/tzuser.add.inc:74
+msgid "Reset"
+msgstr ""
+
+#: includes/tzuser.add.inc:108
+msgid "Username"
+msgstr ""
+
+#: includes/tzuser.add.inc:108
+msgid "Password"
+msgstr ""
+
+#: includes/tzuser.add.inc:128
+msgid "Please enter a valid mobile number"
+msgstr ""
+
+#: includes/tzuser.add.inc:130
+msgid "Please enter username"
+msgstr ""
+
+#: includes/tzuser.add.inc:139
+msgid "Mobile number entered twice"
+msgstr ""
+
+#: includes/tzuser.add.inc:161
+msgid "Sent install SMS to number @number"
 msgstr ""
 
 #: includes/tzuser.views.inc:5

@@ -63,7 +63,8 @@ function tzintellitime_mock_drush_schedule_all() {
   $result = db_query('SELECT * FROM {tzintellitime_mock_users}');
   while($mock_user = db_fetch_object($result)) {
     $account = user_load(array('name' => $mock_user->login, 'status' => 1));
-    if(tzintellitime_server_auth($account, $mock_user->login, $mock_user->password)) {
+    $account = tzintellitime_server_auth($account, $mock_user->login, $mock_user->password);
+    if($account) {
       tzintellitime_sync_schedule_user($account->uid);
     }
   }

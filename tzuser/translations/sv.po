@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TimeZynk\n"
-"POT-Creation-Date: 2011-02-17 09:49+0100\n"
-"PO-Revision-Date: 2011-02-17 09:52+0100\n"
+"POT-Creation-Date: 2011-02-17 12:27+0100\n"
+"PO-Revision-Date: 2011-02-17 12:29+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: Swedish <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -21,31 +21,57 @@ msgstr ""
 "X-Poedit-Language: Swedish\n"
 "X-Poedit-Country: SWEDEN\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Bookmarks: -1,-1,15,-1,-1,-1,-1,-1,-1,-1\n"
+"X-Poedit-Bookmarks: -1,-1,24,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: tzuser.theme.inc:18
 msgid "View user profile."
 msgstr "Visa användarprofil."
 
-#: tzuser.module:41;154
+#: tzuser.module:247;287
 msgid "Full name"
 msgstr "Fullständigt namn"
 
-#: tzuser.module:47;160
+#: tzuser.module:255;294
+#: includes/tzuser.add.inc:108
 msgid "Mobile number"
 msgstr "Mobilnummer"
 
-#: tzuser.module:150
+#: tzuser.module:269
+msgid "Please enter a valid phone number"
+msgstr "Skriv in ett giltigt mobilnummer"
+
+#: tzuser.module:282
 msgid "TimeZynk Information"
 msgstr "TimeZynk Information"
 
-#: tzuser.module:155
+#: tzuser.module:288
 msgid "The users full name"
 msgstr "Användarens fullständiga namn"
 
-#: tzuser.module:161
+#: tzuser.module:295
 msgid "The users mobile number without country code"
 msgstr "Användarens mobilnummer utan landskod"
+
+#: tzuser.module:37
+msgid "view employees"
+msgstr ""
+
+#: tzuser.module:37
+msgid "manage employees"
+msgstr ""
+
+#: tzuser.module:11
+msgid "Employees"
+msgstr "Anställda"
+
+#: tzuser.module:19
+msgid "Employee overview"
+msgstr "Översikt"
+
+#: tzuser.module:25
+#: includes/tzuser.add.inc:70;156
+msgid "Add employees"
+msgstr "Lägg till..."
 
 #: tzuser.install:25
 msgid "Stores TimeZynk user data"
@@ -62,6 +88,42 @@ msgstr ""
 #: tzuser.info:0
 msgid "TimeZynk"
 msgstr ""
+
+#: includes/tzuser.add.inc:15;60
+msgid "Add more rows"
+msgstr "Fler rader..."
+
+#: includes/tzuser.add.inc:23
+msgid "To add more users to TimeZynk, fill in their mobile numbers and usernames below. If you need more rows use the <em>Add more rows</em> button."
+msgstr "För att lägga till fler anställda till TimeZynk, fyll i mobilnummer och användarnamn nedan. Om du behöver fler rader använder du <em>Fler rader..</em> knappen nedan."
+
+#: includes/tzuser.add.inc:74
+msgid "Reset"
+msgstr "Rensa"
+
+#: includes/tzuser.add.inc:108
+msgid "Username"
+msgstr "Användarnamn"
+
+#: includes/tzuser.add.inc:108
+msgid "Password"
+msgstr "Lösenord"
+
+#: includes/tzuser.add.inc:128
+msgid "Please enter a valid mobile number"
+msgstr "Skriv in ett giltigt mobilnummer"
+
+#: includes/tzuser.add.inc:130
+msgid "Please enter username"
+msgstr "Skriv in ett användarnamn"
+
+#: includes/tzuser.add.inc:139
+msgid "Mobile number entered twice"
+msgstr "Mobilnumret finns med två gånger"
+
+#: includes/tzuser.add.inc:161
+msgid "Sent install SMS to number @number"
+msgstr "Skickade installations-SMS till @number"
 
 #: includes/tzuser.views.inc:5
 msgid "User"

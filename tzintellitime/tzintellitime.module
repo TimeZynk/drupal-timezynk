@@ -136,7 +136,8 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
 
   if (!$account || (isset($account->intellitime_user) && !tzintellitime_is_authenticated($account))) {
     try {
-      if(tzintellitime_server_auth($account, $username, $password)) {
+      $account = tzintellitime_server_auth($account, $username, $password);
+      if($account) {
         // Login successful, store in global user object
         $user = $account;
 
@@ -165,7 +166,7 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
 /**
  * Validate username and password against Intellitime Server
  */
-function tzintellitime_server_auth(&$account, $username, $password) {
+function tzintellitime_server_auth($account, $username, $password) {
   // new user or existing user with expired cookie-jar.
   if(isset($account->intellitime_session_data)) {
     TZCurl::destroySessionData($account->intellitime_session_data);
@@ -179,25 +180,31 @@ function tzintellitime_server_auth(&$account, $username, $password) {
     return FALSE;
   }
 
-  $user_data = array(
-    'intellitime_user' => TRUE,
-    'intellitime_session_data' => $curl->getSessionData(),
-    'tzuser' => array(
-      'fullname' => $fullname,
-    ),
-    'status' => 1,
-    'pass' => $password,
-  );
+  if(!$account) {
+    $account = tzuser_add_user($fullname, $username, $password, '', array(
+      'intellitime_user' => TRUE,
+      'intellitime_session_data' => $curl->getSessionData(),
+    ));
+  } else {
+    $user_data = array(
+      'status' => 1,
+      'pass' => $password,
+      'intellitime_user' => TRUE,
+      'intellitime_session_data' => $curl->getSessionData(),
+      'tzuser' => array(
+        'fullname' => $fullname,
+      ),
 
-  if (!$account) {
-    $user_data['mail'] = $username;
-    $user_data['init'] = $username;
-    $user_data['name'] = $username;
+    );
+
+    $account = user_save($account, $user_data);
   }
 
-  $account = user_save($account, $user_data);
+  return $account;
+}
 
-  return TRUE;
+function tzintellitime_tzuser_add_user_data_alter(&$user_data) {
+  $user_data['intellitime_user'] = TRUE;
 }
 
 

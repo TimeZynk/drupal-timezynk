@@ -16,6 +16,8 @@ function tzuser_username($account) {
 
   if (user_access('access user profiles')) {
     $output = l($name, 'user/' . $account->uid, array('attributes' => array('title' => t('View user profile.'))));
+  } else {
+    $output = $name;
   }
 
   return $output;

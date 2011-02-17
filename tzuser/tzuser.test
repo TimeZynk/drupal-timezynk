@@ -4,19 +4,19 @@ class TZSMSUITestCase extends DrupalWebTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => 'TZSMS UI Test Suite',
+      'name' => 'TZUser Test Suite',
       'description' => '',
-      'group' => 'TZSMS',
+      'group' => 'TZBase',
     );
   }
 
   public function setUp() {
     // Enable any modules required for the test.
-   parent::setUp('ahah_helper', 'sms', 'tzsms', 'tzsms_ui');
+   parent::setUp('ahah_helper', 'tzuser');
 
    // Create and test user
    $this->test_user = $this->drupalCreateUser(array(
-     'send installation sms',
+     'manage employees',
    ));
    $this->drupalLogin($this->test_user);
   }
@@ -34,7 +34,7 @@ class TZSMSUITestCase extends DrupalWebTestCase {
   }
 
   public function _testGetForm() {
-    $this->drupalGet('tzsms/installation');
+    $this->drupalGet('tzuser/add');
     $this->assertResponse(200, 'User is allowed to access the SMS sending page');
 
     for($i = 0; $i < 10; $i++) {
@@ -54,7 +54,7 @@ class TZSMSUITestCase extends DrupalWebTestCase {
     $edit['rows[row_7][number]'] = '073938822';
     $edit['rows[row_7][username]'] = 'test user 2';
     $edit['rows[row_7][password]'] = 'test password 2';
-    $this->drupalPost('tzsms/installation', $edit, t('Add more numbers'));
+    $this->drupalPost('tzuser/add', $edit, t('Add more rows'));
     $this->assertResponse(200, 'Add more rows returned 200 OK');
 
     // Check that we have more rows
@@ -70,21 +70,44 @@ class TZSMSUITestCase extends DrupalWebTestCase {
 
   public function _testSendSMS() {
     $edit['rows[row_0][number]'] = '0738-847 48';
+    $edit['rows[row_0][username]'] = 'ABC User';
     $edit['rows[row_7][number]'] = '073/93 88 22';
-    $this->drupalPost('tzsms/installation', $edit, t('Send installation SMS'));
+    $edit['rows[row_7][username]'] = 'CDE User';
+    $this->drupalPost('tzuser/add', $edit, t('Add employees'));
     $this->assertResponse(200, 'Submit returned 200 OK');
 
-    $this->assertRaw(t('Sent install SMS to number %number', array('%number' => '073884748')));
-    $this->assertRaw(t('Sent install SMS to number %number', array('%number' => '073938822')));
+    $this->assertRaw(t('Created user @username with mobile @number', array(
+      '@username' => 'ABC User',
+      '@number' => '073884748')
+    ));
+    $this->assertRaw(t('Created user @username with mobile @number', array(
+      '@username' => 'CDE User',
+      '@number' => '073938822')
+    ));
+  }
+
+  public function _testUsernameRequired() {
+    $edit['rows[row_0][number]'] = '0738-847 48';
+    $edit['rows[row_7][number]'] = '073/93 88 22';
+    $edit['rows[row_7][username]'] = 'B User';
+    $edit['rows[row_9][number]'] = '073/88-47-48';
+    $edit['rows[row_9][username]'] = 'C User';
+    $this->drupalPost('tzuser/add', $edit, t('Add employees'));
+    $this->assertResponse(200, 'Submit returned 200 OK');
+
+    $this->assertText(t('Please enter username'));
   }
 
   public function _testStopDuplicates() {
     $edit['rows[row_0][number]'] = '0738-847 48';
+    $edit['rows[row_0][username]'] = 'A User';
     $edit['rows[row_7][number]'] = '073/93 88 22';
+    $edit['rows[row_7][username]'] = 'B User';
     $edit['rows[row_9][number]'] = '073/88-47-48';
-    $this->drupalPost('tzsms/installation', $edit, t('Send installation SMS'));
+    $edit['rows[row_9][username]'] = 'C User';
+    $this->drupalPost('tzuser/add', $edit, t('Add employees'));
     $this->assertResponse(200, 'Submit returned 200 OK');
 
-    $this->assertText(t('Number entered twice'));
+    $this->assertText(t('Mobile number entered twice'));
   }
 }

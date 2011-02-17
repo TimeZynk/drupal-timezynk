@@ -18,16 +18,6 @@ function tzsms_ui_menu() {
     'access arguments' => array('send sms'),
     'weight' => -10,
   );
-  $items['tzsms/installation'] = array(
-    'title' => 'Installation SMS',
-    'access arguments' => array('send installation sms'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('tzsms_ui_installation_sms_form'),
-    'file' => 'tzsms_ui.install.inc',
-    'type' => MENU_LOCAL_TASK,
-    'weight' => -9,
-  );
-
   return $items;
 }
 
@@ -36,19 +26,7 @@ function tzsms_ui_menu() {
  * Define available permissions.
  */
 function tzsms_ui_perm() {
-  return array('send sms', 'send installation sms');
-}
-
-/**
- * Implementation of hook_theme().
- * Declares the theme function for formatting the installation SMS form rows.
- */
-function tzsms_ui_theme() {
-  return array(
-    'tzsms_ui_installation_rows' => array(
-      'arguments' => array(),
-    ),
-  );
+  return array('send sms');
 }
 
 function tzsms_ui_list_users() {
@@ -59,7 +37,7 @@ function tzsms_ui_list_users() {
     if(empty($account->tzuser['mobile'])) {
       continue;
     }
-    if(FALSE === tzsms_validate_phone_number($account->tzuser['mobile'])) {
+    if(FALSE === tzuser_validate_phone_number($account->tzuser['mobile'])) {
       continue;
     }
     $users[] = $account;
