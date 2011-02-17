@@ -21,6 +21,12 @@ function tzuser_menu() {
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
   );
+  $items['tzuser/overview/ajax'] = array(
+    'page callback' => 'tzuser_overview_ajax',
+    'access arguments' => array('view employees'),
+    'file' => 'includes/tzuser.overview.inc',
+    'type' => MENU_CALLBACK,
+  );
   $items['tzuser/add'] = array(
     'title' => 'Add employees',
     'access arguments' => array('manage employees'),
@@ -44,7 +50,24 @@ function tzuser_perm() {
 function tzuser_theme() {
   return array(
     'tzuser_add_users_rows' => array(
-      'arguments' => array(),
+      'arguments' => array('element' => NULL),
+      'file' => 'includes/tzuser.theme.inc',
+    ),
+    'tzuser_user_overview' => array(
+      'arguments' => array('form' => NULL),
+      'file' => 'includes/tzuser.theme.inc',
+    ),
+    'traffic_light' => array(
+      'arguments' => array('status' => NULL),
+      'file' => 'includes/tzuser.theme.inc',
+    ),
+    'time_ago' => array(
+      'arguments' => array('time' => NULL),
+      'file' => 'includes/tzuser.theme.inc',
+    ),
+    'due_reports_count' => array(
+      'arguments' => array('count' => NULL),
+      'file' => 'includes/tzuser.theme.inc',
     ),
   );
 }
@@ -97,7 +120,7 @@ function tzuser_theme_registry_alter(&$theme_registry) {
   if (!empty($theme_registry['form_element'])) {
     $path = drupal_get_path('module', 'tzuser');
     $theme_registry['username']['function'] = 'tzuser_username';
-    $theme_registry['username']['file'] = $path . '/tzuser.theme.inc';
+    $theme_registry['username']['file'] = $path . '/includes/tzuser.theme.inc';
     $theme_registry['username']['theme path'] = $path;
     $theme_registry['username']['theme paths'][0] = $path;
   }
@@ -163,13 +186,6 @@ function tzuser_add_user($fullname, $username, $password = '', $mobile_number = 
     return FALSE;
   }
 
-  if(empty($password)) {
-    /* Generate a password if none is provided. This can be changed by the admin
-     * or when the user is authenticated remotely for the first time.
-     */
-    $password = uniqid('passwd');
-  }
-
   // Try to load account
   $account = user_load(array('name' => $username));
 
@@ -178,17 +194,24 @@ function tzuser_add_user($fullname, $username, $password = '', $mobile_number = 
   }
   $user_data = $extra_data;
   $user_data['status'] = 1;
-  $user_data['pass'] = $password;
   $user_data['tzuser'] = array(
     'fullname' => $fullname,
     'mobile' => tzuser_validate_phone_number($mobile_number),
   );
 
   if (!$account) {
+    // New account
+    if(empty($password)) {
+      /* Generate a password if none is provided. This can be changed by the admin
+       * or when the user is authenticated remotely for the first time.
+       */
+      $password = user_password(10);
+    }
     $mail = _tzuser_generate_fake_email();
     $user_data['mail'] = $mail;
     $user_data['init'] = $mail;
     $user_data['name'] = $username;
+    $user_data['pass'] = $password;
   }
 
   drupal_alter('tzuser_add_user_data', $user_data);
@@ -274,7 +297,7 @@ function _tzuser_validate_entry($edit) {
 
   $mobile = tzuser_validate_phone_number($edit['tzuser']['mobile']);
   if(empty($mobile)) {
-    form_set_error('tzuser][mobile', t('Please enter a valid phone number'));
+    form_set_error('tzuser][mobile', t('Please enter a valid mobile number'));
   }
 }
 
@@ -288,6 +311,7 @@ function _tzuser_user_form($account) {
     '#tree' => TRUE,
     '#type' => 'fieldset',
     '#title' => t('TimeZynk Information'),
+    '#weight' => -20,
   );
   $form['tzuser']['fullname'] = array(
     '#type' => 'textfield',

@@ -2,6 +2,7 @@ name = TimeZynk Base User
 description = Provides TimeZynk user data
 package = TimeZynk
 files[] = includes/TZUserFilter.class.inc
+files[] = includes/TZUserStatus.class.inc
 dependencies[] = autoload
 dependencies[] = ahah_helper
 core = 6.x

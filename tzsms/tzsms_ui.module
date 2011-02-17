@@ -18,6 +18,11 @@ function tzsms_ui_menu() {
     'access arguments' => array('send sms'),
     'weight' => -10,
   );
+  $items['tzsms/install_sms_ajax'] = array(
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('send sms'),
+    'page callback' => 'tzsms_ui_user_overview_callback',
+  );
   return $items;
 }
 
@@ -79,4 +84,24 @@ function tzsms_ui_recipient_form($default_policy = 'include', $default_selection
   );
 
   return $form;
+}
+
+function tzsms_ui_form_tzuser_user_overview_alter(&$form, &$form_state) {
+  drupal_add_js(drupal_get_path('module', 'tzsms_ui') . '/tzsms_ui.overview.js');
+  $form['send_install_sms'] = array(
+    '#type' => 'submit',
+    '#value' => t('New install SMS'),
+    '#access' => user_access('send sms'),
+  );
+}
+
+function tzsms_ui_user_overview_callback() {
+  if (empty($_POST['selected_users'])) {
+    return;
+  }
+
+  $users = array_keys($_POST['selected_users']);
+  tzsms_send_install_sms($users);
+  drupal_set_message(t('Sent @count SMS messages', array('@count' => count($users))));
+  print theme('status_messages', 'status');
 }

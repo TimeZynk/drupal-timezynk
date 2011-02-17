@@ -3,8 +3,10 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  tzuser.theme.inc: n/a
 #  tzuser.module: n/a
+#  includes/tzuser.overview.inc: n/a
+#  javascript/tzuser.overview.js: n/a
+#  includes/tzuser.theme.inc: n/a
 #  includes/tzuser.add.inc: n/a
 #  tzuser.install: n/a
 #  tzuser.info: n/a
@@ -15,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-02-17 12:27+0100\n"
+"POT-Creation-Date: 2011-02-21 15:32+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -24,39 +26,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzuser.theme.inc:18
-msgid "View user profile."
-msgstr ""
-
-#: tzuser.module:247;287
+#: tzuser.module:278;319 includes/tzuser.overview.inc:12 javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr ""
 
-#: tzuser.module:255;294 includes/tzuser.add.inc:108
+#: tzuser.module:286;326 includes/tzuser.theme.inc:67
 msgid "Mobile number"
 msgstr ""
 
-#: tzuser.module:269
-msgid "Please enter a valid phone number"
+#: tzuser.module:300 includes/tzuser.add.inc:93
+msgid "Please enter a valid mobile number"
 msgstr ""
 
-#: tzuser.module:282
+#: tzuser.module:313
 msgid "TimeZynk Information"
 msgstr ""
 
-#: tzuser.module:288
+#: tzuser.module:320
 msgid "The users full name"
 msgstr ""
 
-#: tzuser.module:295
+#: tzuser.module:327
 msgid "The users mobile number without country code"
 msgstr ""
 
-#: tzuser.module:37
+#: tzuser.module:43
 msgid "view employees"
 msgstr ""
 
-#: tzuser.module:37
+#: tzuser.module:43
 msgid "manage employees"
 msgstr ""
 
@@ -68,7 +66,7 @@ msgstr ""
 msgid "Employee overview"
 msgstr ""
 
-#: tzuser.module:25 includes/tzuser.add.inc:70;156
+#: tzuser.module:31 includes/tzuser.add.inc:70;121
 msgid "Add employees"
 msgstr ""
 
@@ -100,39 +98,91 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
-#: includes/tzuser.add.inc:108
-msgid "Username"
-msgstr ""
-
-#: includes/tzuser.add.inc:108
-msgid "Password"
-msgstr ""
-
-#: includes/tzuser.add.inc:128
-msgid "Please enter a valid mobile number"
-msgstr ""
-
-#: includes/tzuser.add.inc:130
+#: includes/tzuser.add.inc:95
 msgid "Please enter username"
 msgstr ""
 
-#: includes/tzuser.add.inc:139
+#: includes/tzuser.add.inc:104
 msgid "Mobile number entered twice"
 msgstr ""
 
-#: includes/tzuser.add.inc:161
-msgid "Sent install SMS to number @number"
+#: includes/tzuser.add.inc:126
+msgid "Created user @username with mobile @number"
+msgstr ""
+
+#: includes/tzuser.overview.inc:10 javascript/tzuser.overview.js:0
+msgid "Status"
+msgstr ""
+
+#: includes/tzuser.overview.inc:11 includes/tzuser.theme.inc:67 javascript/tzuser.overview.js:0
+msgid "Username"
+msgstr ""
+
+#: includes/tzuser.overview.inc:13 javascript/tzuser.overview.js:0
+msgid "Mobile"
+msgstr ""
+
+#: includes/tzuser.overview.inc:14 javascript/tzuser.overview.js:0
+msgid "Due reports"
+msgstr ""
+
+#: includes/tzuser.overview.inc:15 javascript/tzuser.overview.js:0
+msgid "Last login"
+msgstr ""
+
+#: includes/tzuser.overview.inc:35
+msgid "Employees with all time reported"
+msgstr ""
+
+#: includes/tzuser.overview.inc:36
+msgid "Employees with late reports"
+msgstr ""
+
+#: includes/tzuser.overview.inc:37
+msgid "Employees who have never logged in"
+msgstr ""
+
+#: includes/tzuser.overview.inc:49
+msgid "Show status"
+msgstr ""
+
+#: includes/tzuser.overview.inc:50
+msgid "Select which statuses you want to show"
+msgstr ""
+
+#: includes/tzuser.overview.inc:89;124
+msgid "edit"
+msgstr ""
+
+#: includes/tzuser.theme.inc:18
+msgid "View user profile."
+msgstr ""
+
+#: includes/tzuser.theme.inc:31
+msgid "No users available."
+msgstr ""
+
+#: includes/tzuser.theme.inc:67
+msgid "Password"
+msgstr ""
+
+#: includes/tzuser.theme.inc:75
+msgid "@time ago"
+msgstr ""
+
+#: includes/tzuser.theme.inc:75
+msgid "never"
 msgstr ""
 
 #: includes/tzuser.views.inc:5
 msgid "User"
 msgstr ""
 
-#: includes/tzuser.views.inc:25
+#: includes/tzuser.views.inc:30
 msgid "Users full name"
 msgstr ""
 
-#: includes/tzuser.views.inc:40
+#: includes/tzuser.views.inc:45
 msgid "Users mobile number"
 msgstr ""
 

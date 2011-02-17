@@ -78,41 +78,6 @@ function tzuser_add_users_form(&$form_state) {
 }
 
 /**
- * Theme the number rows in the SMS form in a nice table
- * @param array $element Element containing the number rows
- */
-function theme_tzuser_add_users_rows($element) {
-  // Build up number rows
-  $rows = array();
-  foreach($element as $rowid => $row) {
-    if(isset($element[$rowid]['index']) && is_array($element[$rowid]['index'])) {
-      $rows[] = array(
-        drupal_render($element[$rowid]['index']),
-        drupal_render($element[$rowid]['number']),
-        drupal_render($element[$rowid]['username']),
-        drupal_render($element[$rowid]['password']),
-      );
-    }
-  }
-
-  // Add our "Add more rows" button last in the table, with full colspan
-  $rows[] = array(array(
-    'data' => drupal_render($element['add_more']),
-    'colspan' => 4,
-  ));
-
-  // Wrap in div for the AHAH-handlers sake
-  $output = '<div id="tzuser_add_number_rows">';
-
-  // Setup headers and output table
-  $header = array('', t('Mobile number') . '*', t('Username') . '*', t('Password'));
-  $output .= theme('table', $header, $rows);
-
-  $output .= '</div>';
-  return $output;
-}
-
-/**
  * Validation function for tzuser_add_users_form
  * @param $form the form
  * @param $form_state form state and values

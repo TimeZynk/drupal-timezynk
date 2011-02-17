@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TimeZynk\n"
-"POT-Creation-Date: 2011-02-17 12:27+0100\n"
-"PO-Revision-Date: 2011-02-17 12:29+0100\n"
+"POT-Creation-Date: 2011-02-21 15:32+0100\n"
+"PO-Revision-Date: 2011-02-21 15:33+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: Swedish <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -23,40 +23,39 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Bookmarks: -1,-1,24,-1,-1,-1,-1,-1,-1,-1\n"
 
-#: tzuser.theme.inc:18
-msgid "View user profile."
-msgstr "Visa användarprofil."
-
-#: tzuser.module:247;287
+#: tzuser.module:278;319
+#: includes/tzuser.overview.inc:12
+#: javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr "Fullständigt namn"
 
-#: tzuser.module:255;294
-#: includes/tzuser.add.inc:108
+#: tzuser.module:286;326
+#: includes/tzuser.theme.inc:67
 msgid "Mobile number"
 msgstr "Mobilnummer"
 
-#: tzuser.module:269
-msgid "Please enter a valid phone number"
+#: tzuser.module:300
+#: includes/tzuser.add.inc:93
+msgid "Please enter a valid mobile number"
 msgstr "Skriv in ett giltigt mobilnummer"
 
-#: tzuser.module:282
+#: tzuser.module:313
 msgid "TimeZynk Information"
 msgstr "TimeZynk Information"
 
-#: tzuser.module:288
+#: tzuser.module:320
 msgid "The users full name"
 msgstr "Användarens fullständiga namn"
 
-#: tzuser.module:295
+#: tzuser.module:327
 msgid "The users mobile number without country code"
 msgstr "Användarens mobilnummer utan landskod"
 
-#: tzuser.module:37
+#: tzuser.module:43
 msgid "view employees"
 msgstr ""
 
-#: tzuser.module:37
+#: tzuser.module:43
 msgid "manage employees"
 msgstr ""
 
@@ -66,12 +65,12 @@ msgstr "Anställda"
 
 #: tzuser.module:19
 msgid "Employee overview"
-msgstr "Översikt"
+msgstr "Översikt över anställda"
 
-#: tzuser.module:25
-#: includes/tzuser.add.inc:70;156
+#: tzuser.module:31
+#: includes/tzuser.add.inc:70;121
 msgid "Add employees"
-msgstr "Lägg till..."
+msgstr "Lägg till anställda"
 
 #: tzuser.install:25
 msgid "Stores TimeZynk user data"
@@ -101,39 +100,98 @@ msgstr "För att lägga till fler anställda till TimeZynk, fyll i mobilnummer o
 msgid "Reset"
 msgstr "Rensa"
 
-#: includes/tzuser.add.inc:108
-msgid "Username"
-msgstr "Användarnamn"
-
-#: includes/tzuser.add.inc:108
-msgid "Password"
-msgstr "Lösenord"
-
-#: includes/tzuser.add.inc:128
-msgid "Please enter a valid mobile number"
-msgstr "Skriv in ett giltigt mobilnummer"
-
-#: includes/tzuser.add.inc:130
+#: includes/tzuser.add.inc:95
 msgid "Please enter username"
 msgstr "Skriv in ett användarnamn"
 
-#: includes/tzuser.add.inc:139
+#: includes/tzuser.add.inc:104
 msgid "Mobile number entered twice"
 msgstr "Mobilnumret finns med två gånger"
 
-#: includes/tzuser.add.inc:161
-msgid "Sent install SMS to number @number"
-msgstr "Skickade installations-SMS till @number"
+#: includes/tzuser.add.inc:126
+msgid "Created user @username with mobile @number"
+msgstr "Skapade användare @username med mobilnummer @number"
+
+#: includes/tzuser.overview.inc:10
+#: javascript/tzuser.overview.js:0
+msgid "Status"
+msgstr "Status"
+
+#: includes/tzuser.overview.inc:11
+#: includes/tzuser.theme.inc:67
+#: javascript/tzuser.overview.js:0
+msgid "Username"
+msgstr "Användarnamn"
+
+#: includes/tzuser.overview.inc:13
+#: javascript/tzuser.overview.js:0
+#, fuzzy
+msgid "Mobile"
+msgstr "Mobilnummer"
+
+#: includes/tzuser.overview.inc:14
+#: javascript/tzuser.overview.js:0
+msgid "Due reports"
+msgstr "Orapporterade pass"
+
+#: includes/tzuser.overview.inc:15
+#: javascript/tzuser.overview.js:0
+msgid "Last login"
+msgstr "Senast inloggad"
+
+#: includes/tzuser.overview.inc:35
+msgid "Employees with all time reported"
+msgstr "Anställa med alla pass rapporterade"
+
+#: includes/tzuser.overview.inc:36
+msgid "Employees with late reports"
+msgstr "Anställda med försenade rapporter"
+
+#: includes/tzuser.overview.inc:37
+msgid "Employees who have never logged in"
+msgstr "Anställda som aldrig har loggat in"
+
+#: includes/tzuser.overview.inc:49
+msgid "Show status"
+msgstr "Visa status"
+
+#: includes/tzuser.overview.inc:50
+msgid "Select which statuses you want to show"
+msgstr "Välj vilka anställda du vill visa"
+
+#: includes/tzuser.overview.inc:89;124
+msgid "edit"
+msgstr "redigera"
+
+#: includes/tzuser.theme.inc:18
+msgid "View user profile."
+msgstr "Visa användarprofil."
+
+#: includes/tzuser.theme.inc:31
+msgid "No users available."
+msgstr "Inga anställda att visa"
+
+#: includes/tzuser.theme.inc:67
+msgid "Password"
+msgstr "Lösenord"
+
+#: includes/tzuser.theme.inc:75
+msgid "@time ago"
+msgstr "@time sedan"
+
+#: includes/tzuser.theme.inc:75
+msgid "never"
+msgstr "aldrig"
 
 #: includes/tzuser.views.inc:5
 msgid "User"
 msgstr "Användare"
 
-#: includes/tzuser.views.inc:25
+#: includes/tzuser.views.inc:30
 msgid "Users full name"
 msgstr "Användarens fullständiga namn"
 
-#: includes/tzuser.views.inc:40
+#: includes/tzuser.views.inc:45
 msgid "Users mobile number"
 msgstr "Mobilnummer"
 

@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-02-17 12:23+0100\n"
+"POT-Creation-Date: 2011-02-21 15:21+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -38,7 +38,7 @@ msgstr ""
 msgid "Sent message to @count mobiles"
 msgstr ""
 
-#: tzsms_ui.send.inc:44 tzsms.module:44;151;193
+#: tzsms_ui.send.inc:44 tzsms.module:44;159;201
 msgid "tzsms"
 msgstr ""
 
@@ -54,59 +54,59 @@ msgstr ""
 msgid "Send new TimeZynk installation SMS"
 msgstr ""
 
-#: tzsms.module:66
+#: tzsms.module:74
 msgid "TimeZynk SMS settings"
 msgstr ""
 
-#: tzsms.module:67
+#: tzsms.module:75
 msgid "TimeZynk sends out installation instructions via SMS, configure the settings here!"
 msgstr ""
 
-#: tzsms.module:71
+#: tzsms.module:79
 msgid "Default country code for this site"
 msgstr ""
 
-#: tzsms.module:73
+#: tzsms.module:81
 msgid "The country code will be used to send installation SMS to the users registered on this site"
 msgstr ""
 
-#: tzsms.module:77
+#: tzsms.module:85
 msgid "The content of the SMS"
 msgstr ""
 
-#: tzsms.module:79
+#: tzsms.module:87
 msgid "The available variables are: !url, !username and !password"
 msgstr ""
 
-#: tzsms.module:83
+#: tzsms.module:91
 msgid "The content of the SMS when keeping the same password"
 msgstr ""
 
-#: tzsms.module:85
+#: tzsms.module:93
 msgid "The available variables are: !url and !username"
 msgstr ""
 
-#: tzsms.module:103
+#: tzsms.module:111
 msgid "You must enter a numeric country code (e.g. 46 for Sweden)!"
 msgstr ""
 
-#: tzsms.module:140
+#: tzsms.module:148
 msgid "Your mobile phone number or e-mail address"
 msgstr ""
 
-#: tzsms.module:141
+#: tzsms.module:149
 msgid "Send new password over SMS"
 msgstr ""
 
-#: tzsms.module:152
+#: tzsms.module:160
 msgid "New password has been sent to you over SMS"
 msgstr ""
 
-#: tzsms.module:221
+#: tzsms.module:229
 msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username and \"!password\" as password."
 msgstr ""
 
-#: tzsms.module:235
+#: tzsms.module:243
 msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username."
 msgstr ""
 
@@ -114,31 +114,39 @@ msgstr ""
 msgid "Failed to send SMS to invalid number: @number"
 msgstr ""
 
-#: tzsms.module:151
+#: tzsms.module:159
 msgid "Requested new password over SMS"
 msgstr ""
 
-#: tzsms.module:193
+#: tzsms.module:201
 msgid "Sending install SMS to !nbr"
 msgstr ""
 
-#: tzsms_ui.module:52
+#: tzsms_ui.module:57
 msgid "Recipients"
 msgstr ""
 
-#: tzsms_ui.module:58
+#: tzsms_ui.module:63
 msgid "Select recipients"
 msgstr ""
 
-#: tzsms_ui.module:60
+#: tzsms_ui.module:65
 msgid "Send ONLY to the users marked below"
 msgstr ""
 
-#: tzsms_ui.module:61
+#: tzsms_ui.module:66
 msgid "Send to EVERYONE, except the users marked below"
 msgstr ""
 
-#: tzsms_ui.module:29
+#: tzsms_ui.module:93
+msgid "New install SMS"
+msgstr ""
+
+#: tzsms_ui.module:105
+msgid "Sent @count SMS messages"
+msgstr ""
+
+#: tzsms_ui.module:34
 msgid "send sms"
 msgstr ""
 

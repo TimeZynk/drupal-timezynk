@@ -1,0 +1,32 @@
+.tzuser_status {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.tzuser_status_red {
+    background: url('../images/tzuser_status_red.png') center no-repeat;
+}
+
+.tzuser_status_green {
+    background: url('../images/tzuser_status_green.png') center no-repeat;
+}
+
+.tzuser_status_yellow {
+    background: url('../images/tzuser_status_yellow.png') center no-repeat;
+}
+
+.form-checkboxes .form-item {
+    padding-left: 20px;
+}
+
+#tzuser-user-overview #edit-status-20-wrapper {
+    background: url('../images/tzuser_status_green.png') left no-repeat;
+}
+#tzuser-user-overview #edit-status-10-wrapper {
+    background: url('../images/tzuser_status_yellow.png') left no-repeat;
+}
+#tzuser-user-overview #edit-status-0-wrapper {
+    background: url('../images/tzuser_status_red.png') left no-repeat;
+}
