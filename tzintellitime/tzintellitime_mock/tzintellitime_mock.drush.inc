@@ -79,6 +79,7 @@ function tzintellitime_mock_drush_reset_all() {
 function tzintellitime_mock_drush_add_user($username, $password) {
   $db_object = array(
     'login' => $username,
+    'fullname' => $username,
     'password' => $password,
   );
   drupal_write_record('tzintellitime_mock_users', $db_object);

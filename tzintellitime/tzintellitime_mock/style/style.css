@@ -259,6 +259,7 @@
 	text-decoration: none;
 }
 
-#_ctl24_MenuItems td {
+#_ctl24_MenuItems td,
+#_ctl0_MenuItems td {
     text-align: center;
 }

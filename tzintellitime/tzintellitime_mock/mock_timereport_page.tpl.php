@@ -164,7 +164,7 @@ myWindow.focus();
                         <img id="_ctl24_ImageCustomer" src="../Customers/intelliplan_logo.gif" alt="" border="0" />
                     </td>
                     <td><img src="../Images/trans.gif" width="20" height="1" border="0"></td>
-                    <td><font face="Verdana" size="2"><span id="_ctl24_LabeUserName"><?php print $username ?></span></font></td>
+                    <td><font face="Verdana" size="2"><span id="_ctl24_LabeUserName"><?php print $mock_user->fullname ?></span></font></td>
                 </tr>
 
             </table>
@@ -273,9 +273,10 @@ myWindow.focus();
                                       <?php
                                         $index = 0;
                                         foreach($unfinished_weeks as $week => $dateinweek):
-                                          $prefix = "NotPrepWeeksRepeater__ctl$index";?>
-                                            <a id="<?php print $prefix ?>_WeekNotPrep" class="WeeksNav" href="TimeReport.aspx?DateInWeek=<?php print $dateinweek ?>"><?php print substr($week,5,2)?></a>
-                                            <span id="<?php print $prefix ?>0_LabelWeekNotPrepComma">,</span>
+                                          $prefix = "NotPrepWeeksRepeater__ctl$index";
+                                          $weeknumber = intval(substr($week,5,2), 10);
+                                          $index++; ?>
+                                            <a id="<?php print $prefix ?>_WeekNotPrep" class="WeeksNav" href="TimeReport.aspx?DateInWeek=<?php print $dateinweek ?>"><?php print $weeknumber ?></a><span id="<?php print $prefix ?>0_LabelWeekNotPrepComma">,</span>
 				      <?php endforeach;?>
                                     </b>
                                 </td>
@@ -330,6 +331,10 @@ myWindow.focus();
                                 $begintime = $report->get_begintime();
                                 $endtime = $report->get_endtime();
                                 $weekday = substr($begintime->format('D'), 0, 2);
+                                $disabled = '';
+                                if ($report->state != TZIntellitimeReport::STATE_OPEN) {
+                                  $disabled = 'disabled="disabled"';
+                                }
                                 ?>
                                     <tr>
                                         <td id="<?php print $id_prefix ?>_td0" colspan="20" bgcolor="#ffffff"><img src="../Images/trans.gif" width="1" height="3" border="0"></td>
@@ -357,18 +362,18 @@ myWindow.focus();
                                         <td id="<?php print $id_prefix ?>_td7" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                                         <td id="<?php print $id_prefix ?>_td8" width="50" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                                            <input name="<?php print $name_prefix ?>:TextboxTimeFrom" type="text" value="<?php print $report->begin ?>" size="5" id="<?php print $id_prefix ?>_TextboxTimeFrom" class="TimeReportTextBox" /><input name="<?php print $name_prefix ?>:DateFromHidden" id="<?php print $id_prefix ?>_DateFromHidden" type="hidden" value="<?php print $report->begin ?>" /></td>
+                                            <input name="<?php print $name_prefix ?>:TextboxTimeFrom" type="text" value="<?php print $report->begin ?>" <? print $disabled ?> size="5" id="<?php print $id_prefix ?>_TextboxTimeFrom" class="TimeReportTextBox" /><input name="<?php print $name_prefix ?>:DateFromHidden" id="<?php print $id_prefix ?>_DateFromHidden" type="hidden" value="<?php print $report->begin ?>" /></td>
 
                                         <td id="<?php print $id_prefix ?>_td9" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                                         <td id="<?php print $id_prefix ?>_td10" width="50" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-                                            <input name="<?php print $name_prefix ?>:TextboxTimeTo" type="text" value="<?php print $report->end ?>" size="5" id="<?php print $id_prefix ?>_TextboxTimeTo" class="TimeReportTextBox" /><input name="<?php print $name_prefix ?>:DateToHidden" id="<?php print $id_prefix ?>_DateToHidden" type="hidden" value="<?php print $report->end ?>" /></td>
+                                            <input name="<?php print $name_prefix ?>:TextboxTimeTo" type="text" value="<?php print $report->end ?>" <? print $disabled ?> size="5" id="<?php print $id_prefix ?>_TextboxTimeTo" class="TimeReportTextBox" /><input name="<?php print $name_prefix ?>:DateToHidden" id="<?php print $id_prefix ?>_DateToHidden" type="hidden" value="<?php print $report->end ?>" /></td>
 
                                         <td id="<?php print $id_prefix ?>_td11" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                                         <td id="<?php print $id_prefix ?>_td12" width="40" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
 
-                                            <input name="<?php print $name_prefix ?>:TextboxBreak" type="text" value="<?php print $report->break_duration_minutes ?>" size="3" id="<?php print $id_prefix ?>_TextboxBreak" class="TimeReportTextBox" /><input name="<?php print $name_prefix ?>:BreakHidden" id="<?php print $id_prefix ?>_BreakHidden" type="hidden" value="none" /></td>
+                                            <input name="<?php print $name_prefix ?>:TextboxBreak" type="text" value="<?php print $report->break_duration_minutes ?>" <? print $disabled ?> size="3" id="<?php print $id_prefix ?>_TextboxBreak" class="TimeReportTextBox" /><input name="<?php print $name_prefix ?>:BreakHidden" id="<?php print $id_prefix ?>_BreakHidden" type="hidden" value="none" /></td>
 
                                         <td id="<?php print $id_prefix ?>_td13" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
@@ -380,21 +385,25 @@ myWindow.focus();
                                         <td id="<?php print $id_prefix ?>_td16" width="50" class="TimeReportOldRow" align="center" valign="top" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="1" height="1" border="0">
 
 
-                                            <input name="<?php print $name_prefix ?>:TextboxExplicitOvertime" type="text" value="0" size="3" id="<?php print $id_prefix ?>_TextboxExplicitOvertime" class="TimeReportTextBox" /><input name="<?php print $name_prefix ?>:OverTimeHidden" id="<?php print $id_prefix ?>_OverTimeHidden" type="hidden" value="none" /></td>
+                                            <input name="<?php print $name_prefix ?>:TextboxExplicitOvertime" type="text" value="0" <? print $disabled ?> size="3" id="<?php print $id_prefix ?>_TextboxExplicitOvertime" class="TimeReportTextBox" /><input name="<?php print $name_prefix ?>:OverTimeHidden" id="<?php print $id_prefix ?>_OverTimeHidden" type="hidden" value="none" /></td>
 
                                         <td id="<?php print $id_prefix ?>_td17" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                                         <td id="<?php print $id_prefix ?>_td18" width="120" rowspan="2" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
                                             <select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3"  class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?<?php print $report->id ?>');" onchange="OpenExpense(this, 'Expense.aspx?<?php print $report->id ?>');">
-
+                                                <? if (!$disabled) : ?>
                                                 <option>[Klicka här]</option>
+                                                <? endif; ?>
                                             </select>
                                         </td>
 
                                         <td id="<?php print $id_prefix ?>_td19" width="8" rowspan="2" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
                                         <td id="<?php print $id_prefix ?>_td20" width="50" rowspan="2" class="TimeReportOldRow" valign="top" align="middle" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="1" height="1" border="0">
-                                            <input id="<?php print $id_prefix ?>_CheckBoxDelete" type="checkbox" name="<?php print $name_prefix ?>:CheckBoxDelete" /></td>
+                                            <? if (!$disabled) : ?>
+                                            <input id="<?php print $id_prefix ?>_CheckBoxDelete" type="checkbox" name="<?php print $name_prefix ?>:CheckBoxDelete" />
+                                            <? endif; ?>
+                                        </td>
 
                                     </tr>
                                     <tr>
@@ -562,9 +571,14 @@ myWindow.focus();
 
                                         <tr>
                                             <td width="10"><IMG height="5" src="../Images/Trans.gif" width="10" border="0"></td>
-                                            <td vAlign="middle" align="left" width="30%"><input type="submit" name="UpdateButton" value="Uppdatera" id="UpdateButton" /><input type="submit" name="DoneButton" value="Vecka Klar" id="DoneButton" /></td>
+                                            <td vAlign="middle" align="left" width="30%"><input type="submit" name="UpdateButton" value="Uppdatera" id="UpdateButton" /><br/>
+                                        <? if($all_reports_done): ?>
+                                              <input type="submit" id="ChangeButton" value="Ändra vecka" name="ChangeButton"/>
+                                        <? else: ?>
+                                              <input type="submit" name="DoneButton" value="Vecka Klar" id="DoneButton" />
+                                        <? endif; ?></td>
                                             <td width="5"><IMG height="30" src="../Images/Trans.gif" width="10" border="0"></td>
-                                            <td class="SubjectRow" vAlign="middle" align="right" width="30%"><b><span id="Translatedlabel22">Summa timmar:</span></b></td>
+                                            <td class="SubjectRow" vAlign="middle" align="right" width="30%"><b><span id="Translatedlabel22">Summa&nbsp;timmar:</span></b></td>
                                             <td width="5"><IMG height="30" src="../Images/Trans.gif" width="5" border="0"></td>
                                             <td class="SubjectRow" align="left"><b><?php print $total_duration_hours ?></b></td>
                                         </tr>

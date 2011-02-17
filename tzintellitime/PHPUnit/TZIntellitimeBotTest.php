@@ -7,7 +7,7 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
 
   public function testCreateBot() {
     $curlInterface = $this->getMock('TZCurl');
-    $url = 'http://localhost/IntelliplanWeb';
+    $url = 'http://localhost/demo/v2005/';
 
     $bot = new TZIntellitimeBot($curlInterface, $url);
     $this->assertInstanceOf('TZIntellitimeServerInterface', $bot);
@@ -16,7 +16,7 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
   public function testRefreshWeek() {
     $expectedDate = new DateTime('2011-01-25', $this->timezone);
     $curlInterface = $this->getMock('TZCurl');
-    $base_url = 'http://localhost/IntelliplanWeb/';
+    $base_url = 'http://localhost/demo/v2005/';
     $login_url = $base_url . 'Portal/Login.aspx?Gw27UDsdffd9TMdfgfgqqoQ%3d%3d';
 
     $curlInterface->expects($this->once())
@@ -38,7 +38,7 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
   public function testRefreshWeekWithoutDate() {
     $expectedDate = tzbase_make_date();
     $curlInterface = $this->getMock('TZCurl');
-    $base_url = 'http://localhost/IntelliplanWeb/';
+    $base_url = 'http://localhost/demo/v2005/';
     $login_url = $base_url . 'Portal/Login.aspx?Gw27UDsdffd9TMdfgfgqqoQ%3d%3d';
 
     $curlInterface->expects($this->once())
@@ -60,7 +60,7 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
 
   public function testNullPostData() {
     $curlInterface = $this->getMock('TZCurl');
-    $base_url = 'http://localhost/IntelliplanWeb/';
+    $base_url = 'http://localhost/demo/v2005/';
     $login_url = $base_url . 'Portal/Login.aspx?Gw27UDsdffd9TMdfgfgqqoQ%3d%3d';
 
     $bot = new TZIntellitimeBot($curlInterface, $login_url);
@@ -75,7 +75,7 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
 
   public function testPostData() {
     $curlInterface = $this->getMock('TZCurl');
-    $base_url = 'http://localhost/IntelliplanWeb/';
+    $base_url = 'http://localhost/demo/v2005/';
     $login_url = $base_url . 'Portal/Login.aspx?Gw27UDsdffd9TMdfgfgqqoQ%3d%3d';
 
     $curlInterface->expects($this->once())
@@ -104,7 +104,7 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
 
   public function testLogin() {
     $curlInterface = $this->getMock('TZCurl');
-    $base_url = 'http://localhost/IntelliplanWeb/';
+    $base_url = 'http://localhost/demo/v2005/';
     $login_url = $base_url . 'Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d';
 
     $expectedUsername = 'myuser';
@@ -138,7 +138,7 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
 
   public function testLogout() {
     $curlInterface = $this->getMock('TZCurl');
-    $base_url = 'http://localhost/IntelliplanWeb/';
+    $base_url = 'http://localhost/demo/v2005/';
     $login_url = $base_url . 'Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d';
 
     $curlInterface->expects($this->once())
@@ -157,7 +157,7 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
   public function testBuildURLAfterError() {
     $expectedDate = new DateTime('2011-01-25', $this->timezone);
     $curlInterface = $this->getMock('TZCurl');
-    $base_url = 'http://localhost/IntelliplanWeb/(adskm23234km2ksd823)/';
+    $base_url = 'http://localhost/demo/v2005/(adskm23234km2ksd823)/';
 
     $login_url = $base_url . 'Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d';
     $date_url = $base_url . 'TimeReport/TimeReport.aspx?DateInWeek=' . $expectedDate->format('Y-m-d');
@@ -179,7 +179,7 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
   public function testBuildNormalURL() {
     $expectedDate = new DateTime('2011-01-25', $this->timezone);
     $curlInterface = $this->getMock('TZCurl');
-    $base_url = 'http://localhost/IntelliplanWeb/(adskm23234km2ksd823)/';
+    $base_url = 'http://localhost/demo/v2005/(adskm23234km2ksd823)/';
 
     $login_url = $base_url . 'Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d';
     $date_url = $base_url . 'TimeReport/TimeReport.aspx?DateInWeek=' . $expectedDate->format('Y-m-d');

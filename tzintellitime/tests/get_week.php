@@ -14,7 +14,7 @@ $intelli = array(
 
 /*
 $intelli = array(
-  'url' => "http://localhost/IntelliplanWeb/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d",
+  'url' => "http://localhost/demo/v2005/Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d",
   'user' => "test user",
   'pass' => "test password",
 );*/

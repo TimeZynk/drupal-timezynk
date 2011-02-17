@@ -48,7 +48,7 @@ function _tzintellitime_mock_user_settings() {
 
   $result = db_query('SELECT * FROM {tzintellitime_mock_users} ORDER BY user_id ASC');
   while($mock_user = db_fetch_object($result)) {
-    $form[] = _mock_user_form_entry($mock_user->user_id, $mock_user->login, $mock_user->password);
+    $form[] = _mock_user_form_entry($mock_user->user_id, $mock_user->login, $mock_user->fullname, $mock_user->password);
   }
 
   for($i = 0; $i < 10; $i++) {
@@ -162,18 +162,19 @@ function theme_mock_user_table($element) {
       $rows[] = array(
         $element[$rowid]['user_id']['#value'],
         drupal_render($element[$rowid]['login']),
+        drupal_render($element[$rowid]['fullname']),
         drupal_render($element[$rowid]['password']),
       );
     }
   }
 
   // Setup headers
-  $header = array(t('ID'), t('Username'), t('Password'));
+  $header = array(t('ID'), t('Username'), t('Full name'), t('Password'));
 
   return theme('table', $header, $rows);
 }
 
-function _mock_user_form_entry($user_id='', $login='', $password='') {
+function _mock_user_form_entry($user_id='', $login='', $fullname='', $password='') {
   return array(
     'user_id' => array(
       '#type' => 'value',
@@ -184,6 +185,11 @@ function _mock_user_form_entry($user_id='', $login='', $password='') {
       '#default_value' => $login,
       '#size' => 20,
       '#maxlength' => 20,
+    ),
+    'fullname' => array(
+      '#type' => 'textfield',
+      '#default_value' => $fullname,
+      '#size' => 40,
     ),
     'password' => array(
       '#type' => 'textfield',

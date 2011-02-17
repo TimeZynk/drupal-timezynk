@@ -133,7 +133,7 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
     );
     $this->drupalPost('admin/settings/tzintellitime_mock', $form, t('Save'));
 
-    $this->intelli_url = $this->getAbsoluteUrl('IntelliplanWeb/Portal/Login.aspx');
+    $this->intelli_url = $this->getAbsoluteUrl('demo/v2005/Portal/Login.aspx');
     $this->curl = new TZCurl();
     $this->bot = new TZIntellitimeBot($this->curl, $this->intelli_url);
   }
@@ -202,7 +202,7 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
   public function testErrorCode() {
     variable_set('tzintellitime_mock_error_code', '500');
     try {
-      $this->curl->request($this->getAbsoluteUrl('IntelliplanWeb/Portal/Login.aspx'));
+      $this->curl->request($this->getAbsoluteUrl('demo/v2005/Portal/Login.aspx'));
       $this->fail('Expected exception');
     } catch(TZNetworkFailureException $e) {
       $this->pass('Caught exception: ' . $e->getMessage());
