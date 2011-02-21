@@ -1,9 +1,5 @@
 <?php
 
-define('TZUSER_OVERVIEW_YELLOW_LIMIT', 24*60*60);
-
-tzbase_include_proto_classes();
-
 function tzuser_user_overview_headers() {
   return array(
     array(),
@@ -55,10 +51,7 @@ function tzuser_overview_ajax() {
 
   $overview = array();
   while($user_entry = db_fetch_object($result)) {
-    $status = new TZUserStatus($user_entry->login, TZUSER_OVERVIEW_YELLOW_LIMIT);
-    if($status->getStatus($now) != TZUserStatus::RED) {
-      _tzuser_set_report_info($status, $user_entry->uid, TZUSER_OVERVIEW_YELLOW_LIMIT);
-    }
+    $status = tzuser_get_user_status($user_entry, $now);
 
     $checkbox = array(
       '#type' => 'checkbox',
@@ -71,8 +64,8 @@ function tzuser_overview_ajax() {
 
     $overview[] = array(
       'checkbox' => drupal_render($checkbox),
-      'status' => theme('traffic_light', $status->getStatus($now)),
-      'status_value' => $status->getStatus($now),
+      'status' => theme('traffic_light', $status->getStatusCode($now)),
+      'status_value' => $status->getStatusCode($now),
       'name' => $user_entry->name,
       'fullname' => $user_entry->fullname,
       'mobile' => $user_entry->mobile,
@@ -83,21 +76,6 @@ function tzuser_overview_ajax() {
     );
   }
   return drupal_json($overview);
-}
-
-/**
- * @param TZUserStatus $status
- */
-function _tzuser_set_report_info(&$status, $uid) {
-  $dueTime = time();
-  $result = db_query('SELECT COUNT(n.vid) AS count, MIN(endtime) AS endtime FROM {node} n INNER JOIN {tzreport} tzr ON tzr.vid = n.vid WHERE flags != 255 AND assignedto = %d AND flags < %d AND endtime < %d', $uid, TZFlags::REPORTED, $dueTime);
-  $data = db_fetch_object($result);
-  if(!$data) {
-    return;
-  }
-
-  $status->setNumberOfDueReports(intval($data->count));
-  $status->setEarliestDueEndTime(intval($data->endtime));
 }
 
 function _tzuser_user_overview_operations($user_entry, $destination) {

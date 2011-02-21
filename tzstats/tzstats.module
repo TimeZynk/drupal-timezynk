@@ -35,6 +35,10 @@ function tzstats_synchronized_multiple_users($module, $count, $successful, $befo
   drupal_write_record('tzstats_sync', $record);
 }
 
+function tzstats_cron() {
+  require_once(dirname(__FILE__) . '/tzstats.user.inc');
+  tzstats_record_user_status();
+}
 
 /**
  * Implementation of hook_views_api.

@@ -1,5 +1,7 @@
 <?php
 
+define('TZUSER_OVERVIEW_YELLOW_LIMIT', 24*60*60);
+
 function tzuser_menu() {
   $items['admin/user/tzuser/ajax/autocomplete/user'] = array(
     'page callback' => 'tzuser_ajax_autocomplete_user',
@@ -238,6 +240,30 @@ function tzuser_validate_phone_number($number) {
   }
   return $mobile_number;
 }
+
+/**
+ * @param array $account
+ * @param int @now timestamp
+ * @return TZUserStatus status
+ */
+function tzuser_get_user_status($account, $now) {
+  tzbase_include_proto_classes();
+
+  $status = new TZUserStatus($account->login, TZUSER_OVERVIEW_YELLOW_LIMIT);
+  if($status->getStatusCode($now) == TZUserStatus::RED) {
+    return $status;
+  }
+
+  $result = db_query('SELECT COUNT(n.vid) AS count, MIN(endtime) AS endtime FROM {node} n INNER JOIN {tzreport} tzr ON tzr.vid = n.vid WHERE flags != 255 AND assignedto = %d AND flags < %d AND endtime < %d', $account->uid, TZFlags::REPORTED, $now);
+  $data = db_fetch_object($result);
+  if($data) {
+    $status->setNumberOfDueReports(intval($data->count));
+    $status->setEarliestDueEndTime(intval($data->endtime));
+  }
+
+  return $status;
+}
+
 
 function _tzuser_load_entry($account) {
   $entry = array();

@@ -11,20 +11,20 @@ class TZUserStatusTest extends PHPUnit_Framework_TestCase {
 
   function testRedOnNoLogin() {
     $status = $this->createStatus(0);
-    $this->assertEquals(TZUserStatus::RED, $status->getStatus($this->now));
+    $this->assertEquals(TZUserStatus::RED, $status->getStatusCode($this->now));
   }
 
   function testYellowOnLogin() {
     // Last login 10 days ago
     $status = $this->createStatus(time() - 10*24*3600);
-    $this->assertEquals(TZUserStatus::YELLOW, $status->getStatus($this->now));
+    $this->assertEquals(TZUserStatus::YELLOW, $status->getStatusCode($this->now));
   }
 
   function testGreenOnZeroDueReports() {
     // Last login 10 days ago
     $status = $this->createStatus(time() - 10*24*3600);
     $status->setNumberOfDueReports(0);
-    $this->assertEquals(TZUserStatus::GREEN, $status->getStatus($this->now));
+    $this->assertEquals(TZUserStatus::GREEN, $status->getStatusCode($this->now));
   }
 
   function testGreenOnManyButRecentDueReports() {
@@ -32,7 +32,7 @@ class TZUserStatusTest extends PHPUnit_Framework_TestCase {
     $status = $this->createStatus(time() - 10*24*3600);
     $status->setNumberOfDueReports(2);
     $status->setEarliestDueEndTime($this->now - $this->dueLimit);
-    $this->assertEquals(TZUserStatus::GREEN, $status->getStatus($this->now));
+    $this->assertEquals(TZUserStatus::GREEN, $status->getStatusCode($this->now));
   }
 
   function testYellowOnManyNonRecentDueReports() {
@@ -40,7 +40,7 @@ class TZUserStatusTest extends PHPUnit_Framework_TestCase {
     $status = $this->createStatus(time() - 10*24*3600);
     $status->setNumberOfDueReports(2);
     $status->setEarliestDueEndTime($this->now - $this->dueLimit-1);
-    $this->assertEquals(TZUserStatus::YELLOW, $status->getStatus($this->now));
+    $this->assertEquals(TZUserStatus::YELLOW, $status->getStatusCode($this->now));
   }
 
   function testThrowsOnNegativeCount() {

@@ -110,6 +110,39 @@ function tzstats_update_6002() {
   return $ret;
 }
 
+function tzstats_update_6003() {
+  /* Keep track of user status */
+  $ret = array();
+  db_create_table($ret, 'tzstats_user',  array(
+    'description' => t('Stores statistics on user status'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "{users}.uid.",
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for change",
+      ),
+      'status' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Status value',
+      ),
+    ),
+    'primary key' => array('id'),
+  ));
+  return $ret;
+}
+
 /**
  * TZStats database schema
  */
@@ -154,6 +187,7 @@ function tzstats_schema() {
     ),
     'primary key' => array('id'),
   );
+
   $schema['tzstats_sync'] = array(
     'description' => t('Stores statistics on synchronized users'),
     'fields' => array(
@@ -189,5 +223,35 @@ function tzstats_schema() {
     ),
     'primary key' => array('id'),
   );
+
+  /* Keep track of user status */
+  $schema['tzstats_user'] = array(
+    'description' => t('Stores statistics on user status'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "{users}.uid.",
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for change",
+      ),
+      'status' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Status value',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
   return $schema;
 }

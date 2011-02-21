@@ -30,7 +30,7 @@ class TZUserStatus {
     return $this->numberOfDueReports;
   }
 
-  function getStatus($now) {
+  function getStatusCode($now) {
     if(empty($this->lastLogin)) {
       return TZUserStatus::RED;
     }
