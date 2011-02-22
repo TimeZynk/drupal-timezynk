@@ -12,7 +12,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2010-10-27 11:10+0200\n"
+"POT-Creation-Date: 2011-02-22 11:43+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -65,55 +65,55 @@ msgstr ""
 msgid "Assigned to"
 msgstr ""
 
-#: excelexport.inc:126
+#: excelexport.inc:128
 msgid "New"
 msgstr ""
 
-#: excelexport.inc:129
+#: excelexport.inc:131
 msgid "Signed in"
 msgstr ""
 
-#: excelexport.inc:132
+#: excelexport.inc:134
 msgid "Reported"
 msgstr ""
 
-#: excelexport.inc:135
+#: excelexport.inc:137
 msgid "Approved"
 msgstr ""
 
-#: excelexport.inc:138
+#: excelexport.inc:140
 msgid "Locked"
 msgstr ""
 
-#: excelexport.inc:140
+#: excelexport.inc:142
 msgid "Unknown"
 msgstr ""
 
-#: excelexport.inc:80
+#: excelexport.inc:81
 msgid "Excel export"
 msgstr ""
 
-#: excelexport.inc:80
+#: excelexport.inc:81
 msgid "Could not autosize columns, no such instance of PHPExcel"
 msgstr ""
 
+#: excelexport.module:23
+msgid "export timereports to excel"
+msgstr ""
+
 #: excelexport.module:12
-msgid "Provides excel export functionality for time reports. Requires tzbase.module."
+msgid "To Excel"
 msgstr ""
 
-#: excelexport.module:22
-msgid "Export time reports to excel"
-msgstr ""
-
-#: (duplicate) excelexport.install:17 
+#: excelexport.install:16
 msgid "PHPExcel installed under %path."
 msgstr ""
 
-#: (duplicate) excelexport.install:20 
+#: excelexport.install:19
 msgid "Not found"
 msgstr ""
 
-#: (duplicate) excelexport.install:21 
+#: excelexport.install:20
 msgid "Please install PHPExcel 1.7.4 or newer under sites/all/libraries/phpexcel."
 msgstr ""
 

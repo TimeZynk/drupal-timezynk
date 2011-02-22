@@ -8,8 +8,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tzbase\n"
-"POT-Creation-Date: 2010-11-10 17:52+0100\n"
-"PO-Revision-Date: 2010-11-10 17:54+0100\n"
+"POT-Creation-Date: 2011-02-22 11:45+0100\n"
+"PO-Revision-Date: 2011-02-22 11:48+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: TimeZynk AB <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -60,13 +60,98 @@ msgstr "Välj vilket uppdrag du vill hämta tidrapporter från"
 msgid "End date must be after start date"
 msgstr "Slutdatumet måste vara efter startdatumet"
 
-#: tzreports.module:27
+#: tzreports.views_default.inc:24
+msgid "Time Report Overview"
+msgstr "Tidrapportsöversikt"
+
+#: tzreports.views_default.inc:34;87;471;636
+msgid "Assigned user"
+msgstr "Användare"
+
+#: tzreports.views_default.inc:42;644
+msgid "Job ID"
+msgstr "Uppdrags-ID"
+
+#: tzreports.views_default.inc:52
+msgid "Full name"
+msgstr "Fullständigt namn"
+
+#: tzreports.views_default.inc:125;449
+msgid "Assignment"
+msgstr "Uppdrag"
+
+#: tzreports.views_default.inc:158;417;689
+msgid "Date"
+msgstr "Datum"
+
+#: tzreports.views_default.inc:189;720
+msgid "Start time"
+msgstr "Starttid"
+
+#: tzreports.views_default.inc:220;751
+msgid "End time"
+msgstr "Sluttid"
+
+#: tzreports.views_default.inc:251;782
+msgid "Break duration"
+msgstr "Rastlängd"
+
+#: tzreports.views_default.inc:282;813
+msgid "Total duration"
+msgstr "Totaltid"
+
+#: tzreports.views_default.inc:492;591
+#: tzreports.module:12
+msgid "Time Reports"
+msgstr "Tidrapporter"
+
+#: tzreports.views_default.inc:607
+msgid "All"
+msgstr "Alla"
+
+#: tzreports.views_default.inc:660
+msgid "Comment"
+msgstr "Kommentar"
+
+#: tzreports.views_default.inc:1095
+msgid "Invoice overview"
+msgstr "Översikt per uppdrag"
+
+#: tzreports.views_default.inc:1188;1399;1436
+msgid "Assignments"
+msgstr "Uppdrag"
+
+#: tzreports.views_default.inc:1198
+msgid "Parent"
+msgstr "Överliggande"
+
+#: tzreports.views_default.inc:1211
+msgid "Title"
+msgstr "Titel"
+
+#: tzreports.views_default.inc:1244
+msgid "State"
+msgstr "Tillstånd"
+
+#: tzreports.views_default.inc:1309
+msgid "Parent assignment"
+msgstr "Överliggande uppdrag"
+
+#: tzreports.views_default.inc:1328
+msgid "Top level"
+msgstr "Översta nivån"
+
+#: tzreports.views_default.inc:1437
+msgid "Show and edit available assignments"
+msgstr "Visa och ändra tillgängliga uppdrag"
+
+#: tzreports.module:34
 msgid "use timezynk report generator"
 msgstr ""
 
-#: tzreports.module:12
-msgid "Assignment summary"
-msgstr "Uppdragsöversikt"
+#: tzreports.module:18
+msgid "By assignment"
+msgstr "Per uppdrag"
 
 #: tzreports.info:0
 msgid "TimeZynk report generator"
@@ -88,9 +173,6 @@ msgstr ""
 
 #~ msgid "Job to invoice"
 #~ msgstr "Välj uppdrag att fakturera"
-
-#~ msgid "Invoice"
-#~ msgstr "Fakturera"
 
 #~ msgid "TimeZynk Statistics"
 #~ msgstr "TimeZynk Statistik"

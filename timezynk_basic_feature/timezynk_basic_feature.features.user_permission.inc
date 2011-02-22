@@ -62,14 +62,6 @@ function timezynk_basic_feature_user_default_permissions() {
     ),
   );
 
-  // Exported permission: send installation sms
-  $permissions['send installation sms'] = array(
-    'name' => 'send installation sms',
-    'roles' => array(
-      '0' => 'authenticated user',
-    ),
-  );
-
   // Exported permission: use timezynk report generator
   $permissions['use timezynk report generator'] = array(
     'name' => 'use timezynk report generator',

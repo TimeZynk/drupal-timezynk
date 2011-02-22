@@ -17,19 +17,20 @@ function tzintellitime_mock_init() {
 }
 
 function tzintellitime_mock_menu() {
-  $items['demo/v2005'] = array(
-    'title' => 'Intellitime Demo Login',
-    'page callback' => 'tzintellitime_mock_request',
-    'access callback' => TRUE,
-    'type' => MENU_NORMAL_ITEM,
-  );
-
   $items['demo'] = array(
     'title' => 'Intellitime Demo',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('tzintellitime_mock_presets'),
     'file' => 'tzintellitime_mock.presets.inc',
     'access callback' => TRUE,
+    'type' => MENU_SUGGESTED_ITEM,
+  );
+
+  $items['demo/v2005'] = array(
+    'title' => 'Intellitime Demo Login',
+    'page callback' => 'tzintellitime_mock_request',
+    'access callback' => TRUE,
+    'type' => MENU_SUGGESTED_ITEM,
   );
 
   $items['admin/settings/tzintellitime_mock'] = array(
@@ -542,4 +543,22 @@ function tzintellitime_mock_load_object($id) {
   $row = db_fetch_object($result);
   $obj = unserialize($row->data);
   return _tzintellitime_mock_fill_id($obj, $row);
+}
+
+function tzintellitime_mock_schedule_all_users() {
+  global $user;
+
+  $old_delay = TZINTELLITIME_MOCK_DELAY_MILLIS;
+  variable_set('tzintellitime_mock_delay_millis', 0);
+
+  $result = db_query('SELECT * FROM {tzintellitime_mock_users}');
+  while($mock_user = db_fetch_object($result)) {
+    $account = user_load(array('name' => $mock_user->login, 'status' => 1));
+    $account = tzintellitime_server_auth($account, $mock_user->login, $mock_user->password);
+    if($account) {
+      tzintellitime_sync_schedule_user($account->uid);
+    }
+  }
+
+  variable_set('tzintellitime_mock_delay_millis', $old_delay);
 }

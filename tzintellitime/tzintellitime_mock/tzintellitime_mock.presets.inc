@@ -53,4 +53,6 @@ function tzintellitime_mock_presets_submit($form, $form_state) {
       tzintellitime_mock_store_object($report_clone);
     }
   }
+
+  tzintellitime_mock_schedule_all_users();
 }

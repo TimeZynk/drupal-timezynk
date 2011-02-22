@@ -8,14 +8,21 @@
  * Implementation of hook_menu()
  */
 function tzreports_menu() {
-  $items['reports/invoice'] = array(
-    'title' => 'Assignment summary',
+  $items['timereports'] = array(
+    'title' => 'Time Reports',
+    'title callback' => 't',
+    'access arguments' => array('use timezynk report generator'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['timereports/by_assignment'] = array(
+    'title' => 'By assignment',
     'title callback' => 't',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('tzreports_invoice'),
     'access arguments' => array('use timezynk report generator'),
     'file' => 'tzreports.invoice.inc',
-    'type' => MENU_NORMAL_ITEM,
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10,
   );
   return $items;
 }
@@ -38,6 +45,17 @@ function tzreports_theme() {
   );
 }
 
+function tzreports_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'tzreports'),
+  );
+}
+
 function theme_assignment_trail($trail) {
   return implode(' &raquo; ', $trail);
+}
+
+function tzreports_blank_page() {
+  return '';
 }

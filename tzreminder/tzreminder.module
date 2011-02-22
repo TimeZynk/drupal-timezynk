@@ -142,6 +142,6 @@ function _tzreminder_send_reminder($delayPolicy, $now, $config, $uid, $count) {
       array('@mobile' => $account->tzuser['mobile']),
       WATCHDOG_INFO,
       theme('username', $account));
-  tzsms_send(TZSMS_TYPE_USER_SMS, $account->tzuser['mobile'], $message);
+  tzsms_send(TZSMS_TYPE_AUTO_REMINDER_SMS, $account->tzuser['mobile'], $message);
   return TRUE;
 }

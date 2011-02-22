@@ -11,7 +11,22 @@ Drupal.behaviors.TZUserOverview = function(context) {
 
     function makeFieldComparator(field) {
         return function(a, b) {
-            return a[field] >= b[field];
+            if (a[field] > b[field]) {
+                return 1;
+            }
+
+            if (a[field] < b[field]) {
+                return -1;
+            }
+
+            /* The field is equal in both objects
+             * Try to fallback to comparing the name
+             * since it should always be unique.
+             */
+            if (field != 'name') {
+                return makeFieldComparator('name')(a,b);
+            }
+            return 0;
         }
     }
 

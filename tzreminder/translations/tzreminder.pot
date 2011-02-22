@@ -12,7 +12,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-02-11 17:02+0100\n"
+"POT-Creation-Date: 2011-02-22 12:26+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -20,6 +20,14 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: tzreminder.module:141
+msgid "tzreminder"
+msgstr ""
+
+#: tzreminder.module:141
+msgid "Sending reminder to @mobile"
+msgstr ""
 
 #: tzreminder.module:21
 msgid "configure reminders"

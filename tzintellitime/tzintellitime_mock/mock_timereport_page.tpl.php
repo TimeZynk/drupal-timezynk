@@ -571,7 +571,7 @@ myWindow.focus();
 
                                         <tr>
                                             <td width="10"><IMG height="5" src="../Images/Trans.gif" width="10" border="0"></td>
-                                            <td vAlign="middle" align="left" width="30%"><input type="submit" name="UpdateButton" value="Uppdatera" id="UpdateButton" /><br/>
+                                            <td vAlign="middle" align="left" width="30%"><input type="submit" name="UpdateButton" value="Spara" id="UpdateButton" /><br/>
                                         <? if($all_reports_done): ?>
                                               <input type="submit" id="ChangeButton" value="Ändra vecka" name="ChangeButton"/>
                                         <? else: ?>

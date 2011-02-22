@@ -9,12 +9,3 @@ function timezynk_basic_feature_ctools_plugin_api() {
     return array("version" => 1);
   }
 }
-
-/**
- * Implementation of hook_views_api().
- */
-function timezynk_basic_feature_views_api() {
-  return array(
-    'api' => '2',
-  );
-}
