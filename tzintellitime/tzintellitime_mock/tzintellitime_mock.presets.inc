@@ -22,10 +22,16 @@ function tzintellitime_mock_presets_submit($form, $form_state) {
   $today = tzbase_make_date();
 
   $nbrOfWeeksForward = 2;
+  $nbrOfWeeksBackward = 2;
+  $totalNbrOfWeeks = $nbrOfWeeksForward + $nbrOfWeeksBackward + 1;
+
+  $start = clone($today);
+  $start->modify("-$nbrOfWeeksBackward weeks");
 
   $reports = array();
-  for($i = 0; $i <= $nbrOfWeeksForward; $i++) {
-    $date = clone($today);
+  $todayIndex = 0;
+  for($i = 0; $i < $totalNbrOfWeeks; $i++) {
+    $date = clone($start);
     $date->modify("+$i weeks");
     $weekSpan = tzintellitime_week_span($date);
     $dayOfWeek = clone($weekSpan[0]);
@@ -40,8 +46,20 @@ function tzintellitime_mock_presets_submit($form, $form_state) {
       $report->end = '16:30';
       $report->break_duration_minutes = '30';
 
+      /* We need this index later to be able to set certain reports
+       * as REPORTED
+       */
+      if ($today->format('Ymd') == $dayOfWeek->format('Ymd')) {
+        $todayIndex = count($reports);
+      }
+
       $reports[] = $report;
     }
+  }
+
+  // Make sure all our history is reported, except the last 3 working days
+  for ($i = 0; $i < $todayIndex - 3; $i++) {
+    $reports[$i]->state = TZIntellitimeReport::STATE_REPORTED;
   }
 
   // Save the reports once for every user
@@ -55,4 +73,6 @@ function tzintellitime_mock_presets_submit($form, $form_state) {
   }
 
   tzintellitime_mock_schedule_all_users();
+
+  drupal_set_message(t('Last reset @date', array('@date' => date_format_date(tzbase_make_date()))));
 }

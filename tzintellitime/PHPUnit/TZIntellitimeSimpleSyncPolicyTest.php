@@ -39,6 +39,43 @@ class TZIntellitimeSimpleSyncPolicyTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($expectedNbrOfWeeks + 1, $i);
   }
 
+  public function testFourWeeksBackward() {
+    $expectedNbrOfWeeks = 4;
+    $startDate = new DateTime('2011-02-22', $this->timezone);
+    $policy = new TZIntellitimeSimpleSyncPolicy($this->account, $startDate, 0, $expectedNbrOfWeeks);
+    $this->assertNotNull($policy);
+
+    $expectedWeeks = array('2011W04', '2011W05', '2011W06', '2011W07', '2011W08');
+    $actualWeeks = array();
+    while($week = $policy->getNextWeekToSync()) {
+      $actualWeeks[] = $week->format('o\WW');
+    }
+
+    sort($actualWeeks);
+
+    $this->assertEquals($expectedWeeks, $actualWeeks);
+  }
+
+  public function testFourWeeksBackwardAndForward() {
+    $expectedNbrOfWeeks = 4;
+    $startDate = new DateTime('2011-01-14', $this->timezone);
+    $policy = new TZIntellitimeSimpleSyncPolicy($this->account, $startDate, $expectedNbrOfWeeks, $expectedNbrOfWeeks);
+    $this->assertNotNull($policy);
+
+    $expectedWeeks = array(
+      '2010W50', '2010W51', '2010W52', '2011W01',
+      '2011W02',
+      '2011W03', '2011W04', '2011W05', '2011W06', );
+
+    $actualWeeks = array();
+    while($week = $policy->getNextWeekToSync()) {
+      $actualWeeks[] = $week->format('o\WW');
+    }
+    sort($actualWeeks);
+
+    $this->assertEquals($expectedWeeks, $actualWeeks);
+  }
+
   public function testAddUnfinishedWeeks() {
     $expectedNbrOfWeeks = 0;
     $expectedWeeks = array(

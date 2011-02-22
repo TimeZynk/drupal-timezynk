@@ -13,7 +13,7 @@ class TZIntellitimeSimpleSyncPolicy implements TZIntellitimeSyncPolicy {
    * @param DateTime $startDate Date for the first week to sync
    * @param int $nbrOfWeeksForward How many extra weeks to sync beyond the first week.
    */
-  public function __construct($account, $startDate, $nbrOfWeeksForward) {
+  public function __construct($account, $startDate, $nbrOfWeeksForward = 0, $nbrOfWeeksBackward = 0) {
     tzbase_include_proto_classes();
 
     $this->account = $account;
@@ -27,10 +27,18 @@ class TZIntellitimeSimpleSyncPolicy implements TZIntellitimeSyncPolicy {
     $this->addWeek($date);
 
     // Sync weeks forward in time according to current configuration
-    for($i = 1; $i <= $nbrOfWeeksForward; $i++) {
+    for ($i = 0; $i < $nbrOfWeeksForward; $i++) {
       $date->modify('+7 days');
       $this->addWeek($date);
     }
+
+    // Sync weeks backward in time according to current configuration
+    $date = clone($startDate);
+    for ($i = 0; $i < $nbrOfWeeksBackward; $i++) {
+      $date->modify('-7 days');
+      $this->addWeek($date);
+    }
+
     $this->addLocalUnlockedWeeks();
     $this->addUpdatedWeeks();
   }

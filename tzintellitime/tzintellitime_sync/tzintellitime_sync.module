@@ -4,6 +4,7 @@ define('TZINTELLITIME_SYNC_INTERVAL_MINUTES', variable_get('tzintellitime_sync_i
 define('TZINTELLITIME_SYNC_USERS_PER_RUN', variable_get('tzintellitime_sync_users_per_run', 100));
 define('TZINTELLITIME_SYNC_PARALLEL_THREADS', variable_get('tzintellitime_sync_parallel_threads', 2));
 define('TZINTELLITIME_SYNC_WEEKS_FORWARD', variable_get('tzintellitime_sync_weeks_forward', 2));
+define('TZINTELLITIME_SYNC_WEEKS_BACKWARD', variable_get('tzintellitime_sync_weeks_backward', 2));
 
 /** Sync both new users and users with expired session on login */
 define('TZINTELLITIME_SYNC_INITIAL_SYNC_BOTH', 'both');
@@ -158,7 +159,12 @@ function tzintellitime_sync_synchronize_user($uid) {
   try {
     // SyncPolicy starting today
     $startDate = tzbase_make_date();
-    $syncPolicy = new TZIntellitimeSimpleSyncPolicy($account, $startDate, TZINTELLITIME_SYNC_WEEKS_FORWARD);
+    $syncPolicy = new TZIntellitimeSimpleSyncPolicy(
+        $account,
+        $startDate,
+        TZINTELLITIME_SYNC_WEEKS_FORWARD,
+        TZINTELLITIME_SYNC_WEEKS_BACKWARD
+    );
 
     $curl = new TZCurl($account->intellitime_session_data);
     $serverInterface = new TZIntellitimeBot($curl, TZINTELLITIME_BASE_URL);

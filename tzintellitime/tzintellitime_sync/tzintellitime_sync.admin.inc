@@ -26,6 +26,12 @@ function tzintellitime_sync_admin_settings() {
     '#description' => t('Enter 0 for only the current week, 1 for the current week and next week, and so on.'),
     '#default_value' => TZINTELLITIME_SYNC_WEEKS_FORWARD,
   );
+  $form['tzintellitime_sync_weeks_backward'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Number of weeks backward in time to synchronize'),
+    '#description' => t('Enter 0 for only the current week, 1 for the current week and previous week, and so on.'),
+    '#default_value' => TZINTELLITIME_SYNC_WEEKS_BACKWARD,
+  );
   $form['tzintellitime_sync_initial_sync'] = array(
     '#type' => 'radios',
     '#title' => t('Initial synchronization'),
@@ -54,9 +60,11 @@ function tzintellitime_sync_admin_settings_validate($form, &$form_state) {
     form_set_error('tzintellitime_sync_interval_minutes', t('Synchronization interval must be greater than 0'));
   }
 
-  if(!is_numeric($form_state['values']['tzintellitime_sync_weeks_forward'])) {
+  if(!ctype_digit($form_state['values']['tzintellitime_sync_weeks_forward'])) {
     form_set_error('tzintellitime_sync_weeks_forward', t('Enter number of weeks as a positive integer.'));
-  } elseif($form_state['values']['tzintellitime_sync_weeks_forward'] < 0) {
-    form_set_error('tzintellitime_sync_weeks_forward', t('Must synchronize at least the current week'));
+  }
+
+  if(!ctype_digit($form_state['values']['tzintellitime_sync_weeks_backward'])) {
+    form_set_error('tzintellitime_sync_weeks_backward', t('Enter number of weeks as a positive integer.'));
   }
 }
