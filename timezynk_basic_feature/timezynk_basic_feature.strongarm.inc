@@ -80,7 +80,7 @@ function timezynk_basic_feature_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'sms_default_gateway';
-  $strongarm->value = 'log';
+  $strongarm->value = 'clickatell';
 
   $export['sms_default_gateway'] = $strongarm;
   $strongarm = new stdClass;
