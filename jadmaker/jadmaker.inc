@@ -26,7 +26,8 @@ function jadmaker_create_jad() {
     }
   }
 
-  if(false !== strpos($ua, 'iPhone')) {
+  if(false !== strpos($ua, 'iPhone') ||
+     false !== strpos($ua, 'iPad')) {
     // Check for customer-specific overrride
     $mobile_path = file_directory_path() . '/mobile';
     if(file_exists($mobile_path)) {
