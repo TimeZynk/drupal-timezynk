@@ -155,13 +155,7 @@ function tzproto_handle_get_user(&$cmd, &$result) {
   // Load basic data
   $tzuser->set_id($user->uid);
   $tzuser->set_username($user->name);
-
-  if(module_exists('realname')) {
-    $tzuser->set_realname($user->realname);
-  } else {
-    $tzuser->set_realname($user->name);
-  }
-
+  $tzuser->set_realname(theme('username', $user, FALSE));
   $tzuser->set_may_create_job(user_access('create tzjob content', $user));
 
   $result->set_user($tzuser);

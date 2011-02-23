@@ -1,6 +1,6 @@
 <?php
 
-function tzuser_username($account) {
+function tzuser_username($account, $link = TRUE) {
   $name = '';
   if(!empty($account->tzuser['fullname'])) {
     $name = $account->tzuser['fullname'];
@@ -14,7 +14,7 @@ function tzuser_username($account) {
 
   $name = check_plain($name);
 
-  if (user_access('access user profiles')) {
+  if ($link && user_access('access user profiles')) {
     $output = l($name, 'user/' . $account->uid, array('attributes' => array('title' => t('View user profile.'))));
   } else {
     $output = $name;
