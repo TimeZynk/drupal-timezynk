@@ -1,6 +1,6 @@
 <?php
 
-define('TZUSER_OVERVIEW_YELLOW_LIMIT', 24*60*60);
+define('TZUSER_OVERVIEW_YELLOW_LIMIT', 0);
 
 function tzuser_menu() {
   $items['admin/user/tzuser/ajax/autocomplete/user'] = array(
