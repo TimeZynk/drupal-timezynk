@@ -7,12 +7,14 @@ class TZUserStatus {
 
   private $lastLogin;
   private $dueLimit;
+  private $loginLimit;
   private $numberOfDueReports = -1;
   private $earliestDueEndTime = 0;
 
-  function __construct($lastLogin, $dueLimit) {
+  function __construct($lastLogin, $dueLimit, $loginLimit) {
     $this->lastLogin = $lastLogin;
     $this->dueLimit = $dueLimit;
+    $this->loginLimit = $loginLimit;
   }
 
   function setEarliestDueEndTime($endtime) {
@@ -31,13 +33,16 @@ class TZUserStatus {
   }
 
   function getStatusCode($now) {
-    if(empty($this->lastLogin)) {
+    if (empty($this->lastLogin)) {
       return TZUserStatus::RED;
     }
-    if($this->numberOfDueReports === 0) {
+    if (is_numeric($this->loginLimit) && $this->lastLogin <= $now - $this->loginLimit) {
+      return TZUserStatus::RED;
+    }
+    if ($this->numberOfDueReports === 0) {
       return TZUserStatus::GREEN;
     }
-    if($this->earliestDueEndTime >= $now - $this->dueLimit) {
+    if ($this->earliestDueEndTime >= $now - $this->dueLimit) {
       return TZUserStatus::GREEN;
     }
     return TZUserStatus::YELLOW;

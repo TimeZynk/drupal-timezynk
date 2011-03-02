@@ -1,6 +1,7 @@
 <?php
 
 define('TZUSER_OVERVIEW_YELLOW_LIMIT', 0);
+define('TZUSER_OVERVIEW_RED_LIMIT', 14*24*3600);
 
 function tzuser_menu() {
   $items['admin/user/tzuser/ajax/autocomplete/user'] = array(
@@ -249,7 +250,7 @@ function tzuser_validate_phone_number($number) {
 function tzuser_get_user_status($account, $now) {
   tzbase_include_proto_classes();
 
-  $status = new TZUserStatus($account->login, TZUSER_OVERVIEW_YELLOW_LIMIT);
+  $status = new TZUserStatus($account->login, TZUSER_OVERVIEW_YELLOW_LIMIT, TZUSER_OVERVIEW_RED_LIMIT);
   if($status->getStatusCode($now) == TZUserStatus::RED) {
     return $status;
   }

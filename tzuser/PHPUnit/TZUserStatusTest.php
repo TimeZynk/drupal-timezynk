@@ -6,11 +6,24 @@ class TZUserStatusTest extends PHPUnit_Framework_TestCase {
 
   function setUp() {
     $this->dueLimit = 26*60*60; // 24 hours
+    $this->redLimit = NULL;
     $this->now = time();
   }
 
   function testRedOnNoLogin() {
     $status = $this->createStatus(0);
+    $this->assertEquals(TZUserStatus::RED, $status->getStatusCode($this->now));
+  }
+
+  function testRedExactlyOnRedLimit() {
+    $this->redLimit = 3600;
+    $status = $this->createStatus($this->now - $this->redLimit);
+    $this->assertEquals(TZUserStatus::RED, $status->getStatusCode($this->now));
+  }
+
+  function testRedBeforeRedLimit() {
+    $this->redLimit = 3600;
+    $status = $this->createStatus($this->now - $this->redLimit - 342342);
     $this->assertEquals(TZUserStatus::RED, $status->getStatusCode($this->now));
   }
 
@@ -64,6 +77,6 @@ class TZUserStatusTest extends PHPUnit_Framework_TestCase {
   }
 
   private function createStatus($lastLogin) {
-    return new TZUserStatus($lastLogin, $this->dueLimit);
+    return new TZUserStatus($lastLogin, $this->dueLimit, $this->redLimit);
   }
 }

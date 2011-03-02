@@ -1,6 +1,6 @@
 <?php
 
-define('TZINTELLITIME_SYNC_INTERVAL_MINUTES', variable_get('tzintellitime_sync_interval_minutes', 12));
+define('TZINTELLITIME_SYNC_INTERVAL_MINUTES', variable_get('tzintellitime_sync_interval_minutes', 0));
 define('TZINTELLITIME_SYNC_USERS_PER_RUN', variable_get('tzintellitime_sync_users_per_run', 100));
 define('TZINTELLITIME_SYNC_PARALLEL_THREADS', variable_get('tzintellitime_sync_parallel_threads', 2));
 define('TZINTELLITIME_SYNC_WEEKS_FORWARD', variable_get('tzintellitime_sync_weeks_forward', 2));

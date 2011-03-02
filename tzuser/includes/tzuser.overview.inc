@@ -30,7 +30,7 @@ function tzuser_user_overview(&$form_state) {
   $status_options = array(
     TZUserStatus::GREEN => t('Employees with all time reported'),
     TZUserStatus::YELLOW => t('Employees with late reports'),
-    TZUserStatus::RED => t('Employees who have never logged in'),
+    TZUserStatus::RED => t('Employees inactive for more than @redlimit', array('@redlimit' => format_interval(TZUSER_OVERVIEW_RED_LIMIT))),
   );
 
   $form['filter']['status'] = array(
@@ -72,7 +72,7 @@ function tzuser_overview_ajax() {
       'due_count' => theme('due_reports_count', $status->getNumberOfDueReports()),
       'login' => theme('time_ago', $user_entry->login),
       'login_value' => $user_entry->login,
-      'operations' => user_edit_access($user_entry) ? l(t('edit'), "user/$user_entry->uid/edit") : '',
+      'operations' => user_edit_access($user_entry) ? l(t('edit'), "user/$user_entry->uid/edit", array('query' => 'destination=tzuser')) : '',
     );
   }
   return drupal_json($overview);
