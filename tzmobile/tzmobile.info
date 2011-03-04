@@ -3,5 +3,5 @@ description = Provides mobile web application for TimeZynk
 package = TimeZynk
 dependencies[] = tzbase
 dependencies[] = jquery_ui
-dependencies[] = sms
+dependencies[] = tzsms
 core = 6.x

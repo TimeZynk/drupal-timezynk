@@ -8,12 +8,16 @@
 #  tzsms.module: n/a
 #  tzsms.info: n/a
 #  tzsms_ui.info: n/a
+#  includes/BeepSend.class.inc: n/a
+#  includes/LogOnlyBackend.class.inc: n/a
+#  includes/SmsBackendFactory.class.inc: n/a
+#  includes/tzsms.admin.inc: n/a
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-02-21 15:21+0100\n"
+"POT-Creation-Date: 2011-03-08 00:14+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -27,99 +31,83 @@ msgid "SMS Message"
 msgstr ""
 
 #: tzsms_ui.send.inc:11
-msgid "Enter any text you want to send as SMS"
+msgid "Enter any text you want to send as SMS. Maximum message length 459 characters."
 msgstr ""
 
 #: tzsms_ui.send.inc:19 tzsms_ui.module:16
 msgid "Send"
 msgstr ""
 
-#: tzsms_ui.send.inc:51
+#: tzsms_ui.send.inc:27
+msgid "Message cannot exceed 459 characters in length. Current length !length"
+msgstr ""
+
+#: tzsms_ui.send.inc:62
 msgid "Sent message to @count mobiles"
 msgstr ""
 
-#: tzsms_ui.send.inc:44 tzsms.module:44;159;201
+#: tzsms_ui.send.inc:55 tzsms.module:71;88;91;152;194
 msgid "tzsms"
 msgstr ""
 
-#: tzsms_ui.send.inc:44
+#: tzsms_ui.send.inc:55
 msgid "Sent custom message to @number (!user)"
 msgstr ""
 
-#: tzsms.module:22
+#: tzsms.module:49
 msgid "Reset password and send new TimeZynk installation SMS"
 msgstr ""
 
-#: tzsms.module:26
+#: tzsms.module:53
 msgid "Send new TimeZynk installation SMS"
 msgstr ""
 
-#: tzsms.module:74
-msgid "TimeZynk SMS settings"
-msgstr ""
-
-#: tzsms.module:75
-msgid "TimeZynk sends out installation instructions via SMS, configure the settings here!"
-msgstr ""
-
-#: tzsms.module:79
-msgid "Default country code for this site"
-msgstr ""
-
-#: tzsms.module:81
-msgid "The country code will be used to send installation SMS to the users registered on this site"
-msgstr ""
-
-#: tzsms.module:85
-msgid "The content of the SMS"
-msgstr ""
-
-#: tzsms.module:87
-msgid "The available variables are: !url, !username and !password"
-msgstr ""
-
-#: tzsms.module:91
-msgid "The content of the SMS when keeping the same password"
-msgstr ""
-
-#: tzsms.module:93
-msgid "The available variables are: !url and !username"
-msgstr ""
-
-#: tzsms.module:111
-msgid "You must enter a numeric country code (e.g. 46 for Sweden)!"
-msgstr ""
-
-#: tzsms.module:148
+#: tzsms.module:141
 msgid "Your mobile phone number or e-mail address"
 msgstr ""
 
-#: tzsms.module:149
+#: tzsms.module:142
 msgid "Send new password over SMS"
 msgstr ""
 
-#: tzsms.module:160
+#: tzsms.module:153
 msgid "New password has been sent to you over SMS"
 msgstr ""
 
-#: tzsms.module:229
+#: tzsms.module:222
 msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username and \"!password\" as password."
 msgstr ""
 
-#: tzsms.module:243
+#: tzsms.module:236
 msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username."
 msgstr ""
 
-#: tzsms.module:44
+#: tzsms.module:71
 msgid "Failed to send SMS to invalid number: @number"
 msgstr ""
 
-#: tzsms.module:159
+#: tzsms.module:88
+msgid "Failed to send SMS message: @error"
+msgstr ""
+
+#: tzsms.module:91
+msgid "Message successfully sent with id: \"@id\""
+msgstr ""
+
+#: tzsms.module:152
 msgid "Requested new password over SMS"
 msgstr ""
 
-#: tzsms.module:201
+#: tzsms.module:194
 msgid "Sending install SMS to !nbr"
+msgstr ""
+
+#: tzsms.module:32 tzsms_ui.module:8
+msgid "SMS"
+msgstr ""
+
+#: tzsms.module:33
+msgid "Sitewide settings for SMS."
 msgstr ""
 
 #: tzsms_ui.module:57
@@ -150,10 +138,6 @@ msgstr ""
 msgid "send sms"
 msgstr ""
 
-#: tzsms_ui.module:8
-msgid "SMS"
-msgstr ""
-
 #: tzsms.info:0
 msgid "TimeZynk SMS"
 msgstr ""
@@ -172,5 +156,77 @@ msgstr ""
 
 #: tzsms_ui.info:0
 msgid "Provides TimeZynk SMS sending UI"
+msgstr ""
+
+#: includes/BeepSend.class.inc:15
+msgid "LogHttp"
+msgstr ""
+
+#: includes/BeepSend.class.inc:15
+msgid "Requesting SMS URL: \"@url\""
+msgstr ""
+
+#: includes/LogOnlyBackend.class.inc:5
+msgid "sms_log"
+msgstr ""
+
+#: includes/LogOnlyBackend.class.inc:5
+msgid "SMS Sent from \"@from\" to \"@to\": @message"
+msgstr ""
+
+#: includes/SmsBackendFactory.class.inc:35
+msgid "Log only"
+msgstr ""
+
+#: includes/SmsBackendFactory.class.inc:36
+msgid "BeepSend"
+msgstr ""
+
+#: includes/SmsBackendFactory.class.inc:39
+msgid "SMS Framework"
+msgstr ""
+
+#: includes/tzsms.admin.inc:12
+msgid "SMS Backend"
+msgstr ""
+
+#: includes/tzsms.admin.inc:18
+msgid "Default country code for this site"
+msgstr ""
+
+#: includes/tzsms.admin.inc:20
+msgid "The country code will be used to send installation SMS to the users registered on this site"
+msgstr ""
+
+#: includes/tzsms.admin.inc:24
+msgid "Default SMS sender"
+msgstr ""
+
+#: includes/tzsms.admin.inc:26
+msgid "Default SMS sender ID, alphanumeric max 11 characters."
+msgstr ""
+
+#: includes/tzsms.admin.inc:30
+msgid "The content of the SMS"
+msgstr ""
+
+#: includes/tzsms.admin.inc:32
+msgid "The available variables are: !url, !username and !password"
+msgstr ""
+
+#: includes/tzsms.admin.inc:36
+msgid "The content of the SMS when keeping the same password"
+msgstr ""
+
+#: includes/tzsms.admin.inc:38
+msgid "The available variables are: !url and !username"
+msgstr ""
+
+#: includes/tzsms.admin.inc:57
+msgid "You must enter a numeric country code (e.g. 46 for Sweden)!"
+msgstr ""
+
+#: includes/tzsms.admin.inc:61
+msgid "Sender must be alphanumeric with maximum 11 characters"
 msgstr ""
 

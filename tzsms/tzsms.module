@@ -18,6 +18,28 @@ define('TZSMS_TYPE_INSTALL_SMS', 1);
  */
 define('TZSMS_TYPE_AUTO_REMINDER_SMS', 2);
 
+define('TZSMS_DEFAULT_COUNTRY_CODE', variable_get('tzsms_default_country_code', '46'));
+define('TZSMS_DEFAULT_SENDER', variable_get('tzsms_default_sender', 'TimeZynk'));
+define('TZSMS_BACKEND', variable_get('tzsms_backend', 'beepsend'));
+
+define('TZSMS_BEEPSEND_USERNAME', 'TimeZynk01');
+define('TZSMS_BEEPSEND_PASSWORD', 'HanUzEg');
+
+
+function tzsms_menu() {
+  $items = array();
+  $items['admin/settings/timezynk/tzsms'] = array(
+    'title' => 'SMS',
+    'description' => 'Sitewide settings for SMS.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzsms_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/tzsms.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
 /**
  * Implements hook_user_operations. Adds a new selection to the mass user action
  * dropdown at the administration pages.
@@ -53,10 +75,26 @@ function tzsms_send($type, $phonenbr, $msg) {
   // Invoke tzsms_send hook to allow modules to collect statistics or billing info
   module_invoke_all('tzsms_send', $type, $valid_number, strlen($msg));
 
-  // Load country code and send SMS
-  $country_code = intval(variable_get('tzsms_default_country_code', '46'));
-  sms_send($valid_number, $msg, array('country' => $country_code));
+  // Load country code
+  $international_number = tzsms_set_country_code($valid_number, TZSMS_DEFAULT_COUNTRY_CODE);
+
+  $factory = new SmsBackendFactory(TZSMS_BACKEND);
+  $backend = $factory->create();
+
+  $message_id = '';
+  try {
+    $message_id = $backend->send(TZSMS_DEFAULT_SENDER, $international_number, $msg);
+  } catch (SmsBackendException $e) {
+    watchdog('tzsms', 'Failed to send SMS message: @error', array('@error' => $e->getMessage()));
+  }
+
+  watchdog('tzsms', 'Message successfully sent with id: "@id"', array('@id' => $message_id));
+
   return TRUE;
+}
+
+function tzsms_set_country_code($number, $country_code) {
+  return preg_replace('/^0+/', $country_code, $number);
 }
 
 function tzsms_tzuser_add_user_notify($account, $password = '') {
@@ -65,56 +103,6 @@ function tzsms_tzuser_add_user_notify($account, $password = '') {
       $account->name,
       $password
   );
-}
-
-
-/**
- * Provide a simple form to set the default country code
- * @ingroup forms
- * @see system_settings_form()
- */
-function tzsms_form_user_admin_settings_alter(&$form, &$form_state) {
-  $form['tzsms_settings'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('TimeZynk SMS settings'),
-    '#description' => t('TimeZynk sends out installation instructions via SMS, configure the settings here!'),
-    '#weight' => 0,
-    'tzsms_default_country_code' => array(
-      '#type' => 'textfield',
-      '#title' => t('Default country code for this site'),
-      '#default_value' => variable_get('tzsms_default_country_code', '46'),
-      '#description' => t('The country code will be used to send installation SMS to the users registered on this site'),
-    ),
-    'tzsms_install_sms_template' => array(
-      '#type' => 'textarea',
-      '#title' => t('The content of the SMS'),
-      '#default_value' => variable_get('tzsms_install_sms_template', tzsms_install_sms_template()),
-      '#description' => t('The available variables are: !url, !username and !password'),
-    ),
-    'tzsms_install_sms_no_password_template' => array(
-      '#type' => 'textarea',
-      '#title' => t('The content of the SMS when keeping the same password'),
-      '#default_value' => variable_get('tzsms_install_sms_no_password_template', tzsms_install_sms_no_password_template()),
-      '#description' => t('The available variables are: !url and !username'),
-    ),
-  );
-  $form['#validate'][] = 'tzsms_form_user_admin_settings_validate';
-}
-
-
-/**
- * Validate the form to check that admin has entered correct TimeZynk
- * SMS settings.
- * @param $form submitted form
- * @param $form_state submitted form state
- */
-function tzsms_form_user_admin_settings_validate(&$form, &$form_state) {
-  /* Country code must be all numeric and contain a maximum of 4 digits since
-   * a couple of countries like Barbados and Jamaica have 4 digit country codes */
-  $country_code = $form_state['values']['tzsms_default_country_code'];
-  if(strlen($country_code) > 4 || !ctype_digit($country_code)) {
-    form_set_error('tzsms_default_country_code', t('You must enter a numeric country code (e.g. 46 for Sweden)!'));
-  }
 }
 
 

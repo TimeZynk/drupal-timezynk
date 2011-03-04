@@ -71,7 +71,7 @@ function tzmobile_send_reminder($username) {
   }
 
   $msg = t('Please remember to send your time report today. Best Regards / TimeZynk');
-  sms_send($username, $msg, array('country' => 46));
+  tzsms_send(TZSMS_TYPE_AUTO_REMINDER_SMS, $username, $msg);
 
   drupal_json(array(
     'username' => $username,
