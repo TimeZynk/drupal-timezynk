@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TimeZynk\n"
 "POT-Creation-Date: 2011-03-02 12:15+0100\n"
-"PO-Revision-Date: 2011-03-02 12:16+0100\n"
+"PO-Revision-Date: 2011-03-05 15:20+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: Swedish <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -141,7 +141,7 @@ msgstr "Senast inloggad"
 
 #: includes/tzuser.overview.inc:31
 msgid "Employees with all time reported"
-msgstr "Anställa med alla pass rapporterade"
+msgstr "Anställda med alla pass rapporterade"
 
 #: includes/tzuser.overview.inc:32
 msgid "Employees with late reports"
