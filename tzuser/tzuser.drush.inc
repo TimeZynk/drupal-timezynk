@@ -18,6 +18,7 @@ function tzuser_drush_help($section) {
 
 function tzuser_drush_overview() {
   $user_status = array();
+  $now = time();
 
   $result = db_query('SELECT * FROM {users} WHERE uid > 1 AND status = 1');
   while ($account = db_fetch_object($result)) {
