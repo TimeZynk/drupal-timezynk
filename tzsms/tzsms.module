@@ -73,7 +73,7 @@ function tzsms_send($type, $phonenbr, $msg) {
   }
 
   // Invoke tzsms_send hook to allow modules to collect statistics or billing info
-  module_invoke_all('tzsms_send', $type, $valid_number, strlen($msg));
+  module_invoke_all('tzsms_send', $type, $valid_number, mb_strlen($msg));
 
   // Load country code
   $international_number = tzsms_set_country_code($valid_number, TZSMS_DEFAULT_COUNTRY_CODE);
