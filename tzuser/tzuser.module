@@ -322,9 +322,11 @@ function _tzuser_validate_entry($edit) {
     return;
   }
 
-  $mobile = tzuser_validate_phone_number($edit['tzuser']['mobile']);
-  if(empty($mobile)) {
-    form_set_error('tzuser][mobile', t('Please enter a valid mobile number'));
+  if (strlen($edit['tzuser']['mobile']) > 0) {
+    $mobile = tzuser_validate_phone_number($edit['tzuser']['mobile']);
+    if(empty($mobile)) {
+      form_set_error('tzuser][mobile', t('Please enter a valid mobile number'));
+    }
   }
 }
 
@@ -349,7 +351,7 @@ function _tzuser_user_form($account) {
   );
   $form['tzuser']['mobile'] = array(
     '#type' => 'textfield',
-    '#required' => TRUE,
+    '#required' => FALSE,
     '#title' => t('Mobile number'),
     '#description' => t('The users mobile number without country code'),
     '#default_value' => empty($account->tzuser['mobile']) ? '' : $account->tzuser['mobile'],
