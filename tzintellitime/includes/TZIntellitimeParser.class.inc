@@ -518,7 +518,11 @@ class TZIntellitimeParser {
      */
     $expensesFieldWithOptions = $row->xpath('td/select/option');
     if (empty($expensesFieldWithOptions)) {
-      return TZIntellitimeReport::STATE_REPORTED;
+      /* We only want to mark the report as reported if we are in an editable week */
+      $submitButtons = $this->doc->xpath('//input[@type="submit"]');
+      if (!empty($submitButtons)) {
+        return TZIntellitimeReport::STATE_REPORTED;
+      }
     }
 
     // No indicators found, assume STATE_OPEN

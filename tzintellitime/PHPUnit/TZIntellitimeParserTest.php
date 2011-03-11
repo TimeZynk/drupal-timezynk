@@ -276,4 +276,12 @@ class TZIntellitimeParserTest extends PHPUnit_Framework_TestCase {
     $username = $parser->parse_username();
     $this->assertEquals('Johan Heander', $username);
   }
+
+  public function testFutureV8WeekMarkedOpen() {
+    $parser = $this->loadHTMLFile('Parser_v8FutureWeekOpen.txt');
+    $reports = $parser->parse_reports();
+    foreach ($reports as $report) {
+      $this->assertEquals(TZIntellitimeReport::STATE_OPEN, $report->state);
+    }
+  }
 }
