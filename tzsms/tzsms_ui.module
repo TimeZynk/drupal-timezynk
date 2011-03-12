@@ -42,7 +42,7 @@ function tzsms_ui_list_users() {
     if(empty($account->tzuser['mobile'])) {
       continue;
     }
-    if(FALSE === tzuser_validate_phone_number($account->tzuser['mobile'])) {
+    if(!tzuser_validate_phone_number($account->tzuser['mobile'])) {
       continue;
     }
     $users[] = $account;

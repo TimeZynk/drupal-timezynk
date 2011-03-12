@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tzsms\n"
-"POT-Creation-Date: 2011-03-08 00:14+0100\n"
-"PO-Revision-Date: 2011-03-08 00:16+0100\n"
+"POT-Creation-Date: 2011-03-12 12:24+0100\n"
+"PO-Revision-Date: 2011-03-12 12:26+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: sv <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -36,7 +36,7 @@ msgid "Sent message to @count mobiles"
 msgstr "Skickade meddelandet till @count mobiler"
 
 #: tzsms_ui.send.inc:55
-#: tzsms.module:71;88;91;152;194
+#: tzsms.module:71;88;91;153;195
 msgid "tzsms"
 msgstr "tzsms"
 
@@ -52,25 +52,25 @@ msgstr "Skapa nytt TimeZynk-lösenord och skicka via installations-SMS"
 msgid "Send new TimeZynk installation SMS"
 msgstr "Skicka nytt installations-SMS för TimeZynk"
 
-#: tzsms.module:141
+#: tzsms.module:142
 msgid "Your mobile phone number or e-mail address"
 msgstr "Skriv ditt mobilnummer eller din e-postadress"
 
-#: tzsms.module:142
+#: tzsms.module:143
 msgid "Send new password over SMS"
 msgstr "Skicka nytt lösenord över SMS"
 
-#: tzsms.module:153
+#: tzsms.module:154
 msgid "New password has been sent to you over SMS"
 msgstr "Ditt nya lösenord har skickats till dig över SMS"
 
-#: tzsms.module:222
-msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username and \"!password\" as password."
-msgstr "Välkommen till TimeZynk! Besök !url för att installera och logga sedan in med \"!username\" som användarnamn och \"!password\" som lösenord."
+#: tzsms.module:223
+msgid "Welcome to mobile time reporting! Visit !url to install, then login using \"!username\" as username and \"!password\" as password."
+msgstr "Välkommen till mobil tidrapportering! Besök !url för att installera och logga sedan in med \"!username\" som användarnamn och \"!password\" som lösenord."
 
-#: tzsms.module:236
-msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username."
-msgstr "Välkommen till TimeZynk! Besök !url för att installera och logga sedan in med \"!username\" som användarnamn."
+#: tzsms.module:237
+msgid "Welcome to mobile time reporting! Visit !url to install, then login using \"!username\" as username."
+msgstr "Välkommen till mobil tidrapportering! Besök !url för att installera och logga sedan in med \"!username\" som användarnamn."
 
 #: tzsms.module:71
 msgid "Failed to send SMS to invalid number: @number"
@@ -84,13 +84,13 @@ msgstr "Kunde inte skicka SMS: @error"
 msgid "Message successfully sent with id: \"@id\""
 msgstr "SMS skickat med id: \"@id\""
 
-#: tzsms.module:152
+#: tzsms.module:153
 msgid "Requested new password over SMS"
 msgstr "Begärde nytt lösenord över SMS"
 
-#: tzsms.module:194
-msgid "Sending install SMS to !nbr"
-msgstr "Skickar installations-SMS till !nbr"
+#: tzsms.module:195
+msgid "Sending SMS to !nbr"
+msgstr "Skickar SMS till !nbr"
 
 #: tzsms.module:32
 #: tzsms_ui.module:8

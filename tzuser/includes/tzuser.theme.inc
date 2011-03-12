@@ -28,7 +28,7 @@ function theme_tzuser_user_overview($form) {
 
   $header = tzuser_user_overview_headers();
   $rows = array();
-  $rows[] = array(array('data' => t('No users available.'), 'colspan' => count($header)));
+  $rows[] = array(array('data' => t('Loading employees, please wait...'), 'colspan' => count($header)));
 
   $output .= theme('table', $header, $rows);
 

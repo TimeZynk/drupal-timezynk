@@ -89,7 +89,7 @@ function tzuser_add_users_form_validate($form, &$form_state) {
     $rowid = 'row_' . $i;
     if(!empty($form_state['values']['rows'][$rowid]['number'])) {
       $number = tzuser_validate_phone_number($form_state['values']['rows'][$rowid]['number']);
-      if(!$number) {
+      if(empty($number)) {
         form_set_error("rows][$rowid][number", t('Please enter a valid mobile number'));
       } else if(empty($form_state['values']['rows'][$rowid]['username'])) {
         form_set_error("rows][$rowid][username", t('Please enter username'));

@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-03-02 12:15+0100\n"
+"POT-Creation-Date: 2011-03-12 12:22+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -26,27 +26,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzuser.module:305;346 includes/tzuser.overview.inc:8 javascript/tzuser.overview.js:0;0
+#: tzuser.module:336;379 includes/tzuser.overview.inc:8 javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr ""
 
-#: tzuser.module:313;353 includes/tzuser.theme.inc:67
+#: tzuser.module:344;386 includes/tzuser.theme.inc:67
 msgid "Mobile number"
 msgstr ""
 
-#: tzuser.module:327 includes/tzuser.add.inc:93
+#: tzuser.module:359 includes/tzuser.add.inc:93
 msgid "Please enter a valid mobile number"
 msgstr ""
 
-#: tzuser.module:340
+#: tzuser.module:373
 msgid "TimeZynk Information"
 msgstr ""
 
-#: tzuser.module:347
+#: tzuser.module:380
 msgid "The users full name"
 msgstr ""
 
-#: tzuser.module:354
+#: tzuser.module:387
 msgid "The users mobile number without country code"
 msgstr ""
 
@@ -159,7 +159,7 @@ msgid "View user profile."
 msgstr ""
 
 #: includes/tzuser.theme.inc:31
-msgid "No users available."
+msgid "Loading employees, please wait..."
 msgstr ""
 
 #: includes/tzuser.theme.inc:67

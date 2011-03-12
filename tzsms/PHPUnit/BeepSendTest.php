@@ -9,16 +9,18 @@ class BeepSendTest extends PHPUnit_Framework_TestCase {
   public function testBasicMessage() {
     $expectedTo = '46733623516';
     $expectedFrom = 'TimeZynk';
+    $expectedId = '05929360012992463561049446734434150';
     $expectedUrl = "https://connect.beepsend.com/gateway.php?user=myuser&pass=mypassword&to=$expectedTo&from=$expectedFrom&message=Med+%E5%E4%F6%C5%C4%D6";
     $this->httpHelper->expects($this->once())
         ->method('get')
         ->with($expectedUrl)
         ->will($this->returnValue((object)array(
           'code' => 200,
-          'data' => '05929360012992463561049446734434150',
+          'data' => " $expectedId\r\n",
         )));
 
-    $this->beepSend->send($expectedFrom, $expectedTo, 'Med åäöÅÄÖ');
+    $id = $this->beepSend->send($expectedFrom, $expectedTo, 'Med åäöÅÄÖ');
+    $this->assertEquals($expectedId, $id);
   }
 
   public function testRequestErrorMessage() {
@@ -72,7 +74,7 @@ class BeepSendTest extends PHPUnit_Framework_TestCase {
         ->with($expectedUrl)
         ->will($this->returnValue((object)array(
           'code' => 200,
-          'data' => $expectedError
+          'data' => " $expectedError\r\n"
         )));
 
     try {

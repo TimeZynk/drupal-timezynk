@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-03-08 00:14+0100\n"
+"POT-Creation-Date: 2011-03-12 12:24+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -46,7 +46,7 @@ msgstr ""
 msgid "Sent message to @count mobiles"
 msgstr ""
 
-#: tzsms_ui.send.inc:55 tzsms.module:71;88;91;152;194
+#: tzsms_ui.send.inc:55 tzsms.module:71;88;91;153;195
 msgid "tzsms"
 msgstr ""
 
@@ -62,24 +62,24 @@ msgstr ""
 msgid "Send new TimeZynk installation SMS"
 msgstr ""
 
-#: tzsms.module:141
+#: tzsms.module:142
 msgid "Your mobile phone number or e-mail address"
 msgstr ""
 
-#: tzsms.module:142
+#: tzsms.module:143
 msgid "Send new password over SMS"
 msgstr ""
 
-#: tzsms.module:153
+#: tzsms.module:154
 msgid "New password has been sent to you over SMS"
 msgstr ""
 
-#: tzsms.module:222
-msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username and \"!password\" as password."
+#: tzsms.module:223
+msgid "Welcome to mobile time reporting! Visit !url to install, then login using \"!username\" as username and \"!password\" as password."
 msgstr ""
 
-#: tzsms.module:236
-msgid "Welcome to TimeZynk! Visit !url to install, then login using \"!username\" as username."
+#: tzsms.module:237
+msgid "Welcome to mobile time reporting! Visit !url to install, then login using \"!username\" as username."
 msgstr ""
 
 #: tzsms.module:71
@@ -94,12 +94,12 @@ msgstr ""
 msgid "Message successfully sent with id: \"@id\""
 msgstr ""
 
-#: tzsms.module:152
+#: tzsms.module:153
 msgid "Requested new password over SMS"
 msgstr ""
 
-#: tzsms.module:194
-msgid "Sending install SMS to !nbr"
+#: tzsms.module:195
+msgid "Sending SMS to !nbr"
 msgstr ""
 
 #: tzsms.module:32 tzsms_ui.module:8

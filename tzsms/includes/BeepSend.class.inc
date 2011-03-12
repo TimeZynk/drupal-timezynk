@@ -56,10 +56,10 @@ class BeepSend implements SmsBackend {
       throw new SmsBackendException($httpResult->code . ": " . $httpResult->data);
     }
 
-    if (preg_match('/^E\d+/', $httpResult->data, $match)) {
-      throw new SmsBackendException('BeepSend error code ' . $match[0]);
+    if (preg_match('/^\s*(E\d+)/', $httpResult->data, $match)) {
+      throw new SmsBackendException('BeepSend error code ' . $match[1]);
     }
 
-    return $httpResult->data;
+    return trim($httpResult->data);
   }
 }

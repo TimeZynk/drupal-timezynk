@@ -130,16 +130,42 @@ function tzuser_theme_registry_alter(&$theme_registry) {
 }
 
 function tzuser_form_alter(&$form, &$form_state, $form_id) {
-  /* Hide e-mail field in the user registration and user edit forms,
-   * since we don't really care about it and it is cumbersome to
-   * have to enter it just to satisfy drupal.
-   */
-  if ($form_id == 'user_register' ||
-      $form_id == 'user_profile_form') {
+  if ($form_id == 'user_register' || $form_id == 'user_profile_form') {
+    /* Hide e-mail field in the user registration and user edit forms,
+     * since we don't really care about it and it is cumbersome to
+     * have to enter it just to satisfy drupal.
+     */
     $form['account']['mail']['#type'] = 'hidden';
     $form['account']['mail']['#value'] = _tzuser_generate_fake_email();
+  } else if ($form_id == 'user_login' || $form_id == 'user_login_block') {
+    if (isset($form['#validate']) && is_array($form['#validate'])) {
+      /* Allow users to login with mobile number instead of username */
+      array_unshift($form['#validate'],'tzuser_user_login_validate');
+    }
   }
 }
+
+/**
+ * Allow the user to login using either their mobile
+ * number or their username by checking if the enterered
+ * username is found as a mobile number.
+ */
+function tzuser_user_login_validate($form, &$form_state) {
+  if (empty($form_state['values']['name'])) {
+    return;
+  }
+
+  $mobile = tzuser_validate_phone_number($form_state['values']['name']);
+  if (empty($mobile)) {
+    return;
+  }
+
+  $name = db_result(db_query("SELECT name FROM {users} u INNER JOIN {tzuser} tz ON u.uid = tz.uid WHERE tz.mobile = '%s' ORDER BY u.uid LIMIT 1", $mobile));
+  if ($name) {
+    form_set_value($form['name'], $name, $form_state);
+  }
+}
+
 
 /**
  * AJAX callback for autocompleting user names. Groked from user.module.
@@ -230,14 +256,15 @@ function tzuser_add_user($fullname, $username, $password = '', $mobile_number = 
 /**
  * Validate a mobile phone number and strip out all extra characters
  * @param string $number phone number to validate
- * @return all-numeric phone number if success, otherwise FALSE
+ * @return all-numeric phone number if success, otherwise empty string
  */
 function tzuser_validate_phone_number($number) {
   // Remove characters like '+', '-', ' ' and '/'
-  $mobile_number = preg_replace('/[\+\- \/]/', '', $number);
+  $mobile_number = preg_replace('/\s*/', '', $number);
+  $mobile_number = preg_replace('/[\+\-\/\(\)]/', '', $mobile_number);
   // There should be only digits left now
   if(!ctype_digit($mobile_number) || strlen($mobile_number) < 6) {
-    return FALSE;
+    return '';
   }
   return $mobile_number;
 }
@@ -289,6 +316,10 @@ function _tzuser_save_entry(&$edit, $account) {
     $entry = array_merge($entry, $account->tzuser);
   }
   $entry = array_merge($entry, $edit['tzuser']);
+
+  if (!empty($entry['mobile'])) {
+    $entry['mobile'] = tzuser_validate_phone_number($entry['mobile']);
+  }
 
   if(empty($account->tzuser)) {
     drupal_write_record('tzuser', $entry);

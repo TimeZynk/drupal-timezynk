@@ -67,7 +67,7 @@ function tzsms_user_operations() {
  */
 function tzsms_send($type, $phonenbr, $msg) {
   $valid_number = tzuser_validate_phone_number($phonenbr);
-  if(FALSE === $valid_number) {
+  if(empty($valid_number)) {
     watchdog('tzsms', 'Failed to send SMS to invalid number: @number', array('@number' => $phonenbr));
     return FALSE;
   }
@@ -94,13 +94,14 @@ function tzsms_send($type, $phonenbr, $msg) {
 }
 
 function tzsms_set_country_code($number, $country_code) {
-  return preg_replace('/^0+/', $country_code, $number);
+  return preg_replace('/^0*/', $country_code, $number);
 }
 
 function tzsms_tzuser_add_user_notify($account, $password = '') {
+  if (!empty($account->tzuser['mobile']))
   tzsms_send_new_user_sms(
       $account->tzuser['mobile'],
-      $account->name,
+      $account->tzuser['mobile'],
       $password
   );
 }
@@ -164,8 +165,8 @@ function tzsms_reset_pw_and_send_install_sms($users) {
     $user = user_load($uid);
     $new_pass = genpass_generate();
     $user = user_save($user, array('pass' => $new_pass));
-    if($user) {
-      tzsms_send_new_user_sms($user->tzuser['mobile'], $user->name, $new_pass);
+    if($user && !empty($user->tzuser['mobile'])) {
+      tzsms_send_new_user_sms($user->tzuser['mobile'], $user->tzuser['mobile'], $new_pass);
     }
   }
 }
@@ -176,8 +177,8 @@ function tzsms_reset_pw_and_send_install_sms($users) {
 function tzsms_send_install_sms($users) {
   foreach($users as $uid) {
     $user = user_load($uid);
-    if($user) {
-      tzsms_send_new_user_sms($user->tzuser['mobile'], $user->name);
+    if($user && !empty($user->tzuser['mobile'])) {
+      tzsms_send_new_user_sms($user->tzuser['mobile'], $user->tzuser['mobile']);
     }
   }
 }
@@ -191,7 +192,7 @@ function tzsms_send_install_sms($users) {
  * @param $password password to substitute in the install SMS template
  */
 function tzsms_send_new_user_sms($phonenbr, $username, $password = NULL) {
-  watchdog('tzsms', 'Sending install SMS to !nbr', array('!nbr' => $phonenbr));
+  watchdog('tzsms', 'Sending SMS to !nbr', array('!nbr' => $phonenbr));
   $msg = '';
   if($password) {
     $msg = tzsms_install_sms_template(array(
@@ -219,7 +220,7 @@ function tzsms_install_sms_template($variables = array()) {
     // An admin setting overrides the default string.
     return strtr($admin_setting, $variables);
   } else {
-    return t('Welcome to TimeZynk! Visit !url to install, then login using "!username" as username and "!password" as password.',
+    return t('Welcome to mobile time reporting! Visit !url to install, then login using "!username" as username and "!password" as password.',
       $variables);
   }
 }
@@ -233,7 +234,7 @@ function tzsms_install_sms_no_password_template($variables = array()) {
     // An admin setting overrides the default string.
     return strtr($admin_setting, $variables);
   } else {
-    return t('Welcome to TimeZynk! Visit !url to install, then login using "!username" as username.',
+    return t('Welcome to mobile time reporting! Visit !url to install, then login using "!username" as username.',
       $variables);
   }
 }
