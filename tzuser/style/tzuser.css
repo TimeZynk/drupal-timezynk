@@ -1,3 +1,12 @@
+#tzuser-user-overview fieldset > .form-item {
+    float: left;
+    margin-right: 2em;
+}
+
+#tzuser-user-overview .date-clear-block {
+    clear: none;
+}
+
 .tzuser_status {
     width: 20px;
     height: 20px;
@@ -17,6 +26,10 @@
     background: url('../images/tzuser_status_yellow.png') center no-repeat;
 }
 
+.tzuser_status_grey {
+    background: url('../images/tzuser_status_grey.png') center no-repeat;
+}
+
 .form-checkboxes .form-item {
     padding-left: 20px;
 }
@@ -29,4 +42,7 @@
 }
 #tzuser-user-overview #edit-status-0-wrapper {
     background: url('../images/tzuser_status_red.png') left no-repeat;
+}
+#tzuser-user-overview #edit-status--10-wrapper {
+    background: url('../images/tzuser_status_grey.png') left no-repeat;
 }

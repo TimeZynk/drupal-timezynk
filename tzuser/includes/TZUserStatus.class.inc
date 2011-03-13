@@ -1,6 +1,7 @@
 <?php
 
 class TZUserStatus {
+  const GREY = -10;
   const RED = 0;
   const YELLOW = 10;
   const GREEN = 20;
@@ -34,7 +35,7 @@ class TZUserStatus {
 
   function getStatusCode($now) {
     if (empty($this->lastLogin)) {
-      return TZUserStatus::RED;
+      return TZUserStatus::GREY;
     }
     if (is_numeric($this->loginLimit) && $this->lastLogin <= $now - $this->loginLimit) {
       return TZUserStatus::RED;

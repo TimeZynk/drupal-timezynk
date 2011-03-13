@@ -16,7 +16,7 @@
    version="1.1"
    inkscape:version="0.47 r22583"
    sodipodi:docname="tzuser_status.svg"
-   inkscape:export-filename="/Users/johan/TimeZynk/devel/drupal/timezynk/tzuser/images/tzuser_status_green.png"
+   inkscape:export-filename="/Users/johan/TimeZynk/devel/drupal/timezynk/tzuser/images/tzuser_status_grey.png"
    inkscape:export-xdpi="64.800003"
    inkscape:export-ydpi="64.800003">
   <defs
@@ -39,11 +39,11 @@
       <stop
          id="stop3667"
          offset="0"
-         style="stop-color:#cc3900;stop-opacity:1" />
+         style="stop-color:#9e9e9e;stop-opacity:1" />
       <stop
          id="stop3669"
          offset="1"
-         style="stop-color:#9d0000;stop-opacity:1" />
+         style="stop-color:#666666;stop-opacity:1" />
     </linearGradient>
     <linearGradient
        inkscape:collect="always"
@@ -124,15 +124,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="8"
-     inkscape:cx="-0.25000008"
-     inkscape:cy="5.4974"
+     inkscape:cx="-8.3610075"
+     inkscape:cy="15.39868"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1578"
-     inkscape:window-height="880"
-     inkscape:window-x="179"
-     inkscape:window-y="28"
+     inkscape:window-width="1264"
+     inkscape:window-height="563"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
@@ -147,7 +147,7 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="red"
+     inkscape:label="grey"
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-2.6187184,-1024.8596)"
@@ -164,6 +164,23 @@
        transform="translate(0.61871843,1020.8596)" />
   </g>
   <g
+     style="display:none"
+     transform="translate(-2.6187184,-1024.8596)"
+     id="g2843"
+     inkscape:groupmode="layer"
+     inkscape:label="red">
+    <path
+       transform="translate(0.61871843,1020.8596)"
+       d="m 26,16.5 a 11.5,11.5 0 1 1 -23,0 11.5,11.5 0 1 1 23,0 z"
+       sodipodi:ry="11.5"
+       sodipodi:rx="11.5"
+       sodipodi:cy="16.5"
+       sodipodi:cx="14.5"
+       id="path2845"
+       style="fill:url(#radialGradient3671);fill-opacity:1;stroke:url(#linearGradient3596);stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       sodipodi:type="arc" />
+  </g>
+  <g
      transform="translate(-2.6187184,-1024.8596)"
      id="g3657"
      inkscape:groupmode="layer"
@@ -171,7 +188,7 @@
      style="display:none">
     <path
        transform="translate(0.61871843,1020.8596)"
-       d="m 26,16.5 a 11.5,11.5 0 1 1 -23,0 11.5,11.5 0 1 1 23,0 z"
+       d="M 26,16.5 C 26,22.851275 20.851275,28 14.5,28 8.1487254,28 3,22.851275 3,16.5 3,10.148725 8.1487254,5 14.5,5 20.851275,5 26,10.148725 26,16.5 z"
        sodipodi:ry="11.5"
        sodipodi:rx="11.5"
        sodipodi:cy="16.5"
@@ -194,7 +211,7 @@
        sodipodi:cy="16.5"
        sodipodi:rx="11.5"
        sodipodi:ry="11.5"
-       d="m 26,16.5 a 11.5,11.5 0 1 1 -23,0 11.5,11.5 0 1 1 23,0 z"
+       d="M 26,16.5 C 26,22.851275 20.851275,28 14.5,28 8.1487254,28 3,22.851275 3,16.5 3,10.148725 8.1487254,5 14.5,5 20.851275,5 26,10.148725 26,16.5 z"
        transform="translate(0.61871843,1020.8596)"
        inkscape:export-filename="/Users/johan/TimeZynk/devel/drupal/timezynk/tzuser/images/tzuser_status_yellow.png"
        inkscape:export-xdpi="64.800003"

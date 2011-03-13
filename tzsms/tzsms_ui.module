@@ -21,7 +21,12 @@ function tzsms_ui_menu() {
   $items['tzsms/install_sms_ajax'] = array(
     'type' => MENU_CALLBACK,
     'access arguments' => array('send sms'),
-    'page callback' => 'tzsms_ui_user_overview_callback',
+    'page callback' => 'tzsms_ui_install_sms_ajax',
+  );
+  $items['tzsms/reminder_sms_ajax'] = array(
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('send sms'),
+    'page callback' => 'tzsms_ui_reminder_sms_ajax',
   );
   return $items;
 }
@@ -88,6 +93,11 @@ function tzsms_ui_recipient_form($default_policy = 'include', $default_selection
 
 function tzsms_ui_form_tzuser_user_overview_alter(&$form, &$form_state) {
   drupal_add_js(drupal_get_path('module', 'tzsms_ui') . '/tzsms_ui.overview.js');
+  $form['send_reminder_sms'] = array(
+    '#type' => 'submit',
+    '#value' => t('Send reminder SMS'),
+    '#access' => user_access('send sms'),
+  );
   $form['send_install_sms'] = array(
     '#type' => 'submit',
     '#value' => t('New install SMS'),
@@ -95,7 +105,7 @@ function tzsms_ui_form_tzuser_user_overview_alter(&$form, &$form_state) {
   );
 }
 
-function tzsms_ui_user_overview_callback() {
+function tzsms_ui_install_sms_ajax() {
   if (empty($_POST['selected_users'])) {
     return;
   }
@@ -103,5 +113,28 @@ function tzsms_ui_user_overview_callback() {
   $users = array_keys($_POST['selected_users']);
   tzsms_send_install_sms($users);
   drupal_set_message(t('Sent @count SMS messages', array('@count' => count($users))));
+  print theme('status_messages', 'status');
+}
+
+function tzsms_ui_reminder_sms_ajax() {
+  if (empty($_POST['selected_users'])) {
+    return;
+  }
+
+  $sms_count = 0;
+  $users = array_keys($_POST['selected_users']);
+  foreach ($users as $uid) {
+    $account = user_load($uid);
+    if (empty($account->tzuser['mobile'])) {
+      continue;
+    }
+    tzsms_send(
+        TZSMS_TYPE_USER_SMS,
+        $account->tzuser['mobile'],
+        t('Hi! We are waiting for some of your time reports, please fill them in.')
+    );
+    $sms_count++;
+  }
+  drupal_set_message(t('Sent @count SMS messages', array('@count' => $sms_count)));
   print theme('status_messages', 'status');
 }

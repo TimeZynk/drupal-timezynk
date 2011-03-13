@@ -52,6 +52,12 @@ function tzuser_add_users_form(&$form_state) {
       '#size' => 20,
       '#default_value' => !empty($form_state['values']['rows'][$rowid]['password']) ? $form_state['values']['rows'][$rowid]['password'] : '',
     );
+
+    $default_manager = $GLOBALS['user']->uid;
+    if (!empty($form_state['values']['rows'][$rowid]['manager'])) {
+      $default_manager = $form_state['values']['rows'][$rowid]['manager'];
+    }
+    $form['rows'][$rowid]['manager'] = tzuser_select_manager_field($default_manager);
   }
 
   // Button to add more rows
@@ -96,9 +102,11 @@ function tzuser_add_users_form_validate($form, &$form_state) {
       } else if(empty($seen_numbers[$number])) {
         $username = trim($form_state['values']['rows'][$rowid]['username']);
         $password = trim($form_state['values']['rows'][$rowid]['password']);
+        $manager = intval($form_state['values']['rows'][$rowid]['manager']);
         $seen_numbers[$number] = array(
           'username' => $username,
           'password' => $password,
+          'manager' => $manager
         );
       } else {
         form_set_error("rows][$rowid][number", t('Mobile number entered twice'));
@@ -120,7 +128,14 @@ function tzuser_add_users_form_submit($form, &$form_state) {
   // We only do full submit if we are called by the submit button
   if($form_state['values']['op'] === t('Add employees')) {
     foreach($form_state['storage']['numbers'] as $mobile_number => $user_data) {
-      $account = tzuser_add_user($user_data['username'], $user_data['username'], $user_data['password'], $mobile_number);
+      $account = tzuser_add_user(
+          $user_data['username'],
+          $user_data['username'],
+          $user_data['password'],
+          $mobile_number,
+          array(),
+          $user_data['manager']
+      );
       if($account) {
         module_invoke_all('tzuser_add_user_notify', $account, $user_data['password']);
         drupal_set_message(t('Created user @username with mobile @number', array(

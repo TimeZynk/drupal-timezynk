@@ -14,19 +14,35 @@ function timezynk_basic_feature_user_default_permissions() {
     ),
   );
 
-  // Exported permission: create tzjob content
-  $permissions['create tzjob content'] = array(
-    'name' => 'create tzjob content',
+  // Exported permission: access user profiles
+  $permissions['access user profiles'] = array(
+    'name' => 'access user profiles',
     'roles' => array(
-      '0' => 'authenticated user',
+      '0' => 'manager',
     ),
   );
 
-  // Exported permission: create tzreport content
-  $permissions['create tzreport content'] = array(
-    'name' => 'create tzreport content',
+  // Exported permission: administer permissions
+  $permissions['administer permissions'] = array(
+    'name' => 'administer permissions',
     'roles' => array(
-      '0' => 'authenticated user',
+      '0' => 'manager',
+    ),
+  );
+
+  // Exported permission: administer users
+  $permissions['administer users'] = array(
+    'name' => 'administer users',
+    'roles' => array(
+      '0' => 'manager',
+    ),
+  );
+
+  // Exported permission: configure reminders
+  $permissions['configure reminders'] = array(
+    'name' => 'configure reminders',
+    'roles' => array(
+      '0' => 'manager',
     ),
   );
 
@@ -35,6 +51,7 @@ function timezynk_basic_feature_user_default_permissions() {
     'name' => 'edit any tzjob content',
     'roles' => array(
       '0' => 'authenticated user',
+      '1' => 'manager',
     ),
   );
 
@@ -43,6 +60,7 @@ function timezynk_basic_feature_user_default_permissions() {
     'name' => 'edit any tzreport content',
     'roles' => array(
       '0' => 'authenticated user',
+      '1' => 'manager',
     ),
   );
 
@@ -51,6 +69,7 @@ function timezynk_basic_feature_user_default_permissions() {
     'name' => 'edit own tzjob content',
     'roles' => array(
       '0' => 'authenticated user',
+      '1' => 'manager',
     ),
   );
 
@@ -59,6 +78,23 @@ function timezynk_basic_feature_user_default_permissions() {
     'name' => 'edit own tzreport content',
     'roles' => array(
       '0' => 'authenticated user',
+      '1' => 'manager',
+    ),
+  );
+
+  // Exported permission: manage employees
+  $permissions['manage employees'] = array(
+    'name' => 'manage employees',
+    'roles' => array(
+      '0' => 'manager',
+    ),
+  );
+
+  // Exported permission: send sms
+  $permissions['send sms'] = array(
+    'name' => 'send sms',
+    'roles' => array(
+      '0' => 'manager',
     ),
   );
 
@@ -66,7 +102,7 @@ function timezynk_basic_feature_user_default_permissions() {
   $permissions['use timezynk report generator'] = array(
     'name' => 'use timezynk report generator',
     'roles' => array(
-      '0' => 'authenticated user',
+      '0' => 'manager',
     ),
   );
 
@@ -75,6 +111,7 @@ function timezynk_basic_feature_user_default_permissions() {
     'name' => 'view any tzjob content',
     'roles' => array(
       '0' => 'authenticated user',
+      '1' => 'manager',
     ),
   );
 
@@ -83,6 +120,15 @@ function timezynk_basic_feature_user_default_permissions() {
     'name' => 'view any tzreport content',
     'roles' => array(
       '0' => 'authenticated user',
+      '1' => 'manager',
+    ),
+  );
+
+  // Exported permission: view employees
+  $permissions['view employees'] = array(
+    'name' => 'view employees',
+    'roles' => array(
+      '0' => 'manager',
     ),
   );
 
@@ -91,6 +137,7 @@ function timezynk_basic_feature_user_default_permissions() {
     'name' => 'view own tzjob content',
     'roles' => array(
       '0' => 'authenticated user',
+      '1' => 'manager',
     ),
   );
 
@@ -99,6 +146,15 @@ function timezynk_basic_feature_user_default_permissions() {
     'name' => 'view own tzreport content',
     'roles' => array(
       '0' => 'authenticated user',
+      '1' => 'manager',
+    ),
+  );
+
+  // Exported permission: view revisions
+  $permissions['view revisions'] = array(
+    'name' => 'view revisions',
+    'roles' => array(
+      '0' => 'manager',
     ),
   );
 

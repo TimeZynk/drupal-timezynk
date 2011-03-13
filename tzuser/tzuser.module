@@ -210,7 +210,7 @@ function tzuser_ajax_autocomplete_user($string = '') {
  * @param Array $extra_data Extra fields to save in the user object
  * @return object Fully loaded user object on success, otherwise FALSE
  */
-function tzuser_add_user($fullname, $username, $password = '', $mobile_number = '', $extra_data = array()) {
+function tzuser_add_user($fullname, $username, $password = '', $mobile_number = '', $extra_data = array(), $manager = 0) {
   if(empty($fullname) || empty($username)) {
     return FALSE;
   }
@@ -226,6 +226,7 @@ function tzuser_add_user($fullname, $username, $password = '', $mobile_number = 
   $user_data['tzuser'] = array(
     'fullname' => $fullname,
     'mobile' => tzuser_validate_phone_number($mobile_number),
+    'manager' => $manager,
   );
 
   if (!$account) {
@@ -278,7 +279,7 @@ function tzuser_get_user_status($account, $now) {
   tzbase_include_proto_classes();
 
   $status = new TZUserStatus($account->login, TZUSER_OVERVIEW_YELLOW_LIMIT, TZUSER_OVERVIEW_RED_LIMIT);
-  if($status->getStatusCode($now) == TZUserStatus::RED) {
+  if($status->getStatusCode($now) == TZUserStatus::GREY) {
     return $status;
   }
 
@@ -346,6 +347,15 @@ function _tzuser_show_entry(&$account) {
       '#weight' => -9,
     );
   }
+  if (!empty($account->tzuser['manager'])) {
+    $manager = user_load($account->tzuser['manager']);
+    $account->content['manager'] = array(
+      '#type' => 'user_profile_item',
+      '#title' => t('Manager'),
+      '#value' => $manager->tzuser['fullname'],
+      '#weight' => -8,
+    );
+  }
 }
 
 function _tzuser_validate_entry($edit) {
@@ -387,7 +397,41 @@ function _tzuser_user_form($account) {
     '#description' => t('The users mobile number without country code'),
     '#default_value' => empty($account->tzuser['mobile']) ? '' : $account->tzuser['mobile'],
   );
+  $form['tzuser']['manager'] = tzuser_select_manager_field(
+    empty($account->tzuser['manager']) ? '' : $account->tzuser['manager']
+  );
+  $form['tzuser']['manager']['#title'] = t('Manager');
+  $form['tzuser']['manager']['#description'] = t('Select employees manager');
+
   return $form;
+}
+
+function tzuser_select_manager_field($default_value = '') {
+  $managers = array(
+    0 => '---',
+  );
+  $result = db_query('SELECT * FROM {users_roles} role INNER JOIN {tzuser} tz ON role.uid = tz.uid WHERE rid = %d', tzuser_manager_role_id());
+  while ($entry = db_fetch_object($result)) {
+    $managers[intval($entry->uid)] = $entry->fullname;
+  }
+
+  $form_field = array(
+    '#type' => 'select',
+    '#required' => FALSE,
+    '#default_value' => $default_value,
+    '#options' => $managers,
+  );
+  return $form_field;
+}
+
+function tzuser_manager_role_id() {
+  static $manager_role_id = 0;
+
+  if (!$manager_role_id) {
+    $manager_role_id = db_result(db_query('SELECT rid FROM {role} WHERE name = "manager"'));
+  }
+
+  return $manager_role_id;
 }
 
 function _tzuser_generate_fake_email() {

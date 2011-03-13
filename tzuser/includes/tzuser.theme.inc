@@ -50,6 +50,7 @@ function theme_tzuser_add_users_rows($element) {
         drupal_render($element[$rowid]['number']),
         drupal_render($element[$rowid]['username']),
         drupal_render($element[$rowid]['password']),
+        drupal_render($element[$rowid]['manager']),
       );
     }
   }
@@ -64,7 +65,7 @@ function theme_tzuser_add_users_rows($element) {
   $output = '<div id="tzuser_add_number_rows">';
 
   // Setup headers and output table
-  $header = array('', t('Mobile number') . '*', t('Username') . '*', t('Password'));
+  $header = array('', t('Mobile number') . '*', t('Username') . '*', t('Password'), t('Manager'));
   $output .= theme('table', $header, $rows);
 
   $output .= '</div>';
@@ -81,6 +82,7 @@ function theme_traffic_light($status) {
   }
 
   $status_table = array(
+    TZUserStatus::GREY => 'grey',
     TZUserStatus::RED => 'red',
     TZUserStatus::YELLOW => 'yellow',
     TZUserStatus::GREEN => 'green',

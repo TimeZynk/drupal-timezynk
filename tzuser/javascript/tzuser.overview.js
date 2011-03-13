@@ -3,11 +3,13 @@ Drupal.behaviors.TZUserOverview = function(context) {
     var showFilter = {
         '20': true,
         '10': true,
-        '0': true
+        '0': true,
+        '-10': true
     };
     var comparator;
     var data = [];
     var selections = {};
+    var refreshIntervalId;
 
     function makeFieldComparator(field) {
         return function(a, b) {
@@ -89,11 +91,17 @@ Drupal.behaviors.TZUserOverview = function(context) {
         return showFilter[row['status_value']];
     }
 
-    function connectCheckboxes() {
+    function connectFilters() {
         $('.form-checkboxes input').change(function(event) {
             var that = $(this);
             showFilter[that.val()] = that.attr('checked') ? true : false;
             renderOverviewTable();
+        });
+        $('#edit-manager').change(function(event) {
+            startOverviewRefreshCycle();
+        });
+        $('#edit-date-datepicker-popup-0').change(function(event) {
+            startOverviewRefreshCycle();
         });
     }
 
@@ -141,7 +149,15 @@ Drupal.behaviors.TZUserOverview = function(context) {
     }
 
     function updateOverviewData() {
-        $.getJSON('tzuser/overview/ajax',
+        var manager = $('#edit-manager').val();
+        var date = $('#edit-date-datepicker-popup-0').val();
+        var url = 'tzuser/overview/ajax/' + manager;
+
+        if (date.match(/\d{4}-\d{2}-\d{2}/)) {
+            url += '?date=' + date;
+        }
+
+        $.getJSON(url,
             '',
             function (jsonData) {
                 data = jsonData;
@@ -150,8 +166,15 @@ Drupal.behaviors.TZUserOverview = function(context) {
         );
     }
 
-    connectCheckboxes();
+    function startOverviewRefreshCycle() {
+        if (refreshIntervalId) {
+            clearInterval(refreshIntervalId);
+        }
+        updateOverviewData();
+        refreshIntervalId = setInterval(updateOverviewData, 5000);
+    }
+
+    connectFilters();
     updateSortBy(window.location.hash);
-    updateOverviewData();
-    setInterval(updateOverviewData, 5000);
+    startOverviewRefreshCycle();
 };

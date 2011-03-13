@@ -11,8 +11,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TimeZynk\n"
-"POT-Creation-Date: 2011-02-22 12:26+0100\n"
-"PO-Revision-Date: 2011-02-22 12:27+0100\n"
+"POT-Creation-Date: 2011-03-13 20:25+0100\n"
+"PO-Revision-Date: 2011-03-13 20:27+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: Swedish <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -54,7 +54,7 @@ msgstr ""
 
 #: includes/TZDelayedReminderPolicy.class.inc:40
 msgid "Hi! We are waiting for @count of your time reports. Please fill !third-person-personal-pronoun in!"
-msgstr "Hej! Vi väntar på @count av dina tidrapporter. Vänligen fyll i !third-person-personal-pronoun."
+msgstr "Hej! Vi väntar på @count av dina tidrapporter, fyll i och skicka in !third-person-personal-pronoun. Tack på förhand!"
 
 #: includes/TZDelayedReminderPolicy.class.inc:42
 msgid "one"

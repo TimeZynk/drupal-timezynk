@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-03-12 12:24+0100\n"
+"POT-Creation-Date: 2011-03-13 20:23+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -110,31 +110,39 @@ msgstr ""
 msgid "Sitewide settings for SMS."
 msgstr ""
 
-#: tzsms_ui.module:57
+#: tzsms_ui.module:62
 msgid "Recipients"
 msgstr ""
 
-#: tzsms_ui.module:63
+#: tzsms_ui.module:68
 msgid "Select recipients"
 msgstr ""
 
-#: tzsms_ui.module:65
+#: tzsms_ui.module:70
 msgid "Send ONLY to the users marked below"
 msgstr ""
 
-#: tzsms_ui.module:66
+#: tzsms_ui.module:71
 msgid "Send to EVERYONE, except the users marked below"
 msgstr ""
 
-#: tzsms_ui.module:93
+#: tzsms_ui.module:98
+msgid "Send reminder SMS"
+msgstr ""
+
+#: tzsms_ui.module:103
 msgid "New install SMS"
 msgstr ""
 
-#: tzsms_ui.module:105
+#: tzsms_ui.module:115;138
 msgid "Sent @count SMS messages"
 msgstr ""
 
-#: tzsms_ui.module:34
+#: tzsms_ui.module:134
+msgid "Hi! We are waiting for some of your time reports, please fill them in."
+msgstr ""
+
+#: tzsms_ui.module:39
 msgid "send sms"
 msgstr ""
 

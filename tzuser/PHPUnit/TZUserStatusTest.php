@@ -10,9 +10,9 @@ class TZUserStatusTest extends PHPUnit_Framework_TestCase {
     $this->now = time();
   }
 
-  function testRedOnNoLogin() {
+  function testGrayOnNoLogin() {
     $status = $this->createStatus(0);
-    $this->assertEquals(TZUserStatus::RED, $status->getStatusCode($this->now));
+    $this->assertEquals(TZUserStatus::GREY, $status->getStatusCode($this->now));
   }
 
   function testRedExactlyOnRedLimit() {

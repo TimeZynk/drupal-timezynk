@@ -5,4 +5,6 @@ files[] = includes/TZUserFilter.class.inc
 files[] = includes/TZUserStatus.class.inc
 dependencies[] = autoload
 dependencies[] = ahah_helper
+dependencies[] = permissions_api
+dependencies[] = date_popup
 core = 6.x

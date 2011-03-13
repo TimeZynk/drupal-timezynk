@@ -8,6 +8,8 @@
  */
 function tzuser_install() {
   drupal_install_schema('tzuser');
+  permissions_create_role('manager');
+  permissions_grant_all_permissions_by_module('manager', 'tzuser');
 }
 
 /**
@@ -15,6 +17,24 @@ function tzuser_install() {
  */
 function tzuser_uninstall() {
   drupal_uninstall_schema('tzuser');
+  permissions_delete_role('manager');
+}
+
+function tzuser_update_6001() {
+  $ret = array();
+
+  permissions_create_role('manager');
+  permissions_grant_all_permissions_by_module('manager', 'tzuser');
+
+  db_add_field($ret, 'tzuser', 'manager',
+    array(
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => FALSE,
+      'description' => 'Manager user ID from {users}.uid.',
+    )
+  );
+  return $ret;
 }
 
 /**
@@ -39,6 +59,12 @@ function tzuser_schema() {
         'type' => 'varchar',
         'length' => '32',
         'description' => 'Mobile Phone number for user',
+      ),
+      'manager' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'description' => 'Manager user ID from {users}.uid.',
       ),
     ),
     'primary key' => array('uid'),
