@@ -293,6 +293,15 @@ function tzuser_get_user_status($account, $now) {
   return $status;
 }
 
+function tzuser_list_users() {
+  $users = array();
+  $result = db_query('SELECT u.uid FROM {users} u INNER JOIN {tzuser} tz ON u.uid = tz.uid WHERE u.status = 1 ORDER BY tz.fullname');
+  while($account = db_fetch_object($result)) {
+    $users[] = user_load($account->uid);
+  }
+  return $users;
+}
+
 
 function _tzuser_load_entry($account) {
   $entry = array();

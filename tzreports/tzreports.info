@@ -2,5 +2,7 @@ name = TimeZynk report generator
 description = Provides TimeZynk reports
 dependencies[] = tzbase
 dependencies[] = views
+dependencies[] = autoload
+files[] = includes/TZReportsTimeReports.class.inc
 package = TimeZynk
 core = 6.x

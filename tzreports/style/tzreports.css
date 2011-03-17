@@ -1,0 +1,30 @@
+#edit-date-wrapper,
+#edit-assignment-wrapper,
+#edit-users-wrapper,
+#edit-group-wrapper
+{
+    float: left;
+    margin-right: 2em;
+}
+
+#timereports-wrapper {
+    clear: both;
+}
+
+.timereports-align-right {
+    text-align: right;
+}
+
+tr.timereports-subtotal-row td.timereports-subtotal-field {
+    background-color: #EAEAEA;
+    font-weight: normal;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+}
+
+tr.timereports-total-row td.timereports-total-field {
+    background-color: #EAEAEA;
+    font-weight: bold;
+    border-top: 1px solid #000000;
+    border-bottom: 3px double #000000;
+}

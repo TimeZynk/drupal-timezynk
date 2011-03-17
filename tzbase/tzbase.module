@@ -421,6 +421,14 @@ function tzbase_form($node) {
   }
 }
 
+function tzbase_theme() {
+  return array(
+    'assignment_path' => array(
+      'arguments' => array('jobid' => 0),
+    ),
+  );
+}
+
 /**
  * Handle validation of tzbase node form
  * @param Array $form
@@ -635,6 +643,37 @@ function tzbase_tzreport_list_flags() {
 function tzbase_format_tzreport_flags($flags) {
   $flaglist = tzbase_tzreport_list_flags();
   return $flaglist[$flags];
+}
+
+function tzbase_children_for_jobid($jobid) {
+  $children = array($jobid);
+  $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzjob} tzj ON n.vid = tzj.vid WHERE tzj.parentid = %d', $jobid);
+  while ($nid = db_result($result)) {
+    $children = array_merge($children, tzbase_children_for_jobid($nid));
+  }
+  return $children;
+}
+
+function theme_assignment_path($jobid) {
+  static $assignment_path = array();
+
+  if (empty($assignment_path[$jobid])) {
+    $result = db_query('SELECT * FROM {node} n INNER JOIN {tzjob} tzj ON n.vid = tzj.vid WHERE n.nid = %d', $jobid);
+    $job = db_fetch_object($result);
+    if (!$job) {
+      return 'Job not found!!';
+    }
+
+    $path = '';
+    if ($job->parentid) {
+      $path .= theme('assignment_path', $job->parentid) . ' &raquo; ';
+    }
+    $path .= $job->title;
+
+    $assignment_path[$jobid] = $path;
+  }
+
+  return $assignment_path[$jobid];
 }
 
 /**

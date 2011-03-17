@@ -3,16 +3,17 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  tzreports.invoice.inc: n/a
-#  tzreports.views_default.inc: n/a
 #  tzreports.module: n/a
 #  tzreports.info: n/a
+#  includes/TZReportsTimeReports.class.inc: n/a
+#  includes/tzreports.timereports.inc: n/a
+#  includes/tzreports.views_default.inc: n/a
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-02-22 11:45+0100\n"
+"POT-Creation-Date: 2011-03-17 17:37+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -21,136 +22,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzreports.invoice.inc:30
-msgid "Summary for @job @startdate - @enddate"
-msgstr ""
-
-#: tzreports.invoice.inc:63
-msgid "No reports for the selected date span"
-msgstr ""
-
-#: tzreports.invoice.inc:116
-msgid "Select options"
-msgstr ""
-
-#: tzreports.invoice.inc:123;126
-msgid "Select assignment"
-msgstr ""
-
-#: tzreports.invoice.inc:128
-msgid "Select which assignment to list time reports for"
-msgstr ""
-
-#: tzreports.invoice.inc:134
-msgid "Start date"
-msgstr ""
-
-#: tzreports.invoice.inc:139
-msgid "End date"
-msgstr ""
-
-#: tzreports.invoice.inc:145
-msgid "Apply"
-msgstr ""
-
-#: tzreports.invoice.inc:153
-msgid "Please select an assignment"
-msgstr ""
-
-#: tzreports.invoice.inc:160
-msgid "End date must be after start date"
-msgstr ""
-
-#: tzreports.views_default.inc:24
-msgid "Time Report Overview"
-msgstr ""
-
-#: tzreports.views_default.inc:34;87;471;636
-msgid "Assigned user"
-msgstr ""
-
-#: tzreports.views_default.inc:42;644
-msgid "Job ID"
-msgstr ""
-
-#: tzreports.views_default.inc:52
-msgid "Full name"
-msgstr ""
-
-#: tzreports.views_default.inc:125;449
-msgid "Assignment"
-msgstr ""
-
-#: tzreports.views_default.inc:158;417;689
-msgid "Date"
-msgstr ""
-
-#: tzreports.views_default.inc:189;720
-msgid "Start time"
-msgstr ""
-
-#: tzreports.views_default.inc:220;751
-msgid "End time"
-msgstr ""
-
-#: tzreports.views_default.inc:251;782
-msgid "Break duration"
-msgstr ""
-
-#: tzreports.views_default.inc:282;813
-msgid "Total duration"
-msgstr ""
-
-#: tzreports.views_default.inc:492;591 tzreports.module:12
-msgid "Time Reports"
-msgstr ""
-
-#: tzreports.views_default.inc:607
-msgid "All"
-msgstr ""
-
-#: tzreports.views_default.inc:660
-msgid "Comment"
-msgstr ""
-
-#: tzreports.views_default.inc:1095
-msgid "Invoice overview"
-msgstr ""
-
-#: tzreports.views_default.inc:1188;1399;1436
-msgid "Assignments"
-msgstr ""
-
-#: tzreports.views_default.inc:1198
-msgid "Parent"
-msgstr ""
-
-#: tzreports.views_default.inc:1211
-msgid "Title"
-msgstr ""
-
-#: tzreports.views_default.inc:1244
-msgid "State"
-msgstr ""
-
-#: tzreports.views_default.inc:1309
-msgid "Parent assignment"
-msgstr ""
-
-#: tzreports.views_default.inc:1328
-msgid "Top level"
-msgstr ""
-
-#: tzreports.views_default.inc:1437
-msgid "Show and edit available assignments"
-msgstr ""
-
-#: tzreports.module:34
+#: tzreports.module:41
 msgid "use timezynk report generator"
 msgstr ""
 
-#: tzreports.module:18
-msgid "By assignment"
+#: tzreports.module:12
+msgid "Time Reports"
+msgstr ""
+
+#: tzreports.module:21
+msgid "List"
 msgstr ""
 
 #: tzreports.info:0
@@ -163,5 +44,89 @@ msgstr ""
 
 #: tzreports.info:0
 msgid "TimeZynk"
+msgstr ""
+
+#: includes/TZReportsTimeReports.class.inc:16
+msgid "Name"
+msgstr ""
+
+#: includes/TZReportsTimeReports.class.inc:17 includes/tzreports.timereports.inc:120
+msgid "Assignment"
+msgstr ""
+
+#: includes/TZReportsTimeReports.class.inc:18
+msgid "Date"
+msgstr ""
+
+#: includes/TZReportsTimeReports.class.inc:19
+msgid "Start time"
+msgstr ""
+
+#: includes/TZReportsTimeReports.class.inc:20
+msgid "End time"
+msgstr ""
+
+#: includes/TZReportsTimeReports.class.inc:21
+msgid "Break"
+msgstr ""
+
+#: includes/TZReportsTimeReports.class.inc:22;71
+msgid "Total"
+msgstr ""
+
+#: includes/TZReportsTimeReports.class.inc:38
+msgid "edit"
+msgstr ""
+
+#: includes/TZReportsTimeReports.class.inc:65
+msgid "Subtotal for <em>!path</em>"
+msgstr ""
+
+#: includes/tzreports.timereports.inc:98
+msgid "Start date"
+msgstr ""
+
+#: includes/tzreports.timereports.inc:104
+msgid "End date"
+msgstr ""
+
+#: includes/tzreports.timereports.inc:114
+msgid "All assignments"
+msgstr ""
+
+#: includes/tzreports.timereports.inc:134;146
+msgid "Employees"
+msgstr ""
+
+#: includes/tzreports.timereports.inc:144
+msgid "Group by"
+msgstr ""
+
+#: includes/tzreports.timereports.inc:147 includes/tzreports.views_default.inc:606;817;854
+msgid "Assignments"
+msgstr ""
+
+#: includes/tzreports.views_default.inc:616
+msgid "Parent"
+msgstr ""
+
+#: includes/tzreports.views_default.inc:629
+msgid "Title"
+msgstr ""
+
+#: includes/tzreports.views_default.inc:662
+msgid "State"
+msgstr ""
+
+#: includes/tzreports.views_default.inc:727
+msgid "Parent assignment"
+msgstr ""
+
+#: includes/tzreports.views_default.inc:746
+msgid "Top level"
+msgstr ""
+
+#: includes/tzreports.views_default.inc:855
+msgid "Show and edit available assignments"
 msgstr ""
 

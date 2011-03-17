@@ -12,18 +12,25 @@ function tzreports_menu() {
     'title' => 'Time Reports',
     'title callback' => 't',
     'access arguments' => array('use timezynk report generator'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzreports_timereports'),
+    'file' => 'includes/tzreports.timereports.inc',
     'type' => MENU_NORMAL_ITEM,
   );
-  $items['timereports/by_assignment'] = array(
-    'title' => 'By assignment',
+  $items['timereports/all'] = array(
+    'title' => 'List',
     'title callback' => 't',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('tzreports_invoice'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
     'access arguments' => array('use timezynk report generator'),
-    'file' => 'tzreports.invoice.inc',
-    'type' => MENU_LOCAL_TASK,
-    'weight' => 10,
+    'weight' => -10,
   );
+  $items['timereports/all/ajax'] = array(
+    'access arguments' => array('use timezynk report generator'),
+    'page callback' => 'tzreports_timereports_ajax',
+    'file' => 'includes/tzreports.timereports.inc',
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
@@ -34,28 +41,10 @@ function tzreports_perm() {
   return array('use timezynk report generator');
 }
 
-/**
- * Implementation of hook_theme().
- */
-function tzreports_theme() {
-  return array(
-    'assignment_trail' => array(
-      'arguments' => array('trail' => NULL),
-    ),
-  );
-}
-
 function tzreports_views_api() {
   return array(
     'api' => 2,
-    'path' => drupal_get_path('module', 'tzreports'),
+    'path' => drupal_get_path('module', 'tzreports') . '/includes',
   );
 }
 
-function theme_assignment_trail($trail) {
-  return implode(' &raquo; ', $trail);
-}
-
-function tzreports_blank_page() {
-  return '';
-}
