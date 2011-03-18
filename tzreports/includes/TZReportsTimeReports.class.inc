@@ -11,8 +11,9 @@ class TZReportsTimeReports {
   private $group_title = array();
   private $total_duration = 0;
 
-  function __construct($group_by = TZReportsTimeReports::GROUP_BY_ASSIGNED_TO) {
+  function __construct($group_by, $destination) {
     $this->headers = array(
+      array(),
       t('Name'),
       t('Assignment'),
       t('Date'),
@@ -24,10 +25,12 @@ class TZReportsTimeReports {
     );
 
     $this->group_by = $group_by;
+    $this->destination = $destination;
   }
 
   function addReport($report) {
     $row = array(
+      theme('timereport_status', $report),
       $report->fullname,
       $report->assignment_path,
       $report->begin_date->format('Y-m-d'),
@@ -35,7 +38,7 @@ class TZReportsTimeReports {
       array('data' => $report->end_date->format('H:i'), 'class' => 'timereports-align-right'),
       array('data' => tzbase_format_duration($report->breakduration), 'class' => 'timereports-align-right'),
       array('data' => tzbase_format_duration($report->totalduration), 'class' => 'timereports-align-right'),
-      l(t('edit'), "node/$report->nid/edit"),
+      l(t('edit'), "node/$report->nid/edit", array('query' => $this->destination)),
     );
 
     $group_key = $report->assignedto;
@@ -76,9 +79,10 @@ class TZReportsTimeReports {
     return array(
       'class' => "$class-row",
       'data' => array(
+        array('class' => "$class-field"),
         array(
           'data' => $label,
-          'colspan' => count($this->headers) - 2,
+          'colspan' => count($this->headers) - 3,
           'class' => "$class-field label"
         ),
         array(

@@ -23,7 +23,7 @@ function tzreports_timereports_ajax() {
   if (isset($_POST['group_by'])) {
     $group_by = intval($_POST['group_by'], 10);
   }
-  $summary = new TZReportsTimeReports($group_by);
+  $summary = new TZReportsTimeReports($group_by, 'destination=timereports');
 
   $query = 'SELECT * FROM {node} n ' .
       'INNER JOIN {tzreport} tzr ON n.vid = tzr.vid ' .

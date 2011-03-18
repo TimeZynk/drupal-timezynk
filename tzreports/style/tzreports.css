@@ -15,6 +15,29 @@
     text-align: right;
 }
 
+.timereport-status {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.timereport-status-red {
+    background: url('../../tzuser/images/tzuser_status_red.png') center no-repeat;
+}
+
+.timereport-status-green {
+    background: url('../../tzuser/images/tzuser_status_green.png') center no-repeat;
+}
+
+.timereport-status-yellow {
+    background: url('../../tzuser/images/tzuser_status_yellow.png') center no-repeat;
+}
+
+.timereport-status-grey {
+    background: url('../../tzuser/images/tzuser_status_grey.png') center no-repeat;
+}
+
 tr.timereports-subtotal-row td.timereports-subtotal-field {
     background-color: #EAEAEA;
     font-weight: normal;

@@ -41,6 +41,29 @@ function tzreports_perm() {
   return array('use timezynk report generator');
 }
 
+function tzreports_theme() {
+  return array(
+    'timereport_status' => array(
+      'arguments' => array('flags' => NULL),
+    ),
+  );
+}
+
+function theme_timereport_status($report) {
+  $now = time();
+  tzbase_include_proto_classes();
+  if ($report->flags < TZFlags::REPORTED) {
+    if ($report->endtime > $now) {
+      $class = 'grey';
+    } else {
+      $class = 'red';
+    }
+  } else {
+    $class = 'green';
+  }
+  return "<div class=\"timereport-status timereport-status-$class\"></div>";
+}
+
 function tzreports_views_api() {
   return array(
     'api' => 2,
