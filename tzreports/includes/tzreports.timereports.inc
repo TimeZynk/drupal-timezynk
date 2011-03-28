@@ -9,6 +9,7 @@ function tzreports_timereports(&$form_state) {
   $form['users'] = tzreport_select_users_field();
   $form['assignment'] = tzreport_select_assignment_field();
   $form['group_by'] = tzreport_select_group_by_field();
+  $form['show_comments'] = tzreport_show_comments_field();
   $form['progress'] = array(
     '#value' => '<div class="ahah-progress"></div>',
   );
@@ -23,9 +24,14 @@ function tzreports_timereports_ajax() {
   if (isset($_POST['group_by'])) {
     $group_by = intval($_POST['group_by'], 10);
   }
-  $summary = new TZReportsTimeReports($group_by, 'destination=timereports');
+  $summary = new TZReportsTimeReports(
+      $group_by,
+      'destination=timereports',
+      isset($_POST['show_comments'])
+  );
 
   $query = 'SELECT * FROM {node} n ' .
+      'INNER JOIN {node_revisions} rev ON n.vid = rev.vid ' .
       'INNER JOIN {tzreport} tzr ON n.vid = tzr.vid ' .
       'INNER JOIN {tzuser} tzu ON tzr.assignedto = tzu.uid ' .
       'WHERE tzr.flags != 255';
@@ -148,6 +154,19 @@ function tzreport_select_group_by_field() {
     ),
     '#default_value' => TZReportsTimeReports::GROUP_BY_ASSIGNED_TO,
     '#prefix' => '<div id="edit-group-wrapper">',
+    '#suffix' => '</div>',
+  );
+}
+
+function tzreport_show_comments_field() {
+  return array(
+    '#type' => 'checkboxes',
+    '#title' => t('Comments'),
+    '#options' => array(
+      t('Show comments'),
+    ),
+    '#default_value' => array(0),
+    '#prefix' => '<div id="edit-show-comments-wrapper">',
     '#suffix' => '</div>',
   );
 }

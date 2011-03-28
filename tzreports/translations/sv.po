@@ -8,8 +8,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tzbase\n"
-"POT-Creation-Date: 2011-03-17 17:37+0100\n"
-"PO-Revision-Date: 2011-03-17 17:38+0100\n"
+"POT-Creation-Date: 2011-03-28 22:43+0200\n"
+"PO-Revision-Date: 2011-03-28 22:43+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: TimeZynk AB <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -44,67 +44,75 @@ msgstr "Tillhandahåller rapporter för TimeZynk"
 msgid "TimeZynk"
 msgstr ""
 
-#: includes/TZReportsTimeReports.class.inc:16
+#: includes/TZReportsTimeReports.class.inc:20
 msgid "Name"
 msgstr "Namn"
 
-#: includes/TZReportsTimeReports.class.inc:17
-#: includes/tzreports.timereports.inc:120
+#: includes/TZReportsTimeReports.class.inc:21
+#: includes/tzreports.timereports.inc:126
 msgid "Assignment"
 msgstr "Uppdrag"
 
-#: includes/TZReportsTimeReports.class.inc:18
+#: includes/TZReportsTimeReports.class.inc:22
 msgid "Date"
 msgstr "Datum"
 
-#: includes/TZReportsTimeReports.class.inc:19
-msgid "Start time"
-msgstr "Starttid"
+#: includes/TZReportsTimeReports.class.inc:23
+msgid "Start"
+msgstr "Start"
 
-#: includes/TZReportsTimeReports.class.inc:20
-msgid "End time"
-msgstr "Sluttid"
+#: includes/TZReportsTimeReports.class.inc:24
+msgid "End"
+msgstr "Slut"
 
-#: includes/TZReportsTimeReports.class.inc:21
+#: includes/TZReportsTimeReports.class.inc:25
 msgid "Break"
 msgstr "Rast"
 
-#: includes/TZReportsTimeReports.class.inc:22;71
+#: includes/TZReportsTimeReports.class.inc:26;83
 msgid "Total"
 msgstr "Totalt"
 
-#: includes/TZReportsTimeReports.class.inc:38
+#: includes/TZReportsTimeReports.class.inc:50
 msgid "edit"
 msgstr "redigera"
 
-#: includes/TZReportsTimeReports.class.inc:65
+#: includes/TZReportsTimeReports.class.inc:77
 msgid "Subtotal for <em>!path</em>"
 msgstr "Delsumma för <em>!path</em>"
 
-#: includes/tzreports.timereports.inc:98
+#: includes/tzreports.timereports.inc:104
 msgid "Start date"
 msgstr "Startdatum"
 
-#: includes/tzreports.timereports.inc:104
+#: includes/tzreports.timereports.inc:110
 msgid "End date"
 msgstr "Slutdatum"
 
-#: includes/tzreports.timereports.inc:114
+#: includes/tzreports.timereports.inc:120
 msgid "All assignments"
 msgstr "Alla uppdrag"
 
-#: includes/tzreports.timereports.inc:134;146
+#: includes/tzreports.timereports.inc:140;152
 msgid "Employees"
 msgstr "Anställda"
 
-#: includes/tzreports.timereports.inc:144
+#: includes/tzreports.timereports.inc:150
 msgid "Group by"
 msgstr "Gruppera efter"
 
-#: includes/tzreports.timereports.inc:147
+#: includes/tzreports.timereports.inc:153
 #: includes/tzreports.views_default.inc:606;817;854
 msgid "Assignments"
 msgstr "Uppdrag"
+
+#: includes/tzreports.timereports.inc:164
+msgid "Comments"
+msgstr "Kommentarer"
+
+#: includes/tzreports.timereports.inc:166
+msgid "Show comments"
+msgstr "Visa kommentarer"
 
 #: includes/tzreports.views_default.inc:616
 msgid "Parent"

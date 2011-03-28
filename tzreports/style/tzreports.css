@@ -1,7 +1,8 @@
 #edit-date-wrapper,
 #edit-assignment-wrapper,
 #edit-users-wrapper,
-#edit-group-wrapper
+#edit-group-wrapper,
+#edit-show-comments-wrapper
 {
     float: left;
     margin-right: 2em;

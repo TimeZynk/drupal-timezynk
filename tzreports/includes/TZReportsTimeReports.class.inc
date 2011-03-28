@@ -6,19 +6,22 @@ class TZReportsTimeReports {
 
   private $headers;
   private $group_by;
+  private $destination;
+  private $show_comments;
+
   private $group_rows = array();
   private $group_total = array();
   private $group_title = array();
   private $total_duration = 0;
 
-  function __construct($group_by, $destination) {
+  function __construct($group_by, $destination, $show_comments) {
     $this->headers = array(
       array(),
       t('Name'),
       t('Assignment'),
       t('Date'),
-      array('data' => t('Start time'), 'class' => 'timereports-align-right'),
-      array('data' => t('End time'), 'class' => 'timereports-align-right'),
+      array('data' => t('Start'), 'class' => 'timereports-align-right'),
+      array('data' => t('End'), 'class' => 'timereports-align-right'),
       array('data' => t('Break'), 'class' => 'timereports-align-right'),
       array('data' => t('Total'), 'class' => 'timereports-align-right'),
       array(),
@@ -26,13 +29,19 @@ class TZReportsTimeReports {
 
     $this->group_by = $group_by;
     $this->destination = $destination;
+    $this->show_comments = $show_comments;
   }
 
   function addReport($report) {
+    $body = $report->assignment_path;
+    if ($this->show_comments && !empty($report->body)) {
+      $body .= '<br/><em>' . check_plain($report->body) . '</em>';
+    }
+
     $row = array(
       theme('timereport_status', $report),
       $report->fullname,
-      $report->assignment_path,
+      $body,
       $report->begin_date->format('Y-m-d'),
       array('data' => $report->begin_date->format('H:i'), 'class' => 'timereports-align-right'),
       array('data' => $report->end_date->format('H:i'), 'class' => 'timereports-align-right'),
