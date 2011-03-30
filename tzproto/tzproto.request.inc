@@ -546,6 +546,9 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
     $report = node_submit($report);
     node_save($report);
 
+    // Invoke hook to allow modules to collect statistics or billing info
+    module_invoke_all('tzproto_saved_report', $report);
+
     if($data->id()) {
       watchdog('tzproto', 'Created revision !vid of report !nid', array('!vid' => $report->vid, '!nid' => $report->nid),
         WATCHDOG_NOTICE,

@@ -143,6 +143,69 @@ function tzstats_update_6003() {
   return $ret;
 }
 
+function tzstats_update_6004() {
+  /* Keep track of incoming time reports */
+  $ret = array();
+  db_create_table($ret, 'tzstats_report',  array(
+    'description' => t('Stores statistics on incoming time reports'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "{users}.uid.",
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for change",
+      ),
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => '{node_revision}.vid for the report',
+      ),
+    ),
+    'primary key' => array('id'),
+  ));
+  return $ret;
+}
+
+function tzstats_update_6005() {
+  /* Keep track of user logins */
+  $ret = array();
+  db_create_table($ret, 'tzstats_login',  array(
+    'description' => t('Stores statistics on user logins'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "{users}.uid.",
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for login",
+      ),
+    ),
+    'primary key' => array('id'),
+  ));
+  return $ret;
+}
+
 /**
  * TZStats database schema
  */
@@ -248,6 +311,59 @@ function tzstats_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'description' => 'Status value',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  $schema['tzstats_report'] = array(
+    'description' => t('Stores statistics on incoming time reports'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "{users}.uid.",
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for change",
+      ),
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => '{node_revision}.vid for the report',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  $schema['tzstats_login'] = array(
+    'description' => t('Stores statistics on user logins'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "{users}.uid.",
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for login",
       ),
     ),
     'primary key' => array('id'),

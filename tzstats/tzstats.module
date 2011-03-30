@@ -16,6 +16,29 @@ function tzstats_tzsms_send($type, $phonenbr, $length) {
   drupal_write_record('tzstats_sms', $record);
 }
 
+/**
+ * Implements hook_tzproto_saved_report
+ * Logs the saved report timestamp for billing statistics
+ */
+function tzstats_tzproto_saved_report($report) {
+  $record = array(
+    'uid' => $report->assignedto,
+    'timestamp' => time(),
+    'vid' => $report->vid,
+  );
+  drupal_write_record('tzstats_report', $record);
+}
+
+function tzstats_user($op, &$edit, &$account, $category = NULL) {
+  if ($op == 'login') {
+    $record = array(
+      'uid' => $account->uid,
+      'timestamp' => time(),
+    );
+    drupal_write_record('tzstats_login', $record);
+  }
+}
+
 function tzstats_synchronized_multiple_users($module, $count, $successful, $before, $after) {
   watchdog('tzstats', 'Synchronized !successful/!count users in !seconds seconds using @module',
     array(
@@ -38,6 +61,7 @@ function tzstats_synchronized_multiple_users($module, $count, $successful, $befo
 function tzstats_cron() {
   require_once(dirname(__FILE__) . '/tzstats.user.inc');
   tzstats_record_user_status();
+  tzstats_clean_sync_stats();
 }
 
 /**
@@ -49,6 +73,17 @@ function tzstats_views_api() {
     'api' => 2,
     'path' => drupal_get_path('module', 'tzstats'),
   );
+}
+
+function tzstats_clean_sync_stats() {
+  db_query(
+      "DELETE sync FROM {tzstats_sync} sync ".
+      "LEFT JOIN ( " .
+        "SELECT id FROM {tzstats_sync} ORDER BY id DESC LIMIT 1000 " .
+      ") latest ON sync.id = latest.id " .
+      "WHERE latest.id IS NULL"
+  );
+  watchdog('tzstats', 'Cleared !count rows from tzsync_stats', array('!count' => db_affected_rows()));
 }
 
 /**
