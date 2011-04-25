@@ -185,6 +185,9 @@ message TZGetJobCmd {
 
   // Offset into dataset to fetch from
   optional int32 offset = 4;
+
+  // Set to only fetch jobs with a specific value in may_create_report
+  optional bool may_create_report = 5;
 }
 message TZGetJobResult {
   optional int32 total_job_count = 1;

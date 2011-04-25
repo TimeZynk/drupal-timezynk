@@ -231,23 +231,32 @@ function tzproto_handle_get_job_cmd(&$cmd, &$result) {
   else {
     // Filtering on changed time?
     $changed = 0;
-    if($jobcmd->changed_after()) {
+    if ($jobcmd->changed_after()) {
       $changed = $jobcmd->changed_after();
     }
 
     $sql = "SELECT n.nid FROM {node} n WHERE type = 'tzjob' AND status = 1 AND changed > %d ORDER BY title";
     $db_result = FALSE;
-    if($jobcmd->limit()) {
+    if ($jobcmd->limit()) {
       $db_result = db_query_range(db_rewrite_sql($sql), $jobcmd->offset(), $jobcmd->limit(), $changed);
     } else {
       $db_result = db_query(db_rewrite_sql($sql), $changed);
     }
-    while($data = db_fetch_object($db_result)) {
+
+    $tzjobs = array();
+    while ($data = db_fetch_object($db_result)) {
       $node = node_load($data->nid, NULL, TRUE);
-      $tzjob = $jobresult->add_job();
+      $tzjob = new TZJob();
       tzproto_fill_from_node($tzjob, $node);
+
+      if ($jobcmd->may_create_report() === NULL ||
+          (boolean)$jobcmd->may_create_report() === (boolean)$tzjob->may_create_report()) {
+        $tzjobs[] = $tzjob;
+      }
     }
+    $jobresult->set_all_jobs($tzjobs);
   }
+
   $result->set_get_job_result($jobresult);
 }
 

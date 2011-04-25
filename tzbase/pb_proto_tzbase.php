@@ -39,8 +39,8 @@ class TZConstants extends PBEnum
 
   public function __construct($reader=null)
   {
-    parent::__construct($reader);
-    $this->names = array(
+   	parent::__construct($reader);
+ 	$this->names = array(
 			1 => "VERSION");
    }
 }
@@ -935,6 +935,9 @@ class TZGetJobCmd extends PBMessage
     self::$fields["TZGetJobCmd"]["4"] = "PBInt";
     $this->values["4"] = "";
     self::$fieldNames["TZGetJobCmd"]["4"] = "offset";
+    self::$fields["TZGetJobCmd"]["5"] = "PBBool";
+    $this->values["5"] = "";
+    self::$fieldNames["TZGetJobCmd"]["5"] = "may_create_report";
   }
   function job_id()
   {
@@ -967,6 +970,14 @@ class TZGetJobCmd extends PBMessage
   function set_offset($value)
   {
     return $this->_set_value("4", $value);
+  }
+  function may_create_report()
+  {
+    return $this->_get_value("5");
+  }
+  function set_may_create_report($value)
+  {
+    return $this->_set_value("5", $value);
   }
 }
 class TZGetJobResult extends PBMessage
