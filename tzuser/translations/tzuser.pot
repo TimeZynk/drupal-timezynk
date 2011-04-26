@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-03-13 20:30+0100\n"
+"POT-Creation-Date: 2011-04-27 18:09+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -26,35 +26,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzuser.module:337;389 includes/tzuser.overview.inc:8 javascript/tzuser.overview.js:0;0
+#: tzuser.module:346;398 includes/tzuser.overview.inc:8 javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr ""
 
-#: tzuser.module:345;396 includes/tzuser.theme.inc:68
+#: tzuser.module:354;405 includes/tzuser.theme.inc:68
 msgid "Mobile number"
 msgstr ""
 
-#: tzuser.module:354;403 includes/tzuser.theme.inc:68
+#: tzuser.module:363;412 includes/tzuser.theme.inc:68
 msgid "Manager"
 msgstr ""
 
-#: tzuser.module:369 includes/tzuser.add.inc:99
+#: tzuser.module:378 includes/tzuser.add.inc:99
 msgid "Please enter a valid mobile number"
 msgstr ""
 
-#: tzuser.module:383
+#: tzuser.module:392
 msgid "TimeZynk Information"
 msgstr ""
 
-#: tzuser.module:390
+#: tzuser.module:399
 msgid "The users full name"
 msgstr ""
 
-#: tzuser.module:397
+#: tzuser.module:406
 msgid "The users mobile number without country code"
 msgstr ""
 
-#: tzuser.module:404
+#: tzuser.module:413
 msgid "Select employees manager"
 msgstr ""
 
@@ -74,7 +74,7 @@ msgstr ""
 msgid "Employee overview"
 msgstr ""
 
-#: tzuser.module:34 includes/tzuser.add.inc:76;129
+#: tzuser.module:34 includes/tzuser.add.inc:76;130
 msgid "Add employees"
 msgstr ""
 
@@ -110,12 +110,44 @@ msgstr ""
 msgid "Please enter username"
 msgstr ""
 
-#: includes/tzuser.add.inc:112
+#: includes/tzuser.add.inc:113
 msgid "Mobile number entered twice"
 msgstr ""
 
-#: includes/tzuser.add.inc:141
-msgid "Created user @username with mobile @number"
+#: includes/tzuser.add.inc:134
+msgid "Adding employees"
+msgstr ""
+
+#: includes/tzuser.add.inc:135
+msgid "Starting to add employees"
+msgstr ""
+
+#: includes/tzuser.add.inc:136
+msgid "Step @current of @total"
+msgstr ""
+
+#: includes/tzuser.add.inc:137
+msgid "Errors while adding employees"
+msgstr ""
+
+#: includes/tzuser.add.inc:165;181
+msgid "Created employee @username with mobile @number"
+msgstr ""
+
+#: includes/tzuser.add.inc:171
+msgid "Failed to add employee @username with mobile @number"
+msgstr ""
+
+#: includes/tzuser.add.inc:179
+msgid "All @count employees added successfully!"
+msgstr ""
+
+#: includes/tzuser.add.inc:188;190
+msgid "An error occurred during @op with @arguments"
+msgstr ""
+
+#: includes/tzuser.add.inc:190
+msgid "tzuser"
 msgstr ""
 
 #: includes/tzuser.overview.inc:6 javascript/tzuser.overview.js:0

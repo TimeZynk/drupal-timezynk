@@ -104,6 +104,7 @@ function tzuser_add_users_form_validate($form, &$form_state) {
         $password = trim($form_state['values']['rows'][$rowid]['password']);
         $manager = intval($form_state['values']['rows'][$rowid]['manager']);
         $seen_numbers[$number] = array(
+          'mobile' => $number,
           'username' => $username,
           'password' => $password,
           'manager' => $manager
@@ -127,25 +128,66 @@ function tzuser_add_users_form_validate($form, &$form_state) {
 function tzuser_add_users_form_submit($form, &$form_state) {
   // We only do full submit if we are called by the submit button
   if($form_state['values']['op'] === t('Add employees')) {
-    foreach($form_state['storage']['numbers'] as $mobile_number => $user_data) {
-      $account = tzuser_add_user(
-          $user_data['username'],
-          $user_data['username'],
-          $user_data['password'],
-          $mobile_number,
-          array(),
-          $user_data['manager']
-      );
-      if($account) {
-        module_invoke_all('tzuser_add_user_notify', $account, $user_data['password']);
-        drupal_set_message(t('Created user @username with mobile @number', array(
-          '@username' => $account->name,
-          '@number' => $account->tzuser['mobile'])
-        ));
-      }
+    $batch = array(
+      'operations' => array(),
+      'finished' => 'tzuser_add_users_batch_finished',
+      'title' => t('Adding employees'),
+      'init_message' => t('Starting to add employees'),
+      'progress_message' => t('Step @current of @total'),
+      'error_message' => t('Errors while adding employees'),
+      'file' => __FILE__,
+    );
+
+    foreach ($form_state['storage']['numbers'] as $current_user) {
+      $batch['operations'][] = array('tzuser_add_users_batch_process', array($current_user));
     }
+
+    batch_set($batch);
 
     // All sent, clear the form
     unset($form_state['storage']);
+  }
+}
+
+function tzuser_add_users_batch_process($new_user, &$context) {
+  watchdog('tzuser', 'current_user: ' . serialize($new_user));
+  $account = tzuser_add_user(
+    $new_user['username'],
+    $new_user['username'],
+    $new_user['password'],
+    $new_user['mobile'],
+    array(),
+    $new_user['manager']
+  );
+
+  if($account) {
+    module_invoke_all('tzuser_add_user_notify', $account, $new_user['password']);
+    $context['message'] = t('Created employee @username with mobile @number',
+                           array('@username' => $account->name,
+                                '@number' => $account->tzuser['mobile']));
+    watchdog('tzuser', $context['message']);
+    $context['results'][$account->tzuser['mobile']] = $account->name;
+  } else {
+    $context['message'] = t('Failed to add employee @username with mobile @number',
+                            array('@username' => $new_user['username'],
+                                 '@number' => $new_user['mobile']));
+  }
+}
+
+function tzuser_add_users_batch_finished($success, $results, $operations) {
+  if ($success) {
+    drupal_set_message(t('All @count employees added successfully!', array('@count' => count($results))));
+    foreach ($results as $mobile => $user_name) {
+      drupal_set_message(t('Created employee @username with mobile @number', array('@username' => $user_name, '@number' => $mobile)));
+    }
+  } else {
+    $error_operation = reset($operations);
+    $operation = array_shift($error_operation);
+    $arguments = array_shift($error_operation);
+    $arguments_as_string = implode(', ', $arguments);
+    drupal_set_message(t('An error occurred during @op with @arguments',
+                         array('@op' => $operation, '@arguments' => $arguments_as_string)), 'error');
+    watchdog('tzuser', 'An error occurred during @op with @arguments',
+             array('@op' => $operation, '@arguments' => $arguments_as_string), WATCHDOG_ERROR);
   }
 }
