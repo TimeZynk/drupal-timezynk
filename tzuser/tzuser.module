@@ -43,7 +43,7 @@ function tzuser_menu() {
 }
 
 function tzuser_perm() {
-  return array('view employees', 'manage employees');
+  return array('view employees', 'manage employees', 'bulk add employees');
 }
 
 /**

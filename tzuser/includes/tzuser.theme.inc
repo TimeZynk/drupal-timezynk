@@ -58,7 +58,7 @@ function theme_tzuser_add_users_rows($element) {
   // Add our "Add more rows" button last in the table, with full colspan
   $rows[] = array(array(
     'data' => drupal_render($element['add_more']),
-    'colspan' => 4,
+    'colspan' => 5,
   ));
 
   // Wrap in div for the AHAH-handlers sake

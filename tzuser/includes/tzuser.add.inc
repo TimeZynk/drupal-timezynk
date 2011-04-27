@@ -7,6 +7,8 @@
 function tzuser_add_users_form(&$form_state) {
   ahah_helper_register($form, $form_state);
 
+  $form['#attributes']['enctype'] = 'multipart/form-data';
+
   // Check how many number rows we currently show
   $numrows = 10;
   if(isset($form_state['storage']['numrows'])) {
@@ -16,8 +18,6 @@ function tzuser_add_users_form(&$form_state) {
       $numrows += 10;
     }
   }
-
-  $form_state['storage']['numrows'] = $numrows;
 
   $form['description'] = array(
     '#value' => '<p>' . t('To add more users to TimeZynk, fill in their mobile numbers and usernames below. If you need more rows use the <em>Add more rows</em> button.') . '</p>',
@@ -35,29 +35,32 @@ function tzuser_add_users_form(&$form_state) {
   );
 
   for($i = 0; $i < $numrows; $i++) {
-    $rowid = 'row_' . $i;
-    $form['rows'][$rowid]['index'] = array('#value' => $i +1);
-    $form['rows'][$rowid]['number'] = array(
-      '#type' => 'textfield',
-      '#size' => 20,
-      '#default_value' => !empty($form_state['values']['rows'][$rowid]['number']) ? $form_state['values']['rows'][$rowid]['number'] : '',
-    );
-    $form['rows'][$rowid]['username'] = array(
-      '#type' => 'textfield',
-      '#size' => 20,
-      '#default_value' => !empty($form_state['values']['rows'][$rowid]['username']) ? $form_state['values']['rows'][$rowid]['username'] : '',
-    );
-    $form['rows'][$rowid]['password'] = array(
-      '#type' => 'textfield',
-      '#size' => 20,
-      '#default_value' => !empty($form_state['values']['rows'][$rowid]['password']) ? $form_state['values']['rows'][$rowid]['password'] : '',
-    );
+    $row_id = 'row_' . $i;
 
     $default_manager = $GLOBALS['user']->uid;
-    if (!empty($form_state['values']['rows'][$rowid]['manager'])) {
-      $default_manager = $form_state['values']['rows'][$rowid]['manager'];
+    if (!empty($form_state['values']['rows'][$row_id]['manager'])) {
+      $default_manager = $form_state['values']['rows'][$row_id]['manager'];
     }
-    $form['rows'][$rowid]['manager'] = tzuser_select_manager_field($default_manager);
+    
+    $row = array(
+      'mobile' => !empty($form_state['values']['rows'][$row_id]['number']) ? $form_state['values']['rows'][$row_id]['number'] : '',
+      'username' => !empty($form_state['values']['rows'][$row_id]['username']) ? $form_state['values']['rows'][$row_id]['username'] : '',
+      'password' => !empty($form_state['values']['rows'][$row_id]['password']) ? $form_state['values']['rows'][$row_id]['password'] : '',
+      'manager' => $default_manager,
+    );
+
+    $form['rows'][$row_id] = tzuser_add_row_fields($i, $row);
+  }
+
+  if (!empty($form_state['storage']['csv_rows'])) {
+    $csv_rows = $form_state['storage']['csv_rows'];
+    $i = 0;
+    foreach ($csv_rows as $csv_row) {
+      $row_id = 'row_' . $i;
+      $form['rows'][$row_id] = tzuser_add_row_fields($i, $csv_row);
+      $i += 1;
+    }
+    $numrows = $i;
   }
 
   // Button to add more rows
@@ -71,6 +74,13 @@ function tzuser_add_users_form(&$form_state) {
     ),
   );
 
+  $form['file'] = array(
+    '#type' => 'file',
+    '#title' => t('Load from file'),
+    '#description' => t('Fill the fields from a CSV file'),
+    '#access' => user_access('bulk add employees'),
+  );
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Add employees'),
@@ -79,6 +89,8 @@ function tzuser_add_users_form(&$form_state) {
   $form['reset'] = array(
     '#value' => l(t('Reset'), 'tzuser/add'),
   );
+
+  $form_state['storage']['numrows'] = $numrows;
 
   return $form;
 }
@@ -91,9 +103,12 @@ function tzuser_add_users_form(&$form_state) {
 function tzuser_add_users_form_validate($form, &$form_state) {
   $numrows = $form_state['storage']['numrows'];
   $seen_numbers = array();
+
+  // Validate posted rows
   for($i = 0; $i < $numrows; $i++) {
     $rowid = 'row_' . $i;
-    if(!empty($form_state['values']['rows'][$rowid]['number'])) {
+    if(!empty($form_state['values']['rows'][$rowid]['number']) ||
+       !empty($form_state['values']['rows'][$rowid]['username'])) {
       $number = tzuser_validate_phone_number($form_state['values']['rows'][$rowid]['number']);
       if(empty($number)) {
         form_set_error("rows][$rowid][number", t('Please enter a valid mobile number'));
@@ -115,6 +130,38 @@ function tzuser_add_users_form_validate($form, &$form_state) {
     }
   }
   $form_state['storage']['numbers'] = $seen_numbers;
+
+  // Check and add any rows from CSV-file
+  $csv_file = file_save_upload('file');
+  if ($csv_file) {
+    if ($csv_file->filemime != 'text/csv') {
+      form_set_error("file", t('Must be in CSV format'));
+      return;
+    }
+
+    $csv_rows = array();
+    $parser = new CsvUserListParser($csv_file->filepath);
+    while ($row = $parser->getNextRow()) {
+      $manager_user_id = 0;
+
+
+      if (!empty($row->BossUserId)) {
+        $manager_user_id = tzuser_add_find_manager_id($row->BossUserId);
+        if (!$manager_user_id) {
+          drupal_set_message(t('Unknown manager "@manager"', array('@manager' => $row->BossUserId)), 'warning', FALSE);
+        }
+      }
+
+      $csv_rows[] = array(
+        'mobile' => $row->MobilePhone,
+        'username' => $row->UserId,
+        'password' => $row->Password,
+        'manager' => $manager_user_id,
+      );
+    }
+    
+    $form_state['storage']['csv_rows'] = $csv_rows;
+  }
 }
 
 /**
@@ -128,25 +175,72 @@ function tzuser_add_users_form_validate($form, &$form_state) {
 function tzuser_add_users_form_submit($form, &$form_state) {
   // We only do full submit if we are called by the submit button
   if($form_state['values']['op'] === t('Add employees')) {
-    $batch = array(
-      'operations' => array(),
-      'finished' => 'tzuser_add_users_batch_finished',
-      'title' => t('Adding employees'),
-      'init_message' => t('Starting to add employees'),
-      'progress_message' => t('Step @current of @total'),
-      'error_message' => t('Errors while adding employees'),
-      'file' => __FILE__,
-    );
 
-    foreach ($form_state['storage']['numbers'] as $current_user) {
-      $batch['operations'][] = array('tzuser_add_users_batch_process', array($current_user));
+    // Run batch if no file is set
+    if (empty($form_state['storage']['csv_rows'])) {
+      $batch = array(
+        'operations' => array(),
+        'finished' => 'tzuser_add_users_batch_finished',
+        'title' => t('Adding employees'),
+        'init_message' => t('Starting to add employees'),
+        'progress_message' => t('Step @current of @total'),
+        'error_message' => t('Errors while adding employees'),
+        'file' => __FILE__,
+      );
+
+      foreach ($form_state['storage']['numbers'] as $current_user) {
+        $batch['operations'][] = array('tzuser_add_users_batch_process', array($current_user));
+      }
+
+      batch_set($batch);
+
+      // All sent, clear the form
+      unset($form_state['storage']);
     }
-
-    batch_set($batch);
-
-    // All sent, clear the form
-    unset($form_state['storage']);
   }
+}
+
+function tzuser_add_mobile_field($default_value = '') {
+  return array(
+    '#type' => 'textfield',
+    '#size' => 20,
+    '#default_value' => $default_value,
+  );
+}
+
+function tzuser_add_username_field($default_value = '') {
+  return array(
+    '#type' => 'textfield',
+    '#size' => 20,
+    '#default_value' => $default_value,
+  );
+}
+
+function tzuser_add_password_field($default_value = '') {
+  return array(
+    '#type' => 'textfield',
+    '#size' => 20,
+    '#default_value' => $default_value,
+  );
+}
+
+function tzuser_add_find_manager_id($manager_user_name) {
+  $account = user_load(array('name' => $manager_user_name));
+
+  if ($account) {
+    return $account->uid;
+  }
+  return 0;
+}
+
+function tzuser_add_row_fields($index, $row) {
+  $row_fields = array();
+  $row_fields['index'] = array('#value' => $index + 1);
+  $row_fields['number'] = tzuser_add_mobile_field($row['mobile']);
+  $row_fields['username'] = tzuser_add_username_field($row['username']);
+  $row_fields['password'] = tzuser_add_password_field($row['password']);
+  $row_fields['manager'] = tzuser_select_manager_field($row['manager']);
+  return $row_fields;
 }
 
 function tzuser_add_users_batch_process($new_user, &$context) {

@@ -1,0 +1,5 @@
+"EmpNo","Password","FirstName","Surname","MobilePhone","Email","BossFirstName","BossSurname"
+1234,"pass!","En","Användare","076656555",,"Boss","Bossson"
+1235,"word!","Två","Användare","075885855",,"Boss","Bossson"
+1236,"pass!","Tre","Användare","075885856",,"Boss","Bossson"
+1237,"pass!","Fyra","Användare",,"testemp202@test.com",,
