@@ -245,7 +245,6 @@ function tzuser_add_row_fields($index, $row) {
 }
 
 function tzuser_add_users_batch_process($new_user, &$context) {
-  watchdog('tzuser', 'current_user: ' . serialize($new_user));
   $account = tzuser_add_user(
     $new_user['username'],
     $new_user['username'],

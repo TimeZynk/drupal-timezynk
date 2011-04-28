@@ -173,7 +173,7 @@ function tzintellitime_sync_synchronize_user($uid) {
 
     $reportStorage = new TZIntellitimeDBReportStorage($account);
 
-    $ctrlr = new TZIntellitimeSyncController($syncPolicy, $weekFactory, $reportStorage);
+    $ctrlr = new TZIntellitimeSyncController($syncPolicy, $weekFactory, $reportStorage, $account);
     $result = $ctrlr->synchronize();
   } catch (InvalidArgumentException $e) {
     return TZIntellitimeSyncController::AUTH_FAILURE;

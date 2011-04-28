@@ -24,13 +24,19 @@ class TZIntellitimeSyncController {
    */
   private $reportStorage;
 
+  /**
+   * @var  account current user account
+   */
+  private $account;
+
 //  private $weekStatus = array();
 
-  function __construct($syncPolicy, $weekFactory, $reportStorage) {
+  function __construct($syncPolicy, $weekFactory, $reportStorage, $account = null) {
     tzbase_include_proto_classes();
     $this->syncPolicy = $syncPolicy;
     $this->weekFactory = $weekFactory;
     $this->reportStorage = $reportStorage;
+    $this->account = $account;
   }
 
   /**
@@ -77,8 +83,11 @@ class TZIntellitimeSyncController {
   }
 
   private function logException($message, $weekDate, $exception) {
-    tzbase_watchdog_with_data('tzintellitime', $weekDate->format('o\WW') . ': ' . $message,
-            $exception->getRawData());
+    $message = $weekDate->format('o\WW') . ': ' . $message;
+    if (!empty($this->account->name)) {
+      $message = $this->account->name . ' ' . $message;
+    }
+    tzbase_watchdog_with_data('tzintellitime', $message, $exception->getRawData());
   }
 
   private function mapReportsToJobs($tzreports, $tzjobs) {
