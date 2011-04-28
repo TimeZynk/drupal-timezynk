@@ -61,6 +61,7 @@ function tzuser_add_users_form(&$form_state) {
       $i += 1;
     }
     $numrows = $i;
+    unset($form_state['storage']['csv_rows']);
   }
 
   // Button to add more rows
