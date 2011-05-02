@@ -1,5 +1,19 @@
 <?php
 
+function tzstats_menu() {
+  $items['admin/reports/invoice'] = array(
+    'title' => 'Invoice',
+    'title callback' => 't',
+    'access arguments' => array('administer site configuration'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzstats_invoice_form'),
+    'file' => 'tzstats.invoice.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
 /**
  * Implements hook_tzsms_send.
  * Logs sms sending to the statistics database
