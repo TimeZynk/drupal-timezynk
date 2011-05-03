@@ -180,7 +180,6 @@ function tzintellitime_sync_synchronize_user($uid) {
   }
 
   if(TZIntellitimeSyncController::SYNC_OK === $result) {
-    tzintellitime_sync_notice('Synchronized', $account);
     $account = user_save($account, array('intellitime_last_sync' => time()));
   } elseif(TZIntellitimeSyncController::AUTH_FAILURE === $result) {
     // Failed authentication, unschedule user
