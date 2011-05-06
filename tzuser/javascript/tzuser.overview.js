@@ -1,15 +1,16 @@
 Drupal.behaviors.TZUserOverview = function(context) {
-    var sortBy = [Drupal.t('Full name'), 'asc'];
-    var showFilter = {
-        '20': true,
-        '10': true,
-        '0': true,
-        '-10': true
-    };
-    var comparator;
-    var data = [];
-    var selections = {};
-    var refreshIntervalId;
+    var sortBy = [Drupal.t('Full name'), 'asc'],
+        showFilter = {
+            '20': true,
+            '10': true,
+            '0': true,
+            '-10': true
+        },
+        comparator,
+        data = [],
+        selections = {},
+        lastClickedCheckboxID = null,
+        refreshIntervalId;
 
     function makeFieldComparator(field) {
         return function(a, b) {
@@ -133,19 +134,56 @@ Drupal.behaviors.TZUserOverview = function(context) {
             rowCount++;
         }
 
-        // Keep selections over table reloads
-        tableBody.find(':checkbox').change(function() {
-            var that = $(this);
-            selections[that.val()] = that.attr('checked');
-        }).each(function(i, element) {
-            element = $(element);
-            if (selections[element.val()]) {
-                element.attr('checked', 'checked');
-            } else {
-                element.removeAttr('checked');
+        bindCheckboxes(tableBody);
+    }
+
+    function bindCheckboxes(tableBody) {
+        var checkboxes = tableBody.find(':checkbox');
+
+        /* Enable shift-selecting checkboxes and store
+         * checkbox state over page refreshes.
+         */
+        checkboxes.click(function(event) {
+            var that = $(this),
+                lastClickedCheckbox,
+                lastClickedStatus,
+                lastClickedIndex,
+                thisIndex,
+                affectedCheckboxes;
+
+            selections[that.val()] = that.attr('checked') ? true : false;
+
+            if (lastClickedCheckboxID && event.shiftKey) {
+                /* Shift key pressed, find all checkboxes between
+                 * the last one and this one and select them too.
+                 */
+                lastClickedCheckbox = $(lastClickedCheckboxID);
+                lastClickedIndex = checkboxes.index(lastClickedCheckbox);
+                lastClickedStatus = lastClickedCheckbox.attr('checked') ? true : false
+                thisIndex = checkboxes.index(that);
+
+                affectedCheckboxes = checkboxes.slice(Math.min(lastClickedIndex, thisIndex),
+                    Math.max(lastClickedIndex, thisIndex) + 1);
+                affectedCheckboxes.attr('checked', lastClickedStatus ? 'checked' : '');
+
+                // Store selection for page reloads
+                affectedCheckboxes.each(function(i, element) {
+                    selections[$(element).val()] = lastClickedStatus;
+                });
             }
+
+            lastClickedCheckboxID = '#' + that.attr('id');
         });
 
+        /* Restore selections from last selected state */
+        checkboxes.each(function(i, element) {
+            var checkbox = $(element);
+            if (selections[checkbox.val()]) {
+                checkbox.attr('checked', 'checked');
+            } else {
+                checkbox.removeAttr('checked');
+            }
+        });
     }
 
     function updateOverviewData() {
