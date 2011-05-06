@@ -1,11 +1,9 @@
 <?php
 
 class TZUserStatusTest extends PHPUnit_Framework_TestCase {
-  private $dueLimit;
   private $now;
 
   function setUp() {
-    $this->dueLimit = 26*60*60; // 24 hours
     $this->redLimit = NULL;
     $this->now = time();
   }
@@ -40,19 +38,10 @@ class TZUserStatusTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(TZUserStatus::GREEN, $status->getStatusCode($this->now));
   }
 
-  function testGreenOnManyButRecentDueReports() {
+  function testYellowOnManyDueReports() {
     // Last login 10 days ago
     $status = $this->createStatus(time() - 10*24*3600);
     $status->setNumberOfDueReports(2);
-    $status->setEarliestDueEndTime($this->now - $this->dueLimit);
-    $this->assertEquals(TZUserStatus::GREEN, $status->getStatusCode($this->now));
-  }
-
-  function testYellowOnManyNonRecentDueReports() {
-    // Last login 10 days ago
-    $status = $this->createStatus(time() - 10*24*3600);
-    $status->setNumberOfDueReports(2);
-    $status->setEarliestDueEndTime($this->now - $this->dueLimit-1);
     $this->assertEquals(TZUserStatus::YELLOW, $status->getStatusCode($this->now));
   }
 
@@ -77,6 +66,6 @@ class TZUserStatusTest extends PHPUnit_Framework_TestCase {
   }
 
   private function createStatus($lastLogin) {
-    return new TZUserStatus($lastLogin, $this->dueLimit, $this->redLimit);
+    return new TZUserStatus($lastLogin, $this->redLimit);
   }
 }
