@@ -23,10 +23,10 @@ function tzsms_ui_menu() {
     'access arguments' => array('send sms'),
     'page callback' => 'tzsms_ui_install_sms_ajax',
   );
-  $items['tzsms/reminder_sms_ajax'] = array(
+  $items['tzsms/send_text_sms_ajax'] = array(
     'type' => MENU_CALLBACK,
     'access arguments' => array('send sms'),
-    'page callback' => 'tzsms_ui_reminder_sms_ajax',
+    'page callback' => 'tzsms_ui_text_sms_ajax',
   );
   return $items;
 }
@@ -103,6 +103,31 @@ function tzsms_ui_form_tzuser_user_overview_alter(&$form, &$form_state) {
     '#value' => t('New install SMS'),
     '#access' => user_access('send sms'),
   );
+  $form['send_text_sms'] = array(
+    '#type' => 'submit',
+    '#value' => t('Send text-SMS'),
+    '#access' => user_access('send sms'),
+  );
+
+  jquery_ui_add(array('ui.core', 'ui.draggable', 'ui.dialog', 'ui.progressbar'));
+  drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/base/ui.all.css');
+}
+
+function tzsms_send_text_sms($users, $text) {
+  $sms_count = 0;
+  foreach ($users as $uid) {
+    $account = user_load($uid);
+    if (empty($account->tzuser['mobile'])) {
+      continue;
+    }
+    tzsms_send(
+      TZSMS_TYPE_USER_SMS,
+      $account->tzuser['mobile'],
+      $text
+    );
+    $sms_count++;
+  }
+  return $sms_count;
 }
 
 function tzsms_ui_install_sms_ajax() {
@@ -110,31 +135,21 @@ function tzsms_ui_install_sms_ajax() {
     return;
   }
 
-  $users = array_keys($_POST['selected_users']);
+  $users = array_values($_POST['selected_users']);
   tzsms_send_install_sms($users);
   drupal_set_message(t('Sent @count SMS messages', array('@count' => count($users))));
   print theme('status_messages', 'status');
 }
 
-function tzsms_ui_reminder_sms_ajax() {
-  if (empty($_POST['selected_users'])) {
+function tzsms_ui_text_sms_ajax() {
+  if (empty($_POST['selected_users']) ||
+      empty($_POST['text'])) {
     return;
   }
 
-  $sms_count = 0;
-  $users = array_keys($_POST['selected_users']);
-  foreach ($users as $uid) {
-    $account = user_load($uid);
-    if (empty($account->tzuser['mobile'])) {
-      continue;
-    }
-    tzsms_send(
-        TZSMS_TYPE_USER_SMS,
-        $account->tzuser['mobile'],
-        t('Hi! We are waiting for some of your time reports, please fill them in.')
-    );
-    $sms_count++;
-  }
+  $sms_count = tzsms_send_text_sms(array_values($_POST['selected_users']),
+                                   trim($_POST['text']));
+
   drupal_set_message(t('Sent @count SMS messages', array('@count' => $sms_count)));
   print theme('status_messages', 'status');
 }

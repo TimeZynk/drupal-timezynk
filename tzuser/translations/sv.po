@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TimeZynk\n"
-"POT-Creation-Date: 2011-04-27 18:09+0200\n"
-"PO-Revision-Date: 2011-04-27 18:09+0100\n"
+"POT-Creation-Date: 2011-05-09 09:27+0200\n"
+"PO-Revision-Date: 2011-05-09 09:30+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: Swedish <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -23,61 +23,65 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Bookmarks: -1,-1,28,-1,-1,-1,-1,-1,-1,-1\n"
 
-#: tzuser.module:346;398
+#: tzuser.module:344;396
 #: includes/tzuser.overview.inc:8
 #: javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr "Fullständigt namn"
 
-#: tzuser.module:354;405
+#: tzuser.module:352;403
 #: includes/tzuser.theme.inc:68
 msgid "Mobile number"
 msgstr "Mobilnummer"
 
-#: tzuser.module:363;412
+#: tzuser.module:361;410
 #: includes/tzuser.theme.inc:68
 msgid "Manager"
 msgstr "Chef"
 
-#: tzuser.module:378
-#: includes/tzuser.add.inc:99
+#: tzuser.module:376
+#: includes/tzuser.add.inc:115
 msgid "Please enter a valid mobile number"
 msgstr "Skriv in ett giltigt mobilnummer"
 
-#: tzuser.module:392
+#: tzuser.module:390
 msgid "TimeZynk Information"
 msgstr "TimeZynk Information"
 
-#: tzuser.module:399
+#: tzuser.module:397
 msgid "The users full name"
 msgstr "Användarens fullständiga namn"
 
-#: tzuser.module:406
+#: tzuser.module:404
 msgid "The users mobile number without country code"
 msgstr "Användarens mobilnummer utan landskod"
 
-#: tzuser.module:413
+#: tzuser.module:411
 msgid "Select employees manager"
 msgstr "Välj chef till den anställde"
 
-#: tzuser.module:46
+#: tzuser.module:45
 msgid "view employees"
 msgstr ""
 
-#: tzuser.module:46
+#: tzuser.module:45
 msgid "manage employees"
 msgstr ""
 
-#: tzuser.module:14
+#: tzuser.module:45
+msgid "bulk add employees"
+msgstr ""
+
+#: tzuser.module:13
 msgid "Employees"
 msgstr "Anställda"
 
-#: tzuser.module:22
+#: tzuser.module:21
 msgid "Employee overview"
 msgstr "Översikt över anställda"
 
-#: tzuser.module:34
-#: includes/tzuser.add.inc:76;130
+#: tzuser.module:33
+#: includes/tzuser.add.inc:87;178
 msgid "Add employees"
 msgstr "Lägg till anställda"
 
@@ -97,7 +101,7 @@ msgstr ""
 msgid "TimeZynk"
 msgstr ""
 
-#: includes/tzuser.add.inc:15;66
+#: includes/tzuser.add.inc:17;70
 msgid "Add more rows"
 msgstr "Fler rader..."
 
@@ -106,50 +110,66 @@ msgid "To add more users to TimeZynk, fill in their mobile numbers and usernames
 msgstr "För att lägga till fler anställda till TimeZynk, fyll i mobilnummer och användarnamn nedan. Om du behöver fler rader använder du <em>Fler rader..</em> knappen nedan."
 
 #: includes/tzuser.add.inc:80
+msgid "Load from file"
+msgstr "Ladda från fil"
+
+#: includes/tzuser.add.inc:81
+msgid "Fill the fields from a CSV file"
+msgstr "Fyll fälten från en CSV-fil"
+
+#: includes/tzuser.add.inc:91
 msgid "Reset"
 msgstr "Rensa"
 
-#: includes/tzuser.add.inc:101
+#: includes/tzuser.add.inc:117
 msgid "Please enter username"
 msgstr "Skriv in ett användarnamn"
 
-#: includes/tzuser.add.inc:113
+#: includes/tzuser.add.inc:129
 msgid "Mobile number entered twice"
 msgstr "Mobilnumret finns med två gånger"
 
-#: includes/tzuser.add.inc:134
+#: includes/tzuser.add.inc:139
+msgid "Must be in CSV format"
+msgstr "Måste vara i CSV-format"
+
+#: includes/tzuser.add.inc:152
+msgid "Unknown manager \"@manager\""
+msgstr "Okänd chef \"@manager\""
+
+#: includes/tzuser.add.inc:185
 msgid "Adding employees"
 msgstr "Lägger till anställda"
 
-#: includes/tzuser.add.inc:135
+#: includes/tzuser.add.inc:186
 msgid "Starting to add employees"
 msgstr "Börjar lägga till anställda"
 
-#: includes/tzuser.add.inc:136
+#: includes/tzuser.add.inc:187
 msgid "Step @current of @total"
-msgstr ""
+msgstr "Steg @current av @total"
 
-#: includes/tzuser.add.inc:137
+#: includes/tzuser.add.inc:188
 msgid "Errors while adding employees"
 msgstr "Fel inträffade när anställda lades till"
 
-#: includes/tzuser.add.inc:165;181
+#: includes/tzuser.add.inc:259;275
 msgid "Created employee @username with mobile @number"
 msgstr "Skapade användare @username med mobilnummer @number"
 
-#: includes/tzuser.add.inc:171
+#: includes/tzuser.add.inc:265
 msgid "Failed to add employee @username with mobile @number"
 msgstr "Kunde inte skapa användare @username med mobilnummer @number"
 
-#: includes/tzuser.add.inc:179
+#: includes/tzuser.add.inc:273
 msgid "All @count employees added successfully!"
 msgstr "Alla @count anställda lades till."
 
-#: includes/tzuser.add.inc:188;190
+#: includes/tzuser.add.inc:282;284
 msgid "An error occurred during @op with @arguments"
 msgstr "Ett fel inträffade i @op med @arguments"
 
-#: includes/tzuser.add.inc:190
+#: includes/tzuser.add.inc:284
 msgid "tzuser"
 msgstr ""
 
@@ -219,7 +239,11 @@ msgstr "Visa för datum"
 msgid "Show the status until and including date"
 msgstr "Visa status fram till och med datum"
 
-#: includes/tzuser.overview.inc:96;103
+#: includes/tzuser.overview.inc:57
+msgid "<strong>Tip:</strong> Hold the SHIFT key to select many employees"
+msgstr "<strong>Tips:</strong> Håll ner SKIFT-tangenten för att välja många anställda i följd"
+
+#: includes/tzuser.overview.inc:101;108
 msgid "edit"
 msgstr "redigera"
 

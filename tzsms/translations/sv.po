@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tzsms\n"
-"POT-Creation-Date: 2011-03-13 20:23+0100\n"
-"PO-Revision-Date: 2011-03-13 20:25+0100\n"
+"POT-Creation-Date: 2011-05-08 22:33+0200\n"
+"PO-Revision-Date: 2011-05-08 22:36+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: sv <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -24,6 +24,7 @@ msgstr "Skriv in text att skicka som SMS. Maximal längd är 459 tecken."
 
 #: tzsms_ui.send.inc:19
 #: tzsms_ui.module:16
+#: tzsms_ui.overview.js:0
 msgid "Send"
 msgstr "Skicka"
 
@@ -101,39 +102,44 @@ msgstr "SMS"
 msgid "Sitewide settings for SMS."
 msgstr "Systeminställningar för SMS"
 
-#: tzsms_ui.module:62
+#: tzsms_ui.module:67
 msgid "Recipients"
 msgstr "Mottagare"
 
-#: tzsms_ui.module:68
+#: tzsms_ui.module:73
 msgid "Select recipients"
 msgstr "Välj mottagare"
 
-#: tzsms_ui.module:70
+#: tzsms_ui.module:75
 msgid "Send ONLY to the users marked below"
 msgstr "Skicka ENDAST till användare markerade nedan"
 
-#: tzsms_ui.module:71
+#: tzsms_ui.module:76
 msgid "Send to EVERYONE, except the users marked below"
 msgstr "Skicka till ALLA, utom användare markerade nedan"
 
-#: tzsms_ui.module:98
+#: tzsms_ui.module:103
 msgid "Send reminder SMS"
 msgstr "Skicka påminnelse-SMS"
 
-#: tzsms_ui.module:103
+#: tzsms_ui.module:108
 msgid "New install SMS"
 msgstr "Nytt installations-SMS"
 
-#: tzsms_ui.module:115;138
+#: tzsms_ui.module:113
+#: tzsms_ui.overview.js:0
+msgid "Send text-SMS"
+msgstr "Skicka text-SMS"
+
+#: tzsms_ui.module:128;151;176
 msgid "Sent @count SMS messages"
 msgstr "Skickade @count SMS-meddelande"
 
-#: tzsms_ui.module:134
+#: tzsms_ui.module:147
 msgid "Hi! We are waiting for some of your time reports, please fill them in."
 msgstr "Hej! Vi väntar på några av dina tidrapporter, fyll i och skicka in dem. Tack på förhand!"
 
-#: tzsms_ui.module:39
+#: tzsms_ui.module:44
 msgid "send sms"
 msgstr ""
 
@@ -157,6 +163,30 @@ msgstr "TimeZynk SMS UI"
 #: tzsms_ui.info:0
 msgid "Provides TimeZynk SMS sending UI"
 msgstr "Tillhandahåller gränssnitt för TimeZynk-SMS"
+
+#: tzsms_ui.overview.js:0
+msgid "Used @count of 459 characters. (@count_sms SMS-messages)"
+msgstr "Använt @count av 459 tecken. (@count_sms SMS-meddelande)"
+
+#: tzsms_ui.overview.js:0
+msgid "No employees selected"
+msgstr "Inga anställda valda"
+
+#: tzsms_ui.overview.js:0
+msgid "Empty SMS message"
+msgstr "Tomt SMS-meddelande"
+
+#: tzsms_ui.overview.js:0
+msgid "SMS too long"
+msgstr "SMS för långt"
+
+#: tzsms_ui.overview.js:0
+msgid "Sending"
+msgstr "Skickar"
+
+#: tzsms_ui.overview.js:0
+msgid "Sent @count of @total"
+msgstr "Skickade @count av @total"
 
 #: includes/BeepSend.class.inc:15
 msgid "LogHttp"

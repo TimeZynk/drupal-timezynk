@@ -4,3 +4,4 @@ package = TimeZynk
 core = 6.x
 dependencies[] = tzsms
 dependencies[] = ahah_helper
+dependencies[] = jquery_ui

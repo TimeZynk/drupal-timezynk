@@ -5,6 +5,7 @@
 # Generated from files:
 #  tzsms_ui.send.inc: n/a
 #  tzsms_ui.module: n/a
+#  tzsms_ui.overview.js: n/a
 #  tzsms.module: n/a
 #  tzsms.info: n/a
 #  tzsms_ui.info: n/a
@@ -17,7 +18,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-03-13 20:23+0100\n"
+"POT-Creation-Date: 2011-05-08 22:33+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -34,7 +35,7 @@ msgstr ""
 msgid "Enter any text you want to send as SMS. Maximum message length 459 characters."
 msgstr ""
 
-#: tzsms_ui.send.inc:19 tzsms_ui.module:16
+#: tzsms_ui.send.inc:19 tzsms_ui.module:16 tzsms_ui.overview.js:0
 msgid "Send"
 msgstr ""
 
@@ -110,39 +111,43 @@ msgstr ""
 msgid "Sitewide settings for SMS."
 msgstr ""
 
-#: tzsms_ui.module:62
+#: tzsms_ui.module:67
 msgid "Recipients"
 msgstr ""
 
-#: tzsms_ui.module:68
+#: tzsms_ui.module:73
 msgid "Select recipients"
 msgstr ""
 
-#: tzsms_ui.module:70
+#: tzsms_ui.module:75
 msgid "Send ONLY to the users marked below"
 msgstr ""
 
-#: tzsms_ui.module:71
+#: tzsms_ui.module:76
 msgid "Send to EVERYONE, except the users marked below"
 msgstr ""
 
-#: tzsms_ui.module:98
+#: tzsms_ui.module:103
 msgid "Send reminder SMS"
 msgstr ""
 
-#: tzsms_ui.module:103
+#: tzsms_ui.module:108
 msgid "New install SMS"
 msgstr ""
 
-#: tzsms_ui.module:115;138
+#: tzsms_ui.module:113 tzsms_ui.overview.js:0
+msgid "Send text-SMS"
+msgstr ""
+
+#: tzsms_ui.module:128;151;176
 msgid "Sent @count SMS messages"
 msgstr ""
 
-#: tzsms_ui.module:134
+#: tzsms_ui.module:147
 msgid "Hi! We are waiting for some of your time reports, please fill them in."
 msgstr ""
 
-#: tzsms_ui.module:39
+#: tzsms_ui.module:44
 msgid "send sms"
 msgstr ""
 
@@ -164,6 +169,30 @@ msgstr ""
 
 #: tzsms_ui.info:0
 msgid "Provides TimeZynk SMS sending UI"
+msgstr ""
+
+#: tzsms_ui.overview.js:0
+msgid "Used @count of 459 characters. (@count_sms SMS-messages)"
+msgstr ""
+
+#: tzsms_ui.overview.js:0
+msgid "No employees selected"
+msgstr ""
+
+#: tzsms_ui.overview.js:0
+msgid "Empty SMS message"
+msgstr ""
+
+#: tzsms_ui.overview.js:0
+msgid "SMS too long"
+msgstr ""
+
+#: tzsms_ui.overview.js:0
+msgid "Sending"
+msgstr ""
+
+#: tzsms_ui.overview.js:0
+msgid "Sent @count of @total"
 msgstr ""
 
 #: includes/BeepSend.class.inc:15

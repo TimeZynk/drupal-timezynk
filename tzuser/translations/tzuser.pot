@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-04-27 18:09+0200\n"
+"POT-Creation-Date: 2011-05-09 09:27+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -26,55 +26,59 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzuser.module:346;398 includes/tzuser.overview.inc:8 javascript/tzuser.overview.js:0;0
+#: tzuser.module:344;396 includes/tzuser.overview.inc:8 javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr ""
 
-#: tzuser.module:354;405 includes/tzuser.theme.inc:68
+#: tzuser.module:352;403 includes/tzuser.theme.inc:68
 msgid "Mobile number"
 msgstr ""
 
-#: tzuser.module:363;412 includes/tzuser.theme.inc:68
+#: tzuser.module:361;410 includes/tzuser.theme.inc:68
 msgid "Manager"
 msgstr ""
 
-#: tzuser.module:378 includes/tzuser.add.inc:99
+#: tzuser.module:376 includes/tzuser.add.inc:115
 msgid "Please enter a valid mobile number"
 msgstr ""
 
-#: tzuser.module:392
+#: tzuser.module:390
 msgid "TimeZynk Information"
 msgstr ""
 
-#: tzuser.module:399
+#: tzuser.module:397
 msgid "The users full name"
 msgstr ""
 
-#: tzuser.module:406
+#: tzuser.module:404
 msgid "The users mobile number without country code"
 msgstr ""
 
-#: tzuser.module:413
+#: tzuser.module:411
 msgid "Select employees manager"
 msgstr ""
 
-#: tzuser.module:46
+#: tzuser.module:45
 msgid "view employees"
 msgstr ""
 
-#: tzuser.module:46
+#: tzuser.module:45
 msgid "manage employees"
 msgstr ""
 
-#: tzuser.module:14
+#: tzuser.module:45
+msgid "bulk add employees"
+msgstr ""
+
+#: tzuser.module:13
 msgid "Employees"
 msgstr ""
 
-#: tzuser.module:22
+#: tzuser.module:21
 msgid "Employee overview"
 msgstr ""
 
-#: tzuser.module:34 includes/tzuser.add.inc:76;130
+#: tzuser.module:33 includes/tzuser.add.inc:87;178
 msgid "Add employees"
 msgstr ""
 
@@ -94,7 +98,7 @@ msgstr ""
 msgid "TimeZynk"
 msgstr ""
 
-#: includes/tzuser.add.inc:15;66
+#: includes/tzuser.add.inc:17;70
 msgid "Add more rows"
 msgstr ""
 
@@ -103,50 +107,66 @@ msgid "To add more users to TimeZynk, fill in their mobile numbers and usernames
 msgstr ""
 
 #: includes/tzuser.add.inc:80
+msgid "Load from file"
+msgstr ""
+
+#: includes/tzuser.add.inc:81
+msgid "Fill the fields from a CSV file"
+msgstr ""
+
+#: includes/tzuser.add.inc:91
 msgid "Reset"
 msgstr ""
 
-#: includes/tzuser.add.inc:101
+#: includes/tzuser.add.inc:117
 msgid "Please enter username"
 msgstr ""
 
-#: includes/tzuser.add.inc:113
+#: includes/tzuser.add.inc:129
 msgid "Mobile number entered twice"
 msgstr ""
 
-#: includes/tzuser.add.inc:134
+#: includes/tzuser.add.inc:139
+msgid "Must be in CSV format"
+msgstr ""
+
+#: includes/tzuser.add.inc:152
+msgid "Unknown manager \"@manager\""
+msgstr ""
+
+#: includes/tzuser.add.inc:185
 msgid "Adding employees"
 msgstr ""
 
-#: includes/tzuser.add.inc:135
+#: includes/tzuser.add.inc:186
 msgid "Starting to add employees"
 msgstr ""
 
-#: includes/tzuser.add.inc:136
+#: includes/tzuser.add.inc:187
 msgid "Step @current of @total"
 msgstr ""
 
-#: includes/tzuser.add.inc:137
+#: includes/tzuser.add.inc:188
 msgid "Errors while adding employees"
 msgstr ""
 
-#: includes/tzuser.add.inc:165;181
+#: includes/tzuser.add.inc:259;275
 msgid "Created employee @username with mobile @number"
 msgstr ""
 
-#: includes/tzuser.add.inc:171
+#: includes/tzuser.add.inc:265
 msgid "Failed to add employee @username with mobile @number"
 msgstr ""
 
-#: includes/tzuser.add.inc:179
+#: includes/tzuser.add.inc:273
 msgid "All @count employees added successfully!"
 msgstr ""
 
-#: includes/tzuser.add.inc:188;190
+#: includes/tzuser.add.inc:282;284
 msgid "An error occurred during @op with @arguments"
 msgstr ""
 
-#: includes/tzuser.add.inc:190
+#: includes/tzuser.add.inc:284
 msgid "tzuser"
 msgstr ""
 
@@ -210,7 +230,11 @@ msgstr ""
 msgid "Show the status until and including date"
 msgstr ""
 
-#: includes/tzuser.overview.inc:96;103
+#: includes/tzuser.overview.inc:57
+msgid "<strong>Tip:</strong> Hold the SHIFT key to select many employees"
+msgstr ""
+
+#: includes/tzuser.overview.inc:101;108
 msgid "edit"
 msgstr ""
 

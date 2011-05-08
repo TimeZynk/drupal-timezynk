@@ -53,6 +53,11 @@ function tzuser_user_overview(&$form_state) {
     '#description' => t('Show the status until and including date'),
   );
 
+  $form['info'] = array(
+    '#value' => t('<strong>Tip:</strong> Hold the SHIFT key to select many employees'),
+    '#suffix' => '<br/>',
+  );
+
   return $form;
 }
 
