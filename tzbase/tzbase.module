@@ -497,8 +497,55 @@ function tzbase_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       }
     }
   }
+}
 
+function tzbase_view($node, $teaser = FALSE, $page = FALSE) {
+  if ($node->type == 'tzreport') {
+    return tzbase_tzreport_view($node, $teaser, $page);
+  } else if ($node->type == 'tzjob') {
+    return tzbase_tzjob_view($node, $teaser, $page);
+  }
+}
 
+function tzbase_tzreport_view($node, $teaser = FALSE, $page = FALSE) {
+  if ($page) {
+    $breadcrumb = array();
+    $breadcrumb[] = l(t('Home'), NULL);
+    $breadcrumb[] = l(t('Time Reports'), 'timereports');
+    drupal_set_breadcrumb($breadcrumb);
+  }
+
+  $node = node_prepare($node, $teaser);
+  $begindate = tzbase_make_date($node->begintime);
+  $enddate = tzbase_make_date($node->endtime);
+
+  $full_name = db_result(db_query('SELECT fullname FROM tzuser WHERE uid = %d', $node->assignedto));
+  if (!empty($full_name)) {
+    $node->content['name'] = tzbase_node_content_entry(t('Name'), check_plain($full_name), 0);
+  }
+
+  $node->content['assignment'] = tzbase_node_content_entry(t('Assignment'), theme('assignment_path', $node->jobid), 1);
+  $node->content['date'] = tzbase_node_content_entry(t('Date'), $begindate->format('Y-m-d'), 2);
+  $node->content['start'] = tzbase_node_content_entry(t('Start'), $begindate->format('H:i'), 3);
+  $node->content['end'] = tzbase_node_content_entry(t('End'), $enddate->format('H:i'), 4);
+  $node->content['break'] = tzbase_node_content_entry(t('Break'), tzbase_format_duration($node->breakduration), 5);
+  $node->content['total'] = tzbase_node_content_entry(t('Total'), tzbase_format_duration($node->totalduration), 6);
+  $node->content['status'] = tzbase_node_content_entry(t('Status'), tzbase_format_tzreport_flags($node->flags), 7);
+
+  return $node;
+}
+
+function tzbase_tzjob_view($node, $teaser = FALSE, $page = FALSE) {
+  return node_prepare($node, $teaser);
+}
+
+function tzbase_node_content_entry($heading, $value, $weight = 1) {
+  return array(
+    '#prefix' => '<div>',
+    '#value' => '<strong>' . $heading . '</strong>: ' . $value,
+    '#suffix' => '</div>',
+    '#weight' => $weight,
+  );
 }
 
 /**
