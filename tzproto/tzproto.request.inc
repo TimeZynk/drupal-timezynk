@@ -278,7 +278,7 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result, $protocol_version = 0) {
       tzproto_fill_from_node($tzreport, $node, $protocol_version);
     }
   }
-  // Fetch a collections of jobs
+  // Fetch a collections of reports
   else {
     $filter_strings = array();
     $filter_args = array();
@@ -297,7 +297,7 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result, $protocol_version = 0) {
     }
 
     // Filtering on max flags
-    if($reportcmd->max_flag() != NULL) {
+    if($reportcmd->max_flag() !== NULL) {
       $filter_strings[] = 'tz.flags <= %d';
       $filter_args[] = $reportcmd->max_flag();
     }

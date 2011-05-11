@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tzsms\n"
 "POT-Creation-Date: 2011-05-08 22:33+0200\n"
-"PO-Revision-Date: 2011-05-08 22:36+0100\n"
+"PO-Revision-Date: 2011-05-12 11:18+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: sv <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -238,7 +238,7 @@ msgstr "Avsändare för SMS, max 11 alfanumeriska tecken."
 
 #: includes/tzsms.admin.inc:30
 msgid "The content of the SMS"
-msgstr "Mall för installatiosmeddelande"
+msgstr "Mall för installationsmeddelande"
 
 #: includes/tzsms.admin.inc:32
 msgid "The available variables are: !url, !username and !password"
