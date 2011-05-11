@@ -118,6 +118,8 @@ message TZUser {
   // Permissions //
   // User may create top level jobs.
   optional bool may_create_job = 16 [default = false];
+  // User may create new reports
+  optional bool may_create_reports = 17 [default = false];
 }
 
 // RPC messages

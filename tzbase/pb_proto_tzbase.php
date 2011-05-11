@@ -566,6 +566,11 @@ class TZUser extends PBMessage
     $this->values["16"] = new PBBool();
     $this->values["16"]->value = false;
     self::$fieldNames["TZUser"]["16"] = "may_create_job";
+    self::$fields["TZUser"]["17"] = "PBBool";
+    $this->values["17"] = "";
+    $this->values["17"] = new PBBool();
+    $this->values["17"]->value = false;
+    self::$fieldNames["TZUser"]["17"] = "may_create_reports";
   }
   function id()
   {
@@ -606,6 +611,14 @@ class TZUser extends PBMessage
   function set_may_create_job($value)
   {
     return $this->_set_value("16", $value);
+  }
+  function may_create_reports()
+  {
+    return $this->_get_value("17");
+  }
+  function set_may_create_reports($value)
+  {
+    return $this->_set_value("17", $value);
   }
 }
 class TZGetUserCmd extends PBMessage

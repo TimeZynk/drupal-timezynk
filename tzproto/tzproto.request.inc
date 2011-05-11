@@ -157,7 +157,7 @@ function tzproto_handle_get_user(&$cmd, &$result) {
   $tzuser->set_username($user->name);
   $tzuser->set_realname(theme('username', $user, FALSE));
   $tzuser->set_may_create_job(user_access('create tzjob content', $user));
-
+  $tzuser->set_may_create_reports(user_access('create tzreport content', $user));
   $result->set_user($tzuser);
 }
 
