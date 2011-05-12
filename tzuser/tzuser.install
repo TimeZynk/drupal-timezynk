@@ -37,6 +37,12 @@ function tzuser_update_6001() {
   return $ret;
 }
 
+function tzuser_update_6002() {
+  $ret = array();
+  db_add_index($ret, 'tzuser', 'manager', array('manager'));
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
@@ -68,6 +74,9 @@ function tzuser_schema() {
       ),
     ),
     'primary key' => array('uid'),
+    'indexes' => array(
+      'manager' => array('manager'),
+    ),
   );
 
   return $schema;

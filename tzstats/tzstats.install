@@ -206,6 +206,12 @@ function tzstats_update_6005() {
   return $ret;
 }
 
+function tzstats_update_6006() {
+  $ret = array();
+  db_add_index($ret, 'tzstats_user', 'uid', array('uid'));
+  return $ret;
+}
+
 /**
  * TZStats database schema
  */
@@ -314,6 +320,9 @@ function tzstats_schema() {
       ),
     ),
     'primary key' => array('id'),
+    'indexes' => array(
+      'uid' => array('uid'),
+    ),
   );
 
   $schema['tzstats_report'] = array(

@@ -95,6 +95,12 @@ function tzbase_update_6003() {
   return $ret;
 }
 
+function tzbase_update_6004() {
+  $ret = array();
+  db_add_index($ret, 'tzreport', 'begintime', array('begintime'));
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
@@ -189,6 +195,7 @@ function tzbase_schema() {
     'indexes' => array(
       'nid' => array('nid'),
       'assignedto_flags' => array('assignedto', 'flags'),
+      'begintime' => array('begintime'),
     ),
   );
 

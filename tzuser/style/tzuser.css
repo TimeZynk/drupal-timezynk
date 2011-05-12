@@ -46,3 +46,9 @@
 #tzuser-user-overview #edit-status--10-wrapper {
     background: url('../images/tzuser_status_grey.png') left no-repeat;
 }
+tr.tzuser-overview-count-row td {
+    background-color: #EAEAEA;
+    font-weight: bold;
+    border-top: 1px solid #000000;
+    border-bottom: 3px double #000000;
+}

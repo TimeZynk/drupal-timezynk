@@ -15,7 +15,7 @@ function tzuser_user_overview_headers() {
 
 function tzuser_user_overview(&$form_state) {
   $form = array();
-  $now = time();
+  $now = tzbase_make_date();
 
   drupal_add_css(drupal_get_path('module', 'tzuser') . '/style/tzuser.css');
   drupal_add_js(drupal_get_path('module', 'tzuser') . '/javascript/tzuser.overview.js');
@@ -51,6 +51,11 @@ function tzuser_user_overview(&$form_state) {
     '#date_format' => 'Y-m-d',
     '#title' => t('Show status until'),
     '#description' => t('Show the status until and including date'),
+    '#default_value' => $now->format('Y-m-d'),
+  );
+
+  $form['filter']['progress'] = array(
+    '#value' => '<div class="ahah-progress"></div>',
   );
 
   $form['info'] = array(
@@ -61,12 +66,27 @@ function tzuser_user_overview(&$form_state) {
   return $form;
 }
 
-function tzuser_overview_ajax($manager = 0) {
+function tzuser_overview_ajax() {
   $now = time();
 
-  if (!empty($_GET['date']) && preg_match('/\d{4}-\d{2}-\d{2}/', $_GET['date'])) {
-    $date = date_make_date($_GET['date'] . 'T23:59:59');
+  // Handle date setting
+  if (!empty($_GET['date']['date']) && preg_match('/\d{4}-\d{2}-\d{2}/', $_GET['date']['date'])) {
+    $date = date_make_date($_GET['date']['date'] . 'T23:59:59');
     $now = $date->format('U');
+  }
+
+  // Handle manager
+  $manager = 0;
+  if (!empty($_GET['manager']) && is_numeric($_GET['manager'])) {
+    $manager = intval($_GET['manager']);
+  }
+
+  // Handle status filter
+  $status_filter = array();
+  if (!empty($_GET['status'])) {
+    foreach ($_GET['status'] as $status => $value) {
+      $status_filter[$status] = TRUE;
+    }
   }
 
   $sql = 'SELECT * FROM {users} u INNER JOIN {tzuser} tzu ON tzu.uid = u.uid WHERE u.uid > 1 AND u.status = 1';
@@ -78,6 +98,11 @@ function tzuser_overview_ajax($manager = 0) {
   $overview = array();
   while($user_entry = db_fetch_object($result)) {
     $status = tzuser_get_user_status($user_entry, $now);
+    $status_code = $status->getStatusCode($now);
+
+    if (empty($status_filter[$status_code])) {
+      continue;
+    }
 
     $checkbox = array(
       '#type' => 'checkbox',
@@ -90,8 +115,8 @@ function tzuser_overview_ajax($manager = 0) {
 
     $overview[] = array(
       'checkbox' => drupal_render($checkbox),
-      'status' => theme('traffic_light', $status->getStatusCode($now)),
-      'status_value' => $status->getStatusCode($now),
+      'status' => theme('traffic_light', $status_code),
+      'status_value' => $status_code,
       'name' => $user_entry->name,
       'fullname' => $user_entry->fullname,
       'mobile' => $user_entry->mobile,

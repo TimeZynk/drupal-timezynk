@@ -1,11 +1,5 @@
 Drupal.behaviors.TZUserOverview = function(context) {
     var sortBy = [Drupal.t('Full name'), 'asc'],
-        showFilter = {
-            '20': true,
-            '10': true,
-            '0': true,
-            '-10': true
-        },
         comparator,
         data = [],
         selections = {},
@@ -88,15 +82,9 @@ Drupal.behaviors.TZUserOverview = function(context) {
         });
     }
 
-    function shouldShow(row) {
-        return showFilter[row['status_value']];
-    }
-
     function connectFilters() {
-        $('.form-checkboxes input').change(function(event) {
-            var that = $(this);
-            showFilter[that.val()] = that.attr('checked') ? true : false;
-            renderOverviewTable();
+        $('.form-checkboxes input').click(function(event) {
+            startOverviewRefreshCycle();
         });
         $('#edit-manager').change(function(event) {
             startOverviewRefreshCycle();
@@ -112,7 +100,7 @@ Drupal.behaviors.TZUserOverview = function(context) {
             return;
         }
         data.sort(comparator);
-        tableBody = $('.sticky-table tbody');
+        var tableBody = $('.sticky-table tbody');
         tableBody.html('');
         var rowCount = 0;
         for (var uid in data) {
@@ -120,9 +108,6 @@ Drupal.behaviors.TZUserOverview = function(context) {
             row.addClass(rowCount & 1 ? 'odd' : 'even');
 
             var dataRow = data[uid];
-            if (!shouldShow(dataRow)) {
-                continue;
-            }
 
             for (var field in dataRow) {
                 if (field.match(/_value/)) {
@@ -134,7 +119,17 @@ Drupal.behaviors.TZUserOverview = function(context) {
             rowCount++;
         }
 
+        // Add count row
+        var countRow = $('<tr>' +
+            '<td>&nbsp;</td><td>' + Drupal.t('Total') + '</td>' +
+            '<td>' + rowCount + '</td>' +
+            '<td colspan="5">&nbsp;</td>' +
+            '</tr>');
+        countRow.addClass('tzuser-overview-count-row');
+        tableBody.append(countRow);
+
         bindCheckboxes(tableBody);
+        $('.ahah-progress').html('');
     }
 
     function bindCheckboxes(tableBody) {
@@ -187,14 +182,12 @@ Drupal.behaviors.TZUserOverview = function(context) {
     }
 
     function updateOverviewData() {
-        var manager = $('#edit-manager').val();
-        var date = $('#edit-date-datepicker-popup-0').val();
-        var url = 'tzuser/overview/ajax/' + manager;
+        var url = 'tzuser/overview/ajax',
+            form_elements = $('#tzuser-user-overview fieldset:first :input');
 
-        if (date.match(/\d{4}-\d{2}-\d{2}/)) {
-            url += '?date=' + date;
-        }
+        url += '?' + form_elements.serialize();
 
+        $('.ahah-progress').html('<div class="throbber"></div>');
         $.getJSON(url,
             '',
             function (jsonData) {

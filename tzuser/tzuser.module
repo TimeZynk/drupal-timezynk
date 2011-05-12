@@ -278,7 +278,7 @@ function tzuser_get_user_status($account, $now) {
   tzbase_include_proto_classes();
 
   $status = new TZUserStatus($account->login, TZUSER_OVERVIEW_RED_LIMIT);
-  if($status->getStatusCode($now) == TZUserStatus::GREY) {
+  if($status->getStatusCode($now) <= TZUserStatus::RED) {
     return $status;
   }
 
