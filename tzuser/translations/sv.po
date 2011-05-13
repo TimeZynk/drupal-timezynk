@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TimeZynk\n"
-"POT-Creation-Date: 2011-05-09 09:27+0200\n"
-"PO-Revision-Date: 2011-05-09 09:30+0100\n"
+"POT-Creation-Date: 2011-05-16 18:05+0200\n"
+"PO-Revision-Date: 2011-05-16 18:06+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: Swedish <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -23,40 +23,40 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Bookmarks: -1,-1,28,-1,-1,-1,-1,-1,-1,-1\n"
 
-#: tzuser.module:344;396
+#: tzuser.module:346;398
 #: includes/tzuser.overview.inc:8
 #: javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr "Fullständigt namn"
 
-#: tzuser.module:352;403
+#: tzuser.module:354;405
 #: includes/tzuser.theme.inc:68
 msgid "Mobile number"
 msgstr "Mobilnummer"
 
-#: tzuser.module:361;410
+#: tzuser.module:363;412
 #: includes/tzuser.theme.inc:68
 msgid "Manager"
 msgstr "Chef"
 
-#: tzuser.module:376
+#: tzuser.module:378
 #: includes/tzuser.add.inc:115
 msgid "Please enter a valid mobile number"
 msgstr "Skriv in ett giltigt mobilnummer"
 
-#: tzuser.module:390
+#: tzuser.module:392
 msgid "TimeZynk Information"
 msgstr "TimeZynk Information"
 
-#: tzuser.module:397
+#: tzuser.module:399
 msgid "The users full name"
 msgstr "Användarens fullständiga namn"
 
-#: tzuser.module:404
+#: tzuser.module:406
 msgid "The users mobile number without country code"
 msgstr "Användarens mobilnummer utan landskod"
 
-#: tzuser.module:411
+#: tzuser.module:413
 msgid "Select employees manager"
 msgstr "Välj chef till den anställde"
 
@@ -85,7 +85,7 @@ msgstr "Översikt över anställda"
 msgid "Add employees"
 msgstr "Lägg till anställda"
 
-#: tzuser.install:45
+#: tzuser.install:51
 msgid "Stores TimeZynk user data"
 msgstr "Lagrar användardata för TimeZynk"
 
@@ -199,43 +199,43 @@ msgstr "Orapporterade pass"
 msgid "Last login"
 msgstr "Senast inloggad"
 
-#: includes/tzuser.overview.inc:31
+#: includes/tzuser.overview.inc:27
 msgid "Employees with all time reported"
 msgstr "Anställda med alla pass rapporterade"
 
-#: includes/tzuser.overview.inc:32
-msgid "Employees with late reports"
-msgstr "Anställda med försenade rapporter"
+#: includes/tzuser.overview.inc:28
+msgid "Employees that have or might have late reports"
+msgstr "Anställda som har eller kan ha försenade rapporter"
 
-#: includes/tzuser.overview.inc:33
+#: includes/tzuser.overview.inc:29
 msgid "Employees inactive for more than @redlimit"
 msgstr "Anställda som varit inaktiva mer än @redlimit"
 
-#: includes/tzuser.overview.inc:34
+#: includes/tzuser.overview.inc:30
 msgid "Employees who have never logged in"
 msgstr "Anställda som aldrig har loggat in"
 
-#: includes/tzuser.overview.inc:39
+#: includes/tzuser.overview.inc:35
 msgid "Show status"
 msgstr "Visa status"
 
-#: includes/tzuser.overview.inc:40
+#: includes/tzuser.overview.inc:36
 msgid "Select which statuses you want to show"
 msgstr "Välj vilka anställda du vill visa"
 
-#: includes/tzuser.overview.inc:46
+#: includes/tzuser.overview.inc:42
 msgid "Show with manager"
 msgstr "Visa anställda för"
 
-#: includes/tzuser.overview.inc:47
+#: includes/tzuser.overview.inc:43
 msgid "Select which managers employees to show"
 msgstr "Välj vilken chef du vill visa anställda för"
 
-#: includes/tzuser.overview.inc:52
+#: includes/tzuser.overview.inc:48
 msgid "Show status until"
 msgstr "Visa för datum"
 
-#: includes/tzuser.overview.inc:53
+#: includes/tzuser.overview.inc:49
 msgid "Show the status until and including date"
 msgstr "Visa status fram till och med datum"
 
@@ -243,7 +243,7 @@ msgstr "Visa status fram till och med datum"
 msgid "<strong>Tip:</strong> Hold the SHIFT key to select many employees"
 msgstr "<strong>Tips:</strong> Håll ner SKIFT-tangenten för att välja många anställda i följd"
 
-#: includes/tzuser.overview.inc:101;108
+#: includes/tzuser.overview.inc:124;131
 msgid "edit"
 msgstr "redigera"
 
@@ -266,6 +266,10 @@ msgstr "@time sedan"
 #: includes/tzuser.theme.inc:76
 msgid "never"
 msgstr "aldrig"
+
+#: includes/tzuser.theme.inc:101
+msgid "Unknown"
+msgstr "Okänt"
 
 #: includes/tzuser.views.inc:5
 msgid "User"
@@ -292,4 +296,8 @@ msgid "Unable to find user: @users"
 msgid_plural "Unable to find users: @users"
 msgstr[0] "Kunde inte hitta användare: @users"
 msgstr[1] "Kunde inte hitta användare: @users"
+
+#: javascript/tzuser.overview.js:0
+msgid "Total"
+msgstr "Totalt"
 

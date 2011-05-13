@@ -85,6 +85,26 @@ function tzintellitime_sync_user_operations() {
   return $operations;
 }
 
+/**
+ * Alter hook for computed TZUserStatus
+ * @param  TZUserStatus $status
+ */
+function tzintellitime_sync_tzuser_status_alter(&$status) {
+  /* Since our goal is to ensure that GREEN users are also fully synced,
+   * we don't need to process the status unless it is GREEN
+   */
+  if ($status->getStatusCode() != TZUserStatus::GREEN) {
+    return;
+  }
+
+  // Green user, get intellitime info to perform extra checks
+  $result = db_query('SELECT * FROM tzintellitime_sync WHERE uid = %d', $status->getUid());
+  $sync_info = db_fetch_object($result);
+  if(!empty($sync_info)) {
+    $status = new TZIntellitimeUserStatus($status, $sync_info);
+  }
+}
+
 function tzintellitime_sync_schedule_list($users) {
   if(!empty($users)) {
     foreach($users as $uid) {

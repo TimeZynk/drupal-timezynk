@@ -284,16 +284,18 @@ function tzuser_validate_phone_number($number) {
 function tzuser_get_user_status($account, $now) {
   tzbase_include_proto_classes();
 
-  $status = new TZUserStatus($account->login, TZUSER_OVERVIEW_RED_LIMIT);
-  if($status->getStatusCode($now) <= TZUserStatus::RED) {
+  $status = new TZUserStatus($account->uid, $now, $account->login, TZUSER_OVERVIEW_RED_LIMIT);
+  if($status->getStatusCode() <= TZUserStatus::RED) {
     return $status;
   }
 
   $result = db_query('SELECT COUNT(n.vid) AS count FROM {node} n INNER JOIN {tzreport} tzr ON tzr.vid = n.vid WHERE assignedto = %d AND flags < %d AND endtime < %d', $account->uid, TZFlags::REPORTED, $now);
   $data = db_fetch_object($result);
-  if($data) {
+  if ($data) {
     $status->setNumberOfDueReports(intval($data->count));
   }
+
+  drupal_alter('tzuser_status', $status);
 
   return $status;
 }

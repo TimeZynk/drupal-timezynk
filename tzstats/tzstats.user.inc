@@ -18,7 +18,7 @@ function tzstats_record_user_status() {
   $result = db_query('SELECT * FROM {users} WHERE uid > 1 AND status = 1');
   while ($account = db_fetch_object($result)) {
     $status = tzuser_get_user_status($account, $now);
-    $status_code = $status->getStatusCode($now);
+    $status_code = $status->getStatusCode();
     if (!isset($old_status[$account->uid]) || $status_code != $old_status[$account->uid]) {
       $entry = array(
         'status' => $status_code,

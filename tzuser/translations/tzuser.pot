@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-05-09 09:27+0200\n"
+"POT-Creation-Date: 2011-05-16 18:05+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -26,35 +26,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzuser.module:344;396 includes/tzuser.overview.inc:8 javascript/tzuser.overview.js:0;0
+#: tzuser.module:346;398 includes/tzuser.overview.inc:8 javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr ""
 
-#: tzuser.module:352;403 includes/tzuser.theme.inc:68
+#: tzuser.module:354;405 includes/tzuser.theme.inc:68
 msgid "Mobile number"
 msgstr ""
 
-#: tzuser.module:361;410 includes/tzuser.theme.inc:68
+#: tzuser.module:363;412 includes/tzuser.theme.inc:68
 msgid "Manager"
 msgstr ""
 
-#: tzuser.module:376 includes/tzuser.add.inc:115
+#: tzuser.module:378 includes/tzuser.add.inc:115
 msgid "Please enter a valid mobile number"
 msgstr ""
 
-#: tzuser.module:390
+#: tzuser.module:392
 msgid "TimeZynk Information"
 msgstr ""
 
-#: tzuser.module:397
+#: tzuser.module:399
 msgid "The users full name"
 msgstr ""
 
-#: tzuser.module:404
+#: tzuser.module:406
 msgid "The users mobile number without country code"
 msgstr ""
 
-#: tzuser.module:411
+#: tzuser.module:413
 msgid "Select employees manager"
 msgstr ""
 
@@ -82,7 +82,7 @@ msgstr ""
 msgid "Add employees"
 msgstr ""
 
-#: tzuser.install:45
+#: tzuser.install:51
 msgid "Stores TimeZynk user data"
 msgstr ""
 
@@ -190,43 +190,43 @@ msgstr ""
 msgid "Last login"
 msgstr ""
 
-#: includes/tzuser.overview.inc:31
+#: includes/tzuser.overview.inc:27
 msgid "Employees with all time reported"
 msgstr ""
 
-#: includes/tzuser.overview.inc:32
-msgid "Employees with late reports"
+#: includes/tzuser.overview.inc:28
+msgid "Employees that have or might have late reports"
 msgstr ""
 
-#: includes/tzuser.overview.inc:33
+#: includes/tzuser.overview.inc:29
 msgid "Employees inactive for more than @redlimit"
 msgstr ""
 
-#: includes/tzuser.overview.inc:34
+#: includes/tzuser.overview.inc:30
 msgid "Employees who have never logged in"
 msgstr ""
 
-#: includes/tzuser.overview.inc:39
+#: includes/tzuser.overview.inc:35
 msgid "Show status"
 msgstr ""
 
-#: includes/tzuser.overview.inc:40
+#: includes/tzuser.overview.inc:36
 msgid "Select which statuses you want to show"
 msgstr ""
 
-#: includes/tzuser.overview.inc:46
+#: includes/tzuser.overview.inc:42
 msgid "Show with manager"
 msgstr ""
 
-#: includes/tzuser.overview.inc:47
+#: includes/tzuser.overview.inc:43
 msgid "Select which managers employees to show"
 msgstr ""
 
-#: includes/tzuser.overview.inc:52
+#: includes/tzuser.overview.inc:48
 msgid "Show status until"
 msgstr ""
 
-#: includes/tzuser.overview.inc:53
+#: includes/tzuser.overview.inc:49
 msgid "Show the status until and including date"
 msgstr ""
 
@@ -234,7 +234,7 @@ msgstr ""
 msgid "<strong>Tip:</strong> Hold the SHIFT key to select many employees"
 msgstr ""
 
-#: includes/tzuser.overview.inc:101;108
+#: includes/tzuser.overview.inc:124;131
 msgid "edit"
 msgstr ""
 
@@ -256,6 +256,10 @@ msgstr ""
 
 #: includes/tzuser.theme.inc:76
 msgid "never"
+msgstr ""
+
+#: includes/tzuser.theme.inc:101
+msgid "Unknown"
 msgstr ""
 
 #: includes/tzuser.views.inc:5
@@ -283,4 +287,8 @@ msgid "Unable to find user: @users"
 msgid_plural "Unable to find users: @users"
 msgstr[0] ""
 msgstr[1] ""
+
+#: javascript/tzuser.overview.js:0
+msgid "Total"
+msgstr ""
 

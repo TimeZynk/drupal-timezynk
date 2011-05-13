@@ -95,8 +95,10 @@ function theme_due_reports_count($count) {
   if (is_array($count)) {
     $count = $count['#value'];
   }
-  if($count < 0) {
+  if($count == TZUserStatus::NUMBER_OF_REPORTS_NOT_SET) {
     return '';
+  } else if ($count == TZUserStatus::NUMBER_OF_REPORTS_UNKNOWN) {
+    return t('Unknown');
   }
   return '<span class="due_reports_count">' . $count . '</span>';
 }

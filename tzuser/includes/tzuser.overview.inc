@@ -15,13 +15,9 @@ function tzuser_user_overview_headers() {
 
 function tzuser_user_overview(&$form_state) {
   $form = array();
-  $now = tzbase_make_date();
 
   drupal_add_css(drupal_get_path('module', 'tzuser') . '/style/tzuser.css');
   drupal_add_js(drupal_get_path('module', 'tzuser') . '/javascript/tzuser.overview.js');
-
-  // Get return destination for action links
-  $destination = drupal_get_destination();
 
   $form['filter'] = array(
     '#type' => 'fieldset',
@@ -29,7 +25,7 @@ function tzuser_user_overview(&$form_state) {
 
   $status_options = array(
     TZUserStatus::GREEN => t('Employees with all time reported'),
-    TZUserStatus::YELLOW => t('Employees with late reports'),
+    TZUserStatus::YELLOW => t('Employees that have or might have late reports'),
     TZUserStatus::RED => t('Employees inactive for more than @redlimit', array('@redlimit' => format_interval(TZUSER_OVERVIEW_RED_LIMIT))),
     TZUserStatus::GREY => t('Employees who have never logged in'),
   );
@@ -51,7 +47,6 @@ function tzuser_user_overview(&$form_state) {
     '#date_format' => 'Y-m-d',
     '#title' => t('Show status until'),
     '#description' => t('Show the status until and including date'),
-    '#default_value' => $now->format('Y-m-d'),
   );
 
   $form['filter']['progress'] = array(
@@ -67,13 +62,16 @@ function tzuser_user_overview(&$form_state) {
 }
 
 function tzuser_overview_ajax() {
-  $now = time();
+  $date = date_make_date('now');
 
   // Handle date setting
   if (!empty($_GET['date']['date']) && preg_match('/\d{4}-\d{2}-\d{2}/', $_GET['date']['date'])) {
-    $date = date_make_date($_GET['date']['date'] . 'T23:59:59');
-    $now = $date->format('U');
+    $date = date_make_date($_GET['date']['date'] . 'T00:00:00');
+  } else {
+    $date->setTime(0, 0, 0);
   }
+  // The date is up to and including.
+  $date->modify('+1 day');
 
   // Handle manager
   $manager = 0;
@@ -97,8 +95,8 @@ function tzuser_overview_ajax() {
 
   $overview = array();
   while($user_entry = db_fetch_object($result)) {
-    $status = tzuser_get_user_status($user_entry, $now);
-    $status_code = $status->getStatusCode($now);
+    $status = tzuser_get_user_status($user_entry, $date->format('U'));
+    $status_code = $status->getStatusCode();
 
     if (empty($status_filter[$status_code])) {
       continue;
