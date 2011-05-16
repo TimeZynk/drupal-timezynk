@@ -59,8 +59,13 @@ class TZIntellitimeBot implements TZIntellitimeServerInterface {
     $post_url = $this->build_action_url("Portal/" . $post['action']);
     $parser = $this->request($post_url, $post['data']);
 
-    if(!$parser->is_valid_login()) {
-      return FALSE;
+    $error = $parser->parse_page_error();
+    if (!empty($error)) {
+      throw new TZIntellitimeErrorPageException($error, (string)$parser);
+    }
+
+    if (!$parser->is_valid_login()) {
+      throw new TZAuthenticationFailureException('Invalid username or password', (string)$parser);
     }
 
     $fullname = $parser->parse_username();

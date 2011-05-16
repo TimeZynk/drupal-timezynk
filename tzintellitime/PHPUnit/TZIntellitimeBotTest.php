@@ -136,6 +136,82 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('Johan Heander', $loginName);
   }
 
+  public function testErrorPageOnLogin() {
+    $curlInterface = $this->getMock('TZCurl');
+    $base_url = 'http://localhost/demo/v2005/';
+    $login_url = $base_url . 'Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d';
+
+    $expectedUsername = 'myuser';
+    $expectedPassword = 'mypassword';
+
+    $postData = array(
+      'TextBoxUserName' => $expectedUsername,
+      'TextBoxPassword' => $expectedPassword,
+      'ButtonLogin' => 'Logga in',
+      '__VIEWSTATE' => 'dDwyNDA3MjczMzc7dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw1PjtpPDE1PjtpPDE5Pjs+O2w8dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9DdXN0b21lcnMvaW50ZWxsaXBsYW5fbG9nby5naWY7Pj47Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDx+L0ltYWdlcy9JbWdfSW50ZWxsaXBsYW5Mb2dvV2hpdGUuZ2lmOz4+Oz47Oz47Pj47Pj47dDxwPHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxMb2dnYSBpbjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8R2zDtm10IGzDtnNlbm9yZGV0Pzs+Pjs+Ozs+Oz4+Oz4+Oz5ngNWIe5WIW3O3prUuG7wbptC3jg==',
+    );
+
+    $curlInterface->expects($this->at(0))
+        ->method('request')
+        ->with($login_url, NULL)
+        ->will($this->returnValue($this->loadHTMLFile('intellitime-login-page.html')));
+
+    $curlInterface->expects($this->at(1))
+        ->method('getLastEffectiveURL')
+        ->will($this->returnValue($login_url));
+
+    $curlInterface->expects($this->at(2))
+        ->method('request')
+        ->with($login_url, $postData)
+        ->will($this->returnValue($this->loadHTMLFile('WeekData_ThrowOnErrorPage.txt')));
+
+    $bot = new TZIntellitimeBot($curlInterface, $login_url);
+    try {
+      $bot->login($expectedUsername, $expectedPassword);
+      $this->fail('expects exception');
+    } catch (TZIntellitimeErrorPageException $e) {
+      $this->assertNotNull($e, 'caught page exception');
+    }
+  }
+
+  public function testInvalidLogin() {
+    $curlInterface = $this->getMock('TZCurl');
+    $base_url = 'http://localhost/demo/v2005/';
+    $login_url = $base_url . 'Portal/Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d';
+
+    $expectedUsername = 'myuser';
+    $expectedPassword = 'mypassword';
+
+    $postData = array(
+      'TextBoxUserName' => $expectedUsername,
+      'TextBoxPassword' => $expectedPassword,
+      'ButtonLogin' => 'Logga in',
+      '__VIEWSTATE' => 'dDwyNDA3MjczMzc7dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw1PjtpPDE1PjtpPDE5Pjs+O2w8dDw7bDxpPDA+Oz47bDx0PDtsPGk8MT47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9DdXN0b21lcnMvaW50ZWxsaXBsYW5fbG9nby5naWY7Pj47Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDx+L0ltYWdlcy9JbWdfSW50ZWxsaXBsYW5Mb2dvV2hpdGUuZ2lmOz4+Oz47Oz47Pj47Pj47dDxwPHA8bDxWaXNpYmxlOz47bDxvPGY+Oz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxMb2dnYSBpbjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8R2zDtm10IGzDtnNlbm9yZGV0Pzs+Pjs+Ozs+Oz4+Oz4+Oz5ngNWIe5WIW3O3prUuG7wbptC3jg==',
+    );
+
+    $curlInterface->expects($this->at(0))
+        ->method('request')
+        ->with($login_url, NULL)
+        ->will($this->returnValue($this->loadHTMLFile('intellitime-login-page.html')));
+
+    $curlInterface->expects($this->at(1))
+        ->method('getLastEffectiveURL')
+        ->will($this->returnValue($login_url));
+
+    $curlInterface->expects($this->at(2))
+        ->method('request')
+        ->with($login_url, $postData)
+        ->will($this->returnValue($this->loadHTMLFile('intellitime-login-page.html')));
+
+    $bot = new TZIntellitimeBot($curlInterface, $login_url);
+    try {
+      $bot->login($expectedUsername, $expectedPassword);
+      $this->fail('expects exception');
+    } catch (TZAuthenticationFailureException $e) {
+      $this->assertNotNull($e, 'caught login exception');
+    }
+  }
+
   public function testLogout() {
     $curlInterface = $this->getMock('TZCurl');
     $base_url = 'http://localhost/demo/v2005/';

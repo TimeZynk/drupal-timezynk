@@ -121,13 +121,13 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
   }
 
   $username = $form_state['values']['name'];
-  $password = $form_state['values']['pass'];
+  $password = trim($form_state['values']['pass']);
 
   // Check for valid user name
   user_login_name_validate($form, $form_state);
 
   // Load the user if it is exists and is not blocked
-  $account = user_load(array('name' => $username, 'status' => 1));
+  $account = user_load(array('name' => $username, 'pass' => $password, 'status' => 1));
 
   // Any errors so far?
   if(form_get_errors()) {
@@ -136,24 +136,26 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
 
   if (!$account || (isset($account->intellitime_user) && !tzintellitime_is_authenticated($account))) {
     try {
-      $account = tzintellitime_server_auth($account, $username, $password);
-      if($account) {
-        // Login successful, store in global user object
-        $user = $account;
+      $user = tzintellitime_server_auth($account, $username, $password);
 
-        // Schedule for sync
-        if(module_exists('tzintellitime_sync')) {
-          tzintellitime_sync_schedule_user($user->uid);
-        }
+      // Schedule for sync
+      if(module_exists('tzintellitime_sync')) {
+        tzintellitime_sync_schedule_user($user->uid);
       }
     } catch(TZNetworkFailureException $e) {
       watchdog('tzintellitime', 'Network problem when authenticating @user: @msg',
         array('@user' => $username, '@msg' => $e->getMessage()),
         WATCHDOG_WARNING);
+    } catch(TZIntellitimeErrorPageException $e) {
+      $message = t('Error page when authenticating @user: @msg',
+                   array('@user' => $username, '@msg' => $e->getMessage()));
+      tzbase_watchdog_with_data('tzintellitime', $message, $e->getRawData());
     } catch(TZAuthenticationFailureException $e) {
       watchdog('tzintellitime', 'Failed to authenticate @user',
         array('@user' => $username),
         WATCHDOG_WARNING);
+      // Set form error to stop login
+      form_set_error('name', t('Invalid username or password for %name.', array('%name' => $username)));
     }
   }
 
@@ -173,34 +175,43 @@ function tzintellitime_server_auth($account, $username, $password) {
   }
 
   $curl = new TZCurl();
-  $bot = new TZIntellitimeBot($curl, TZINTELLITIME_BASE_URL);
-  $fullname = $bot->login($username, $password);
-  if(FALSE === $fullname) {
+
+  try {
+    $bot = new TZIntellitimeBot($curl, TZINTELLITIME_BASE_URL);
+    $fullname = $bot->login($username, $password);
+
+    if(!$account) {
+      $account = tzuser_add_user(
+        $fullname,
+        $username,
+        $password,
+        '',
+        array(
+             'intellitime_user' => TRUE,
+             'intellitime_session_data' => $curl->getSessionData(),
+        )
+      );
+    } else {
+      $user_data = array(
+        'status' => 1,
+        'pass' => $password,
+        'intellitime_user' => TRUE,
+        'intellitime_session_data' => $curl->getSessionData(),
+        'login' => time(),
+        'tzuser' => array(
+          'fullname' => $fullname,
+        ),
+      );
+
+      $account = user_save($account, $user_data);
+    }
+
+    return $account;
+
+  } catch (TZIntellitimeServerException $e) {
     TZCurl::destroySessionData($curl->getSessionData());
-    return FALSE;
+    throw $e;
   }
-
-  if(!$account) {
-    $account = tzuser_add_user($fullname, $username, $password, '', array(
-      'intellitime_user' => TRUE,
-      'intellitime_session_data' => $curl->getSessionData(),
-    ));
-  } else {
-    $user_data = array(
-      'status' => 1,
-      'pass' => $password,
-      'intellitime_user' => TRUE,
-      'intellitime_session_data' => $curl->getSessionData(),
-      'login' => time(),
-      'tzuser' => array(
-        'fullname' => $fullname,
-      ),
-    );
-
-    $account = user_save($account, $user_data);
-  }
-
-  return $account;
 }
 
 function tzintellitime_tzuser_add_user_data_alter(&$user_data) {
