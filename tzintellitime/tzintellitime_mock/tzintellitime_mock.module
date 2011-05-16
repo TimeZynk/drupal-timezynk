@@ -390,7 +390,7 @@ function _tzintellitime_mock_parse_duration($duration) {
 }
 
 function tzintellitime_mock_authenticate($user, $pass) {
-  $mock_user = tzintellitime_mock_load_user($user);
+  $mock_user = tzintellitime_mock_load_user_by_name($user);
   if(!empty($mock_user) && $mock_user->password === $pass) {
     $token = md5($user . microtime() . $pass);
     $_SESSION['tzintellitime_mock_cookie'] = $token;
@@ -510,11 +510,11 @@ function _tzintellitime_mock_fill_id(&$object, $row) {
 }
 
 function tzintellitime_mock_load_user($user_id) {
-  if(is_numeric($user_id)) {
-    return db_fetch_object(db_query('SELECT * FROM {tzintellitime_mock_users} WHERE user_id = %d', $user_id));
-  } else {
-    return db_fetch_object(db_query('SELECT * FROM {tzintellitime_mock_users} WHERE LOWER(login) = \'%s\'', strtolower($user_id)));
-  }
+  return db_fetch_object(db_query('SELECT * FROM {tzintellitime_mock_users} WHERE user_id = %d', $user_id));
+}
+
+function tzintellitime_mock_load_user_by_name($user_name) {
+  return db_fetch_object(db_query('SELECT * FROM {tzintellitime_mock_users} WHERE LOWER(login) = \'%s\'', strtolower($user_name)));
 }
 
 function tzintellitime_mock_store_object($object) {
@@ -546,8 +546,6 @@ function tzintellitime_mock_load_object($id) {
 }
 
 function tzintellitime_mock_schedule_all_users() {
-  global $user;
-
   $old_delay = TZINTELLITIME_MOCK_DELAY_MILLIS;
   variable_set('tzintellitime_mock_delay_millis', 0);
 
