@@ -224,23 +224,30 @@ function tzuser_add_user($fullname, $username, $password = '', $mobile_number = 
   $user_data['status'] = 1;
   $user_data['tzuser'] = array(
     'fullname' => $fullname,
-    'mobile' => tzuser_validate_phone_number($mobile_number),
-    'manager' => $manager,
   );
 
+  if(empty($password)) {
+    /* Generate a password if none is provided. This can be changed by the admin
+     * or when the user is authenticated remotely for the first time.
+     */
+    $password = user_password(10);
+  }
+  $user_data['pass'] = $password;
+
+  $mobile_number = tzuser_validate_phone_number($mobile_number);
+  if (!empty($mobile_number)) {
+    $user_data['tzuser']['mobile'] = $mobile_number;
+  }
+
+  if (!empty($manager)) {
+    $user_data['tzuser']['manager'] = $manager;
+  }
+
   if (!$account) {
-    // New account
-    if(empty($password)) {
-      /* Generate a password if none is provided. This can be changed by the admin
-       * or when the user is authenticated remotely for the first time.
-       */
-      $password = user_password(10);
-    }
     $mail = _tzuser_generate_fake_email();
     $user_data['mail'] = $mail;
     $user_data['init'] = $mail;
     $user_data['name'] = $username;
-    $user_data['pass'] = $password;
   }
 
   drupal_alter('tzuser_add_user_data', $user_data);
