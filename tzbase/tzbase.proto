@@ -122,6 +122,17 @@ message TZUser {
   optional bool may_create_reports = 17 [default = false];
 }
 
+enum TZAvailabilityType {
+  AVAILABLE = 0;
+  NOT_AVAILABLE = 1;
+}
+
+message TZAvailability {
+  optional int32 id = 1;
+  optional TZAvailabilityType type = 2;
+  optional TZTimeSpan time_span = 3;
+}
+
 // RPC messages
 
 message TZGetUserCmd {
@@ -204,8 +215,23 @@ message TZCreateJobResult {
   optional int32 id = 1;
 }
 
+message TZGetAvailabilityCmd {
+  // Only return availability within this date range.
+  optional TZDateRange date_range = 1;
+}
 
+message TZGetAvailabilityResult {
+  repeated TZAvailability availability = 1;
+}
 
+message TZSaveAvailabilityCmd {
+  // Only return availability within this date range.
+  optional TZAvailability availability = 1;
+}
+
+message TZSaveAvailabilityResult {
+  optional int32 id = 1;
+}
 
 // Generic single RPC command, must be wrapped in a TZRequest
 message TZCommand {
@@ -220,6 +246,9 @@ message TZCommand {
 
   optional TZGetJobCmd get_job_cmd = 6;
   optional TZCreateJobCmd create_job_cmd = 7;
+
+  optional TZGetAvailabilityCmd get_availability_cmd = 8;
+  optional TZSaveAvailabilityCmd save_availability_cmd = 9;
 }
 
 // Generic single RPC result, must be wrapped in a TZResponse
@@ -240,6 +269,9 @@ message TZResult {
 
   optional TZGetJobResult get_job_result = 9;
   optional TZCreateJobResult create_job_result = 10;
+
+  optional TZGetAvailabilityResult get_availability_result = 11;
+  optional TZSaveAvailabilityResult save_availability_result = 12;
 }
 
 //
