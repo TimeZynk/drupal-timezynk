@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Run with drush scr
  */

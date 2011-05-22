@@ -426,7 +426,7 @@ function tzuser_select_manager_field($default_value = '') {
   $managers = array(
     0 => '---',
   );
-  $result = db_query('SELECT * FROM {users_roles} role INNER JOIN {tzuser} tz ON role.uid = tz.uid WHERE rid = %d', tzuser_manager_role_id());
+  $result = db_query('SELECT * FROM {users_roles} role INNER JOIN {tzuser} tz ON role.uid = tz.uid WHERE rid = %d ORDER BY tz.fullname', tzuser_manager_role_id());
   while ($entry = db_fetch_object($result)) {
     $managers[intval($entry->uid)] = $entry->fullname;
   }

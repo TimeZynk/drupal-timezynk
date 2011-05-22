@@ -16,16 +16,32 @@ class TZProtoTestCase extends DrupalWebTestCase {
   private $admin_user = NULL;
   private $standard_user = NULL;
 
-
   public function setUp() {
     // Enable any modules required for the test.
-   parent::setUp('libraries', 'date_api', 'date_timezone', 'tzbase', 'tzproto');
+   parent::setUp('libraries', 'date_api', 'date_timezone', 'tzuser', 'tzbase', 'tzproto');
    variable_set('date_default_timezone_name', 'Europe/Stockholm');
    tzbase_include_proto_classes();
    require_once dirname(__FILE__) . '/tzproto.request.inc';
 
    // Create test users
-   $this->admin_user = $this->drupalCreateUser(array('create tzjob content', 'create tzreport content', 'edit own tzreport content', 'view own tzreport content', 'remove own tzreport content', 'view any tzjob content'));
+   $this->admin_user = $this->drupalCreateUser(array('create tzjob content',
+                                                    'create tzreport content',
+                                                    'edit own tzreport content',
+                                                    'view own tzreport content',
+                                                    'remove own tzreport content',
+                                                    'view any tzjob content',
+                                                    'view own availability content',
+                                                    'create availability content',
+                                                    'remove own availability content'));
+   $this->admin_user2 = $this->drupalCreateUser(array('create tzjob content',
+                                                     'create tzreport content',
+                                                     'edit own tzreport content',
+                                                     'view own tzreport content',
+                                                     'remove own tzreport content',
+                                                     'view any tzjob content',
+                                                     'view own availability content',
+                                                     'create availability content',
+                                                     'remove own availability content'));
    $this->standard_user = $this->drupalCreateUser(array('edit own tzreport content', 'view own tzreport content', 'view any tzjob content'));
   }
 
@@ -121,8 +137,8 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $reports = $this->doGetReportsByDateRange(NULL, $date_range);
     $this->assertEqual(8, count($reports));
 
-    /* Double ended range, all reports including end points between
-     * 2010-09-03 00:00 and 2010-09-07 23:59 */
+    // Double ended range, all reports including end points between
+    // 2010-09-03 00:00 and 2010-09-07 23:59
     $date_range->set_end($expected_time_spans[7]->date());
     $reports = $this->doGetReportsByDateRange(NULL, $date_range);
     $this->assertEqual(5, count($reports));
@@ -144,8 +160,8 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $this->doCreateReportTimeSpan($jobid, TZFlags::CREATED, $time_span);
 
 
-    /* Double ended range, all reports including end points between
-     * 2010-09-15 00:00 and 2010-09-15 23:59 */
+    // Double ended range, all reports including end points between
+    // 2010-09-15 00:00 and 2010-09-15 23:59
     $date_range = new TZDateRange();
     $date_range->set_start($date);
     $date_range->set_end($date);
@@ -170,10 +186,10 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $jobid = $this->doCreateJob();
     $reflection = new ReflectionClass('TZFlags');
     for ($i = 1; $i<11; $i++) {
-      /* This should create reports with flags
-       * 1      , 2        , 3       , 4       , 5     , 6      , 7      , 8        , 9       , 10
-       * CREATED, SIGNED_IN, REPORTED, APPROVED, LOCKED, DELETED, CREATED, SIGNED_IN, REPORTED, APPROVED
-       */
+      // This should create reports with flags
+      // 1      , 2        , 3       , 4       , 5     , 6      , 7      , 8        , 9       , 10
+      // CREATED, SIGNED_IN, REPORTED, APPROVED, LOCKED, DELETED, CREATED, SIGNED_IN, REPORTED, APPROVED
+
       $this->doCreateReport($jobid, $reflection->getConstant($flaglist[$flagindices[($i-1)%count($flagindices)]]), $expectedBeginTime*$i);
     }
 
@@ -210,7 +226,95 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $this->assertFalse($report_id);
   }
 
+  public function testShouldReturnCreatedAvailability() {
+    $expected_id = $this->doCreateAvailability(TZAvailabilityType::AVAILABLE, date_make_date('2011-05-22T08:00'));
+    $this->assertTrue($expected_id);
 
+    $date_range = new TZDateRange();
+    $date_range->set_start($this->createTZDate(2011, 5, 22));
+    $date_range->set_end($this->createTZDate(2011, 5, 22));
+    $availability = $this->doGetAvailabilityByDateRange($date_range);
+    $this->assertEqual(1, count($availability));
+    $this->assertEqual($expected_id, $availability[0]->id());
+  }
+
+  public function testCannotCreateAvailabilityIfNotPermitted() {
+    $user = $this->drupalCreateUser(array('create tzjob content',
+                                         'create tzreport content',
+                                         'edit own tzreport content',
+                                         'view own tzreport content',
+                                         'remove own tzreport content',
+                                         'view any tzjob content',
+                                         'view own availability content',
+                                         'remove own availability content'));
+    $expected_id = $this->doCreateAvailability(TZAvailabilityType::AVAILABLE,
+                                               date_make_date('2011-05-22T08:00'),
+                                               $user);
+    $this->assertFalse($expected_id);
+  }
+
+
+  public function testShouldNotReturnDeletedAvailability() {
+    $expected_id = $this->doCreateAvailability(TZAvailabilityType::AVAILABLE, date_make_date('2011-05-22T08:00'));
+    $this->assertTrue($expected_id);
+
+    $deleted = $this->doDeleteAvailability($expected_id);
+    $this->assertTrue($deleted);
+
+    $date_range = new TZDateRange();
+    $date_range->set_start($this->createTZDate(2011, 5, 22));
+    $date_range->set_end($this->createTZDate(2011, 5, 22));
+    $availability = $this->doGetAvailabilityByDateRange($date_range);
+    $this->assertEqual(0, count($availability));
+  }
+
+  public function testCannotDeleteAvailabilityIfNotPermitted() {
+    $user = $this->drupalCreateUser(array('create tzjob content',
+                                         'create tzreport content',
+                                         'edit own tzreport content',
+                                         'view own tzreport content',
+                                         'remove own tzreport content',
+                                         'view any tzjob content',
+                                         'view own availability content',
+                                         'create availability content',));
+    $expected_id = $this->doCreateAvailability(TZAvailabilityType::AVAILABLE,
+                                               date_make_date('2011-05-22T08:00'),
+                                               $user);
+    $deleted = $this->doDeleteAvailability($expected_id, $user);
+    $this->assertFalse($deleted);
+  }
+
+  public function testCannotDeleteOtherUsersAvailability() {
+    $expected_id = $this->doCreateAvailability(TZAvailabilityType::AVAILABLE, date_make_date('2011-05-22T08:00'));
+    $this->assertTrue($expected_id);
+
+    $deleted = $this->doDeleteAvailability($expected_id, $this->admin_user2);
+    $this->assertFalse($deleted);
+
+    $date_range = new TZDateRange();
+    $date_range->set_start($this->createTZDate(2011, 5, 22));
+    $date_range->set_end($this->createTZDate(2011, 5, 22));
+    $availability = $this->doGetAvailabilityByDateRange($date_range);
+    $this->assertEqual(1, count($availability));
+    $this->assertEqual($expected_id, $availability[0]->id());
+  }
+
+  public function testShouldOnlyReturnAvailabilityInDateRange() {
+    $expected_ids = array();
+    for ($day = 1; $day < 22; $day++) {
+      $date_string = sprintf('2011-05-%02dT08:00', $day);
+      $expected_ids[] = $this->doCreateAvailability(TZAvailabilityType::AVAILABLE, date_make_date($date_string));
+    }
+
+    $date_range = new TZDateRange();
+    $date_range->set_start($this->createTZDate(2011, 5, 10));
+    $date_range->set_end($this->createTZDate(2011, 5, 20));
+    $availability = $this->doGetAvailabilityByDateRange($date_range);
+    $this->assertEqual(11, count($availability));
+    foreach ($availability as $a) {
+      $this->assertTrue(FALSE !== array_search($a->id(), $expected_ids));
+    }
+  }
 
   public function doGetAdminUser() {
     $request = $this->createRequest($this->admin_user);
@@ -280,13 +384,108 @@ class TZProtoTestCase extends DrupalWebTestCase {
     return $reports;
   }
 
+  public function doGetAvailabilityByDateRange($date_range = NULL) {
+    $request = $this->createRequest($this->admin_user);
+    $cmd = $request->add_command();
+    $get_availability_cmd = new TZGetAvailabilityCmd();
+
+    if (NULL == $date_range) {
+      $date_range = new TZDateRange();
+    }
+    $get_availability_cmd->set_date_range($date_range);
+    $cmd->set_get_availability_cmd($get_availability_cmd);
+
+    $response = $this->sendRequest($request, TZConstants::VERSION);
+    $this->assertEqual(1, $response->results_size());
+
+    $result = $response->result(0);
+    $get_availability_result = $result->get_availability_result();
+    $this->assertNotNull($get_availability_result);
+
+    $availability = array();
+    for ($i = 0; $i < $get_availability_result->availabilitys_size(); $i++) {
+      $availability[] = $get_availability_result->availability($i);
+    }
+    return $availability;
+  }
+
+  public function doCreateAvailability($type = TZAvailabilityType::AVAILABLE, $start_date = NULL, $account = NULL) {
+    if($account == NULL) {
+      $account = $this->admin_user;
+    }
+
+    $request = $this->createRequest($account);
+    $cmd = $request->add_command();
+
+    // Populate default TZ report
+    $availability = new TZAvailability();
+
+    $availability->set_type($type);
+
+    if ($start_date == NULL) {
+      $start_date = tzbase_make_date(time() - 3600*2);
+    }
+
+    $end_date = clone($start_date);
+    $end_date->modify('+4 hours');
+    $time_span = new TZTimeSpan();
+    $time_span->set_date(tzproto_create_tzdate($start_date));
+    $time_span->set_start(tzproto_create_tztime($start_date));
+    $time_span->set_end(tzproto_create_tztime($end_date));
+    $availability->set_time_span($time_span);
+
+    $save_availability_cmd = new TZSaveAvailabilityCmd();
+    $save_availability_cmd->set_availability($availability);
+    $cmd->set_save_availability_cmd($save_availability_cmd);
+
+    $response = $this->sendRequest($request, TZConstants::VERSION);
+    $this->assertEqual(1, $response->results_size());
+    $result = $response->result(0);
+
+    // Check for error
+    if($result->error_code()) {
+      $this->assertNotNull($result->error_msg());
+      return FALSE;
+    }
+
+    $save_availability_result = $result->save_availability_result();
+    $this->assertTrue($save_availability_result->id(), 'Expected valid id, got ' . $save_availability_result->id());
+
+    return $save_availability_result->id();
+  }
+
+  public function doDeleteAvailability($id, $account = NULL) {
+    if($account == NULL) {
+      $account = $this->admin_user;
+    }
+
+    $request = $this->createRequest($account);
+    $cmd = $request->add_command();
+
+    $delete_availability_cmd = new TZDeleteAvailabilityCmd();
+    $delete_availability_cmd->set_id($id);
+    $cmd->set_delete_availability_cmd($delete_availability_cmd);
+
+    $response = $this->sendRequest($request, TZConstants::VERSION);
+    $this->assertEqual(1, $response->results_size());
+    $result = $response->result(0);
+
+    // Check for error
+    if($result->error_code()) {
+      $this->assertNotNull($result->error_msg());
+      return FALSE;
+    }
+
+    return TRUE;
+  }
+
   public function doGetStandardUser() {
     $request = $this->createRequest($this->standard_user);
     $cmd = $request->add_command();
     $get_user_cmd = new TZGetUserCmd();
     $cmd->set_get_user_cmd($get_user_cmd);
 
-    $response = $this->sendRequest($request);
+    $response = $this->sendRequest($request, TZConstants::VERSION);
     $this->assertEqual(1, $response->results_size());
     $result = $response->result(0);
     $tzuser = $result->user();

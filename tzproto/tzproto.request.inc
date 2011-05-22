@@ -66,10 +66,19 @@ function tzproto_request() {
         tzproto_handle_get_report_cmd($cmd, $result, $protocol_version);
       }
       else if($cmd->create_job_cmd()) {
-      	tzproto_handle_create_job_cmd($cmd, $result);
+        tzproto_handle_create_job_cmd($cmd, $result);
       }
       else if($cmd->create_report_cmd()) {
         tzproto_handle_create_report_cmd($cmd, $result);
+      }
+      else if ($cmd->get_availability_cmd()) {
+        tzproto_handle_get_availability_cmd($cmd, $result);
+      }
+      else if ($cmd->save_availability_cmd()) {
+        tzproto_handle_save_availability_cmd($cmd, $result);
+      }
+      else if ($cmd->delete_availability_cmd()) {
+        tzproto_handle_delete_availability_cmd($cmd, $result);
       }
       else {
         $result->set_error_code(501);
@@ -158,6 +167,8 @@ function tzproto_handle_get_user(&$cmd, &$result) {
   $tzuser->set_realname(theme('username', $user, FALSE));
   $tzuser->set_may_create_job(user_access('create tzjob content', $user));
   $tzuser->set_may_create_reports(user_access('create tzreport content', $user));
+  $tzuser->set_may_create_availability(user_access('create availability content', $user));
+
   $result->set_user($tzuser);
 }
 
@@ -175,20 +186,20 @@ function tzproto_handle_sync_cmd(&$cmd, &$result, $protocol_version = 0) {
   }
 
   for($i = 0; $i < $sync_cmd->new_jobs_size(); $i++) {
-      $job = tzproto_create_tzjob_from_protobuf($sync_cmd->new_job($i), $result);
-      if($result->error_code()) {
-        // Break if we hit an error
-        return;
-      }
+    $job = tzproto_create_tzjob_from_protobuf($sync_cmd->new_job($i), $result);
+    if($result->error_code()) {
+      // Break if we hit an error
+      return;
+    }
   }
 
   // Store new reports
   for($i = 0; $i < $sync_cmd->new_reports_size(); $i++) {
-      $report = tzproto_create_tzreport_from_protobuf($sync_cmd->new_report($i), $result);
-      if($result->error_code()) {
-        // Break if we hit an error
-        return;
-      }
+    $report = tzproto_create_tzreport_from_protobuf($sync_cmd->new_report($i), $result);
+    if($result->error_code()) {
+      // Break if we hit an error
+      return;
+    }
   }
 
   // Load jobs
@@ -250,7 +261,7 @@ function tzproto_handle_get_job_cmd(&$cmd, &$result) {
       tzproto_fill_from_node($tzjob, $node);
 
       if ($jobcmd->may_create_report() === NULL ||
-          (boolean)$jobcmd->may_create_report() === (boolean)$tzjob->may_create_report()) {
+      (boolean)$jobcmd->may_create_report() === (boolean)$tzjob->may_create_report()) {
         $tzjobs[] = $tzjob;
       }
     }
@@ -303,24 +314,16 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result, $protocol_version = 0) {
     }
     $date_range = $reportcmd->date_range();
     if($date_range) {
-      $start_date = $date_range->start();
-      $time = new TZTime();
-      $time->set_hour(0);
-      $time->set_minute(0);
-      if ($start_date) {
-        // Start date, create a timestamp for this date, with time set to 00:00.
-        $datetime = tzproto_create_datetime($start_date, $time);
-        $filter_strings[] = 'tz.begintime >= %d';
-        $filter_args[] = $datetime->format('U');
-      }
-      $end_date = $date_range->end();
-      if (!empty($end_date)) {
-        // End date, create a timestamp for the day after, with time set to 00:00.
-        $datetime = tzproto_create_datetime($end_date, $time);
-        $datetime->modify("+1 day");
+      $datetime_range = tzproto_create_datetime_range($date_range);
 
+      if ($datetime_range->start) {
+        $filter_strings[] = 'tz.begintime >= %d';
+        $filter_args[] = $datetime_range->start->format('U');
+      }
+
+      if ($datetime_range->end) {
         $filter_strings[] = 'tz.begintime < %d';
-        $filter_args[] = $datetime->format('U');
+        $filter_args[] = $datetime_range->end->format('U');
       }
     } else {
       if ($reportcmd->after()) {
@@ -371,11 +374,11 @@ function tzproto_handle_create_job_cmd(&$cmd, &$result) {
 
   // Store new job
   if($jobcmd->new_job()) {
-      $job = tzproto_create_tzjob_from_protobuf($jobcmd->new_job(), $result);
-      if($result->error_code()) {
-        return;
-      }
-      $jobresult->set_id($job->nid);
+    $job = tzproto_create_tzjob_from_protobuf($jobcmd->new_job(), $result);
+    if($result->error_code()) {
+      return;
+    }
+    $jobresult->set_id($job->nid);
   }
   $result->set_create_job_result($jobresult);
 }
@@ -390,13 +393,163 @@ function tzproto_handle_create_report_cmd(&$cmd, &$result) {
 
   // Store new reports
   if($reportcmd->new_report()) {
-      $report = tzproto_create_tzreport_from_protobuf($reportcmd->new_report(), $result);
-      if($result->error_code()) {
-        return;
-      }
-      $reportresult->set_id($report->nid);
+    $report = tzproto_create_tzreport_from_protobuf($reportcmd->new_report(), $result);
+    if($result->error_code()) {
+      return;
+    }
+    $reportresult->set_id($report->nid);
   }
   $result->set_create_report_result($reportresult);
+}
+
+function _tzproto_run_get_availability_query($get_availability_cmd) {
+  global $user;
+  $filter_strings = array();
+  $filter_args = array();
+
+  $filter_strings[] = 'uid = %d';
+  $filter_args[] = $user->uid;
+
+  if ($get_availability_cmd->id()) {
+    // Get single availability
+    $filter_strings[] = 'id = %d';
+    $filter_args[] = $get_availability_cmd->id();
+  } else {
+    // Get all within date range
+    $range = tzproto_create_datetime_range($get_availability_cmd->date_range());
+    if ($range->start) {
+      $filter_strings[] = 'start_time >= %d';
+      $filter_args[] = $range->start->format('U');
+    }
+
+    if ($range->end) {
+      $filter_strings[] = 'start_time < %d';
+      $filter_args[] = $range->end->format('U');
+    }
+  }
+  $filter_string = implode(' AND ', $filter_strings);
+
+  $query = 'SELECT * FROM {tzavailability} WHERE ' . $filter_string;
+  return db_query($query, $filter_args);
+}
+
+/**
+ * Populates a TZAvailability object from one Availability DB entry.
+ * @param $availability the TZAvailability object to populate.
+ * @param $data a database entry for availability.
+ */
+function tzproto_populate_tzavailability(&$availability, $data) {
+  $availability->set_id($data->id);
+  $availability->set_type($data->availability_type);
+
+  $time_span = tzproto_create_tztimespan($data->start_time, $data->end_time);
+  $availability->set_time_span($time_span);
+}
+
+function tzproto_handle_get_availability_cmd(&$cmd, &$result) {
+  if (!user_access('view own availability content')) {
+    $result->set_error_code(403);
+    $result->set_error_msg('May not view availability');
+    return;
+  }
+
+  $get_availability_result = new TZGetAvailabilityResult();
+  $db_result = _tzproto_run_get_availability_query($cmd->get_availability_cmd());
+
+  while ($data = db_fetch_object($db_result)) {
+    $availability = $get_availability_result->add_availability();
+    tzproto_populate_tzavailability($availability, $data);
+  }
+  $result->set_get_availability_result($get_availability_result);
+}
+
+function tzproto_handle_save_availability_cmd(&$cmd, &$result) {
+  global $user;
+
+  if (!user_access('create availability content')) {
+    $result->set_error_code(403);
+    $result->set_error_msg('May not create availability');
+    return;
+  }
+
+  $save_availability_cmd = $cmd->save_availability_cmd();
+  $save_availability_result = new TZSaveAvailabilityResult();
+
+  $availability = $save_availability_cmd->availability();
+  if (!$availability) {
+    return;
+  }
+
+  $record = NULL;
+
+  if ($availability->id()) {
+    $record = tzbase_load_availability($availability->id());
+    if ($record->uid != $user->uid) {
+      $result->set_error_code(400);
+      $result->set_error_msg("May not modify other user's availability report");
+      return;
+    }
+  } else {
+    $record = new stdClass();
+    $record->uid = $user->uid;
+  }
+
+  $record->availability_type = $availability->type();
+
+  $time_span = $availability->time_span();
+  if (!$time_span) {
+    $result->set_error_code(400);
+    $result->set_error_msg('Missing time span in availability');
+    return;
+  }
+
+  $start_date = tzproto_create_datetime($time_span->date(), $time_span->start());
+  $end_date = tzproto_create_datetime($time_span->date(), $time_span->end());
+  if ($end_date < $start_date) {
+    $end_date->modify('+1 day');
+  }
+  $record->start_time = $start_date->format('U');
+  $record->end_time = $end_date->format('U');
+
+  if (empty($record->id)) {
+    drupal_write_record('tzavailability', $record);
+  } else {
+    drupal_write_record('tzavailability', $record, 'id');
+  }
+
+  $save_availability_result->set_id($record->id);
+  $result->set_save_availability_result($save_availability_result);
+}
+
+function tzproto_handle_delete_availability_cmd(&$cmd, &$result) {
+  global $user;
+
+  if (!user_access('remove own availability content')) {
+    $result->set_error_code(403);
+    $result->set_error_msg('May not remove availability');
+    return;
+  }
+
+  $delete_availability_cmd = $cmd->delete_availability_cmd();
+
+  $filter_strings = array();
+  $filter_args = array();
+
+  $filter_strings[] = 'uid = %d';
+  $filter_args[] = $user->uid;
+
+  $filter_strings[] = 'id = %d';
+  $filter_args[] = $delete_availability_cmd->id();
+
+  $filter_string = implode(' AND ', $filter_strings);
+
+  $query = 'DELETE FROM {tzavailability} WHERE ' . $filter_string;
+  db_query($query, $filter_args);
+  $affected_rows = db_affected_rows();
+  if (!$affected_rows) {
+    $result->set_error_code(404);
+    $result->set_error_msg('ID not found');
+  }
 }
 
 /**
@@ -419,7 +572,7 @@ function tzproto_fill_from_node(&$proto, $node, $protocol_version = 0) {
      * allows creating children/reports et c. ... */
     $proto->set_may_create_child(node_access('create', $node->type));
     $proto->set_may_create_report(node_access('create', 'tzreport') &&
-        $node->flags == TZJobFlags::ACTIVE);
+    $node->flags == TZJobFlags::ACTIVE);
     $proto->set_may_edit(node_access('update', $node));
   } else if($node->type == 'tzreport') {
     $proto->set_vid($node->vid);
@@ -569,8 +722,8 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
 
     if($data->id()) {
       watchdog('tzproto', 'Created revision !vid of report !nid', array('!vid' => $report->vid, '!nid' => $report->nid),
-        WATCHDOG_NOTICE,
-        l('View', 'node/' . $report->nid));
+      WATCHDOG_NOTICE,
+      l('View', 'node/' . $report->nid));
 
       /* If the node has been updated and is immediately
        * reloaded after update, it will
@@ -666,32 +819,60 @@ function tzproto_create_datetime($tzdate, $tztime) {
   $minute = $tztime->minute();
 
   if (!empty($year) && !empty($month) && !empty($day) &&
-    $hour !== NULL && $minute !== NULL ) {
-        $datetime = new DateTime();
-        $datetime->setTimezone(date_default_timezone(FALSE));
-        $datetime->setDate($year, $month, $day);
-        $datetime->setTime($hour, $minute);
+  $hour !== NULL && $minute !== NULL ) {
+    $datetime = new DateTime();
+    $datetime->setTimezone(date_default_timezone(FALSE));
+    $datetime->setDate($year, $month, $day);
+    $datetime->setTime($hour, $minute);
   }
   return $datetime;
 }
 
 function tzproto_create_tztimespan($epoch_start, $epoch_end) {
-      $datetime = tzbase_make_date($epoch_start);
-      if (empty($datetime)) {
-        return NULL;
-      }
-      $date = tzproto_create_tzdate($datetime);
-      $start_time = tzproto_create_tztime($datetime);
+  $datetime = tzbase_make_date($epoch_start);
+  if (empty($datetime)) {
+    return NULL;
+  }
+  $date = tzproto_create_tzdate($datetime);
+  $start_time = tzproto_create_tztime($datetime);
 
-      $datetime = tzbase_make_date($epoch_end);
-      if (empty($datetime)) {
-        return NULL;
-      }
-      $end_time = tzproto_create_tztime($datetime);
+  $datetime = tzbase_make_date($epoch_end);
+  if (empty($datetime)) {
+    return NULL;
+  }
+  $end_time = tzproto_create_tztime($datetime);
 
-      $time_span = new TZTimeSpan();
-      $time_span->set_date($date);
-      $time_span->set_start($start_time);
-      $time_span->set_end($end_time);
-      return $time_span;
+  $time_span = new TZTimeSpan();
+  $time_span->set_date($date);
+  $time_span->set_start($start_time);
+  $time_span->set_end($end_time);
+  return $time_span;
+}
+
+function tzproto_create_datetime_range($date_range) {
+  $range = (object)array(
+    'start' => null,
+    'end' => null,
+  );
+
+  if ($date_range) {
+    $time = new TZTime();
+    $time->set_hour(0);
+    $time->set_minute(0);
+
+    $start_date = $date_range->start();
+    if ($start_date) {
+      // Start date, create a timestamp for this date, with time set to 00:00.
+      $range->start = tzproto_create_datetime($start_date, $time);
+    }
+
+    $end_date = $date_range->end();
+    if ($end_date) {
+      // End date, create a timestamp for the day after, with time set to 00:00.
+      $range->end = tzproto_create_datetime($end_date, $time);
+      $range->end->modify("+1 day");
+    }
+  }
+
+  return $range;
 }

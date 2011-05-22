@@ -571,6 +571,11 @@ class TZUser extends PBMessage
     $this->values["17"] = new PBBool();
     $this->values["17"]->value = false;
     self::$fieldNames["TZUser"]["17"] = "may_create_reports";
+    self::$fields["TZUser"]["18"] = "PBBool";
+    $this->values["18"] = "";
+    $this->values["18"] = new PBBool();
+    $this->values["18"]->value = false;
+    self::$fieldNames["TZUser"]["18"] = "may_create_availability";
   }
   function id()
   {
@@ -619,6 +624,14 @@ class TZUser extends PBMessage
   function set_may_create_reports($value)
   {
     return $this->_set_value("17", $value);
+  }
+  function may_create_availability()
+  {
+    return $this->_get_value("18");
+  }
+  function set_may_create_availability($value)
+  {
+    return $this->_set_value("18", $value);
   }
 }
 class TZAvailabilityType extends PBEnum
@@ -1156,17 +1169,28 @@ class TZGetAvailabilityCmd extends PBMessage
   public function __construct($reader=null)
   {
     parent::__construct($reader);
-    self::$fields["TZGetAvailabilityCmd"]["1"] = "TZDateRange";
+    self::$fields["TZGetAvailabilityCmd"]["1"] = "PBInt";
     $this->values["1"] = "";
-    self::$fieldNames["TZGetAvailabilityCmd"]["1"] = "date_range";
+    self::$fieldNames["TZGetAvailabilityCmd"]["1"] = "id";
+    self::$fields["TZGetAvailabilityCmd"]["2"] = "TZDateRange";
+    $this->values["2"] = "";
+    self::$fieldNames["TZGetAvailabilityCmd"]["2"] = "date_range";
   }
-  function date_range()
+  function id()
   {
     return $this->_get_value("1");
   }
-  function set_date_range($value)
+  function set_id($value)
   {
     return $this->_set_value("1", $value);
+  }
+  function date_range()
+  {
+    return $this->_get_value("2");
+  }
+  function set_date_range($value)
+  {
+    return $this->_set_value("2", $value);
   }
 }
 class TZGetAvailabilityResult extends PBMessage
@@ -1246,6 +1270,25 @@ class TZSaveAvailabilityResult extends PBMessage
     return $this->_set_value("1", $value);
   }
 }
+class TZDeleteAvailabilityCmd extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZDeleteAvailabilityCmd"]["1"] = "PBInt";
+    $this->values["1"] = "";
+    self::$fieldNames["TZDeleteAvailabilityCmd"]["1"] = "id";
+  }
+  function id()
+  {
+    return $this->_get_value("1");
+  }
+  function set_id($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+}
 class TZCommand extends PBMessage
 {
   var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
@@ -1281,6 +1324,9 @@ class TZCommand extends PBMessage
     self::$fields["TZCommand"]["9"] = "TZSaveAvailabilityCmd";
     $this->values["9"] = "";
     self::$fieldNames["TZCommand"]["9"] = "save_availability_cmd";
+    self::$fields["TZCommand"]["10"] = "TZDeleteAvailabilityCmd";
+    $this->values["10"] = "";
+    self::$fieldNames["TZCommand"]["10"] = "delete_availability_cmd";
   }
   function client_handle()
   {
@@ -1353,6 +1399,14 @@ class TZCommand extends PBMessage
   function set_save_availability_cmd($value)
   {
     return $this->_set_value("9", $value);
+  }
+  function delete_availability_cmd()
+  {
+    return $this->_get_value("10");
+  }
+  function set_delete_availability_cmd($value)
+  {
+    return $this->_set_value("10", $value);
   }
 }
 class TZResult extends PBMessage

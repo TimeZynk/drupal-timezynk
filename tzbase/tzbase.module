@@ -87,7 +87,13 @@ function tzbase_perm() {
     'view any tzjob content',
     'view own tzjob content',
     'edit any tzjob content',
-    'edit own tzjob content');
+    'edit own tzjob content',
+
+    'create availability content',
+    'view any availability content',
+    'view own availability content',
+    'remove own availability content',
+  );
 }
 
 /**
@@ -607,6 +613,10 @@ function tzbase_load($node) {
   else if($node->type == 'tzjob') {
     return db_fetch_object(db_query("SELECT * FROM {tzjob} WHERE vid = %d", $node->vid));
   }
+}
+
+function tzbase_load_availability($id) {
+  return db_fetch_object(db_query("SELECT * from {tzavailability} WHERE id = %d", $id));
 }
 
 function tzbase_job_by_jobcode($jobcode) {

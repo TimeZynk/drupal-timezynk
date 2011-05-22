@@ -112,6 +112,55 @@ function tzbase_update_6005() {
     db_query('UPDATE {tzreport} SET totalduration = (endtime - begintime - breakduration) WHERE vid = %d',
              $row->vid);
   }
+
+  return $ret;
+}
+
+function tzbase_update_6006() {
+  $ret = array();
+
+  $schema['tzavailability'] = array(
+    'description' => t('Stores availability information'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "{users}.uid.",
+      ),
+      'availability_type' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "AvailabilityType",
+      ),
+      'start_time' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Start timestamp'),
+      ),
+      'end_time' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('End timestamp'),
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'uid' => array('uid'),
+    ),
+  );
+
+  db_create_table($ret, 'tzavailability', $schema['tzavailability']);
   return $ret;
 }
 
@@ -253,6 +302,47 @@ function tzbase_schema() {
     'primary key' => array('nid', 'vid'),
     'unique keys' => array('vid' => array('vid')),
     'indexes' => array('nid' => array('nid')),
+  );
+
+  $schema['tzavailability'] = array(
+    'description' => t('Stores availability information'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "{users}.uid.",
+      ),
+      'availability_type' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "AvailabilityType",
+      ),
+      'start_time' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Start timestamp'),
+      ),
+      'end_time' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('End timestamp'),
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'uid' => array('uid'),
+    ),
   );
 
   return $schema;
