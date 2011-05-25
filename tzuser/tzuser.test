@@ -6,7 +6,7 @@ class TZSMSUITestCase extends DrupalWebTestCase {
     return array(
       'name' => 'TZUser Test Suite',
       'description' => '',
-      'group' => 'TZBase',
+      'group' => 'TZUser',
     );
   }
 
@@ -76,11 +76,11 @@ class TZSMSUITestCase extends DrupalWebTestCase {
     $this->drupalPost('tzuser/add', $edit, t('Add employees'));
     $this->assertResponse(200, 'Submit returned 200 OK');
 
-    $this->assertRaw(t('Created user @username with mobile @number', array(
+    $this->assertRaw(t('Created employee @username with mobile @number', array(
       '@username' => 'ABC User',
       '@number' => '073884748')
     ));
-    $this->assertRaw(t('Created user @username with mobile @number', array(
+    $this->assertRaw(t('Created employee @username with mobile @number', array(
       '@username' => 'CDE User',
       '@number' => '073938822')
     ));

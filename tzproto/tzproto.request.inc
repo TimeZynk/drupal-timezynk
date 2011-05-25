@@ -497,9 +497,7 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
 
   // Parse start and finish
   $worked_time = $data->worked_time();
-  $start = NULL;
-  $end = NULL;
-  $date = NULL;
+
   if (!empty($worked_time)) {
     $start = $worked_time->start();
     $end = $worked_time->end();
@@ -516,11 +514,22 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
       $result->set_error_msg('Report lacked start time or end time value.');
       return;
     }
+
+    // We only handle this case for proto version 1 or higher,
+    if ($end_date_time < $begin_date_time) {
+      $end_date_time->modify('+1 day');
+    }
+
     $report->begintime = $begin_date_time->format('U');
     $report->endtime = $end_date_time->format('U');
   } else {
     $report->begintime = $data->begin_time();
     $report->endtime = $data->end_time();
+    if ($report->endtime < $report->begintime) {
+      $result->set_error_code(400);
+      $result->set_error_msg('Report ends before it begins.');
+      return;
+    }
   }
   $report->breakduration = $data->break_duration();
 

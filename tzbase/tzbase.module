@@ -454,17 +454,29 @@ function tzbase_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           $isostr = sprintf('%04d-%02d-%02d %02d:%02d', $date['year'], $date['month'], $date['day'], intval($time[0]), intval($time[1]));
           $node->$field = date_make_date($isostr)->format('U');
         }
-
-        // move endtime forward one day if we are working past midnight
-        // Cannot just add a number of seconds since it might pass DST
-        if($node->endtime < $node->begintime) {
-          $datetime = tzbase_make_date($node->endtime);
-          $datetime->modify('+1 day');
-          $node->endtime = $datetime->format('U');
-        }
-
         $node->breakduration = tzbase_parse_duration($node->time['breakduration']);
       }
+
+      // move endtime forward one day if we are working past midnight
+      // Cannot just add a number of seconds since it might pass DST
+      if (!empty($node->endtime) && !empty($node->begintime)) {
+        $begin_datetime = tzbase_make_date($node->begintime);
+        $end_datetime = tzbase_make_date($node->endtime);
+        _tzbase_validate_duration_no_greater_than_a_day($begin_datetime, $end_datetime, $node);
+        _tzbase_validate_end_after_start($begin_datetime, $end_datetime, $node);
+
+        $node->endtime = _tzbase_calculate_correct_endtime($begin_datetime, $end_datetime);
+      }else {
+        watchdog('tzbase',
+                 'Report (nid: @id, vid: @vid) missing begintime or endtime in tzbase_nodeapi',
+                 array(
+                      '@id' => empty($node->nid) ? 'new node' : $node->nid,
+                      '@vid' => empty($node->vid) ? 'new node' : $node->vid,
+                 ),
+                 WATCHDOG_WARNING,
+                 empty($node->nid) ? NULL : l('Node','node/' . $node->nid));
+      }
+
 
       if(isset($node->travel) && is_array($node->travel)) {
         $node->travelduration = tzbase_parse_duration($node->travel['travelduration']);
@@ -778,4 +790,47 @@ function tzbase_watchdog_node_operation($tag, $node, $operation, $account) {
              ),
              WATCHDOG_NOTICE,
              l('Node', 'node/' . $node->nid) . ', ' . theme('username', $account));
+}
+
+function _tzbase_calculate_correct_endtime($begin_datetime, $end_datetime) {
+  // Set the same date as for begintime, but keep the hour and minute for the endtime.
+  $new_end_datetime = clone($begin_datetime);
+  $new_end_datetime->setTime(intval($end_datetime->format('G'), 10),
+                             intval($end_datetime->format('i'), 10),
+                             intval($end_datetime->format('s'), 10));
+
+  if ($new_end_datetime < $begin_datetime) {
+    $new_end_datetime->modify('+1 day');
+  }
+  return $new_end_datetime->format('U');
+}
+
+function _tzbase_validate_duration_no_greater_than_a_day($begin_datetime, $end_datetime, $node) {
+  $one_day_after_begin_datetime = clone($begin_datetime);
+  $one_day_after_begin_datetime->modify('+1 day');
+
+  if ($end_datetime > $one_day_after_begin_datetime) {
+    watchdog('tzbase',
+             'Report (nid: @id, vid: @vid) spans more than 24 hours.' .
+             'Some module does not clean up its input. Adjusting the report.',
+             array(
+                  '@id' => empty($node->nid) ? 'new node' : $node->nid,
+                  '@vid' => empty($node->vid) ? 'new node' : $node->vid,
+             ),
+             WATCHDOG_ERROR,
+             empty($node->nid) ? NULL : l('Node','node/' . $node->nid));
+  }
+}
+function _tzbase_validate_end_after_start($begin_datetime, $end_datetime, $node) {
+  if ($end_datetime < $begin_datetime) {
+    watchdog('tzbase',
+             'Report (nid: @id, vid: @vid) ends before it starts.' .
+             'Some module does not clean up its input. Adjusting the report.',
+             array(
+                  '@id' => empty($node->nid) ? 'new node' : $node->nid,
+                  '@vid' => empty($node->vid) ? 'new node' : $node->vid,
+             ),
+             WATCHDOG_ERROR,
+             empty($node->nid) ? NULL : l('Node','node/' . $node->nid));
+  }
 }

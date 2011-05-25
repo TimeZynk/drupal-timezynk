@@ -101,6 +101,20 @@ function tzbase_update_6004() {
   return $ret;
 }
 
+function tzbase_update_6005() {
+  $ret = array();
+  $result = db_query('SELECT * FROM {tzreport} WHERE endtime < begintime');
+  while($row = db_fetch_object($result)) {
+    $end_datetime = tzbase_make_date($row->endtime);
+    $end_datetime->modify('+1 day');
+    $row->endtime = $end_datetime->format('U');
+    db_query('UPDATE {tzreport} SET endtime = %d WHERE vid = %d', $row->endtime, $row->vid);
+    db_query('UPDATE {tzreport} SET totalduration = (endtime - begintime - breakduration) WHERE vid = %d',
+             $row->vid);
+  }
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */

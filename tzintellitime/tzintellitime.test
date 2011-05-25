@@ -150,12 +150,18 @@ class TZIntellitimeBotTestCase extends DrupalWebTestCase {
 
   public function testLogin() {
     // Both username and password invalid
-    $ok = $this->bot->login("monkey", "monkey");
-    $this->assertFalse($ok);
-
-    // Invalid password
-    $ok = $this->bot->login("test user", "monkey");
-    $this->assertFalse($ok);
+    try {
+      $ok = $this->bot->login("monkey", "monkey");
+      $this->fail('expected a TZAuthenticationFailureException');
+    } catch (TZAuthenticationFailureException $e) {
+      $this->pass('got a TZAuthenticationFailureException');
+    }
+    try {
+      // Invalid password
+      $ok = $this->bot->login("test user", "monkey");
+    } catch (TZAuthenticationFailureException $e) {
+      $this->pass('got a TZAuthenticationFailureException');
+    }
 
     // Correct username and password
     $ok = $this->bot->login("test user", "test password");

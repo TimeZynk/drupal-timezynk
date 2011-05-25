@@ -184,6 +184,33 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $this->assertEqual(4, count($after_and_including_3));
   }
 
+  public function testSaveReportThatSpansMidnightProtoV1() {
+    $job_id = $this->doCreateJob();
+    $start = $this->createTZTime(22,40);
+    $end = $this->createTZTime(8,0);
+    $date = $this->createTZDate(2011,5,25);
+    $time_span = new TZTimeSpan();
+    $time_span->set_start($start);
+    $time_span->set_end($end);
+    $time_span->set_date($date);
+    $report_id = $this->doCreateReportTimeSpan($job_id, TZFlags::CREATED, $time_span);
+    $this->assertTrue($report_id);
+    $node = node_load($report_id, NULL, TRUE);
+    $this->assertNotNull($node);
+    $this->assertTrue($node->begintime < $node->endtime);
+    $this->assertEqual(8*3600+50*60, $node->totalduration);
+  }
+
+  public function testSaveReportThatIncorrectlySpansMidnightProtoV0() {
+    $job_id = $this->doCreateJob();
+    $begintime = date_make_date('2011-05-25 22:40')->format('U');
+    $endtime = date_make_date('2011-05-25 08:00')->format('U');
+
+    $report_id = $this->doCreateReport($job_id, TZFlags::CREATED, $begintime, NULL, $endtime);
+    $this->assertFalse($report_id);
+  }
+
+
 
   public function doGetAdminUser() {
     $request = $this->createRequest($this->admin_user);
@@ -308,7 +335,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
     return $create_job_result->id();
   }
 
-  public function doCreateReport($jobid, $flags = TZFLags::CREATED, $begintime = NULL, $account = NULL) {
+  public function doCreateReport($jobid, $flags = TZFLags::CREATED, $begintime = NULL, $account = NULL, $endtime = NULL) {
     if($account == NULL) {
       $account = $this->admin_user;
     }
@@ -325,7 +352,9 @@ class TZProtoTestCase extends DrupalWebTestCase {
       $now = time();
       $begintime = $now - 3600*2;
     }
-    $endtime = $begintime + 3600;
+    if ($endtime == NULL) {
+      $endtime = $begintime + 3600;
+    }
     $breakduration = 1800;
 
     $report->set_begin_time($begintime);
@@ -412,6 +441,9 @@ public function doCreateReportTimeSpan($jobid, $flags = TZFLags::CREATED, $time_
 
     $expected_begin = tzproto_create_datetime($time_span->date(), $time_span->start());
     $expected_end = tzproto_create_datetime($time_span->date(), $time_span->end());
+    if ($expected_end < $expected_begin) {
+      $expected_end->modify('+1 day');
+    }
     $this->assertEqual($expected_begin->format('U'), $node->begintime);
     $this->assertEqual($expected_end->format('U'), $node->endtime);
     $this->assertEqual($breakduration, $node->breakduration);
