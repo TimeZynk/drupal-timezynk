@@ -188,21 +188,32 @@ Drupal.behaviors.TZUserOverview = function(context) {
         url += '?' + form_elements.serialize();
 
         $('.ahah-progress').html('<div class="throbber"></div>');
-        $.getJSON(url,
-            '',
-            function (jsonData) {
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            success: function (jsonData) {
                 data = jsonData;
                 renderOverviewTable();
+            },
+            error: function () {
+                window.location.reload();
             }
-        );
+        });
     }
 
     function startOverviewRefreshCycle() {
+		var refreshInterval = 30000;
+
         if (refreshIntervalId) {
             clearInterval(refreshIntervalId);
         }
+
+		if (Drupal.settings.tzuser.OVERVIEW_REFRESH_RATE) {
+			refreshInterval = Drupal.settings.tzuser.OVERVIEW_REFRESH_RATE * 1000;
+		}
+
         updateOverviewData();
-        refreshIntervalId = setInterval(updateOverviewData, 5000);
+        refreshIntervalId = setInterval(updateOverviewData, refreshInterval);
     }
 
     connectFilters();
