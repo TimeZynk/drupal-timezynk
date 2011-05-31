@@ -1,5 +1,7 @@
 <?php
 
+define('ANDROID_MARKET_URL', 'https://market.android.com/details?id=');
+
 /**
  * Generate a JAD file
  */
@@ -9,14 +11,28 @@ function jadmaker_create_jad() {
   jadmaker_store_download_stats();
 
   // Redirect iPhone and iPad
-  if(false !== strpos($ua, 'iPhone') ||
-     false !== strpos($ua, 'iPad')) {
+  if (FALSE !== strpos($ua, 'iPhone') ||
+      FALSE !== strpos($ua, 'iPad')) {
     drupal_goto('mobile');
   }
 
-  $lang = jadmaker_detect_language();
+  if (FALSE !== strpos($ua, 'Android')) {
+    $package = jadmaker_android_package_name();
+    if (jadmaker_available_in_google_market($package)) {
+      // Force redirect, drupal_goto doesn't handle market-protocol
+      header('Location: ' . 'market://details?id=' . $package, TRUE, 302);
+      exit();
+    }
+  }
 
-  $file = jadmaker_find_file($lang);
+  // Try to find generic all-language binary
+  $file = jadmaker_find_file();
+
+  if (!file_exists($file->path)) {
+    // Not found, check client for language clues
+    $lang = jadmaker_detect_language();
+    $file = jadmaker_find_file($lang);
+  }
 
   if (!file_exists($file->path)) {
     watchdog('jadmaker', 'File not found: "@path"', array('@path' => $file->path), WATCHDOG_ALERT);
@@ -96,21 +112,53 @@ function jadmaker_detect_language() {
   return $choosen_language;
 }
 
-function jadmaker_find_file($lang) {
+function jadmaker_find_file($lang = '') {
   $ua = $_SERVER['HTTP_USER_AGENT'];
 
+  $langSuffix = '';
+  if (!empty($lang)) {
+    $langSuffix = '-' . $lang;
+  }
+
   $file = new stdClass();
-  $file->name = "tz-Generic-AnyPhone-$lang.jar";
+  $file->name = "tz-Generic-AnyPhone$langSuffix.jar";
 
   if(FALSE !== strpos($ua, 'Android')) {
-    $file->name = "tz-Generic-android-$lang.apk";
+    $file->name = "tz-Generic-android$langSuffix.apk";
   } else if (FALSE !== strpos($ua, 'SEMC') ||
      FALSE !== strpos($ua, 'SonyEricsson')) {
-    $file->name = "tz-Sony-Ericsson-JavaPlatform8-$lang.jar";
+    $file->name = "tz-Sony-Ericsson-JavaPlatform8$langSuffix.jar";
   }
 
   $file->path = file_create_path($file->name);
   return $file;
+}
+
+function jadmaker_android_package_name() {
+  $server_name = $_SERVER['SERVER_NAME'];
+  if (strlen($server_name) < 3) {
+    $server_name = $_SERVER['HTTP_HOST'];
+  }
+  $package_parts = explode('.', $server_name);
+  $package_parts = array_slice($package_parts, -3, 3);
+  $package_parts = array_reverse($package_parts);
+  $package_name = implode('.', $package_parts);
+  $package_name = preg_replace("/[^0-9a-z.]/", "_", $package_name);
+  return $package_name;
+}
+
+function jadmaker_available_in_google_market($package) {
+  $cache_id = 'jadmaker:market:' . $package;
+
+  $cached_response = cache_get($cache_id);
+  if ($cached_response) {
+    return $cached_response->data;
+  }
+
+  $response = drupal_http_request(ANDROID_MARKET_URL . $package, array(), 'HEAD');
+  $available = ($response->code < 400);
+  cache_set($cache_id, $available, 'cache', time() + 7200);
+  return $available;
 }
 
 function jadmaker_create_manifest($jarfile, $jarpath) {

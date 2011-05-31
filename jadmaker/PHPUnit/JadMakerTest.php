@@ -116,4 +116,43 @@ class JadMakerTest extends PHPUnit_Framework_TestCase {
     $file = jadmaker_find_file('sv');
     $this->assertEquals("tz-Generic-AnyPhone-sv.jar", $file->name);
   }
+
+  function testDynamicLanguageAndroidFile() {
+    global $_SERVER;
+    $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Linux; U; Android 2.2; sv-se; HTC Desire Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1';
+    $file = jadmaker_find_file();
+    $this->assertEquals("tz-Generic-android.apk", $file->name);
+  }
+
+  function testDynamicLanguageNokiaFile() {
+    global $_SERVER;
+    $_SERVER['HTTP_USER_AGENT'] = 'Nokia5310XpressMusic/2.0 (08.32) Profile/MIDP-2.1 Configuration/CLDC-1.1';
+    $file = jadmaker_find_file();
+    $this->assertEquals("tz-Generic-AnyPhone.jar", $file->name);
+  }
+
+  function testDynamicLanguageSEMCFile() {
+    global $_SERVER;
+    $_SERVER['HTTP_USER_AGENT'] = 'SonyEricssonC902/R3CA Browser/NetFront/3.4 Profile/MIDP-2.1 Configuration/CLDC-1.1 JavaPlatform/JP-8.3.1';
+    $file = jadmaker_find_file();
+    $this->assertEquals("tz-Sony-Ericsson-JavaPlatform8.jar", $file->name);
+  }
+
+  function testM1000AndroidPackage() {
+    $_SERVER['SERVER_NAME'] = 'm1000.tzapp.com';
+    $package = jadmaker_android_package_name();
+    $this->assertEquals('com.tzapp.m1000', $package);
+  }
+
+  function testStripWWWFromAndroidPackage() {
+    $_SERVER['SERVER_NAME'] = 'www.m1000.tzapp.com';
+    $package = jadmaker_android_package_name();
+    $this->assertEquals('com.tzapp.m1000', $package);
+  }
+
+  function testConvertIllegalCharactersInAndroidPackage() {
+    $_SERVER['SERVER_NAME'] = 'www.demo-en.tzapp.com';
+    $package = jadmaker_android_package_name();
+    $this->assertEquals('com.tzapp.demo_en', $package);
+  }
 }
