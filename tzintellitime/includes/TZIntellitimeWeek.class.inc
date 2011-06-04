@@ -68,9 +68,9 @@ class TZIntellitimeWeek {
     $weekData = $this->serverInterface->refreshWeek($this->date);
     $updatedReports = $weekData->updateReports($this->reports, $this->account);
 
-    $post = $weekData->buildPost($updatedReports);
-
     try {
+      $post = $weekData->buildPost($updatedReports);
+
       while($post) {
         $weekData = $this->serverInterface->postWeek($post);
         if($post->isIntermediate()) {
@@ -87,6 +87,8 @@ class TZIntellitimeWeek {
        * some of the POSTs have failed, the reports have still been updated with
        * intellitime_last_state and need to be saved by the caller.
        */
+      $result->exception = $e;
+    } catch(TZIntellitimeInconsistentPost $e) {
       $result->exception = $e;
     }
 

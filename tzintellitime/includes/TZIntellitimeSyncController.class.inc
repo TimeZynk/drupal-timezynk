@@ -73,6 +73,10 @@ class TZIntellitimeSyncController {
         $this->logException('Network failure', $weekDate, $e);
         $status = TZIntellitimeSyncController::NETWORK_FAILURE;
         continue;
+      } catch (TZIntellitimeInconsistentPost $e) {
+        $this->logException('Inconsistent post', $weekDate, $e);
+        $status = TZIntellitimeSyncController::NETWORK_FAILURE;
+        continue;
       } catch (TZAuthenticationFailureException $e) {
         $this->logException('Session expired', $weekDate, $e);
         $status = TZIntellitimeSyncController::AUTH_FAILURE;

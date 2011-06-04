@@ -505,7 +505,7 @@ function tzproto_handle_save_availability_cmd(&$cmd, &$result) {
 
   $start_date = tzproto_create_datetime($time_span->date(), $time_span->start());
   $end_date = tzproto_create_datetime($time_span->date(), $time_span->end());
-  if ($end_date < $start_date) {
+  if ($end_date <= $start_date) {
     $end_date->modify('+1 day');
   }
   $record->start_time = $start_date->format('U');
