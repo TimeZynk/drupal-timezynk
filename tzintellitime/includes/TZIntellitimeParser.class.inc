@@ -1,7 +1,7 @@
 <?php
 
 class TZIntellitimeReportRowNotFound extends Exception {}
-class TZIntellitimeInconsistentPost extends Exception {}
+class TZIntellitimeInconsistentPost extends TZIntellitimeServerException {}
 
 class TZIntellitimeParser {
   /**
@@ -225,13 +225,13 @@ class TZIntellitimeParser {
 
     if($allReportsDone) {
       if(empty($post['DoneButton'])) {
-        throw new TZIntellitimeInconsistentPost('Done button not found: ' . print_r($post, TRUE));
+        throw new TZIntellitimeInconsistentPost('Done button not found: ' . print_r($post, TRUE), $this->doc->saveXML());
       }
       unset($post['UpdateButton']);
       unset($post['ChangeButton']);
     } else {
       if(empty($post['UpdateButton'])) {
-        throw new TZIntellitimeInconsistentPost('Update button not found');
+        throw new TZIntellitimeInconsistentPost('Update button not found', $this->doc->saveXML());
       }
       unset($post['DoneButton']);
       unset($post['ChangeButton']);
