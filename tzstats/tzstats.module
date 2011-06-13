@@ -10,6 +10,14 @@ function tzstats_menu() {
     'file' => 'tzstats.invoice.inc',
     'type' => MENU_NORMAL_ITEM,
   );
+  $items['admin/reports/failed_login'] = array(
+    'title' => 'Failed logins',
+    'title callback' => 't',
+    'access arguments' => array('administer site configuration'),
+    'page callback' => 'tzstats_failed_login_page',
+  	'file' => 'tzstats.failed_login.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
 
   return $items;
 }
