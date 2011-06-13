@@ -125,7 +125,7 @@ function tzproto_login($req) {
     watchdog('tzproto', 'Login for !name', array('!name' => $user->name));
     return 0;
   }
-
+  module_invoke_all('tzproto_login_failed', $req->username(), $_SERVER['HTTP_USER_AGENT']);
   return tzproto_error(t('Wrong username or password.'), 401);
 }
 

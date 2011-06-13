@@ -212,6 +212,42 @@ function tzstats_update_6006() {
   return $ret;
 }
 
+function tzstats_update_6007() {
+/* Keep track of failed user logins */
+  $ret = array();
+  db_create_table($ret, 'tzstats_failed_login',  array(
+    'description' => t('Stores statistics on failed user logins'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 60,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Attempted username',
+      ),
+      'user_agent' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'User agent',
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for attempted login",
+      ),
+    ),
+    'primary key' => array('id'),
+  ));
+  return $ret;
+}
+
 /**
  * TZStats database schema
  */
@@ -373,6 +409,37 @@ function tzstats_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'description' => "Timestamp for login",
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  $schema['tzstats_failed_login'] = array(
+    'description' => t('Stores statistics on failed user logins'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 60,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Attempted username',
+      ),
+      'user_agent' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'User agent',
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for attempted login",
       ),
     ),
     'primary key' => array('id'),

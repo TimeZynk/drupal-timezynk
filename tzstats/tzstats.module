@@ -125,3 +125,18 @@ function tzstats_date_api_fields($field) {
     );
   }
 }
+
+/**
+ * Record a failed login and the user agent conveying the login.
+ * Enter description here ...
+ * @param string $username
+ * @param string $user_agent
+ */
+function tzstats_tzproto_login_failed($username, $user_agent) {
+  $record = array(
+    'name' => $username,
+  	'user_agent' => $user_agent,
+  	'timestamp' => time(),
+  );
+  drupal_write_record('tzstats_failed_login', $record);
+}
