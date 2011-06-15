@@ -18,6 +18,11 @@ define('TZSMS_TYPE_INSTALL_SMS', 1);
  */
 define('TZSMS_TYPE_AUTO_REMINDER_SMS', 2);
 
+/**
+ * Debug SMS messages sent to alert administrator about rare error conditions
+ */
+define('TZSMS_TYPE_DEBUG_SMS', 3);
+
 define('TZSMS_DEFAULT_COUNTRY_CODE', variable_get('tzsms_default_country_code', '46'));
 define('TZSMS_DEFAULT_SENDER', variable_get('tzsms_default_sender', 'TimeZynk'));
 define('TZSMS_BACKEND', variable_get('tzsms_backend', 'beepsend'));
@@ -25,6 +30,7 @@ define('TZSMS_BACKEND', variable_get('tzsms_backend', 'beepsend'));
 define('TZSMS_BEEPSEND_USERNAME', 'TimeZynk01');
 define('TZSMS_BEEPSEND_PASSWORD', 'HanUzEg');
 
+define('TZSMS_DEBUG_SMS_RECEIVER', variable_get('tzsms_debug_sms_receiver', '0733623516'));
 
 function tzsms_menu() {
   $items = array();
@@ -236,5 +242,14 @@ function tzsms_install_sms_no_password_template($variables = array()) {
   } else {
     return t('Welcome to mobile time reporting! Visit !url to install, then login using "!username" as username.',
       $variables);
+  }
+}
+
+function tzsms_debug_sms($message) {
+  $validated_mobile = tzuser_validate_phone_number(TZSMS_DEBUG_SMS_RECEIVER);
+  if (!empty($validated_mobile)) {
+    $server_name = str_replace('.tzapp.com', '', $_SERVER['SERVER_NAME']);
+    $truncated_message = substr($server_name . ': ' . $message, 0, 159);
+    tzsms_send(TZSMS_TYPE_DEBUG_SMS, TZSMS_DEBUG_SMS_RECEIVER, $truncated_message);
   }
 }

@@ -37,6 +37,12 @@ function tzsms_admin_settings($form_state) {
       '#default_value' => variable_get('tzsms_install_sms_no_password_template', tzsms_install_sms_no_password_template()),
       '#description' => t('The available variables are: !url and !username'),
     ),
+    'tzsms_debug_sms_receiver' => array(
+      '#type' => 'textfield',
+      '#title' => t('Reciever of debug log SMS'),
+      '#default_value' => TZSMS_DEBUG_SMS_RECEIVER,
+      '#description' => t('Enter a mobile number unto which debug SMSes will be delivered'),
+    ),
   );
 
   return system_settings_form($form);

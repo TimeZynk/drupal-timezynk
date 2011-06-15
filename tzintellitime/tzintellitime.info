@@ -8,6 +8,7 @@ files[] = includes/TZIntellitimeAssignment.class.inc
 files[] = includes/TZIntellitimeBot.class.inc
 files[] = includes/TZIntellitimeDBReportStorage.class.inc
 files[] = includes/TZIntellitimeDefaultWeekFactory.class.inc
+files[] = includes/TZIntellitimeLogger.class.inc
 files[] = includes/TZIntellitimeParser.class.inc
 files[] = includes/TZIntellitimePostData.class.inc
 files[] = includes/TZIntellitimeReport.class.inc
@@ -20,6 +21,8 @@ files[] = includes/TZIntellitimeUserStatus.class.inc
 files[] = includes/TZIntellitimeWeek.class.inc
 files[] = includes/TZIntellitimeWeekData.class.inc
 files[] = includes/TZIntellitimeWeekFactory.class.inc
+files[] = includes/TZSmsLogger.class.inc
+files[] = includes/TZWatchdogLogger.class.inc
 
 files[] = tzintellitime.module
 files[] = tzintellitime.test
