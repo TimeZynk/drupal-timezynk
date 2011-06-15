@@ -44,6 +44,88 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(TZIntellitimeSyncController::SYNC_OK, $status);
   }
 
+  public function testRegisteredLoggerReceivesLogMessages() {
+    $loggerMock = $this->getMock('TZIntellitimeLogger');
+    $this->syncController->registerLogger($loggerMock);
+    $expectedDate = new DateTime('2011-01-25', $this->timezone);
+    $this->syncPolicy->expects($this->exactly(2))
+        ->method('getNextWeekToSync')
+        ->will($this->onConsecutiveCalls($expectedDate, NULL));
+
+    $expectedMonday = new DateTime('2011-01-24T00:00:00.000', $this->timezone);
+    $expectedSunday = new DateTime('2011-01-31T00:00:00.000', $this->timezone);
+    $expectedReports = array();
+
+    $this->reportStorage->expects($this->once())
+        ->method('getTZReports')
+        ->with($expectedMonday, $expectedSunday)
+        ->will($this->returnValue($expectedReports));
+
+    $expectedWeek = $this->getMockBuilder('TZIntellitimeWeek')
+        ->disableOriginalConstructor()
+        ->getMock();
+
+    $expectedException = new TZIntellitimeInconsistentPost('test');
+    $expectedWeek->expects($this->once())
+        ->method('sync')
+        ->will($this->throwException($expectedException));
+
+    $this->weekFactory->expects($this->once())
+        ->method('createWeek')
+        ->with($expectedDate, $expectedReports)
+        ->will($this->returnValue($expectedWeek));
+
+    $loggerMock->expects($this->once())
+        ->method('logException')
+        ->with($this->stringContains('Inconsistent post'), $this->equalTo($expectedException));
+
+    $this->syncController->synchronize();
+  }
+
+  public function testTwoRegisteredLoggersReceivesLogMessages() {
+    $loggerMock = $this->getMock('TZIntellitimeLogger');
+    $loggerMock2 = $this->getMock('TZIntellitimeLogger');
+    $this->syncController->registerLogger($loggerMock);
+    $this->syncController->registerLogger($loggerMock2);
+
+    $expectedDate = new DateTime('2011-01-25', $this->timezone);
+    $this->syncPolicy->expects($this->exactly(2))
+        ->method('getNextWeekToSync')
+        ->will($this->onConsecutiveCalls($expectedDate, NULL));
+
+    $expectedMonday = new DateTime('2011-01-24T00:00:00.000', $this->timezone);
+    $expectedSunday = new DateTime('2011-01-31T00:00:00.000', $this->timezone);
+    $expectedReports = array();
+
+    $this->reportStorage->expects($this->once())
+        ->method('getTZReports')
+        ->with($expectedMonday, $expectedSunday)
+        ->will($this->returnValue($expectedReports));
+
+    $expectedWeek = $this->getMockBuilder('TZIntellitimeWeek')
+        ->disableOriginalConstructor()
+        ->getMock();
+
+    $expectedException = new TZIntellitimeInconsistentPost('test');
+    $expectedWeek->expects($this->once())
+        ->method('sync')
+        ->will($this->throwException($expectedException));
+
+    $this->weekFactory->expects($this->once())
+        ->method('createWeek')
+        ->with($expectedDate, $expectedReports)
+        ->will($this->returnValue($expectedWeek));
+
+    $loggerMock->expects($this->once())
+        ->method('logException')
+        ->with($this->stringContains('Inconsistent post'), $this->equalTo($expectedException));
+    $loggerMock2->expects($this->once())
+        ->method('logException')
+        ->with($this->stringContains('Inconsistent post'), $this->equalTo($expectedException));
+
+    $this->syncController->synchronize();
+  }
+
   public function testSyncSingleWeek() {
     $testDescription = new stdClass();
     $testDescription->date = '2011-01-25';
