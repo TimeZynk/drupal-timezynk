@@ -447,9 +447,8 @@ myWindow.focus();
                               <?php endforeach;?>
                             <!-- LIST ROWS END -->
                             <!-- ADD NEW ROW START -->
-
                             <table id="AddRowPanel" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td>
-
+                              <?php if (!$future): ?>
                                 <TR>
                                     <TD width="5"><IMG height="18" src="../Images/Trans.gif" width="5" border="0"></TD>
                                     <TD class="SubjectRow" width="123" colSpan="3"><B>
@@ -562,7 +561,7 @@ myWindow.focus();
                                 <TR>
                                     <TD bgColor="#aca899" colSpan="20"></TD>
                                 </TR>
-
+                                <?php endif; ?>
 </td></tr></table>
                             <!-- ADD NEW ROW END -->
                             <tr>
@@ -571,12 +570,16 @@ myWindow.focus();
 
                                         <tr>
                                             <td width="10"><IMG height="5" src="../Images/Trans.gif" width="10" border="0"></td>
-                                            <td vAlign="middle" align="left" width="30%"><input type="submit" name="UpdateButton" value="Spara" id="UpdateButton" /><br/>
-                                        <?php if($all_reports_done): ?>
-                                              <input type="submit" id="ChangeButton" value="Ändra vecka" name="ChangeButton"/>
-                                        <?php else: ?>
-                                              <input type="submit" name="DoneButton" value="Vecka Klar" id="DoneButton" />
-                                        <?php endif; ?></td>
+                                            <td vAlign="middle" align="left" width="30%">
+                                              <?php if (!$future): ?>
+                                                <input type="submit" name="UpdateButton" value="Spara" id="UpdateButton" /><br/>
+                                                <?php if($all_reports_done): ?>
+                                                  <input type="submit" id="ChangeButton" value="Ändra vecka" name="ChangeButton"/>
+                                                <?php else: ?>
+                                                  <input type="submit" name="DoneButton" value="Vecka Klar" id="DoneButton" />
+                                                <?php endif; ?>
+                                              <?php endif; ?>
+                                            </td>
                                             <td width="5"><IMG height="30" src="../Images/Trans.gif" width="10" border="0"></td>
                                             <td class="SubjectRow" vAlign="middle" align="right" width="30%"><b><span id="Translatedlabel22">Summa&nbsp;timmar:</span></b></td>
                                             <td width="5"><IMG height="30" src="../Images/Trans.gif" width="5" border="0"></td>

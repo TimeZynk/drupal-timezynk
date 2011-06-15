@@ -164,6 +164,11 @@ function tzintellitime_mock_preprocess_mock_timereport_page(&$variables) {
     $date->modify('monday');
     $date->modify('-1 week');
   }
+  
+  // Check if week is in the future
+  $variables['future'] = ($date > tzbase_make_date());
+  
+  // Build array of all dates this week
   $daysthisweek = array();
   for($i = 0; $i < 7; $i++) {
     $daysthisweek[] = clone $date;
@@ -277,9 +282,14 @@ function _tzintellitime_mock_rewrite_path($path) {
 }
 
 function _tzintellitime_mock_resync() {
+  $mock_user = tzintellitime_mock_load_user($_SESSION['tzintellitime_mock_user_id']);
+  
   // Trigger sync
   if (module_exists('tzintellitime_sync')) {
-    tzintellitime_sync_synchronize_users();
+    $account = user_load(array('name' => $mock_user->login));
+    if ($account) {
+      tzintellitime_sync_schedule_user($account->uid, TRUE);
+    }
   }
 
   $query = array();
