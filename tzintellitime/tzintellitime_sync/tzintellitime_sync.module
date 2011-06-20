@@ -197,8 +197,12 @@ function tzintellitime_sync_synchronize_user($uid) {
     $ctrlr->registerLogger(new TZWatchdogLogger());
     $ctrlr->registerLogger(new TZSmsLogger());
     $result = $ctrlr->synchronize();
+
+    // Make sure curl write its session to disk
+    $curl->close();
   } catch (InvalidArgumentException $e) {
-    return TZIntellitimeSyncController::AUTH_FAILURE;
+    tzintellitime_sync_warning('Caught InvalidArgumentException', $account);
+    $result = TZIntellitimeSyncController::AUTH_FAILURE;
   }
 
   if(TZIntellitimeSyncController::SYNC_OK === $result) {
@@ -212,6 +216,7 @@ function tzintellitime_sync_synchronize_user($uid) {
     // Hopefully a temporary failure, log
     tzintellitime_sync_warning('Failed to synchronize', $account);
   }
+
   return $result;
 }
 

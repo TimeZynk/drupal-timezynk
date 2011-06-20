@@ -53,9 +53,14 @@ class TZCurl {
    * Destroys us!
    * Evil androids hate robots!
    */
-  function __destruct() {
+  public function __destruct() {
+    $this->close();
+  }
+
+  public function close() {
     if($this->handle !== NULL) {
       curl_close($this->handle);
+      $this->handle = NULL;
     }
   }
 

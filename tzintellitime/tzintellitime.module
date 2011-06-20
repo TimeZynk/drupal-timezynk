@@ -19,6 +19,39 @@ function tzintellitime_menu() {
   return $items;
 }
 
+function tzintellitime_user($op, &$edit, &$account, $category = NULL) {
+  if ($op === 'view' && tzintellitime_is_authenticated($account) && user_access('administer site configuration')) {
+    $session_data = $account->intellitime_session_data;
+
+    $cookiejar = fopen($session_data['cookiejar'], 'r');
+    $cookies = "";
+    /**
+     * The cookie file is a TAB-separated file in the following format:
+     * <0:domain> <1:unknown boolean> <2:path>  <3:unknown boolean> <4:expiry>  <5:key> <6:value>
+     *
+     * It starts with a bunch of empty or commented lines, so filter that first.
+     */
+    while (($row = fgetcsv($cookiejar, 0, "\t")) !== FALSE) {
+      if (count($row) < 7) {
+        // Comment or invalid row, skip
+        continue;
+      }
+      $cookies .= 'document.cookie="' . $row[5] . '=' . $row[6] .
+          '; domain=' . $row[0] . '; path=' . $row[2] . '"; ';
+    }
+    fclose($cookiejar);
+
+    $location = 'window.location="' . $session_data['last_effective_url'] . '";';
+
+    $account->content['intelliplan_session'] = array(
+      '#type' => 'user_profile_item',
+      '#title' => t('Intelliplan session'),
+      '#description' => t('Paste into firebug console of empty window'),
+      '#value' => '<textarea cols="80" rows="5">' . $cookies . $location . '</textarea>'
+    );
+  }
+}
+
 /**
  * Implementation of hook_nodeapi. Extend tzjob and tzreport nodes
  * with extra fields needed for mapping them to the corresponding
@@ -195,6 +228,8 @@ function tzintellitime_server_auth($account, $username, $password) {
     return $account;
 
   } catch (TZIntellitimeServerException $e) {
+    // Make sure curl writes session to disk before it is destroyed, instead of after
+    $curl->close();
     TZCurl::destroySessionData($curl->getSessionData());
     throw $e;
   }
