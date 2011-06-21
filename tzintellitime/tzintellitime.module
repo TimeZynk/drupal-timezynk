@@ -261,7 +261,7 @@ function tzintellitime_get_intellitime_id($tzreport) {
  * @param unknown_type $account
  */
 function tzintellitime_is_authenticated($account) {
-  return ($account && $account->intellitime_user &&
+  return ($account && !empty($account->intellitime_user) &&
     isset($account->intellitime_session_data) &&
     TZCurl::isValidSessionData($account->intellitime_session_data)
   );

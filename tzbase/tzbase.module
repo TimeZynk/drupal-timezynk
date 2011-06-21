@@ -41,9 +41,24 @@ function tzbase_menu() {
     'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/tzbase.admin.inc',
   );
+  $items['user_jobs'] = array(
+    'title' => 'User Jobs',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzbase_user_jobs_form'),
+    'access arguments' => array('manage user job mappings'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/tzbase.userjobs.inc',
+  );
+  $items['user_jobs/%/delete'] = array(
+    'title' => 'User Jobs',
+    'page callback' => 'tzbase_user_jobs_delete',
+    'page arguments' => array(1),
+    'access arguments' => array('manage user job mappings'),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/tzbase.userjobs.inc',
+  );
   return $items;
 }
-
 
 /**
  * Implementation of hook_node_info()
@@ -82,6 +97,7 @@ function tzbase_perm() {
     'edit any tzreport content',
     'edit own tzreport content',
     'remove own tzreport content',
+  	'create tzreport on any tzjob',
 
     'create tzjob content',
     'view any tzjob content',
@@ -93,6 +109,8 @@ function tzbase_perm() {
     'view any availability content',
     'view own availability content',
     'remove own availability content',
+
+    'manage user job mappings',
   );
 }
 
@@ -432,6 +450,9 @@ function tzbase_theme() {
     'assignment_path' => array(
       'arguments' => array('jobid' => 0),
     ),
+    'tzbase_user_jobs_form' => array(
+      'arguments' => array('form' => NULL),
+    ),
   );
 }
 
@@ -600,6 +621,10 @@ function tzbase_delete($node) {
   }
   else if($node->type == 'tzjob') {
     db_query("DELETE FROM {tzjob} WHERE nid = %d", $node->nid);
+
+    // Also delete dependent job mappings
+    $mapper = tzbase_user_jobs_mapper();
+    $mapper->deleteAllByJobID($node->nid);
   }
 }
 
@@ -612,6 +637,17 @@ function tzbase_load($node) {
   }
   else if($node->type == 'tzjob') {
     return db_fetch_object(db_query("SELECT * FROM {tzjob} WHERE vid = %d", $node->vid));
+  }
+}
+
+/**
+ * Implementation of hook_user()
+ */
+function tzbase_user($op, &$edit, &$account, $category = NULL) {
+  if ($op == "delete") {
+    // Delete dependent job mappings when user is deleted
+    $mapper = tzbase_user_jobs_mapper();
+    $mapper->deleteAllByUserID($account->uid);
   }
 }
 
@@ -801,6 +837,12 @@ function tzbase_watchdog_node_operation($tag, $node, $operation, $account) {
              WATCHDOG_NOTICE,
              l('Node', 'node/' . $node->nid) . ', ' . theme('username', $account));
 }
+
+function tzbase_user_jobs_mapper() {
+  $dbWrapper = new TZDrupalDBWrapper();
+  return new TZUserJobsMapper($dbWrapper);
+}
+
 
 function _tzbase_calculate_correct_endtime($begin_datetime, $end_datetime) {
   // Set the same date as for begintime, but keep the hour and minute for the endtime.

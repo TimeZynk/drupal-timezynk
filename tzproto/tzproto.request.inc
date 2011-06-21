@@ -4,6 +4,8 @@
  * Request handler for the TimeZynk protocol
  */
 
+class TZProtoException extends Exception {};
+
 
 /**
  * Request dispatcher
@@ -53,36 +55,11 @@ function tzproto_request() {
       $result = $response->add_result();
       $result->set_client_handle($cmd->client_handle());
 
-      if($cmd->get_user_cmd()) {
-        tzproto_handle_get_user($cmd, $result);
-      }
-      else if($cmd->sync_cmd()) {
-        tzproto_handle_sync_cmd($cmd, $result, $protocol_version);
-      }
-      else if($cmd->get_job_cmd()) {
-        tzproto_handle_get_job_cmd($cmd, $result);
-      }
-      else if($cmd->get_report_cmd()) {
-        tzproto_handle_get_report_cmd($cmd, $result, $protocol_version);
-      }
-      else if($cmd->create_job_cmd()) {
-        tzproto_handle_create_job_cmd($cmd, $result);
-      }
-      else if($cmd->create_report_cmd()) {
-        tzproto_handle_create_report_cmd($cmd, $result);
-      }
-      else if ($cmd->get_availability_cmd()) {
-        tzproto_handle_get_availability_cmd($cmd, $result);
-      }
-      else if ($cmd->save_availability_cmd()) {
-        tzproto_handle_save_availability_cmd($cmd, $result);
-      }
-      else if ($cmd->delete_availability_cmd()) {
-        tzproto_handle_delete_availability_cmd($cmd, $result);
-      }
-      else {
-        $result->set_error_code(501);
-        $result->set_error_msg('Not implemented');
+      try {
+        _tzproto_handle_cmd($cmd, $result, $protocol_version);
+      } catch (TZProtoException $e) {
+        $result->set_error_code($e->getCode());
+        $result->set_error_msg($e->getMessage());
       }
     }
   }
@@ -99,6 +76,39 @@ function tzproto_request() {
   // All handling finished, prevent output from other modules
   module_invoke_all('exit');
   exit;
+}
+
+function _tzproto_handle_cmd($cmd, &$result, $protocol_version) {
+  if($cmd->get_user_cmd()) {
+    tzproto_handle_get_user($cmd, $result);
+  }
+  else if($cmd->sync_cmd()) {
+    tzproto_handle_sync_cmd($cmd, $result, $protocol_version);
+  }
+  else if($cmd->get_job_cmd()) {
+    tzproto_handle_get_job_cmd($cmd, $result);
+  }
+  else if($cmd->get_report_cmd()) {
+    tzproto_handle_get_report_cmd($cmd, $result, $protocol_version);
+  }
+  else if($cmd->create_job_cmd()) {
+    tzproto_handle_create_job_cmd($cmd, $result);
+  }
+  else if($cmd->create_report_cmd()) {
+    tzproto_handle_create_report_cmd($cmd, $result);
+  }
+  else if ($cmd->get_availability_cmd()) {
+    tzproto_handle_get_availability_cmd($cmd, $result);
+  }
+  else if ($cmd->save_availability_cmd()) {
+    tzproto_handle_save_availability_cmd($cmd, $result);
+  }
+  else if ($cmd->delete_availability_cmd()) {
+    tzproto_handle_delete_availability_cmd($cmd, $result);
+  }
+  else {
+    throw new TZProtoException('Not implemented', 501);
+  }
 }
 
 /**
@@ -186,20 +196,12 @@ function tzproto_handle_sync_cmd(&$cmd, &$result, $protocol_version = 0) {
   }
 
   for($i = 0; $i < $sync_cmd->new_jobs_size(); $i++) {
-    $job = tzproto_create_tzjob_from_protobuf($sync_cmd->new_job($i), $result);
-    if($result->error_code()) {
-      // Break if we hit an error
-      return;
-    }
+    $job = tzproto_create_tzjob_from_protobuf($sync_cmd->new_job($i));
   }
 
   // Store new reports
   for($i = 0; $i < $sync_cmd->new_reports_size(); $i++) {
-    $report = tzproto_create_tzreport_from_protobuf($sync_cmd->new_report($i), $result);
-    if($result->error_code()) {
-      // Break if we hit an error
-      return;
-    }
+    $report = tzproto_create_tzreport_from_protobuf($sync_cmd->new_report($i));
   }
 
   // Load jobs
@@ -240,35 +242,47 @@ function tzproto_handle_get_job_cmd(&$cmd, &$result) {
   }
   // Fetch a collections of jobs
   else {
-    // Filtering on changed time?
-    $changed = 0;
-    if ($jobcmd->changed_after()) {
-      $changed = $jobcmd->changed_after();
-    }
-
-    $sql = "SELECT n.nid FROM {node} n WHERE type = 'tzjob' AND status = 1 AND changed > %d ORDER BY title";
-    $db_result = FALSE;
-    if ($jobcmd->limit()) {
-      $db_result = db_query_range(db_rewrite_sql($sql), $jobcmd->offset(), $jobcmd->limit(), $changed);
-    } else {
-      $db_result = db_query(db_rewrite_sql($sql), $changed);
-    }
-
     $tzjobs = array();
-    while ($data = db_fetch_object($db_result)) {
-      $node = node_load($data->nid, NULL, TRUE);
-      $tzjob = new TZJob();
-      tzproto_fill_from_node($tzjob, $node);
 
-      if ($jobcmd->may_create_report() === NULL ||
-      (boolean)$jobcmd->may_create_report() === (boolean)$tzjob->may_create_report()) {
-        $tzjobs[] = $tzjob;
+    if ($jobcmd->may_create_report() && !user_access('create tzreport on any tzjob')) {
+
+      global $user;
+      $user_job_mappings = tzbase_user_jobs_mapper()->find($user->uid);
+      foreach($user_job_mappings as $mapping) {
+        $tzjobs[] = _tzproto_load_job($mapping->getJobId(), TRUE);
+      }
+    } else {
+      $sql = "SELECT n.nid FROM {node} n WHERE type = 'tzjob' AND status = 1 ORDER BY title";
+      $db_result = FALSE;
+      if ($jobcmd->limit()) {
+        $db_result = db_query_range(db_rewrite_sql($sql), $jobcmd->offset(), $jobcmd->limit());
+      } else {
+        $db_result = db_query(db_rewrite_sql($sql));
+      }
+
+      while ($data = db_fetch_object($db_result)) {
+        $tzjobs[] = _tzproto_load_job($data->nid, FALSE);
       }
     }
-    $jobresult->set_all_jobs($tzjobs);
+    $jobs = array_values(array_filter($tzjobs));
+    $jobresult->set_all_jobs($jobs);
   }
 
   $result->set_get_job_result($jobresult);
+}
+
+function _tzproto_load_job($id, $filterAwayInactive) {
+  $node = node_load($id, NULL, TRUE);
+  if (empty($node) || $node->status != 1) {
+    return NULL;
+  }
+  if ($filterAwayInactive && $node->flags != TZJobFlags::ACTIVE) {
+    return NULL;
+  }
+
+  $tzjob = new TZJob();
+  tzproto_fill_from_node($tzjob, $node);
+  return $tzjob;
 }
 
 /**
@@ -374,10 +388,7 @@ function tzproto_handle_create_job_cmd(&$cmd, &$result) {
 
   // Store new job
   if($jobcmd->new_job()) {
-    $job = tzproto_create_tzjob_from_protobuf($jobcmd->new_job(), $result);
-    if($result->error_code()) {
-      return;
-    }
+    $job = tzproto_create_tzjob_from_protobuf($jobcmd->new_job());
     $jobresult->set_id($job->nid);
   }
   $result->set_create_job_result($jobresult);
@@ -392,11 +403,9 @@ function tzproto_handle_create_report_cmd(&$cmd, &$result) {
   $reportresult = new TZCreateReportResult();
 
   // Store new reports
-  if($reportcmd->new_report()) {
-    $report = tzproto_create_tzreport_from_protobuf($reportcmd->new_report(), $result);
-    if($result->error_code()) {
-      return;
-    }
+  $new_report = $reportcmd->new_report();
+  if($new_report) {
+    $report = tzproto_create_tzreport_from_protobuf($new_report);
     $reportresult->set_id($report->nid);
   }
   $result->set_create_report_result($reportresult);
@@ -597,16 +606,15 @@ function tzproto_fill_from_node(&$proto, $node, $protocol_version = 0) {
   }
 }
 
-function tzproto_create_tzreport_from_protobuf($data, &$result) {
+function tzproto_create_tzreport_from_protobuf($data) {
   global $user;
 
   // Find new job node id
   if(!$data->job_id()) {
-    $result->set_error_code(400);
-    $result->set_error_msg('invalid job id');
-    return;
+    throw new TZProtoException('no job id', 400);
   }
 
+  // TODO: here somewhere, we must validate that we are indeed allowed to add reports to the relevant job, for this time period..
   $report = new stdClass();
   $original_report = NULL;
 
@@ -614,24 +622,16 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
   if($data->id()) {
     $report = node_load($data->id());
     if(!node_access('update', $report)) {
-      $result->set_error_code(403);
-      $result->set_error_msg('access denied');
-      return;
+      throw new TZProtoException('access denied', 403);
     }
 
     // Save original so we can check if anything really changed later
     $original_report = clone($report);
   } else {
     if(!node_access('create', 'tzreport')) {
-      $result->set_error_code(403);
-      $result->set_error_msg('access denied');
-      return;
+      throw new TZProtoException('access denied', 403);
     }
     $report->type = 'tzreport';
-    if(module_exists('og')) {
-      $report->og_groups = $user->og_groups;
-      $report->og_public = FALSE;
-    }
     $report->created = $data->changed();
   }
 
@@ -656,16 +656,12 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
     $end = $worked_time->end();
     $date = $worked_time->date();
     if (empty($date) || empty($start) || empty($end)) {
-      $result->set_error_code(400);
-      $result->set_error_msg('Report lacked a date, start time or end time value.');
-      return;
+      throw new TZProtoException('Report lacked a date, start time or end time value.', 400);
     }
     $begin_date_time = tzproto_create_datetime($worked_time->date(), $worked_time->start());
     $end_date_time = tzproto_create_datetime($worked_time->date(), $worked_time->end());
     if (empty($begin_date_time) || empty($end_date_time)) {
-      $result->set_error_code(400);
-      $result->set_error_msg('Report lacked start time or end time value.');
-      return;
+      throw new TZProtoException('Report lacked start time or end time value.', 400);
     }
 
     // We only handle this case for proto version 1 or higher,
@@ -679,9 +675,7 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
     $report->begintime = $data->begin_time();
     $report->endtime = $data->end_time();
     if ($report->endtime < $report->begintime) {
-      $result->set_error_code(400);
-      $result->set_error_msg('Report ends before it begins.');
-      return;
+      throw new TZProtoException('Report ends before it begins.', 400);
     }
   }
   $report->breakduration = $data->break_duration();
@@ -695,9 +689,7 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
     if($data->flags() != TZFlags::DELETED || user_access('remove own tzreport content')) {
       $report->flags = $data->flags();
     } else {
-      $result->set_error_code(403);
-      $result->set_error_msg('access denied');
-      return;
+      throw new TZProtoException('access denied', 403);
     }
   }
 
@@ -715,6 +707,7 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
       $report->revision = TRUE;
     }
     $report = node_submit($report);
+    _tzproto_validate_report($report);
     node_save($report);
 
     // Invoke hook to allow modules to collect statistics or billing info
@@ -737,7 +730,24 @@ function tzproto_create_tzreport_from_protobuf($data, &$result) {
   return $report;
 }
 
-function tzproto_create_tzjob_from_protobuf($data, &$result) {
+function _tzproto_validate_report($report) {
+  global $user;
+  if (!empty($report->nid)) {
+    // Updates are always allowed
+    return;
+  }
+  if (user_access('create tzreport on any tzjob')) {
+    return;
+  }
+  $mapper = tzbase_user_jobs_mapper();
+  $may_create_report = $mapper->userMayCreateReport($user->uid, $report->jobid, $report->begintime);
+  if (!$may_create_report) {
+    throw new TZProtoException('May not create report on this date for this assignment', 403);
+  }
+}
+
+
+function tzproto_create_tzjob_from_protobuf($data) {
   global $user;
 
   $job = new stdClass();
@@ -746,23 +756,15 @@ function tzproto_create_tzjob_from_protobuf($data, &$result) {
   if($data->id()) {
     $job = node_load($data->id());
     if(!node_access('update', $job)) {
-      $result->set_error_code(403);
-      $result->set_error_msg('access denied');
-      return;
+      throw new TZProtoException('access denied', 403);
     }
   } else {
     // new node, check create permissions
     if(!node_access('create', 'tzjob')) {
-      $result->set_error_code(403);
-      $result->set_error_msg('access denied');
-      return;
+      throw new TZProtoException('access denied', 403);
     }
 
     $job->type = 'tzjob';
-    if(module_exists('og')) {
-      $job->og_groups = $user->og_groups;
-      $job->og_public = FALSE;
-    }
     $job->created = $data->changed();
   }
 

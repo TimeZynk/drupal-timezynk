@@ -18,7 +18,8 @@ class TZProtoTestCase extends DrupalWebTestCase {
 
   public function setUp() {
     // Enable any modules required for the test.
-   parent::setUp('libraries', 'date_api', 'date_timezone', 'tzuser', 'tzbase', 'tzproto');
+   parent::setUp('libraries', 'date_api', 'date_timezone', 'autoload', 'tzuser', 'tzbase', 'tzproto');
+   autoload_registry_update();
    variable_set('date_default_timezone_name', 'Europe/Stockholm');
    tzbase_include_proto_classes();
    require_once dirname(__FILE__) . '/tzproto.request.inc';
@@ -32,7 +33,9 @@ class TZProtoTestCase extends DrupalWebTestCase {
                                                     'view any tzjob content',
                                                     'view own availability content',
                                                     'create availability content',
-                                                    'remove own availability content'));
+                                                    'remove own availability content',
+                                                    'create tzreport on any tzjob',
+   ));
    $this->admin_user2 = $this->drupalCreateUser(array('create tzjob content',
                                                      'create tzreport content',
                                                      'edit own tzreport content',
@@ -41,7 +44,9 @@ class TZProtoTestCase extends DrupalWebTestCase {
                                                      'view any tzjob content',
                                                      'view own availability content',
                                                      'create availability content',
-                                                     'remove own availability content'));
+                                                     'remove own availability content',
+                                                     'create tzreport on any tzjob',
+   ));
    $this->standard_user = $this->drupalCreateUser(array('edit own tzreport content', 'view own tzreport content', 'view any tzjob content'));
   }
 
@@ -571,7 +576,7 @@ class TZProtoTestCase extends DrupalWebTestCase {
 
     // Check for error
     if($result->error_code()) {
-      $this->assertNotNull($result->error_msg());
+      $this->assertNotNull($result->error_msg(), $result->error_msg());
       return FALSE;
     }
 

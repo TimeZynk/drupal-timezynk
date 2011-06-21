@@ -41,20 +41,23 @@ function tzbase_requirements($phase) {
 
   if($phase == 'runtime') {
     /* Check installation of pb4php library */
-    $pb4php_path = libraries_get_path('pb4php');
-
-    $req['pb4php']['title'] = 'pb4php';
-    if(is_file($pb4php_path . '/message/pb_message.php')) {
-      $req['pb4php']['value'] = t('pb4php installed under %path.', array('%path' => $pb4php_path));
-      $req['pb4php']['severity'] = REQUIREMENT_OK;
-    } else {
-      $req['pb4php']['value'] = t('Not found');
-      $req['pb4php']['description'] = t('Please install pb4php under sites/all/libraries/pb4php.');
-      $req['pb4php']['severity'] = REQUIREMENT_ERROR;
-    }
+    _tzbase_add_requirement($req, 'pb4php', 'message/pb_message.php');
   }
-
   return $req;
+}
+
+function _tzbase_add_requirement(&$req, $name, $file) {
+  $idiorm_path = libraries_get_path($name);
+
+  $req[$name]['title'] = $name;
+  if(is_file($idiorm_path . '/' . $file)) {
+    $req[$name]['value'] = $name . ' installed under ' . $idiorm_path;
+    $req[$name]['severity'] = REQUIREMENT_OK;
+  } else {
+    $req[$name]['value'] = t('Not found');
+    $req[$name]['description'] = 'Please install' . $name . ' under sites/all/libraries/' . $name . '.';
+    $req[$name]['severity'] = REQUIREMENT_ERROR;
+  }
 }
 
 /**
@@ -161,6 +164,46 @@ function tzbase_update_6006() {
   );
 
   db_create_table($ret, 'tzavailability', $schema['tzavailability']);
+  return $ret;
+}
+
+function tzbase_update_6007() {
+  $ret = array();
+  $schema['tzusers_tzjobs'] = array(
+    'description' => t('Stores availability information'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "{users}.uid.",
+      ),
+      'jobid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "{tzjob}.nid",
+      ),
+      'start_time' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'description' => t('Start timestamp'),
+      ),
+      'end_time' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'description' => t('End timestamp'),
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'uid_jobid' => array('uid', 'jobid'),
+    ),
+  );
+  db_create_table($ret, 'tzusers_tzjobs', $schema['tzusers_tzjobs']);
   return $ret;
 }
 
@@ -342,6 +385,41 @@ function tzbase_schema() {
     'primary key' => array('id'),
     'indexes' => array(
       'uid' => array('uid'),
+    ),
+  );
+
+  $schema['tzusers_tzjobs'] = array(
+    'description' => t('Stores availability information'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "{users}.uid.",
+      ),
+      'jobid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "{tzjob}.nid",
+      ),
+      'start_time' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'description' => t('Start timestamp'),
+      ),
+      'end_time' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'description' => t('End timestamp'),
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'uid_jobid' => array('uid', 'jobid'),
     ),
   );
 
