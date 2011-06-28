@@ -27,7 +27,7 @@ class TZUserJobsMapper {
   public function findAll() {
     $mappings = array();
 
-    $cursor = $this->dbWrapper->query('SELECT * FROM {tzusers_tzjobs} ORDER BY id', $uid);
+    $cursor = $this->dbWrapper->query('SELECT * FROM {tzusers_tzjobs} ORDER BY id');
     while ($row = $this->dbWrapper->fetchObject($cursor)) {
       $mapping = new TZUserJobMapping($row);
       $mapping->setDBWrapper($this->dbWrapper);

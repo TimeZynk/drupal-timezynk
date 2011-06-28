@@ -31,8 +31,8 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
     $bot = new TZIntellitimeBot($curlInterface, $login_url);
     $weekData = $bot->refreshWeek($expectedDate);
     $this->assertInstanceOf('TZIntellitimeWeekData', $weekData);
-    $tzjobs = $weekData->getTZJobs();
-    $this->assertEquals(1, count($tzjobs));
+    $assignments = $weekData->getAssignments();
+    $this->assertEquals(1, count($assignments));
   }
 
   public function testRefreshWeekWithoutDate() {
@@ -53,8 +53,8 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
     $bot = new TZIntellitimeBot($curlInterface, $login_url);
     $weekData = $bot->refreshWeek(NULL);
     $this->assertInstanceOf('TZIntellitimeWeekData', $weekData);
-    $tzjobs = $weekData->getTZJobs();
-    $this->assertEquals(1, count($tzjobs));
+    $assignments = $weekData->getAssignments();
+    $this->assertEquals(1, count($assignments));
   }
 
 
@@ -98,8 +98,8 @@ class TZIntellitimeBotTest extends PHPUnit_Framework_TestCase {
     $bot = new TZIntellitimeBot($curlInterface, $login_url);
     $weekData = $bot->postWeek($postData);
     $this->assertInstanceOf('TZIntellitimeWeekData', $weekData);
-    $tzjobs = $weekData->getTZJobs();
-    $this->assertEquals(1, count($tzjobs));
+    $assignments = $weekData->getAssignments();
+    $this->assertEquals(1, count($assignments));
   }
 
   public function testLogin() {

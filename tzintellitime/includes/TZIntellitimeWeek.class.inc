@@ -2,28 +2,7 @@
 
 class TZAuthenticationFailureException extends TZIntellitimeServerException {}
 
-class TZIntellitimeWeekSyncResult {
-  /**
-   * @var array TZReport array
-   */
-  public $tzreports;
 
-  /**
-   * @var array TZJob array
-   */
-  public $tzjobs;
-
-  /**
-   *
-   * @var array List of unfinished weeks in the format of i.e. 2011W02
-   */
-  public $unfinishedWeeks;
-
-  /**
-   * @var TZIntellitimeServerException set if any exception was caught during the synchronization
-   */
-  public $exception;
-}
 
 class TZIntellitimeWeek {
 
@@ -93,7 +72,7 @@ class TZIntellitimeWeek {
     }
 
     $result->tzreports = $updatedReports;
-    $result->tzjobs = $weekData->getTZJobs();
+    $result->intellitime_assignments = $weekData->getAssignments();
     $result->unfinishedWeeks = $weekData->getUnfinishedWeeks();
     return $result;
   }

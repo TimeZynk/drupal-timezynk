@@ -46,15 +46,3 @@ function createMockReport($id, $date, $begintime, $endtime, $breakminutes = 60, 
   $mockReport->intellitime_id = serialize(array($date->format('Y-m-d'), (string) $mockReport->assignedto, (string) $id));
   return $mockReport;
 }
-
-function createMockAssignment($title, $report_key) {
-  tzbase_include_proto_classes();
-
-  $mockAssignment = (object) array(
-    'title'=> $title,
-    'intellitime_id' => rand(1000,10000),
-    'intellitime_report_key' => $report_key,
-  );
-
-  return $mockAssignment;
-}

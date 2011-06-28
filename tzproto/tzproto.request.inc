@@ -249,7 +249,10 @@ function tzproto_handle_get_job_cmd(&$cmd, &$result) {
       global $user;
       $user_job_mappings = tzbase_user_jobs_mapper()->find($user->uid);
       foreach($user_job_mappings as $mapping) {
-        $tzjobs[] = _tzproto_load_job($mapping->getJobId(), TRUE);
+        $jobid = $mapping->getJobId();
+        if (empty($tzjobs[$jobid])) {
+          $tzjobs[$jobid] = _tzproto_load_job($jobid, TRUE);
+        }
       }
     } else {
       $sql = "SELECT n.nid FROM {node} n WHERE type = 'tzjob' AND status = 1 ORDER BY title";
@@ -264,11 +267,16 @@ function tzproto_handle_get_job_cmd(&$cmd, &$result) {
         $tzjobs[] = _tzproto_load_job($data->nid, FALSE);
       }
     }
-    $jobs = array_values(array_filter($tzjobs));
+    $jobs = array_filter($tzjobs);
+    usort($jobs, "_tzproto_sort_jobs_by_title");
     $jobresult->set_all_jobs($jobs);
   }
 
   $result->set_get_job_result($jobresult);
+}
+
+function _tzproto_sort_jobs_by_title($a, $b) {
+  return strnatcasecmp($a->title(), $b->title());
 }
 
 function _tzproto_load_job($id, $filterAwayInactive) {
@@ -575,10 +583,6 @@ function tzproto_fill_from_node(&$proto, $node, $protocol_version = 0) {
 
   if($node->type == 'tzjob') {
     $proto->set_parent_id($node->parentid);
-    $proto->set_job_code($node->jobcode);
-    /*TODO: these just check the node type, we really want
-     * special access rules to check if _this_ node and user combo
-     * allows creating children/reports et c. ... */
     $proto->set_may_create_child(node_access('create', $node->type));
     $proto->set_may_create_report(node_access('create', 'tzreport') &&
     $node->flags == TZJobFlags::ACTIVE);
@@ -614,7 +618,6 @@ function tzproto_create_tzreport_from_protobuf($data) {
     throw new TZProtoException('no job id', 400);
   }
 
-  // TODO: here somewhere, we must validate that we are indeed allowed to add reports to the relevant job, for this time period..
   $report = new stdClass();
   $original_report = NULL;
 

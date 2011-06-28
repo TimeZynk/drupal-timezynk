@@ -17,10 +17,12 @@ files[] = includes/TZIntellitimeServerInterface.class.inc
 files[] = includes/TZIntellitimeSimpleSyncPolicy.class.inc
 files[] = includes/TZIntellitimeSyncController.class.inc
 files[] = includes/TZIntellitimeSyncPolicy.class.inc
+files[] = includes/TZIntellitimeUserJobsMappingPolicy.class.inc
 files[] = includes/TZIntellitimeUserStatus.class.inc
 files[] = includes/TZIntellitimeWeek.class.inc
 files[] = includes/TZIntellitimeWeekData.class.inc
 files[] = includes/TZIntellitimeWeekFactory.class.inc
+files[] = includes/TZIntellitimeWeekSyncResult.class.inc
 files[] = includes/TZSmsLogger.class.inc
 files[] = includes/TZWatchdogLogger.class.inc
 

@@ -51,7 +51,7 @@ class TZIntellitimeDBReportStorage implements TZIntellitimeReportStorage {
 
   private function copyTZJobPropertiesToNode(&$node, $tzjob) {
     $node->title = $tzjob->title;
-    $node->jobcode = $tzjob->jobcode;
+    $node->jobcode = empty($tzjob->jobcode) ? '' : $tzjob->jobcode;
     $node->flags = $tzjob->flags;
     $node->intellitime_local_changes = 0;
   }

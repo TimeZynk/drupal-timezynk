@@ -193,7 +193,9 @@ function tzintellitime_sync_synchronize_user($uid) {
 
     $reportStorage = new TZIntellitimeDBReportStorage($account);
 
-    $ctrlr = new TZIntellitimeSyncController($syncPolicy, $weekFactory, $reportStorage, $account);
+    $userJobsMappingPolicy = new TZIntellitimeUserJobsMappingPolicy(tzbase_user_jobs_mapper(), $account);
+
+    $ctrlr = new TZIntellitimeSyncController($syncPolicy, $weekFactory, $reportStorage, $userJobsMappingPolicy, $account);
     $ctrlr->registerLogger(new TZWatchdogLogger());
     $ctrlr->registerLogger(new TZSmsLogger());
     $result = $ctrlr->synchronize();

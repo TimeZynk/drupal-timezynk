@@ -33,9 +33,9 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
     $unfinishedWeeks = $weekData->getUnfinishedWeeks();
     $this->assertEquals(4, count($unfinishedWeeks));
 
-    $tzjobs = $weekData->getTZJobs();
-    // Assignments are filtered by actual use on the week, so we should get 0
-    $this->assertEquals(0, count($tzjobs));
+    $assignments = $weekData->getAssignments();
+    // All assignments are returned, even if they are not used
+    $this->assertEquals(1, count($assignments));
   }
 
   function testNoParserThrows() {
@@ -555,48 +555,37 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
 
   public function testListAssignmentsHaveID() {
     $weekData = $this->loadHTMLFile('intellitime-v9-timereport-shortened-jobtitles.txt');
-    $tzjobs = $weekData->getTZJobs();
+    $assignments = $weekData->getAssignments();
 
-    $this->assertEquals(5, count($tzjobs));
+    $this->assertEquals(33, count($assignments));
 
-    $this->assertEquals('Axis Communic, Lagerarbeta, "Heating"', $tzjobs[0]->title);
-    $this->assertEquals('Axis Communication AB, Lagerarbetare, "Heating"', $tzjobs[0]->jobcode);
-    $this->assertEquals('5194', $tzjobs[0]->intellitime_id);
+    $this->assertEquals('Axis Commun, Lagerarbeta, Q6032, spec', $assignments[1]->title);
+    $this->assertEquals('5093', $assignments[1]->id);
 
-    $this->assertEquals('Sjukfrånvaro kollektivare månadsanställd', $tzjobs[1]->title);
-    $this->assertEquals('Sjuk arb (mån.lön)', $tzjobs[1]->jobcode);
-    $this->assertEquals('_AC_Sjuk arb (mån.lön)', $tzjobs[1]->intellitime_id);
+    $this->assertEquals('Axis Communicatio, Lagerarbeta, P5534', $assignments[2]->title);
+    $this->assertEquals('6056', $assignments[2]->id);
 
-    $this->assertEquals('Axis Communicatio, Lagerarbeta, P5534', $tzjobs[2]->title);
-    $this->assertEquals('Axis Communication AB, Lagerarbetare, P5534', $tzjobs[2]->jobcode);
-    $this->assertEquals('6056', $tzjobs[2]->intellitime_id);
+    $this->assertEquals('Axis Communic, Lagerarbeta, "Heating"', $assignments[3]->title);
+    $this->assertEquals('5194', $assignments[3]->id);
 
-    $this->assertEquals('Axis Commun, Lagerarbeta, Q6032, spec', $tzjobs[3]->title);
-    $this->assertEquals('Axis Communication AB, Lagerarbetare, Q6032, spec. prod.', $tzjobs[3]->jobcode);
-    $this->assertEquals('5093', $tzjobs[3]->intellitime_id);
-
-    $this->assertEquals('Uttag arbetstidsförkortning', $tzjobs[4]->title);
-    $this->assertEquals('Utt. arbetstidsförk.', $tzjobs[4]->jobcode);
-    $this->assertEquals('_AC_Utt. arbetstidsförk.', $tzjobs[4]->intellitime_id);
+    $this->assertEquals('Sjukfrånvaro kollektivare månadsanställd', $assignments[18]->title);
+    $this->assertEquals('_AC_Sjuk arb (mån.lön)', $assignments[18]->id);
   }
 
   public function testListAssignmentsNoID() {
     $weekData = $this->loadHTMLFile('intellitime-v9-timereport-one-absence-two-done-one-open.txt');
-    $tzjobs = $weekData->getTZJobs();
+    $assignments = $weekData->getAssignments();
 
-    $this->assertEquals(3, count($tzjobs));
+    $this->assertEquals(3, count($assignments));
 
-    $this->assertEquals('Testföretaget Effekt, Lagerarbetare', $tzjobs[0]->title);
-    $this->assertEquals('Testföretaget Effekt, Lagerarbetare', $tzjobs[0]->jobcode);
-    $this->assertEquals('5983', $tzjobs[0]->intellitime_id);
+    $this->assertEquals('Testföretaget Effekt, Lagerarbetare', $assignments[0]->title);
+    $this->assertEquals('5983', $assignments[0]->id);
 
-    $this->assertEquals('Tjänstledig <6 dgr', $tzjobs[1]->title);
-    $this->assertEquals('Tjänstledig <6 dgr', $tzjobs[1]->jobcode);
-    $this->assertEquals('PLACEHOLDER_ID_' . md5('Tjänstledig <6 dgr'), $tzjobs[1]->intellitime_id);
+    $this->assertEquals('Testföretaget Effekt, Truckförare', $assignments[1]->title);
+    $this->assertEquals('6200', $assignments[1]->id);
 
-    $this->assertEquals('Testföretaget Effekt, Truckförare', $tzjobs[2]->title);
-    $this->assertEquals('Testföretaget Effekt, Truckförare', $tzjobs[2]->jobcode);
-    $this->assertEquals('6200', $tzjobs[2]->intellitime_id);
+    $this->assertEquals('Tjänstledig <6 dgr', $assignments[2]->title);
+    $this->assertEquals('PLACEHOLDER_ID_' . md5('Tjänstledig <6 dgr'), $assignments[2]->id);
   }
 
   public function testV8ParseUnfinishedWeeks() {

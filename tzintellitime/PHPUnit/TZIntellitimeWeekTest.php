@@ -62,7 +62,7 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
 
     $this->assertEquals(1, count($syncResult->tzreports));
     $this->assertReportUpdatedCorrectly($reports[0], $syncResult->tzreports[0]);
-    $this->assertReportTitlesInAssignments($syncResult);
+    $this->assertReportsHaveValidJobID($syncResult);
   }
 
   public function testV9SyncSingleOpenNew() {
@@ -87,8 +87,8 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(1, count($syncResult->tzreports));
     $report = $syncResult->tzreports[0];
     $this->assertFalse(isset($report->jobid));
-    $this->assertNotNull($syncResult->tzjobs);
-    $this->assertReportTitlesInAssignments($syncResult);
+    $this->assertNotNull($syncResult->intellitime_assignments);
+    $this->assertReportsHaveValidJobID($syncResult);
   }
 
   public function testV9SyncFindsTwoNewLockedAndUpdatesTheOneExistingReport() {
@@ -123,7 +123,7 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(TZFlags::LOCKED, $syncResult->tzreports[2]->flags);
     $this->assertFalse(isset($syncResult->tzreports[1]->nid));
     $this->assertFalse(isset($syncResult->tzreports[2]->nid));
-    $this->assertReportTitlesInAssignments($syncResult);
+    $this->assertReportsHaveValidJobID($syncResult);
   }
 
   function testV9ChangingReportedRowsRequiresTwoPosts() {
@@ -169,7 +169,7 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     for($i = 0; $i < count($reports); $i++) {
       $this->assertReportUpdatedCorrectly($reports[$i], $syncResult->tzreports[$i], TRUE);
     }
-    $this->assertReportTitlesInAssignments($syncResult);
+    $this->assertReportsHaveValidJobID($syncResult);
   }
 
   public function testV9SyncDeletedOnServer() {
@@ -208,7 +208,7 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $this->assertReportUpdatedCorrectly($reports[1], $syncResult->tzreports[1]);
     $this->assertEquals(TZFlags::DELETED, $syncResult->tzreports[0]->flags);
     $this->assertEquals(TZFlags::DELETED, $syncResult->tzreports[2]->flags);
-    $this->assertReportTitlesInAssignments($syncResult);
+    $this->assertReportsHaveValidJobID($syncResult);
   }
 
   public function testV9RestoreStateOnNetworkException() {
@@ -281,14 +281,14 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
    * $param TZIntellitimeSyncResult $syncResult
    * $return bool
    */
-  private function assertReportTitlesInAssignments($syncResult) {
+  private function assertReportsHaveValidJobID($syncResult) {
     foreach ($syncResult->tzreports as $report) {
       if ($report->flags == TZFlags::DELETED) {
         continue;
       }
       $match = FALSE;
-      foreach ($syncResult->tzjobs as $tzjob) {
-        if ($report->title == $tzjob->jobcode) {
+      foreach ($syncResult->intellitime_assignments as $assignment) {
+        if ($report->intellitime_jobid == $assignment->id) {
           $match = TRUE;
           break;
         }

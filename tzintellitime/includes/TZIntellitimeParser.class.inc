@@ -107,52 +107,41 @@ class TZIntellitimeParser {
    */
   public function parse_assignments() {
     $result = array();
-    $elems = $this->doc->xpath('//select[@id="CustOrdersDropDown"]/option');
-    if(empty($elems)) {
-      return $result;
-    }
-
-    foreach($elems as $option) {
-      $jobcode = trim((string)$option['value']);
-      $jobtitle = trim((string)$option);
-      if($jobcode && $jobtitle) {
-        $assignment = new TZIntellitimeAssignment();
-        $assignment->id = $jobcode;
-        $assignment->report_key = $jobtitle;
-        $assignment->title = $jobtitle;
-        $result[] = $assignment;
-      }
-    }
-
-    return $result;
+    $this->parse_assignment_dropdown($result, 'AddRowDropDown', TRUE);
+    $this->parse_assignment_dropdown($result, 'CustOrdersDropDown', FALSE);
+    return array_values($result);
   }
 
-  /**
-   * Parse absence types and titles from the current document.
-   * @return array TZIntellitimeAssignment array
-   */
-  public function parse_absence_types() {
-    $result = array();
-    $elems = $this->doc->xpath('//select[@id="AddRowDropDown"]/option');
-    if(empty($elems)) {
-      return $result;
-    }
-
-    foreach($elems as $option) {
-      $jobcode = trim((string)$option['value']);
-      $jobtitle = trim((string)$option);
-      $matches = array();
-      if($jobcode && $jobtitle && preg_match('/^_AC_(.+)/', $jobcode, $matches)) {
-        $assignment = new TZIntellitimeAssignment();
-        $assignment->id = $jobcode;
-        $assignment->report_key = $matches[1];
-        $assignment->title = $jobtitle;
-        $assignment->type = TZIntellitimeAssignment::TYPE_ABSENCE;
-        $result[] = $assignment;
+  private function parse_assignment_dropdown(&$result, $id, $may_create_report) {
+    $elems = $this->doc->xpath('//select[@id="' . $id . '"]/option');
+    if(!empty($elems)) {
+      foreach($elems as $option) {
+        $job_id = trim((string)$option['value']);
+        $short_job_title = trim((string)$option);
+        if (!empty($result[$job_id])) {
+          continue;
+        }
+        $assignment = $this->parse_assignment($job_id, $short_job_title);
+        if (!$assignment) {
+          continue;
+        }
+        $assignment->setMayCreateReport($may_create_report);
+        $result[$job_id] = $assignment;
       }
     }
+  }
 
-    return $result;
+  private function parse_assignment($job_id, $short_job_title) {
+      if(!$job_id || $job_id < 0 || !$short_job_title) {
+        return NULL;
+      }
+
+      $matches = array();
+      if (preg_match('/^_AC_(.+)/', $job_id, $matches)) {
+        return new TZIntellitimeAssignment($short_job_title, $matches[1], $job_id, TZIntellitimeAssignment::TYPE_ABSENCE);
+      } else {
+        return new TZIntellitimeAssignment($short_job_title, NULL, $job_id);
+      }
   }
 
   /**

@@ -25,6 +25,11 @@ class TZIntellitimeSyncController {
   private $reportStorage;
 
   /**
+   * @var TZIntellitimeUserJobsMappingPolicy
+   */
+  private $userJobsMappingPolicy;
+
+  /**
    * @var  account current user account
    */
   private $account;
@@ -34,13 +39,12 @@ class TZIntellitimeSyncController {
    */
   private $loggers;
 
-//  private $weekStatus = array();
-
-  function __construct($syncPolicy, $weekFactory, $reportStorage, $account = null) {
+  function __construct($syncPolicy, $weekFactory, $reportStorage, $userJobsMappingPolicy, $account = null) {
     tzbase_include_proto_classes();
     $this->syncPolicy = $syncPolicy;
     $this->weekFactory = $weekFactory;
     $this->reportStorage = $reportStorage;
+    $this->userJobsMappingPolicy = $userJobsMappingPolicy;
     $this->account = $account;
     $this->loggers = array();
   }
@@ -58,16 +62,18 @@ class TZIntellitimeSyncController {
 
       try {
         $syncResult = $week->sync();
+
         if(empty($syncResult)) {
           throw new TZNetworkFailureException("No sync results returned for " . $weekDate->format("o\WW"));
         }
 
-        $storedJobs = $this->reportStorage->storeTZJobs($syncResult->tzjobs);
+        $storedJobs = $this->reportStorage->storeTZJobs($syncResult->getTZJobs());
+        $assignmentMap = $this->mapAssignmentsToJobIDs($storedJobs, $syncResult->intellitime_assignments);
+        $this->userJobsMappingPolicy->resolveMappings($monday, $sunday, $assignmentMap);
         $mappedReports = $this->mapReportsToJobs($syncResult->tzreports, $storedJobs);
         $changedReports = $this->filterChangedReports($mappedReports, $tzReports);
         $this->reportStorage->storeTZReports($changedReports);
         $this->syncPolicy->addWeeks($syncResult->unfinishedWeeks);
-
         if (isset($syncResult->exception)) {
           throw $syncResult->exception;
         }
@@ -124,6 +130,31 @@ class TZIntellitimeSyncController {
     }
 
     return $mappedReports;
+  }
+
+  private function mapAssignmentsToJobIDs($storedJobs, $assignments) {
+
+    if(count($storedJobs) != count($assignments)) {
+      throw new InvalidArgumentException('Could not map assignments to job IDs, mismatched length of input arrays');
+    }
+
+    $intellitime_id_map = array();
+    $jobid_map = array();
+
+    foreach ($storedJobs as $job) {
+      $jobid_map[$job->nid] = $job->intellitime_id;
+    }
+
+    foreach ($assignments as $assignment) {
+      $intellitime_id_map[$assignment->id] = $assignment;
+    }
+
+    foreach ($jobid_map as $jobid => $intellitime_id) {
+      // To conserve memory, do mapping in place.
+      $jobid_map[$jobid] = $intellitime_id_map[$intellitime_id];
+    }
+
+    return $jobid_map;
   }
 
   private function filterChangedReports($modifiedReports, $originalReports) {

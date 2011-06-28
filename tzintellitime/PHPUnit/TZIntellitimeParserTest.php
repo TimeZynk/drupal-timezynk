@@ -92,21 +92,26 @@ class TZIntellitimeParserTest extends PHPUnit_Framework_TestCase {
   public function testParseAssignments() {
     $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
     $assignments = $parser->parse_assignments();
-    $this->assertEquals(1, count($assignments), "only one assignment");
-    $this->assertEquals("5983", $assignments[0]->id, "assignment code 5983");
+    $this->assertEquals(29, count($assignments), "expects 29 assignments");
+    $count_assignments = 0;
+    $count_absence = 0;
+    foreach ($assignments as $assignment) {
+      if ($assignment->type == TZIntellitimeAssignment::TYPE_ASSIGNMENT) {
+        $count_assignments += 1;
+        $this->assertEquals("5983", $assignment->id, "assignment code 5983");
+      } else {
+        $count_absence += 1;
+        $this->assertEquals("_AC_", substr($assignment->id, 0, 4));
+      }
+    }
+    $this->assertEquals(1, $count_assignments);
+    $this->assertEquals(28, $count_absence);
   }
 
   public function testParseAssignmentsUTF8Encoding() {
     $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
     $assignments = $parser->parse_assignments();
     $this->assertEquals("Testföretaget Effekt, Lagerarbetare", $assignments[0]->title, "expect UTF-8 encoding");
-  }
-
-  public function testParseAbsenceTypes() {
-    $parser = $this->loadHTMLFile('intellitime-timereport-page.html');
-    $absence_types = $parser->parse_absence_types();
-    $this->assertEquals(28, count($absence_types));
-    $this->assertEquals("_AC_Uttag extra fridag", $absence_types[4]->id);
   }
 
   public function testParseReportsCorrectCount() {

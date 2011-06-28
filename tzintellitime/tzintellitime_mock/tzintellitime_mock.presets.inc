@@ -14,8 +14,7 @@ function tzintellitime_mock_presets_submit($form, $form_state) {
   db_query('DELETE FROM {tzintellitime_mock_data');
 
   // Create assignment
-  $assignment = new TZIntellitimeAssignment();
-  $assignment->title = 'Demoföretag, demouppgift';
+  $assignment = new TZIntellitimeAssignment('Demoföretag, demouppgift');
   $assignment_id = tzintellitime_mock_store_object($assignment);
 
   // Build up new reports

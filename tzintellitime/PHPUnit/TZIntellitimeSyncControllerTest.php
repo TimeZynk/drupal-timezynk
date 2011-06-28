@@ -18,13 +18,19 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
    */
   private $weekFactory;
 
+  /**
+   * @var TZIntellitimeUserJobsMappingPolicy
+   */
+  private $mappingPolicy;
+
   private $timezone;
 
   function setUp() {
     $this->syncPolicy = $this->getMock('TZIntellitimeSyncPolicy');
     $this->reportStorage = $this->getMock('TZIntellitimeReportStorage');
     $this->weekFactory = $this->getMock('TZIntellitimeWeekFactory');
-    $this->syncController = new TZIntellitimeSyncController($this->syncPolicy, $this->weekFactory, $this->reportStorage);
+    $this->mappingPolicy = $this->getMock('TZIntellitimeUserJobsMappingPolicy');
+    $this->syncController = new TZIntellitimeSyncController($this->syncPolicy, $this->weekFactory, $this->reportStorage, $this->mappingPolicy);
     $this->timezone = date_default_timezone(FALSE);
     $this->clone_lambda = function($o) { return clone($o); };
   }
@@ -39,6 +45,9 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
     $this->weekFactory->expects($this->never())
         ->method('createWeek');
+
+    $this->mappingPolicy->expects($this->never())
+      ->method('resolveMapping');
 
     $status = $this->syncController->synchronize();
     $this->assertEquals(TZIntellitimeSyncController::SYNC_OK, $status);
@@ -244,14 +253,14 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
     $syncResult = new TZIntellitimeWeekSyncResult();
 
-    $syncResult->tzjobs = array(
-      createMockAssignment('Assignment Title', 'title'),
+    $syncResult->intellitime_assignments = array(
+      $this->createMockAssignment('Assignment Title', 'title'),
     );
 
     $syncResult->tzreports = array(
       createMockReport('mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3', '2011-01-25', '08:30', '17:30', 60, 0),
     );
-    $syncResult->tzreports[0]->intellitime_jobid = $syncResult->tzjobs[0]->intellitime_id;
+    $syncResult->tzreports[0]->intellitime_jobid = $syncResult->intellitime_assignments[0]->id;
     unset($syncResult->tzreports[0]->nid);
     unset($syncResult->tzreports[0]->vid);
     unset($syncResult->tzreports[0]->jobid);
@@ -273,14 +282,14 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->with($expectedDates[1], $expectedReports[1])
         ->will($this->returnValue($expectedWeek));
 
-    $storedAssignments = array_map($this->clone_lambda, $syncResult->tzjobs);
+    $storedAssignments = array_map($this->clone_lambda, $syncResult->getTZJobs());
     $storedAssignments[0]->nid = 2;
     $storedAssignments[0]->vid = 3;
     $storedAssignments[0]->parentid = 0;
 
     $this->reportStorage->expects($this->exactly(2))
         ->method('storeTZJobs')
-        ->with($syncResult->tzjobs)
+        ->with($syncResult->getTZJobs())
         ->will($this->returnValue($storedAssignments));
 
     $mappedReports = array_map($this->clone_lambda, $syncResult->tzreports);
@@ -340,14 +349,14 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
     $syncResult = new TZIntellitimeWeekSyncResult();
 
-    $syncResult->tzjobs = array(
-      createMockAssignment('Assignment Title', 'title'),
+    $syncResult->intellitime_assignments = array(
+      $this->createMockAssignment('Assignment Title', 'title'),
     );
 
     $syncResult->tzreports = array(
       createMockReport('mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3', '2011-01-25', '08:30', '17:30', 60, 0),
     );
-    $syncResult->tzreports[0]->intellitime_jobid = $syncResult->tzjobs[0]->intellitime_id;
+    $syncResult->tzreports[0]->intellitime_jobid = $syncResult->intellitime_assignments[0]->id;
     unset($syncResult->tzreports[0]->nid);
     unset($syncResult->tzreports[0]->vid);
     unset($syncResult->tzreports[0]->jobid);
@@ -360,14 +369,14 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->with($expectedMonday, $expectedSunday)
         ->will($this->returnValue($expectedReports));
 
-    $storedAssignments = array_map($this->clone_lambda, $syncResult->tzjobs);
+    $storedAssignments = array_map($this->clone_lambda, $syncResult->getTZJobs());
     $storedAssignments[0]->nid = 2;
     $storedAssignments[0]->vid = 3;
     $storedAssignments[0]->parentid = 0;
 
     $this->reportStorage->expects($this->once())
         ->method('storeTZJobs')
-        ->with($syncResult->tzjobs)
+        ->with($syncResult->getTZJobs())
         ->will($this->returnValue($storedAssignments));
 
     $mappedReports = array_map($this->clone_lambda, $syncResult->tzreports);
@@ -407,14 +416,14 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
     $syncResult = new TZIntellitimeWeekSyncResult();
 
-    $syncResult->tzjobs = array(
-      createMockAssignment('Assignment Title', 'title'),
+    $syncResult->intellitime_assignments = array(
+      $this->createMockAssignment('Assignment Title', 'title'),
     );
 
     $syncResult->tzreports = array(
       createMockReport('mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3', '2011-01-25', '08:30', '17:30', 60, 0),
     );
-    $syncResult->tzreports[0]->intellitime_jobid = $syncResult->tzjobs[0]->intellitime_id;
+    $syncResult->tzreports[0]->intellitime_jobid = $syncResult->intellitime_assignments[0]->id;
     unset($syncResult->tzreports[0]->nid);
     unset($syncResult->tzreports[0]->vid);
     unset($syncResult->tzreports[0]->jobid);
@@ -427,14 +436,14 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->with($expectedMonday, $expectedSunday)
         ->will($this->returnValue($expectedReports));
 
-    $storedAssignments = array_map($this->clone_lambda, $syncResult->tzjobs);
+    $storedAssignments = array_map($this->clone_lambda, $syncResult->getTZJobs());
     $storedAssignments[0]->nid = 2;
     $storedAssignments[0]->vid = 3;
     $storedAssignments[0]->parentid = 0;
 
     $this->reportStorage->expects($this->once())
         ->method('storeTZJobs')
-        ->with($syncResult->tzjobs)
+        ->with($syncResult->getTZJobs())
         ->will($this->returnValue($storedAssignments));
 
     $mappedReports = array_map($this->clone_lambda, $syncResult->tzreports);
@@ -506,13 +515,13 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
     $expectedReports = array();
 
     $syncResult = new TZIntellitimeWeekSyncResult();
-    $syncResult->tzjobs = array(
-      createMockAssignment('Assignment Title', 'title'),
+    $syncResult->intellitime_assignments = array(
+      $this->createMockAssignment('Assignment Title', 'title'),
     );
     $syncResult->tzreports = array(
       createMockReport('mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3', '2011-01-25', '08:30', '17:30', 60, 0),
     );
-    $syncResult->tzreports[0]->intellitime_jobid = $syncResult->tzjobs[0]->intellitime_id;
+    $syncResult->tzreports[0]->intellitime_jobid = $syncResult->intellitime_assignments[0]->id;
     unset($syncResult->tzreports[0]->nid);
     unset($syncResult->tzreports[0]->vid);
     unset($syncResult->tzreports[0]->jobid);
@@ -520,7 +529,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
     $syncResult->unfinishedWeeks = array(
       new DateTime('2011-02-22', $this->timezone),
     );
-    $storedAssignments = array_map($this->clone_lambda, $syncResult->tzjobs);
+    $storedAssignments = array_map($this->clone_lambda, $syncResult->getTZJobs());
     $storedAssignments[0]->nid = 2;
     $storedAssignments[0]->vid = 3;
     $storedAssignments[0]->parentid = 0;
@@ -561,7 +570,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
     $this->reportStorage->expects($this->once())
         ->method('storeTZJobs')
-        ->with($syncResult->tzjobs)
+        ->with($syncResult->getTZJobs())
         ->will($this->returnValue($storedAssignments));
 
     $this->reportStorage->expects($this->once())
@@ -678,14 +687,14 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
           ->disableOriginalConstructor()
           ->getMock();
 
-      if(!isset($test->syncResult->tzjobs)) {
-        $test->syncResult->tzjobs = array(
-          createMockAssignment('Assignment Title', 'title'),
+      if(!isset($test->syncResult->intellitime_assignments)) {
+        $test->syncResult->intellitime_assignments = array(
+          $this->createMockAssignment('Assignment Title', 'title'),
         );
       }
 
       foreach($test->syncResult->tzreports as $tzreport) {
-        $tzreport->intellitime_jobid = $test->syncResult->tzjobs[0]->intellitime_id;
+        $tzreport->intellitime_jobid = $test->syncResult->intellitime_assignments[0]->id;
       }
 
       if(!isset($test->syncResult->unfinishedWeeks)) {
@@ -701,7 +710,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
           ->with($date, $test->expectedReports)
           ->will($this->returnValue($expectedWeek));
 
-      $storedAssignments = array_map($this->clone_lambda, $test->syncResult->tzjobs);
+      $storedAssignments = array_map($this->clone_lambda, $test->syncResult->getTZJobs());
       foreach($storedAssignments as $assignment_key => $assignment) {
         $assignment->nid = 2 + $assignment_key;
         $assignment->vid = 3 + $assignment_key;
@@ -710,7 +719,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
       $this->reportStorage->expects($this->at(1 + 3 * $index))
           ->method('storeTZJobs')
-          ->with($test->syncResult->tzjobs)
+          ->with($test->syncResult->getTZJobs())
           ->will($this->returnValue($storedAssignments));
 
       if(!isset($test->mappedReports)) {
@@ -726,6 +735,10 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->method('storeTZReports')
         ->with($test->mappedReports);
 
+      $this->mappingPolicy->expects($this->at($index))
+        ->method('resolveMappings')
+        ->with($expectedDateRange[0], $expectedDateRange[1], $this->isType('array'));
+
       $index++;
     }
 
@@ -734,4 +747,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->will($this->returnValue(NULL));
   }
 
+  private function createMockAssignment($title, $report_key) {
+    return new TZIntellitimeAssignment($title, $report_key, rand(1000, 10000));
+  }
 }

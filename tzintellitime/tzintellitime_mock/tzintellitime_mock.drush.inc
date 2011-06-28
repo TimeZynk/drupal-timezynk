@@ -82,10 +82,7 @@ function tzintellitime_mock_drush_list_users() {
 }
 
 function tzintellitime_mock_drush_add_assignment($title) {
-  $assignment = new TZIntellitimeAssignment();
-  $assignment->title = $title;
-  $assignment->type = TZIntellitimeAssignment::TYPE_ASSIGNMENT;
-
+  $assignment = new TZIntellitimeAssignment($title);
   $id = tzintellitime_mock_store_object($assignment);
   print $id . "\n";
 }

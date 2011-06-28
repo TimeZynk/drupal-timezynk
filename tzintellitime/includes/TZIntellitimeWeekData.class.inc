@@ -9,7 +9,7 @@ class TZIntellitimeWeekData {
    */
   private $parser;
   private $rows = array();
-  private $tzjobs;
+  private $assignments;
 
   /**
    * @param TZIntellitimeParser $parser
@@ -35,19 +35,15 @@ class TZIntellitimeWeekData {
       $this->rows[$report->id] = $report;
     }
 
-    $assignments = array_merge(
-        $parser->parse_assignments(),
-        $parser->parse_absence_types()
-    );
-
-    $this->tzjobs = $this->createTZJobs($reports, $assignments);
+    $this->assignments = $parser->parse_assignments();
+    $this->mapReportTitleToAssignments($reports);
   }
 
   /**
    * @return array TZIntellitimeAssignment array
    */
-  function getTZJobs() {
-    return array_values($this->tzjobs);
+  function getAssignments() {
+    return $this->assignments;
   }
 
   /**
@@ -216,8 +212,8 @@ class TZIntellitimeWeekData {
   private function mapIntellitimeJobIdToReport($tzreports) {
     foreach($tzreports as $tzreport) {
       $report_key = $tzreport->title;
-      if(isset($this->tzjobs[$report_key])) {
-        $tzreport->intellitime_jobid = $this->tzjobs[$report_key]->intellitime_id;
+      if(isset($this->reportTitleAssignmentMap[$report_key])) {
+        $tzreport->intellitime_jobid = $this->reportTitleAssignmentMap[$report_key]->id;
       }
     }
   }
@@ -248,23 +244,23 @@ class TZIntellitimeWeekData {
     return NULL;
   }
 
-  private function createTZJobs($reports, $assignments) {
-    $tzjobs = array();
-
+  private function mapReportTitleToAssignments($reports) {
+    $this->reportTitleAssignmentMap = array();
     foreach($reports as $report) {
-      $title = $report->title;
+      $full_title = $report->title;
 
-      $assignment = $this->matchAssignmentTitle($assignments, $title);
-      if($assignment) {
-        $assignment->report_key = $title;
-      } else {
-        $assignment = new TZIntellitimeAssignment($title);
+      if (!empty($this->reportTitleAssignmentMap[$full_title])) {
+        continue;
       }
 
-      $tzjobs[$assignment->report_key] = $assignment->convert_to_tzjob();
-    }
+      $assignment = $this->matchAssignmentTitle($full_title);
+      if(!$assignment) {
+        $assignment = new TZIntellitimeAssignment($full_title);
+        $this->assignments[] = $assignment;
+      }
 
-    return $tzjobs;
+      $this->reportTitleAssignmentMap[$full_title] = $assignment;
+    }
   }
 
   /**
@@ -284,36 +280,12 @@ class TZIntellitimeWeekData {
    *
    * @param String $jobtitle
    */
-  private function matchAssignmentTitle($assignments, $title) {
-    foreach($assignments as $assignment) {
-      if($title == $assignment->title) {
-        return $assignment;
-      }
-
-      if($title == $assignment->report_key) {
-        return $assignment;
-      }
-
-      $match = TRUE;
-      $keypath = explode(', ', $assignment->title);
-      $jobpath = explode(', ', $title);
-      if(count($jobpath) != count($keypath)) {
-        continue;
-      }
-      for($i = 0; $i < count($jobpath); $i++) {
-        $keysegment = $keypath[$i];
-        $job = $jobpath[$i];
-        $segment = substr($job, 0, strlen($keysegment));
-        if($keysegment != $segment) {
-          $match = FALSE;
-          break;
-        }
-      }
-      if($match) {
+  private function matchAssignmentTitle($title) {
+    foreach($this->assignments as $assignment) {
+      if($assignment->matchFullTitle($title)) {
         return $assignment;
       }
     }
-
     return NULL;
   }
 }
