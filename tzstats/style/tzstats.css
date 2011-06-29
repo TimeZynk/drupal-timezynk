@@ -1,0 +1,22 @@
+tr.invoice-subtotal td {
+    background-color: #EAEAEA;
+    font-weight: normal;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+}
+
+tr.invoice-total td {
+    background-color: #EAEAEA;
+    font-weight: bold;
+    border-top: 1px solid #000000;
+    border-bottom: 3px double #000000;
+}
+
+.tzstats-invoice-table tr.odd,
+.tzstats-invoice-table tr.even {
+	background-color: #fff;
+}
+
+.tzstats-invoice-table .invoice-money {
+	text-align: right;
+}

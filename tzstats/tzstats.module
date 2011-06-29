@@ -1,13 +1,18 @@
 <?php
 
+define('TIMEZYNK_DAY_PRICE', variable_get('timezynk_day_price', 5));
+define('TIMEZYNK_MONTH_PRICE', variable_get('timezynk_month_price', 50));
+define('TIMEZYNK_SMS_PRICE', variable_get('timezynk_sms_price', 1));
+define('TIMEZYNK_MINIMUM_MONTH_USERS', variable_get('timezynk_minimum_month_users', 0));
+define('TIMEZYNK_MINIMUM_MONTH_USERS_START_DATE', variable_get('timezynk_minimum_month_users_start_date', ''));
+
 function tzstats_menu() {
   $items['admin/reports/invoice'] = array(
     'title' => 'Invoice',
     'title callback' => 't',
     'access arguments' => array('administer site configuration'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('tzstats_invoice_form'),
-    'file' => 'tzstats.invoice.inc',
+    'page callback' => 'tzstats_invoice_page',
+    'file' => 'includes/tzstats.invoice.inc',
     'type' => MENU_NORMAL_ITEM,
   );
   $items['admin/reports/failed_login'] = array(
@@ -15,11 +20,39 @@ function tzstats_menu() {
     'title callback' => 't',
     'access arguments' => array('administer site configuration'),
     'page callback' => 'tzstats_failed_login_page',
-  	'file' => 'tzstats.failed_login.inc',
+  	'file' => 'includes/tzstats.failed_login.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/settings/timezynk/pricing'] = array(
+    'title' => 'Pricing',
+    'description' => 'Customer pricing levels',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzstats_administer_pricing'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/tzstats.pricing.inc',
     'type' => MENU_NORMAL_ITEM,
   );
 
   return $items;
+}
+
+function tzstats_theme() {
+  return array(
+  	'money' => array(
+  	  'arguments' => array('amount' => NULL),
+  	),
+  	'days' => array(
+  	  'arguments' => array('count' => NULL),
+  	),
+  );
+}
+
+function theme_money($amount) {
+  return sprintf('%.02f SEK', $amount);
+}
+
+function theme_days($count) {
+  return sprintf('%d days', $count);
 }
 
 /**
@@ -81,7 +114,7 @@ function tzstats_synchronized_multiple_users($module, $count, $successful, $befo
 }
 
 function tzstats_cron() {
-  require_once(dirname(__FILE__) . '/tzstats.user.inc');
+  require_once(dirname(__FILE__) . '/includes/tzstats.user.inc');
   tzstats_record_user_status();
   tzstats_clean_sync_stats();
 }
@@ -93,7 +126,7 @@ function tzstats_cron() {
 function tzstats_views_api() {
   return array(
     'api' => 2,
-    'path' => drupal_get_path('module', 'tzstats'),
+    'path' => drupal_get_path('module', 'tzstats') . '/includes',
   );
 }
 
