@@ -31,6 +31,7 @@ define('TZSMS_BEEPSEND_USERNAME', 'TimeZynk01');
 define('TZSMS_BEEPSEND_PASSWORD', 'HanUzEg');
 
 define('TZSMS_DEBUG_SMS_RECEIVER', variable_get('tzsms_debug_sms_receiver', '0733623516'));
+define('TZSMS_DEBUG_SMS_BLACKLIST_TIMEOUT', (12 * 3600));
 
 function tzsms_menu() {
   $items = array();
@@ -247,9 +248,28 @@ function tzsms_install_sms_no_password_template($variables = array()) {
 
 function tzsms_debug_sms($message) {
   $validated_mobile = tzuser_validate_phone_number(TZSMS_DEBUG_SMS_RECEIVER);
-  if (!empty($validated_mobile)) {
-    $server_name = str_replace('.tzapp.com', '', $_SERVER['SERVER_NAME']);
-    $truncated_message = substr($server_name . ': ' . $message, 0, 159);
-    tzsms_send(TZSMS_TYPE_DEBUG_SMS, TZSMS_DEBUG_SMS_RECEIVER, $truncated_message);
+  if (empty($validated_mobile)) {
+    return;
   }
+
+  // Filter expired entries from blacklist
+  $now = time();
+  $blacklist = variable_get('tzsms_debug_sms_blacklist', array());
+  foreach ($blacklist as $key => $timeout) {
+    if ($timeout < $now) {
+      unset($blacklist[$key]);
+    }
+  }
+
+  $server_name = str_replace('.tzapp.com', '', $_SERVER['HTTP_HOST']);
+  $truncated_message = substr($server_name . ': ' . $message, 0, 159);
+  $key = md5(TZSMS_DEBUG_SMS_RECEIVER . $truncated_message);
+  if (!empty($blacklist[$key])) {
+    return;
+  }
+
+  tzsms_send(TZSMS_TYPE_DEBUG_SMS, TZSMS_DEBUG_SMS_RECEIVER, $truncated_message);
+
+  $blacklist[$key] = $now + TZSMS_DEBUG_SMS_BLACKLIST_TIMEOUT;
+  variable_set('tzsms_debug_sms_blacklist', $blacklist);
 }
