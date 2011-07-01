@@ -129,15 +129,12 @@ class TZStatsInvoice {
   private function calculate_minimum_cost(&$rows) {
     $minimum_date = date_make_date(TIMEZYNK_MINIMUM_MONTH_USERS_START_DATE);
     if ($minimum_date > $this->start_date) {
-      return 0;
+      return $this->actual_user_cost();
     }
 
     $actual_cost = $this->actual_user_cost();
     $minimum_cost = TIMEZYNK_MINIMUM_MONTH_USERS * TIMEZYNK_MONTH_PRICE;
-    if ($actual_cost >= $minimum_cost) {
-      return $actual_cost;
-    }
-    return $minimum_cost;
+    return max($actual_cost, $minimum_cost);
   }
 
   private function add_user_total_cost_rows(&$rows) {
