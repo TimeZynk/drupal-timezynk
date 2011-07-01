@@ -57,6 +57,20 @@ function tzbase_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'includes/tzbase.userjobs.inc',
   );
+  $items['availability'] = array(
+    'title' => 'Availability',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzbase_availability_form'),
+    'access arguments' => array('view any availability content'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/tzbase.availability.inc',
+  );
+  $items['availability/data'] = array(
+    'page callback' => 'tzbase_availability_data',
+    'access arguments' => array('view any availability content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/tzbase.availability.inc',
+  );
   return $items;
 }
 
@@ -838,9 +852,21 @@ function tzbase_watchdog_node_operation($tag, $node, $operation, $account) {
              l('Node', 'node/' . $node->nid) . ', ' . theme('username', $account));
 }
 
+function tzbase_db_wrapper() {
+  static $dbWrapper = NULL;
+  if (!$dbWrapper) {
+    $dbWrapper = new TZDrupalDBWrapper();
+  }
+  return $dbWrapper;
+}
+
 function tzbase_user_jobs_mapper() {
-  $dbWrapper = new TZDrupalDBWrapper();
-  return new TZUserJobsMapper($dbWrapper);
+  return new TZUserJobsMapper(tzbase_db_wrapper());
+}
+
+function tzbase_availability_store() {
+  tzbase_include_proto_classes();
+  return new AvailabilityStore(tzbase_db_wrapper());
 }
 
 

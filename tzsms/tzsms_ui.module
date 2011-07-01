@@ -9,7 +9,7 @@ function tzsms_ui_menu() {
     'access arguments' => array('send sms'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('tzsms_ui_send_sms_form'),
-    'file' => 'tzsms_ui.send.inc',
+    'file' => 'includes/tzsms_ui.send.inc',
     'type' => MENU_NORMAL_ITEM,
   );
   $items['tzsms/text'] = array(
@@ -92,7 +92,8 @@ function tzsms_ui_recipient_form($default_policy = 'include', $default_selection
 }
 
 function tzsms_ui_form_tzuser_user_overview_alter(&$form, &$form_state) {
-  drupal_add_js(drupal_get_path('module', 'tzsms_ui') . '/tzsms_ui.overview.js');
+  drupal_add_js(drupal_get_path('module', 'tzsms_ui') . '/javascript/tzsms_ui.js');
+  drupal_add_js(drupal_get_path('module', 'tzsms_ui') . '/javascript/tzsms_ui.user.js');
   $form['send_reminder_sms'] = array(
     '#type' => 'submit',
     '#value' => t('Send reminder SMS'),
@@ -103,6 +104,20 @@ function tzsms_ui_form_tzuser_user_overview_alter(&$form, &$form_state) {
     '#value' => t('New install SMS'),
     '#access' => user_access('send sms'),
   );
+  $form['send_text_sms'] = array(
+    '#type' => 'submit',
+    '#value' => t('Send text-SMS'),
+    '#access' => user_access('send sms'),
+  );
+
+  jquery_ui_add(array('ui.core', 'ui.draggable', 'ui.dialog', 'ui.progressbar'));
+  drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/base/ui.all.css');
+}
+
+function tzsms_ui_form_tzbase_availability_form_alter(&$form, &$form_state) {
+  drupal_add_js(drupal_get_path('module', 'tzsms_ui') . '/javascript/tzsms_ui.js');
+  drupal_add_js(drupal_get_path('module', 'tzsms_ui') . '/javascript/tzsms_ui.user.js');
+
   $form['send_text_sms'] = array(
     '#type' => 'submit',
     '#value' => t('Send text-SMS'),

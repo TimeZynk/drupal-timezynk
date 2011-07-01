@@ -1,10 +1,5 @@
-Drupal.behaviors.TZSMSUserOverview = function(context) {
-
-    function clearAllCheckBoxes() {
-        $('tbody :checked').removeAttr('checked').click();
-    }
-
-    function showTextSMSDialog(text) {
+(function($) {
+	$.showTextSMSDialog = function(text, selectedEmployees) {
         var dialog,
             errors,
             form,
@@ -67,7 +62,7 @@ Drupal.behaviors.TZSMSUserOverview = function(context) {
             dialog.dialog('close');
             dialog.remove();
 
-            runWithProgressBar(employees, 5, function(employees, on_success) {
+            $.runWithProgressBar(employees, 5, function(employees, on_success) {
                 sendTextSMS(text, employees, on_success);
             });
         };
@@ -76,17 +71,9 @@ Drupal.behaviors.TZSMSUserOverview = function(context) {
             buttons: buttons,
             width: "450px"
         });
-    }
-
-    function selectedEmployees() {
-        var employees = [];
-        $('table.sticky-table :checked').each(function(index, element) {
-            employees.push($(element).val());
-        });
-        return employees;
-    }
-
-    function runWithProgressBar(employees, chunk_size, on_process) {
+    };
+    
+    $.runWithProgressBar = function(employees, chunk_size, on_process) {
         var dialog,
             progressbar,
             info;
@@ -134,39 +121,17 @@ Drupal.behaviors.TZSMSUserOverview = function(context) {
         }
 
         processEmployeeChunks();
+    };
+    
+    function clearAllCheckBoxes() {
+        $('tbody :checked').removeAttr('checked').click();
     }
-
+    
     function sendTextSMS(text, employees, on_success) {
         $.post('tzsms/send_text_sms_ajax', {
             "text": text,
             "selected_users[]": employees
         }, on_success);
     }
-
-    function sendInstallSMS(employees, on_success) {
-        $.post('tzsms/install_sms_ajax', {
-            "selected_users[]": employees
-        }, on_success);
-    }
-
-    $('#edit-send-install-sms').click(function(event) {
-        var employees = selectedEmployees();
-
-        event.preventDefault();
-
-        if (employees.length > 0) {
-            runWithProgressBar(employees, 5, sendInstallSMS);
-        }
-    });
-
-    $('#edit-send-reminder-sms').click(function(event) {
-        event.preventDefault();
-        showTextSMSDialog(Drupal.t('Hi! We are waiting for some of your time reports, please fill them in.'))
-    });
-
-    $('#edit-send-text-sms').click(function(event) {
-        event.preventDefault();
-        showTextSMSDialog();
-    });
-
-};
+    
+})(jQuery);

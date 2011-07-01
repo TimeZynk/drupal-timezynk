@@ -1,0 +1,12 @@
+#tzbase-availability-form fieldset > .form-item {
+    float: left;
+    margin-right: 2em;
+}
+
+#tzbase-availability-form .date-clear-block {
+    clear: none;
+}
+
+#tzbase-availability-form #edit-submit {
+	margin-top: 2.70em;
+}
