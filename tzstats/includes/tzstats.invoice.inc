@@ -1,5 +1,7 @@
 <?php
 
+define('TZSTATS_INVOICE_CACHE_EXPIRY', 3600);
+
 function tzstats_invoice_page() {
   $month = arg(3);
   if ($month) {
@@ -10,17 +12,23 @@ function tzstats_invoice_page() {
 }
 
 function _tzstats_invoice_choose_month() {
-  $date = date_make_date('now');
-
-  $output = '<ul>';
-  for ($i = 0; $i < 6; $i++) {
-    $date_string = $date->format('Y-m');
-    $invoice = new TZStatsInvoice($date);
-    $output .= '<li>' . l($date_string, 'admin/reports/invoice/' . $date_string) .
-      ': ' . theme('money', $invoice->total_cost()) . '</li>';
-    $date->modify('-1 month');
+  $output = "";
+  $cache_key = 'invoice-select-month';
+  if ($cache = cache_get($cache_key)) {
+    $output = $cache->data;
+  } else {
+    $date = date_make_date('now');
+    $output = '<ul>';
+    for ($i = 0; $i < 6; $i++) {
+      $date_string = $date->format('Y-m');
+      $invoice = new TZStatsInvoice($date);
+      $output .= '<li>' . l($date_string, 'admin/reports/invoice/' . $date_string) .
+                 ': ' . theme('money', $invoice->total_cost()) . '</li>';
+      $date->modify('-1 month');
+    }
+    $output .= '</ul>';
+    cache_set($cache_key, $output, 'cache', time() + TZSTATS_INVOICE_CACHE_EXPIRY);
   }
-  $output .= '</ul>';
   return $output;
 }
 
@@ -55,10 +63,14 @@ class TZStatsInvoice {
 
   function __construct($month_date) {
     $this->start_date = clone($month_date);
+    // Move to 00:00:00 first day of month
+    $this->start_date->setTime(0, 0, 0);
     $this->start_date->modify('-' . ($this->start_date->format('d') - 1) . ' days');
+
+    // Set end date to 23:59:59 last day of month
     $this->end_date = clone($this->start_date);
     $this->end_date->modify('+1 month');
-    $this->end_date->modify('-1 day');
+    $this->end_date->modify('-1 second');
 
     $this->user_costs = $this->calculate_user_costs();
     $this->minimum_costs = $this->calculate_minimum_cost($this->user_costs);
@@ -177,9 +189,9 @@ class TZStatsInvoice {
 
   private function add_user_cost_rows(&$rows) {
     $this->fill_cost_entry_rows($rows, $this->user_costs->day);
-    $rows[] = $this->format_subtotal($this->user_costs->day, 'day users');
 
     $this->fill_cost_entry_rows($rows, $this->user_costs->month);
+    $rows[] = $this->format_subtotal($this->user_costs->day, 'day users');
     $rows[] = $this->format_subtotal($this->user_costs->month, 'month users');
   }
 
@@ -205,15 +217,10 @@ class TZStatsInvoice {
   }
 
   private function calculate_sms_costs() {
-    $start_date = clone($this->start_date);
-    $end_date = clone($this->end_date);
-    $end_date->modify('+1 day');
-    $end_date->setTime(0, 0, 0);
-
     $sql = "SELECT SUM(CEIL(length/160)) FROM tzstats_sms " .
-           "WHERE tzstats_sms.timestamp >= %d AND tzstats_sms.timestamp < %d";
+           "WHERE tzstats_sms.timestamp >= %d AND tzstats_sms.timestamp <= %d";
 
-    $result = db_result(db_query($sql, $start_date->format('U'), $end_date->format('U')));
+    $result = db_result(db_query($sql, $this->start_date->format('U'), $this->end_date->format('U')));
 
     $cost_entry = new stdClass();
     $cost_entry->count = $result ? $result : 0;
@@ -257,15 +264,12 @@ class TZStatsInvoice {
 
   private function fill_user_bucket() {
     $user_bucket = array();
-    $start_date = clone($this->start_date);
-    $end_date = clone($this->end_date);
-    $end_date->modify('+1 day');
-    $end_date->setTime(0, 0, 0);
+
     $sql = "SELECT * FROM tzstats_report INNER JOIN tzreport ON tzreport.vid = tzstats_report.vid " .
-           "WHERE tzstats_report.timestamp >= %d AND tzstats_report.timestamp < %d " .
+           "WHERE tzstats_report.timestamp >= %d AND tzstats_report.timestamp <= %d " .
            "ORDER BY tzstats_report.uid";
 
-    $result = db_query($sql, $start_date->format('U'), $end_date->format('U'));
+    $result = db_query($sql, $this->start_date->format('U'), $this->end_date->format('U'));
     while ($entry = db_fetch_object($result)) {
       if ($entry->uid == 1) {
         continue;
@@ -276,10 +280,10 @@ class TZStatsInvoice {
     }
 
     $sql = "SELECT * FROM tzstats_login " .
-           "WHERE tzstats_login.timestamp >= %d AND tzstats_login.timestamp < %d " .
+           "WHERE tzstats_login.timestamp >= %d AND tzstats_login.timestamp <= %d " .
            "ORDER BY tzstats_login.uid";
 
-    $result = db_query($sql, $start_date->format('U'), $end_date->format('U'));
+    $result = db_query($sql, $this->start_date->format('U'), $this->end_date->format('U'));
     while ($entry = db_fetch_object($result)) {
       if ($entry->uid == 1) {
         continue;
