@@ -47,12 +47,45 @@ class Availability {
     return clone($this->end_time);
   }
 
+  public function setType($type) {
+    $this->type = $type;
+  }
+
+  public function getType() {
+    return $this->type;
+  }
+
   public function isAvailable() {
     return $this->type == TZAvailabilityType::AVAILABLE;
   }
 
   public function setDBWrapper($dbWrapper) {
     $this->dbWrapper = $dbWrapper;
+  }
+
+  public function save() {
+    $this->validate();
+    $written_record = $this->dbWrapper->writeRecord('tzavailability', $this->getFields());
+    $this->setFields($written_record);
+  }
+
+  public function validate() {
+    $exception = new TZDBValidationException('validations failed in Availability');
+    if (empty($this->uid)) {
+      $exception->addError(t('Missing user ID'));
+    }
+    if (empty($this->start_time)) {
+      $exception->addError(t('Missing start time'));
+    }
+    if (empty($this->end_time)) {
+      $exception->addError(t('Missing end time'));
+    }
+    if ($this->end_time < $this->start_time) {
+      $exception->addError(t('Inverted interval'));
+    }
+    if ($exception->hasErrors()) {
+      throw $exception;
+    }
   }
 
   private function setFields($record) {
@@ -70,5 +103,21 @@ class Availability {
     if (!empty($record->end_time)) {
       $this->end_time = tzbase_make_date($record->end_time);
     }
+  }
+
+  private function getFields() {
+    $fields = array();
+    if (!empty($this->id)) {
+      $fields['id'] = $this->id;
+    }
+    $fields['uid'] = $this->uid;
+    $fields['availability_type'] = $this->type;
+    if (!empty($this->start_time)) {
+      $fields['start_time'] = $this->start_time->format('U');
+    }
+    if (!empty($this->end_time)) {
+      $fields['end_time'] = $this->end_time->format('U');
+    }
+    return $fields;
   }
 }

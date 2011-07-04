@@ -15,6 +15,12 @@ function tzstats_administer_pricing() {
     '#description' => t('Maximum price per month per user'),
     '#default_value' => TIMEZYNK_MONTH_PRICE,
   );
+  $form['timezynk_availability_price'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Price per month for availability users'),
+    '#size' => 10,
+    '#default_value' => TIMEZYNK_AVAILABILITY_PRICE,
+  );
   $form['timezynk_sms_price'] = array(
     '#type' => 'textfield',
     '#title' => t('Price per SMS'),

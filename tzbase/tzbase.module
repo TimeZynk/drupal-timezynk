@@ -665,10 +665,6 @@ function tzbase_user($op, &$edit, &$account, $category = NULL) {
   }
 }
 
-function tzbase_load_availability($id) {
-  return db_fetch_object(db_query("SELECT * from {tzavailability} WHERE id = %d", $id));
-}
-
 function tzbase_job_by_jobcode($jobcode) {
   return node_load(db_result(db_query("SELECT nid FROM {tzjob} WHERE jobcode = '%s'", $jobcode)));
 }

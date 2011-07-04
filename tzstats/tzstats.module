@@ -2,6 +2,7 @@
 
 define('TIMEZYNK_DAY_PRICE', variable_get('timezynk_day_price', 5));
 define('TIMEZYNK_MONTH_PRICE', variable_get('timezynk_month_price', 50));
+define('TIMEZYNK_AVAILABILITY_PRICE', variable_get('timezynk_availability_price', 10));
 define('TIMEZYNK_SMS_PRICE', variable_get('timezynk_sms_price', 1));
 define('TIMEZYNK_MINIMUM_MONTH_USERS', variable_get('timezynk_minimum_month_users', 0));
 define('TIMEZYNK_MINIMUM_MONTH_USERS_START_DATE', variable_get('timezynk_minimum_month_users_start_date', ''));
@@ -111,6 +112,21 @@ function tzstats_synchronized_multiple_users($module, $count, $successful, $befo
     'timestamp' => time(),
   );
   drupal_write_record('tzstats_sync', $record);
+}
+
+/**
+ * Implementation of hook_db_write_record_tzavailability
+ * Store stats about writing availability to enable invoicing.
+ */
+function tzstats_db_write_record_tzavailability($record) {
+  if (empty($record->id)) {
+    // Only log creation of new availability
+    $stats = array(
+      'uid' => $record->uid,
+      'timestamp' => time(),
+    );
+    drupal_write_record('tzstats_availability', $stats);
+  }
 }
 
 function tzstats_cron() {

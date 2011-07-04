@@ -248,6 +248,34 @@ function tzstats_update_6007() {
   return $ret;
 }
 
+function tzstats_update_6008() {
+  $ret = array();
+  $schema['tzstats_availability'] = array(
+    'description' => t('Stores statistics on availability usage'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "{users}.uid.",
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for usage",
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  db_create_table($ret, 'tzstats_availability', $schema['tzstats_availability']);
+  return $ret;
+}
+
 /**
  * TZStats database schema
  */
@@ -440,6 +468,29 @@ function tzstats_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'description' => "Timestamp for attempted login",
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  $schema['tzstats_availability'] = array(
+    'description' => t('Stores statistics on availability usage'),
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "{users}.uid.",
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for usage",
       ),
     ),
     'primary key' => array('id'),

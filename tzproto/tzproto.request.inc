@@ -419,63 +419,53 @@ function tzproto_handle_create_report_cmd(&$cmd, &$result) {
   $result->set_create_report_result($reportresult);
 }
 
-function _tzproto_run_get_availability_query($get_availability_cmd) {
+function _tzproto_get_availabilities($get_availability_cmd) {
   global $user;
-  $filter_strings = array();
-  $filter_args = array();
-
-  $filter_strings[] = 'uid = %d';
-  $filter_args[] = $user->uid;
+  $availabilities = array();
+  $store = tzbase_availability_store();
 
   if ($get_availability_cmd->id()) {
     // Get single availability
-    $filter_strings[] = 'id = %d';
-    $filter_args[] = $get_availability_cmd->id();
+    $availability = $store->find($get_availability_cmd->id());
+    if (empty($availability)) {
+      throw new TZProtoException("Availability not found", 404);
+    }
+    if ($availability->getUserId() != $user->uid) {
+      throw new TZProtoException("May not read other user's availability", 403);
+    }
+    $availabilities[] = $availability;
   } else {
     // Get all within date range
     $range = tzproto_create_datetime_range($get_availability_cmd->date_range());
-    if ($range->start) {
-      $filter_strings[] = 'start_time >= %d';
-      $filter_args[] = $range->start->format('U');
-    }
-
-    if ($range->end) {
-      $filter_strings[] = 'start_time < %d';
-      $filter_args[] = $range->end->format('U');
-    }
+    $availabilities = $store->findBetween($user->uid, $range->start, $range->end);
   }
-  $filter_string = implode(' AND ', $filter_strings);
-
-  $query = 'SELECT * FROM {tzavailability} WHERE ' . $filter_string;
-  return db_query($query, $filter_args);
+  return $availabilities;
 }
 
 /**
  * Populates a TZAvailability object from one Availability DB entry.
- * @param $availability the TZAvailability object to populate.
- * @param $data a database entry for availability.
+ * @param TZAvailability $tzavailability the TZAvailability object to populate.
+ * @param Availability $availability a database entry for availability.
  */
-function tzproto_populate_tzavailability(&$availability, $data) {
-  $availability->set_id($data->id);
-  $availability->set_type($data->availability_type);
+function tzproto_populate_tzavailability(&$tzavailability, $availability) {
+  $tzavailability->set_id($availability->getId());
+  $tzavailability->set_type($availability->getType());
 
-  $time_span = tzproto_create_tztimespan($data->start_time, $data->end_time);
-  $availability->set_time_span($time_span);
+  $time_span = tzproto_create_tztimespan($availability->getStartTime()->format('U'),
+                                         $availability->getEndTime()->format('U'));
+  $tzavailability->set_time_span($time_span);
 }
 
 function tzproto_handle_get_availability_cmd(&$cmd, &$result) {
   if (!user_access('view own availability content')) {
-    $result->set_error_code(403);
-    $result->set_error_msg('May not view availability');
-    return;
+    throw new TZProtoException('May not view availability', 403);
   }
 
   $get_availability_result = new TZGetAvailabilityResult();
-  $db_result = _tzproto_run_get_availability_query($cmd->get_availability_cmd());
-
-  while ($data = db_fetch_object($db_result)) {
-    $availability = $get_availability_result->add_availability();
-    tzproto_populate_tzavailability($availability, $data);
+  $availabilities = _tzproto_get_availabilities($cmd->get_availability_cmd());
+  foreach ($availabilities as $availability) {
+    $tzavailability = $get_availability_result->add_availability();
+    tzproto_populate_tzavailability($tzavailability, $availability);
   }
   $result->set_get_availability_result($get_availability_result);
 }
@@ -484,40 +474,38 @@ function tzproto_handle_save_availability_cmd(&$cmd, &$result) {
   global $user;
 
   if (!user_access('create availability content')) {
-    $result->set_error_code(403);
-    $result->set_error_msg('May not create availability');
-    return;
+    throw new TZProtoException('May not create availability', 403);
   }
 
   $save_availability_cmd = $cmd->save_availability_cmd();
   $save_availability_result = new TZSaveAvailabilityResult();
 
-  $availability = $save_availability_cmd->availability();
-  if (!$availability) {
+  $tzavailability = $save_availability_cmd->availability();
+  if (!$tzavailability) {
     return;
   }
 
-  $record = NULL;
+  $availability = NULL;
+  $store = tzbase_availability_store();
 
-  if ($availability->id()) {
-    $record = tzbase_load_availability($availability->id());
-    if ($record->uid != $user->uid) {
-      $result->set_error_code(400);
-      $result->set_error_msg("May not modify other user's availability report");
-      return;
+  if ($tzavailability->id()) {
+    $availability = $store->find($tzavailability->id());
+    if (empty($availability)) {
+      throw new TZProtoException("Availability not found", 404);
+    }
+    if ($availability->getUserId() != $user->uid) {
+      throw new TZProtoException("May not modify other user's availability report", 403);
     }
   } else {
-    $record = new stdClass();
-    $record->uid = $user->uid;
+    $availability = $store->createAvailability();
+    $availability->setUserId($user->uid);
   }
 
-  $record->availability_type = $availability->type();
+  $availability->setType($tzavailability->type());
 
-  $time_span = $availability->time_span();
+  $time_span = $tzavailability->time_span();
   if (!$time_span) {
-    $result->set_error_code(400);
-    $result->set_error_msg('Missing time span in availability');
-    return;
+    throw new TZProtoException('Missing time span in availability', 400);
   }
 
   $start_date = tzproto_create_datetime($time_span->date(), $time_span->start());
@@ -525,16 +513,15 @@ function tzproto_handle_save_availability_cmd(&$cmd, &$result) {
   if ($end_date <= $start_date) {
     $end_date->modify('+1 day');
   }
-  $record->start_time = $start_date->format('U');
-  $record->end_time = $end_date->format('U');
-
-  if (empty($record->id)) {
-    drupal_write_record('tzavailability', $record);
-  } else {
-    drupal_write_record('tzavailability', $record, 'id');
+  $availability->setStartTime($start_date);
+  $availability->setEndTime($end_date);
+  try {
+    $availability->save();
+  } catch (TZDBValidationException $e) {
+    throw new TZProtoException("Validation failed", 400);
   }
 
-  $save_availability_result->set_id($record->id);
+  $save_availability_result->set_id($availability->getId());
   $result->set_save_availability_result($save_availability_result);
 }
 
@@ -542,30 +529,13 @@ function tzproto_handle_delete_availability_cmd(&$cmd, &$result) {
   global $user;
 
   if (!user_access('remove own availability content')) {
-    $result->set_error_code(403);
-    $result->set_error_msg('May not remove availability');
-    return;
+    throw new TZProtoException('May not remove availability', 403);
   }
 
   $delete_availability_cmd = $cmd->delete_availability_cmd();
-
-  $filter_strings = array();
-  $filter_args = array();
-
-  $filter_strings[] = 'uid = %d';
-  $filter_args[] = $user->uid;
-
-  $filter_strings[] = 'id = %d';
-  $filter_args[] = $delete_availability_cmd->id();
-
-  $filter_string = implode(' AND ', $filter_strings);
-
-  $query = 'DELETE FROM {tzavailability} WHERE ' . $filter_string;
-  db_query($query, $filter_args);
-  $affected_rows = db_affected_rows();
-  if (!$affected_rows) {
-    $result->set_error_code(404);
-    $result->set_error_msg('ID not found');
+  $store = tzbase_availability_store();
+  if (!$store->delete($user->uid, $delete_availability_cmd->id())) {
+    throw new TZProtoException('Availability ID not found', 404);
   }
 }
 

@@ -14,6 +14,7 @@ class TZDrupalDBWrapper implements TZDBWrapper {
 
   public function writeRecord($table, $record) {
     $record = (object) $record;
+    module_invoke_all('db_write_record_' . $table, $record);
     if (empty($record->id)) {
       drupal_write_record($table, $record);
     } else {

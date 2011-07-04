@@ -60,6 +60,7 @@ class TZStatsInvoice {
   private $user_costs;
   private $sms_costs;
   private $minimum_costs;
+  private $availability_costs;
 
   function __construct($month_date) {
     $this->start_date = clone($month_date);
@@ -74,11 +75,13 @@ class TZStatsInvoice {
 
     $this->user_costs = $this->calculate_user_costs();
     $this->minimum_costs = $this->calculate_minimum_cost($this->user_costs);
+    $this->availability_costs = $this->calculate_availability_cost();
     $this->sms_costs = $this->calculate_sms_costs();
   }
 
   function total_cost() {
     $total_costs = $this->total_user_cost();
+    $total_costs += $this->total_availability_cost();
     $total_costs += $this->sms_costs->total;
     return $total_costs;
   }
@@ -94,6 +97,7 @@ class TZStatsInvoice {
     $rows = array();
     $this->add_user_cost_rows($rows);
     $this->add_user_total_cost_rows($rows);
+    $this->add_availability_cost_rows($rows);
     $this->add_sms_cost_rows($rows);
     $this->add_grand_total_row($rows);
     return theme('table', $headers, $rows, array('class' => 'tzstats-invoice-table'));
@@ -195,6 +199,30 @@ class TZStatsInvoice {
     $rows[] = $this->format_subtotal($this->user_costs->month, 'month users');
   }
 
+  private function add_availability_cost_rows(&$rows) {
+    foreach ($this->availability_costs as $uid => $cost_entry) {
+      if (!is_numeric($uid)) {
+        continue;
+      }
+      $account = user_load($uid);
+      $rows[] = array(
+        'Availability ' . ($account ? theme('username', $account) : 'User ' . $uid),
+        $cost_entry->count . ' user',
+        $this->money_cell($cost_entry->cost/$cost_entry->count),
+        $this->money_cell($cost_entry->cost),
+      );
+    }
+    $rows[] = array(
+      'data' => array(
+        'Total availability cost',
+        $this->availability_costs['total_count'] . ' users',
+        $this->money_cell($this->availability_costs['total_cost']/$this->availability_costs['total_count']),
+        $this->money_cell($this->availability_costs['total_cost']),
+      ),
+      'class' => 'invoice-subtotal',
+    );
+  }
+
   private function add_sms_cost_rows(&$rows) {
     $rows[] = array(
       'SMS',
@@ -208,6 +236,10 @@ class TZStatsInvoice {
     return $this->minimum_costs;
   }
 
+  private function total_availability_cost() {
+    return $this->availability_costs['total_cost'];
+  }
+
   private function actual_user_days() {
     return $this->user_costs->day['total_days'] + $this->user_costs->month['total_days'];
   }
@@ -217,8 +249,8 @@ class TZStatsInvoice {
   }
 
   private function calculate_sms_costs() {
-    $sql = "SELECT SUM(CEIL(length/160)) FROM tzstats_sms " .
-           "WHERE tzstats_sms.timestamp >= %d AND tzstats_sms.timestamp <= %d";
+    $sql = "SELECT SUM(CEIL(length/160)) FROM {tzstats_sms} sms " .
+           "WHERE sms.timestamp >= %d AND sms.timestamp <= %d";
 
     $result = db_result(db_query($sql, $this->start_date->format('U'), $this->end_date->format('U')));
 
@@ -228,6 +260,23 @@ class TZStatsInvoice {
     $cost_entry->total = $cost_entry->count * $cost_entry->cost;
 
     return $cost_entry;
+  }
+
+  private function calculate_availability_cost() {
+    $sql = "SELECT * FROM {tzstats_availability} WHERE timestamp >= %d AND timestamp <= %d";
+    $result = db_query($sql, $this->start_date->format('U'), $this->end_date->format('U'));
+    $cost_entries = array();
+    while ($row = db_fetch_object($result)) {
+      $cost_entries[$row->uid] = (object)array(
+        'uid' => $row->uid,
+        'count' => 1,
+        'cost' => TIMEZYNK_AVAILABILITY_PRICE,
+        'total' => TIMEZYNK_AVAILABILITY_PRICE,
+      );
+    }
+    $cost_entries['total_count'] = count($cost_entries);
+    $cost_entries['total_cost'] = $cost_entries['total_count'] * TIMEZYNK_AVAILABILITY_PRICE;
+    return $cost_entries;
   }
 
   private function calculate_user_costs() {
@@ -265,7 +314,7 @@ class TZStatsInvoice {
   private function fill_user_bucket() {
     $user_bucket = array();
 
-    $sql = "SELECT * FROM tzstats_report INNER JOIN tzreport ON tzreport.vid = tzstats_report.vid " .
+    $sql = "SELECT * FROM {tzstats_report} tzstats_report INNER JOIN {tzreport} tzreport ON tzreport.vid = tzstats_report.vid " .
            "WHERE tzstats_report.timestamp >= %d AND tzstats_report.timestamp <= %d " .
            "ORDER BY tzstats_report.uid";
 
@@ -279,9 +328,9 @@ class TZStatsInvoice {
       $user_bucket[$entry->uid][$date->format('Ymd')] = TIMEZYNK_DAY_PRICE;
     }
 
-    $sql = "SELECT * FROM tzstats_login " .
-           "WHERE tzstats_login.timestamp >= %d AND tzstats_login.timestamp <= %d " .
-           "ORDER BY tzstats_login.uid";
+    $sql = "SELECT * FROM {tzstats_login} " .
+           "WHERE timestamp >= %d AND timestamp <= %d " .
+           "ORDER BY uid";
 
     $result = db_query($sql, $this->start_date->format('U'), $this->end_date->format('U'));
     while ($entry = db_fetch_object($result)) {
