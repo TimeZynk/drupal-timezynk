@@ -372,6 +372,12 @@ function _tzuser_show_entry(&$account) {
       '#weight' => -8,
     );
   }
+  $account->content['last_login'] = array(
+    '#type' => 'user_profile_item',
+    '#title' => t('Last login'),
+    '#value' => theme('time_ago', $account->login),
+    '#weight' => -7,
+  );
 }
 
 function _tzuser_validate_entry($edit) {

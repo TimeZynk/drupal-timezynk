@@ -1,6 +1,7 @@
 <?php
 
 define('TZINTELLITIME_BASE_URL', variable_get('tzintellitime_base_url', ''));
+define('TZINTELLITIME_SESSION_LIFETIME', 3600);
 
 /**
  * Implementation of hook_menu().
@@ -20,35 +21,67 @@ function tzintellitime_menu() {
 }
 
 function tzintellitime_user($op, &$edit, &$account, $category = NULL) {
-  if ($op === 'view' && tzintellitime_is_authenticated($account) && user_access('administer site configuration')) {
-    $session_data = $account->intellitime_session_data;
-
-    $cookiejar = fopen($session_data['cookiejar'], 'r');
-    $cookies = "";
-    /**
-     * The cookie file is a TAB-separated file in the following format:
-     * <0:domain> <1:unknown boolean> <2:path>  <3:unknown boolean> <4:expiry>  <5:key> <6:value>
-     *
-     * It starts with a bunch of empty or commented lines, so filter that first.
-     */
-    while (($row = fgetcsv($cookiejar, 0, "\t")) !== FALSE) {
-      if (count($row) < 7) {
-        // Comment or invalid row, skip
-        continue;
-      }
-      $cookies .= 'document.cookie="' . $row[5] . '=' . $row[6] .
-          '; domain=' . $row[0] . '; path=' . $row[2] . '"; ';
-    }
-    fclose($cookiejar);
-
-    $location = 'window.location="' . $session_data['last_effective_url'] . '";';
-
-    $account->content['intelliplan_session'] = array(
-      '#type' => 'user_profile_item',
-      '#title' => t('Intelliplan session'),
-      '#description' => t('Paste into firebug console of empty window'),
-      '#value' => '<textarea cols="80" rows="5">' . $cookies . $location . '</textarea>'
+  if ($op === 'view' && user_access('administer site configuration')) {
+    $account->content['intellitime'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Intelliplan'),
+      '#collapsible' => TRUE,
     );
+
+    $account->content['intellitime']['user'] = array(
+      '#type' => 'user_profile_item',
+      '#title' => t('Intelliplan User'),
+      '#description' => t('Is this user an intelliplan user?'),
+      '#value' => empty($account->intellitime_user) ? 'false' : 'true',
+    );
+
+    if (tzintellitime_is_authenticated($account)) {
+      $session_data = $account->intellitime_session_data;
+
+      $cookiejar = fopen($session_data['cookiejar'], 'r');
+      $cookies = "";
+      /**
+       * The cookie file is a TAB-separated file in the following format:
+       * <0:domain> <1:unknown boolean> <2:path>  <3:unknown boolean> <4:expiry>  <5:key> <6:value>
+       *
+       * It starts with a bunch of empty or commented lines, so filter that first.
+       */
+      while (($row = fgetcsv($cookiejar, 0, "\t")) !== FALSE) {
+        if (count($row) < 7) {
+          // Comment or invalid row, skip
+          continue;
+        }
+        $cookies .= 'document.cookie="' . $row[5] . '=' . $row[6] .
+            '; domain=' . $row[0] . '; path=' . $row[2] . '"; ';
+      }
+      fclose($cookiejar);
+
+      $location = 'window.location="' . $session_data['last_effective_url'] . '";';
+
+      $account->content['intellitime']['session'] = array(
+        '#type' => 'user_profile_item',
+        '#title' => t('Intelliplan session'),
+        '#description' => t('Paste into firebug console of empty window'),
+        '#value' => '<textarea cols="80" rows="5">' . $cookies . $location . '</textarea>'
+      );
+      $account->content['intellitime']['session_age'] = array(
+        '#type' => 'user_profile_item',
+        '#title' => t('Intelliplan session age'),
+        '#description' => t('When was the intelliplan session created?'),
+        '#value' => theme('time_ago', $session_data['created'])
+      );
+    }
+
+
+    if (!empty($account->intellitime_last_sync)) {
+      $account->content['intellitime']['last_sync'] = array(
+        '#type' => 'user_profile_item',
+        '#title' => t('Intelliplan last sync'),
+        '#description' => t('Last synchronization with intelliplan'),
+        '#value' => (empty($account->intellitime_active) ? 'Inactive: ' : 'Active: ') .
+                    theme('time_ago', $account->intellitime_last_sync),
+      );
+    }
   }
 }
 
@@ -167,12 +200,12 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
     return;
   }
 
-  if (!$account || (isset($account->intellitime_user) && !tzintellitime_is_authenticated($account))) {
+  if (!$account || tzintellitime_session_needs_refresh($account)) {
     try {
       $user = tzintellitime_server_auth($account, $username, $password);
 
       // Schedule for sync
-      if(module_exists('tzintellitime_sync')) {
+      if(empty($user->intellitime_active) && module_exists('tzintellitime_sync')) {
         tzintellitime_sync_schedule_user($user->uid);
       }
     } catch(TZNetworkFailureException $e) {
@@ -196,6 +229,26 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
   if(empty($user->uid)) {
     user_authenticate($form_state['values']);
   }
+}
+
+function tzintellitime_session_needs_refresh($account) {
+  if (empty($account->intellitime_user)) {
+    // Not intellitime user, no point to refresh anything
+    return FALSE;
+  }
+  if (!tzintellitime_is_authenticated($account)) {
+    // Authentication expired, refresh session now
+    return TRUE;
+  }
+  if (empty($account->intellitime_session_data['created'])) {
+    // Session creation time unknown, better refresh
+    return TRUE;
+  }
+  if ($account->intellitime_session_data['created'] + TZINTELLITIME_SESSION_LIFETIME < time()) {
+    // Session is still valid, but getting old. Refresh to extend.
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /**
