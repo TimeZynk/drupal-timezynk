@@ -1,7 +1,5 @@
 <?php
 
-class TZIntellitimeErrorPageException extends TZIntellitimeServerException {}
-
 class TZIntellitimeWeekData {
 
   /**

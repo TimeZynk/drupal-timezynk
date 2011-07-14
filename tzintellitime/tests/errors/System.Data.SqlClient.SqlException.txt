@@ -1,0 +1,25 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Error</title><meta content="Microsoft Visual Studio 7.0" name="GENERATOR" /><meta content="C#" name="CODE_LANGUAGE" /><meta content="JavaScript" name="vs_defaultClientScript" /><meta content="http://schemas.microsoft.com/intellisense/ie5" name="vs_targetSchema" /><link href="css/Portal.css" type="text/css" rel="stylesheet" /><link href="../css/Style.css" type="text/css" rel="stylesheet" /></head><body ms_positioning="FlowLayout">&#13;
+		<form name="Error" method="post" action="Error.aspx?aspxerrorpath=/IntelliplanWeb/v2005/TimeReport/TimeReport.aspx" id="Error">&#13;
+<input type="hidden" name="__VIEWSTATE" value="dDwtODk3NzU5ODYxO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDU+O2k8OT47aTwxMz47aTwxNT47PjtsPHQ8cDxwPGw8VGV4dDs+O2w8Q2Fubm90IG9wZW4gZGF0YWJhc2UgIkRCMDExNiIgcmVxdWVzdGVkIGJ5IHRoZSBsb2dpbi4gVGhlIGxvZ2luIGZhaWxlZC4NCkxvZ2luIGZhaWxlZCBmb3IgdXNlciAnVVNSX0RCMDExNicuOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxTeXN0ZW0uRGF0YS5TcWxDbGllbnQuU3FsRXhjZXB0aW9uOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDwgICBhdCBTeXN0ZW0uRGF0YS5TcWxDbGllbnQuU3FsSW50ZXJuYWxDb25uZWN0aW9uLk9wZW5BbmRMb2dpbigpDQogICBhdCBTeXN0ZW0uRGF0YS5TcWxDbGllbnQuU3FsSW50ZXJuYWxDb25uZWN0aW9uLi5jdG9yKFNxbENvbm5lY3Rpb24gY29ubmVjdGlvbiwgU3FsQ29ubmVjdGlvblN0cmluZyBjb25uZWN0aW9uT3B0aW9ucykNCiAgIGF0IFN5c3RlbS5EYXRhLlNxbENsaWVudC5TcWxDb25uZWN0aW9uLk9wZW4oKQ0KICAgYXQgSVBNYWluODIuSVBEQUwuQ29ubmVjdFRocm93c0V4KFN0cmluZyBpX3NDb25uU3RyaW5nKTs+Pjs+Ozs+O3Q8cDxwPGw8TmF2aWdhdGVVcmw7VGV4dDs+O2w8L0ludGVsbGlwbGFuV2ViL3YyMDA1L1RpbWVSZXBvcnQvVGltZVJlcG9ydC5hc3B4O1Byb3ZhIElnZW47Pj47Pjs7Pjs+Pjs+Pjs+IqCX/CJ7uluXynV4lrkJ0mPSxcE=" /><!-- TOP BAR START --><table cellspacing="0" cellpadding="0" width="100%" border="0"><tr><td width="100%"><span id="TopBar1"><table border="0" background="../Images/Img_Tonebanner.jpg" style="background-repeat: no-repeat;" bgcolor="#7aa1be" width="100%" cellpadding="0"><tr><td valign="middle" width="8"><img src="../Images/Trans.gif" alt="" border="0" height="24" width="8" /></td>&#13;
+		<td width="15" valign="middle"><img src="Images/Img_ErrorIco.gif" alt="" border="0" /></td>&#13;
+		<td width="5" valign="middle"><img src="../Images/Trans.gif" alt="" border="0" width="5" /></td>&#13;
+		<td width="100%" valign="middle" class="TopBarBig"><span>Ett fel har uppstått!</span></td>&#13;
+	</tr></table></span></td>&#13;
+				</tr></table><!-- TOP BAR END --><img height="3" src="Images/Trans.gif" width="1" border="0" /><br /><table style="BORDER-RIGHT: #aca899 1px solid; BORDER-TOP: #aca899 1px solid; BORDER-LEFT: #aca899 1px solid; BORDER-BOTTOM: #aca899 1px solid" cellspacing="0" cellpadding="0" width="100%" border="0"><tr><td width="*" bgcolor="#ffffff">&#13;
+						<table cellspacing="0" cellpadding="0" width="100%" border="0"><tr><td width="*" colspan="4"><img height="10" src="Images/Trans.gif" width="1" border="0" /></td>&#13;
+							</tr><tr><td width="15"><img height="1" src="Images/Trans.gif" width="15" border="0" /></td>&#13;
+								<td class="ContentMedium" valign="top" width="*">&#13;
+									<table cellspacing="0" cellpadding="0" border="0"><tr><td class="CONTENTMEDIUM" valign="top">&#13;
+												<p><span id="MessageLabel">Meddelande</span><br /><span id="LabelErrortext">Cannot open database "DB0116" requested by the login. The login failed.&#13;
+Login failed for user 'USR_DB0116'.</span><br /><br /><span id="TypeLabel">Feltyp</span><br /><span id="ExceptionType">System.Data.SqlClient.SqlException</span><br /><br /><span id="StackTraceLabel">Stacktrace</span><br /><span id="StackTrace">   at System.Data.SqlClient.SqlInternalConnection.OpenAndLogin()&#13;
+   at System.Data.SqlClient.SqlInternalConnection..ctor(SqlConnection connection, SqlConnectionString connectionOptions)&#13;
+   at System.Data.SqlClient.SqlConnection.Open()&#13;
+   at IPMain82.IPDAL.ConnectThrowsEx(String i_sConnString)</span><br /><br /><a id="HyperLinkReturn" href="/IntelliplanWeb/v2005/TimeReport/TimeReport.aspx">Prova Igen</a>&#13;
+												</p><p></p>&#13;
+											</td>&#13;
+										</tr></table></td>&#13;
+								<td width="15"><img height="1" src="Images/Trans.gif" width="15" border="0" /></td>&#13;
+							</tr><tr><td width="*" colspan="4"><img height="10" src="Images/Trans.gif" width="1" border="0" /></td>&#13;
+							</tr></table></td>&#13;
+				</tr></table></form>&#13;
+	</body></html>
