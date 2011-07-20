@@ -2,6 +2,7 @@
 
 class IntellitimePageTest extends PHPUnit_Framework_TestCase {
   public function setUp() {
+    $this->bot = $this->getMock('TZIntellitimeBot');
   }
 
   public function testWhenBuildingFromFormatErrorPage_ItShouldThrowErrorPageException() {
@@ -29,6 +30,6 @@ class IntellitimePageTest extends PHPUnit_Framework_TestCase {
     $handle = fopen($full_name, "r");
     $contents = fread($handle, filesize($full_name));
     fclose($handle);
-    return new IntellitimePage($contents);
+    return new IntellitimePage($contents, $this->bot);
   }
 }

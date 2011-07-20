@@ -21,10 +21,25 @@ class IntellitimePage {
    */
   protected $doc;
 
-  public function __construct($html_string) {
+  /**
+   * @var TZIntellitimeBot
+   */
+  protected $bot;
+
+  /**
+   * @param String $html_string
+   * @param TZIntellitimeBot $bot
+   * @throws InvalidArgumentException
+   */
+  public function __construct($html_string, $bot) {
     if (empty($html_string)) {
       throw new InvalidArgumentException("Empty HTML");
     }
+    if (empty($bot)) {
+      throw new InvalidArgumentException("No bot supplied");
+    }
+
+    $this->bot = $bot;
 
     $this->doc = $this->load_simplexml_from_html($html_string);
     $this->validate();

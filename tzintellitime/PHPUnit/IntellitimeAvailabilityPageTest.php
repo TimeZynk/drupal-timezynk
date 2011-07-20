@@ -2,6 +2,7 @@
 
 class IntellitimeAvailabilityPageTest extends PHPUnit_Framework_TestCase {
   public function setUp() {
+    $this->bot = $this->getMock('TZIntellitimeBot');
   }
 
   public function testWhenBuildingFromEmptyPage_ItShouldReturnNoAvailableDays() {
@@ -51,6 +52,47 @@ class IntellitimeAvailabilityPageTest extends PHPUnit_Framework_TestCase {
     $this->checkForDates($days, $expected_dates);
   }
 
+  public function testShouldReturnNullWhenGettingPostWithoutData() {
+    $page = $this->build_from_page('availability-0-days.txt');
+    $this->assertNull($page->getPost());
+  }
+
+  public function testShouldGetAPostAfterAddingData() {
+    $expectedAvailability = new IntellitimeAvailability();
+    $expectedAvailability->setDate(date_make_date('2011-07-15'));
+    $page = $this->build_from_page('availability-0-days.txt');
+    $page->setAvailabilities(array($expectedAvailability));
+    $this->assertNotNull($page->getPost());
+  }
+
+  public function testCorrectPostWhenAddingDays() {
+    $expectedAvailability = new IntellitimeAvailability();
+    $expectedAvailability->setDate(date_make_date('2011-07-15'));
+    $page = $this->build_from_page('availability-0-days.txt');
+    $page->setAvailabilities(array($expectedAvailability));
+    $this->assertInstanceOf('IntellitimeAvailabilityAddPost', $page->getPost());
+  }
+
+  public function testCorrectPostWhenUpdatingDays() {
+    $expectedAvailability = new IntellitimeAvailability();
+    $expectedAvailability->setDate(date_make_date('2011-07-14'));
+    $page = $this->build_from_page('availability-1-day.txt');
+    $page->setAvailabilities(array($expectedAvailability));
+    $this->assertInstanceOf('IntellitimeAvailabilityUpdatePost', $page->getPost());
+  }
+
+  public function testThrowsWhenAddingAvailabilitiesBeforeDateRange() {
+    $expectedAvailability = new IntellitimeAvailability();
+    $expectedAvailability->setDate(date_make_date('2011-07-13'));
+    $page = $this->build_from_page('availability-1-day.txt');
+    try {
+      $page->setAvailabilities(array($expectedAvailability));
+      $this->fail();
+    } catch (InvalidArgumentException $e) {
+      $this->assertNotNull($e, 'Expected exception');
+    }
+  }
+
   private function checkForDates($days, $expected_dates) {
     $this->assertEquals(count($days), count($expected_dates));
     foreach ($days as $i => $day) {
@@ -63,6 +105,6 @@ class IntellitimeAvailabilityPageTest extends PHPUnit_Framework_TestCase {
     $handle = fopen($full_name, "r");
     $contents = fread($handle, filesize($full_name));
     fclose($handle);
-    return new IntellitimeAvailabilityPage($contents);
+    return new IntellitimeAvailabilityPage($contents, $this->bot);
   }
 }

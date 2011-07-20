@@ -32,6 +32,11 @@ class TZIntellitimeBot implements TZIntellitimeServerInterface {
     return new TZIntellitimeWeekData($parser);
   }
 
+  public function post($action, $data) {
+    $actionUrl = $this->build_action_url($action);
+    return $this->curl->request($actionUrl, $data);
+  }
+
   public function refreshWeek($date) {
     // Use today as default date
     if($date === NULL) {
