@@ -276,6 +276,24 @@ function tzstats_update_6008() {
   return $ret;
 }
 
+function tzstats_update_6009() {
+  $ret = array();
+  $schema['tzstats_xmlrpc_nonce'] = array(
+    'description' => 'Keeps track of used nonce values',
+    'fields' => array(
+      'nonce' => array(
+        'type' => 'char',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'SHA256 checksum of used nonce value',
+      ),
+    ),
+    'primary key' => array('nonce'),
+  );
+  db_create_table($ret, 'tzstats_xmlrpc_nonce', $schema['tzstats_xmlrpc_nonce']);
+  return $ret;
+}
+
 /**
  * TZStats database schema
  */
@@ -494,6 +512,19 @@ function tzstats_schema() {
       ),
     ),
     'primary key' => array('id'),
+  );
+  
+  $schema['tzstats_xmlrpc_nonce'] = array(
+    'description' => 'Keeps track of used nonce values',
+    'fields' => array(
+      'nonce' => array(
+        'type' => 'char',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'SHA256 checksum of used nonce value',
+      ),
+    ),
+    'primary key' => array('nonce'),
   );
 
   return $schema;

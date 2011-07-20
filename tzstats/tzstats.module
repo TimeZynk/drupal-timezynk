@@ -6,6 +6,7 @@ define('TIMEZYNK_AVAILABILITY_PRICE', variable_get('timezynk_availability_price'
 define('TIMEZYNK_SMS_PRICE', variable_get('timezynk_sms_price', 1));
 define('TIMEZYNK_MINIMUM_MONTH_USERS', variable_get('timezynk_minimum_month_users', 0));
 define('TIMEZYNK_MINIMUM_MONTH_USERS_START_DATE', variable_get('timezynk_minimum_month_users_start_date', ''));
+define('TIMEZYNK_TZSTATS_API_KEY', 'NRxbqRYscRnjSW7dPiOFOFeRMAQsSECkb8tsnml9NROT0nSGXGDqYLDnAEheL2cN');
 
 function tzstats_menu() {
   $items['admin/reports/invoice'] = array(
@@ -33,7 +34,13 @@ function tzstats_menu() {
     'file' => 'includes/tzstats.pricing.inc',
     'type' => MENU_NORMAL_ITEM,
   );
-
+  $items['admin/reports/user_stats.json'] = array(
+    'title' => 'User Stats (JSON)',
+    'page callback' => 'tzstats_user_stats_json',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/tzstats.user_stats.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
   return $items;
 }
 
@@ -196,4 +203,65 @@ function tzstats_tzproto_login_failed($username, $user_agent) {
   	'timestamp' => time(),
   );
   drupal_write_record('tzstats_failed_login', $record);
+}
+
+function tzstats_xmlrpc() {
+  $methods = array();
+  $methods['userStats.getStatus'] = 'xmls_tzstats_get_status';
+  $methods['userStats.getLogins'] = 'xmls_tzstats_get_logins'; 
+  return $methods;
+}
+
+function tzstats_auth_xmlrpc($key, $nonce, $params) {
+  // Verify nonce length
+  if (strlen($nonce) < 16) {
+    return FALSE;
+  }
+  
+  // Verify that nonce is unique
+  $nonce_sha = hash('sha256', $nonce);
+  $unique = @db_query("INSERT INTO {tzstats_xmlrpc_nonce} (nonce) VALUES ('%s')", $nonce_sha);
+  if (!$unique) {
+    // Nonce must be unique
+    return FALSE;
+  }
+
+  // Verify API key HMAC
+  $data = $_SERVER['HTTP_HOST'] . $nonce . implode($params);
+  $hmac = hash_hmac('sha256', $data, TIMEZYNK_TZSTATS_API_KEY);
+  return $hmac == $key;
+}
+
+function xmls_tzstats_get_status($key, $nonce, $timestamp) {
+  if (!tzstats_auth_xmlrpc($key, $nonce, array($timestamp))) {
+    return xmlrpc_error(401, 'Unauthorized');
+  }
+  
+  $user_status = array();
+  $date = date_make_date($timestamp);
+  $date->setTime(0, 0, 0);
+  $date->modify('+1 day');
+  $now = $date->format('U');
+
+  $result = db_query('SELECT * FROM {users} WHERE uid > 1 AND status = 1');
+  while ($account = db_fetch_object($result)) {
+    $status = tzuser_get_user_status($account, $now);
+    $status_code = $status->getStatusCode($now);
+    $user_status[] = array(
+      'uid' => intval($account->uid, 10),
+      'status' => $status_code
+    );
+  }
+  
+  return $user_status;
+}
+
+function xmls_tzstats_get_logins($key, $nonce, $timestamp, $interval) {
+  if (!tzstats_auth_xmlrpc($key, $nonce, array($timestamp, $interval))) {
+    return xmlrpc_error(401, 'Unauthorized');
+  }
+  
+  $query = 'SELECT COUNT(DISTINCT(uid)) FROM {tzstats_login} WHERE timestamp > %d AND timestamp < %d';
+  $result = db_result(db_query($query, $timestamp - $interval, $timestamp));
+  return intval($result);
 }
