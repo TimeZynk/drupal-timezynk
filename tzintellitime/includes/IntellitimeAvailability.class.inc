@@ -19,7 +19,7 @@ class IntellitimeAvailability {
    * Models an availability list for a given date in intellitime.
    */
   public function __construct($date = NULL, $formId = '') {
-    $this->date = $date;
+    $this->date = isset($date) ? clone $date : NULL;
     $this->formId = $formId;
   }
 

@@ -52,9 +52,12 @@ class IntellitimeAvailabilityPageTest extends PHPUnit_Framework_TestCase {
     $this->checkForDates($days, $expected_dates);
   }
 
-  public function testShouldReturnNullWhenGettingPostWithoutData() {
+  /**
+   * Posting with setting any data implies clearing all availabilities.
+   */
+  public function testShouldReturnUpdatePostWhenGettingPostWithoutData() {
     $page = $this->build_from_page('availability-0-days.txt');
-    $this->assertNull($page->getPost());
+    $this->assertInstanceOf('IntellitimeAvailabilityUpdatePost', $page->getPost());
   }
 
   public function testShouldGetAPostAfterAddingData() {

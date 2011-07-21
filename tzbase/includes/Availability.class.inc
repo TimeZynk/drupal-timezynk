@@ -63,6 +63,16 @@ class Availability {
     $this->dbWrapper = $dbWrapper;
   }
 
+  public function isOverlappingRange($from, $to) {
+    $from_date = date_make_date($this->start_time->format('Y-m-d') . 'T' . $from);
+    $to_date = date_make_date($this->start_time->format('Y-m-d') . 'T' . $to);
+    if ($to_date < $from_date) {
+      $to_date->modify('+1 day');
+    }
+    return ($this->start_time >= $from_date && $this->start_time < $to_date) ||
+           ($this->end_time > $from_date && $this->end_time <= $to_date);
+  }
+
   public function save() {
     $this->validate();
     $written_record = $this->dbWrapper->writeRecord('tzavailability', $this->getFields());

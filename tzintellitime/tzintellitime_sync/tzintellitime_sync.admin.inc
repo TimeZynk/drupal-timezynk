@@ -44,6 +44,35 @@ function tzintellitime_sync_admin_settings() {
     '#default_value' => TZINTELLITIME_SYNC_INITIAL_SYNC,
   );
 
+  $availability_set = array(
+    '#type' => 'fieldset',
+    '#title' => 'Availability settings',
+    '#collapsible' => TRUE,
+  );
+
+  $availability_set['tzintellitime_sync_availability_day'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Which hours to consider as day',
+    '#description' => 'Example: "07:00-12:00" synchronizes availability reports between 07:00 and 12:00 to Intellitime as the day checkbox.',
+    '#default_value' => TZINTELLITIME_SYNC_AVAILABILITY_DAY
+  );
+
+  $availability_set['tzintellitime_sync_availability_evening'] = array(
+  	'#type' => 'textfield',
+  	'#title' => 'Which hours to consider as evening',
+  	'#description' => 'Example: "12:00-18:00" synchronizes availability reports between 12:00 and 18:00 to Intellitime as the evening checkbox.',
+  	'#default_value' => TZINTELLITIME_SYNC_AVAILABILITY_EVENING
+  );
+
+  $availability_set['tzintellitime_sync_availability_night'] = array(
+  	'#type' => 'textfield',
+  	'#title' => 'Which hours to consider as night',
+  	'#description' => 'Example: "18:00-23:00" synchronizes availability reports between 18:00 and 23:00 to Intellitime as the night checkbox.',
+  	'#default_value' => TZINTELLITIME_SYNC_AVAILABILITY_NIGHT
+  );
+
+  $form['availability_set'] = $availability_set;
+
   return system_settings_form($form);
 }
 
@@ -67,4 +96,15 @@ function tzintellitime_sync_admin_settings_validate($form, &$form_state) {
   if(!ctype_digit($form_state['values']['tzintellitime_sync_weeks_backward'])) {
     form_set_error('tzintellitime_sync_weeks_backward', t('Enter number of weeks as a positive integer.'));
   }
+
+  if(1 !== preg_match('/^\d{2}:\d{2}-\d{2}:\d{2}$/', $form_state['values']['tzintellitime_sync_availability_day'])) {
+    form_set_error('tzintellitime_sync_availability_day', 'Enter time span as HH:MM-HH:MM');
+  }
+  if(1 !== preg_match('/^\d{2}:\d{2}-\d{2}:\d{2}$/', $form_state['values']['tzintellitime_sync_availability_evening'])) {
+    form_set_error('tzintellitime_sync_availability_evening', 'Enter time span as HH:MM-HH:MM');
+  }
+  if(1 !== preg_match('/^\d{2}:\d{2}-\d{2}:\d{2}$/', $form_state['values']['tzintellitime_sync_availability_night'])) {
+    form_set_error('tzintellitime_sync_availability_night', 'Enter time span as HH:MM-HH:MM');
+  }
+
 }

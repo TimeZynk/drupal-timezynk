@@ -3,8 +3,22 @@
 class IntellitimeAvailabilityUpdatePost extends IntellitimePost {
   private $availabilities;
 
+  /**
+   * Constructs a POST command that updates all availability in Intellitime.
+   * It additively merges the given availabilities for a day before uploading.
+   * E.g. given one availability with 'day' and 'night' set to available, and
+   * another availability with 'evening' set to available, both for the same
+   * date, will result in 'day', 'evening' and 'night' set to available for
+   * that date.
+   *
+   * @param TZIntellitimeBot $bot the bot that will do the actuall uploading
+   * @param IntellitimeForm $form the availability form from Intellitime.
+   * @param Array $availabilities an array containing IntellitimeAvailability
+   * objects to push to the server.
+   * @throws InvalidArgumentException if availabilites are not given.
+   */
   public function __construct($bot, $form, $availabilities) {
-    if (empty($availabilities)) {
+    if (!isset($availabilities)) {
       throw new InvalidArgumentException('Missing availabilities');
     }
     parent::__construct($bot, $form);

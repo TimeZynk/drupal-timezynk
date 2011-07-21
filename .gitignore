@@ -1,5 +1,6 @@
 *~
 \#*\#
 *.mo
+
 coverage/
-/nbproject/private/
+nbproject/

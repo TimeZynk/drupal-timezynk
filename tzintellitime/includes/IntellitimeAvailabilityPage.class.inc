@@ -1,6 +1,10 @@
 <?php
 
 class IntellitimeAvailabilityPage extends IntellitimePage {
+
+  private $addedDays = array();
+  private $updatedDays = array();
+
   public function getAvailableDays() {
     return array_values($this->parseCheckboxListsToAvailabilities());
   }
@@ -24,6 +28,10 @@ class IntellitimeAvailabilityPage extends IntellitimePage {
         $this->addedDays[]  = $a;
       } else {
         $a->setFormId($existingDays[$date_string]->getFormId());
+        /* We do not key this, since there might be more than one availability per day,
+         * and we want the update post to automagically and additively merge the values
+         * of these.
+         */
         $this->updatedDays[] = $a;
       }
     }
@@ -36,11 +44,9 @@ class IntellitimeAvailabilityPage extends IntellitimePage {
   public function getPost() {
     if (!empty($this->addedDays)) {
       return new IntellitimeAvailabilityAddPost($this->bot, $this->getForm(), reset($this->addedDays));
-    } else if (!empty($this->updatedDays)) {
+    } else {
       return new IntellitimeAvailabilityUpdatePost($this->bot, $this->getForm(), $this->updatedDays);
     }
-    return NULL;
-
   }
 
   private function parseCheckboxListsToAvailabilities() {
