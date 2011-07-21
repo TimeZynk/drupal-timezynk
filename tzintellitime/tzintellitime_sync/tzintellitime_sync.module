@@ -181,31 +181,13 @@ function tzintellitime_sync_synchronize_user($uid) {
   }
 
   try {
-    // SyncPolicy starting today
-    $startDate = tzbase_make_date();
-    $syncPolicy = new TZIntellitimeSimpleSyncPolicy(
-        $account,
-        $startDate,
-        TZINTELLITIME_SYNC_WEEKS_FORWARD,
-        TZINTELLITIME_SYNC_WEEKS_BACKWARD
-    );
-
     $curl = new TZCurl($account->intellitime_session_data);
     $serverInterface = new TZIntellitimeBot($curl, TZINTELLITIME_BASE_URL);
 
-    $weekFactory = new TZIntellitimeDefaultWeekFactory($serverInterface, $account);
+    $loggers = array(new TZWatchdogLogger(), new TZSmsLogger());
+    $result = _syncReports($serverInterface, $account, $loggers);
 
-    $reportStorage = new TZIntellitimeDBReportStorage($account);
-
-    $userJobsMappingPolicy = new TZIntellitimeUserJobsMappingPolicy(tzbase_user_jobs_mapper(), $account);
-
-    $ctrlr = new TZIntellitimeSyncController($syncPolicy, $weekFactory, $reportStorage, $userJobsMappingPolicy, $account);
-    $ctrlr->registerLogger(new TZWatchdogLogger());
-    $ctrlr->registerLogger(new TZSmsLogger());
-    $result = $ctrlr->synchronize();
-
-    // Make sure curl write its session to disk
-    $curl->close();
+    $curl->close();  // Make sure curl writes its session to disk
   } catch (InvalidArgumentException $e) {
     tzintellitime_sync_warning('Caught InvalidArgumentException', $account);
     $result = TZIntellitimeSyncController::AUTH_FAILURE;
@@ -224,6 +206,25 @@ function tzintellitime_sync_synchronize_user($uid) {
   }
 
   return $result;
+}
+
+function _syncReports($serverInterface, $account, $loggers) {
+  // SyncPolicy starting today
+  $syncPolicy = new TZIntellitimeSimpleSyncPolicy(
+    $account,
+    tzbase_make_date(),
+    TZINTELLITIME_SYNC_WEEKS_FORWARD,
+    TZINTELLITIME_SYNC_WEEKS_BACKWARD
+  );
+  $weekFactory = new TZIntellitimeDefaultWeekFactory($serverInterface, $account);
+  $reportStorage = new TZIntellitimeDBReportStorage($account);
+  $userJobsMappingPolicy = new TZIntellitimeUserJobsMappingPolicy(tzbase_user_jobs_mapper(), $account);
+
+  $ctrlr = new TZIntellitimeSyncController($syncPolicy, $weekFactory, $reportStorage, $userJobsMappingPolicy, $account);
+  foreach ($loggers as $logger) {
+    $ctrlr->registerLogger($logger);
+  }
+  return $ctrlr->synchronize();
 }
 
 function tzintellitime_sync_notice($message, $account) {
