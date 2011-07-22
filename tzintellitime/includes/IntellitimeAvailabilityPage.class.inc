@@ -114,4 +114,8 @@ class IntellitimeAvailabilityFinalPage extends IntellitimeAvailabilityPage {
   public function getPost() {
     return NULL;
   }
+  public function setAvailabilities($availabilities) {
+    // Do nothing
+    
+  }
 }

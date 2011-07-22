@@ -5,10 +5,11 @@ class IntellitimeAvailabilityUpdatePostTest extends PHPUnit_Framework_TestCase {
     $this->bot = $this->getMock('TZIntellitimeBot');
 
     $this->form = $this->getMock('IntellitimeForm');
-    $this->expectedAction = "Availability.aspx?MId=Availability";
+    $this->formAction = "Availability.aspx?MId=Availability";
+    $this->expectedAction = "Availability/Availability.aspx?MId=Availability";
     $this->form->expects($this->once())
       ->method('getAction')
-      ->will($this->returnValue($this->expectedAction));
+      ->will($this->returnValue($this->formAction));
 
     $this->expectedFormId = 'my_ctl:444_test:_prefix';
     $this->expectedAvailabilities = array(

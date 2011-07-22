@@ -69,8 +69,7 @@ class Availability {
     if ($to_date < $from_date) {
       $to_date->modify('+1 day');
     }
-    return ($this->start_time >= $from_date && $this->start_time < $to_date) ||
-           ($this->end_time > $from_date && $this->end_time <= $to_date);
+    return $this->start_time < $to_date && $this->end_time > $from_date;
   }
 
   public function save() {

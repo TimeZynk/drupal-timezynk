@@ -54,8 +54,18 @@ class AvailabilityTest extends PHPUnit_Framework_TestCase {
     ));
     $this->assertFalse($a->isOverlappingRange('10:45', '12:45'));
   }
+  
+  function testCompletelyWithinOverlaps() {
+    $a = new Availability(array(
+          	'uid' => 123,
+            'availability_type' => TZAvailabilityType::AVAILABLE,
+            'start_time' => 1308825900, // 2011-06-23 12:45:00 +0200
+            'end_time' => 1308829500, //  2011-06-23 13:45:00 +0200
+    ));
+    $this->assertTrue($a->isOverlappingRange('13:00', '13:30'));
+  }
 
-  function testWrapsMidnightDoesNotOverlapsMorning() {
+  function testWrapsMidnightDoesNotOverlapMorning() {
     $a = new Availability(array(
             	'uid' => 123,
               'availability_type' => TZAvailabilityType::AVAILABLE,

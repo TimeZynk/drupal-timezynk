@@ -57,9 +57,8 @@ class IntellitimePage {
   /**
    * Check Intellitime Page for errors. Throws TZIntellitimeErrorPageException
    * with details if error page is detected.
-   * @param SimpleXMLElement $doc
    */
-  private function validate($doc) {
+  private function validate() {
     $form = $this->getForm();
     if (!$form) {
       // No form on the page, weird but not an error page

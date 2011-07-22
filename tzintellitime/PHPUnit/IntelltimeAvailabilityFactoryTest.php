@@ -26,6 +26,15 @@ class IntellitimeAvailabilityFactoryTest extends PHPUnit_Framework_TestCase {
     $this->assertFalse($intellitimeAvailability->isAvailableDuringEvening());
     $this->assertFalse($intellitimeAvailability->isAvailableDuringNight());
   }
+  
+  public function testMatchesSmallerRange() {
+    $start_time = date_make_date('2011-07-14T07:00');
+    $end_time = date_make_date('2011-07-14T13:00');
+    $intellitimeAvailability = $this->factory->create($this->buildAvailability($start_time, $end_time));
+    $this->assertTrue($intellitimeAvailability->isAvailableDuringDay());
+    $this->assertTrue($intellitimeAvailability->isAvailableDuringEvening());
+    $this->assertFalse($intellitimeAvailability->isAvailableDuringNight());
+  }
 
   public function testMatchesRangePastMidnight() {
     $start_time = date_make_date('2011-07-14T19:00');

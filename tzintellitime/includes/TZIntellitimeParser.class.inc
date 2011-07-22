@@ -443,6 +443,9 @@ class TZIntellitimeParser {
 
   private function get_row_total_duration($row) {
     $floatString = strval($row->td[13]->span);
+    if (empty($floatString)) {
+      return NULL;
+    }
     $floatDotDecimal = preg_replace('/,/', '.', $floatString);
     return floatval($floatDotDecimal);
   }
@@ -560,7 +563,7 @@ class TZIntellitimeParser {
      * duration as its own input field. Instead in hides the field completely
      * and its value can only be computed by comparing the actual times with
      * the displayed total duration */
-    if(empty($break_duration_minutes)) {
+    if(empty($break_duration_minutes) && $report->total_hours !== NULL) {
       $begindate = $report->get_begintime();
       $enddate = $report->get_endtime();
       if($enddate < $begindate) {

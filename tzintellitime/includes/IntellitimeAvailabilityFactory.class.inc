@@ -1,6 +1,5 @@
 <?php
 class IntellitimeAvailabilityFactory {
-
   /**
    * @var Array
    */
@@ -27,9 +26,11 @@ class IntellitimeAvailabilityFactory {
    */
   public function create($availability) {
     $ia = new IntellitimeAvailability($availability->getStartTime());
-    $ia->setDay($availability->isOverlappingRange($this->day_range['start'], $this->day_range['end']));
-    $ia->setEvening($availability->isOverlappingRange($this->evening_range['start'], $this->evening_range['end']));
-    $ia->setNight($availability->isOverlappingRange($this->night_range['start'], $this->night_range['end']));
+    if ($availability->isAvailable()) {
+      $ia->setDay($availability->isOverlappingRange($this->day_range['start'], $this->day_range['end']));
+      $ia->setEvening($availability->isOverlappingRange($this->evening_range['start'], $this->evening_range['end']));
+      $ia->setNight($availability->isOverlappingRange($this->night_range['start'], $this->night_range['end']));
+    }
     return $ia;
   }
 }

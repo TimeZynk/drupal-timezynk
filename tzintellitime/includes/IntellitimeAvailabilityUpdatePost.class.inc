@@ -36,6 +36,10 @@ class IntellitimeAvailabilityUpdatePost extends IntellitimePost {
 
     return $data;
   }
+  
+  protected function getAction() {
+    return 'Availability/' . parent::getAction();
+  }
 
   protected function createPage($html_string, $bot) {
     return new IntellitimeAvailabilityFinalPage($html_string, $bot);
