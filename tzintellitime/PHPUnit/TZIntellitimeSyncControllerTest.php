@@ -94,8 +94,10 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
   public function testTwoRegisteredLoggersReceivesLogMessages() {
     $loggerMock = $this->getMock('TZIntellitimeLogger');
     $loggerMock2 = $this->getMock('TZIntellitimeLogger');
-    $this->syncController->registerLogger($loggerMock);
-    $this->syncController->registerLogger($loggerMock2);
+    $composite = new TZCompositeLogger();
+    $composite->add($loggerMock);
+    $composite->add($loggerMock2);
+    $this->syncController->registerLogger($composite);
 
     $expectedDate = new DateTime('2011-01-25', $this->timezone);
     $this->syncPolicy->expects($this->exactly(2))

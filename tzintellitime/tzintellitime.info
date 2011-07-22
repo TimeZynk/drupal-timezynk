@@ -33,6 +33,7 @@ files[] = includes/TZIntellitimeWeek.class.inc
 files[] = includes/TZIntellitimeWeekData.class.inc
 files[] = includes/TZIntellitimeWeekFactory.class.inc
 files[] = includes/TZIntellitimeWeekSyncResult.class.inc
+files[] = includes/TZCompositeLogger.class.inc
 files[] = includes/TZSmsLogger.class.inc
 files[] = includes/TZWatchdogLogger.class.inc
 

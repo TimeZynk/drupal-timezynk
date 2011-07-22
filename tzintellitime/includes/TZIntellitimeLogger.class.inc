@@ -6,6 +6,7 @@
  *
  */
 interface TZIntellitimeLogger {
+
   /**
    * Logs the message and the exception.
    *

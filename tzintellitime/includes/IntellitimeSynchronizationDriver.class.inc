@@ -4,7 +4,7 @@ class IntellitimeSynchronizationDriver {
   function __construct($account) {
     $this->account = $account;
   }
-  
+
   function synchronize() {
     if(!tzintellitime_is_authenticated($this->account)) {
       // User not found or not intellitime user
@@ -17,9 +17,11 @@ class IntellitimeSynchronizationDriver {
       $curl = new TZCurl($this->account->intellitime_session_data);
       $serverInterface = new TZIntellitimeBot($curl, TZINTELLITIME_BASE_URL);
 
-      $loggers = array(new TZWatchdogLogger(), new TZSmsLogger());
+      $loggers = new TZCompositeLogger();
+      $loggers->add(new TZWatchdogLogger());
+      $loggers->add(new TZSmsLogger());
       $result = $this->syncReports($serverInterface, $loggers);
-      
+
       if ($result === TZIntellitimeSyncController::SYNC_OK &&
           user_access('create availability content', $this->account)) {
         $this->syncAvailability($serverInterface);
@@ -45,7 +47,7 @@ class IntellitimeSynchronizationDriver {
 
     return $result;
   }
-  
+
   private function syncReports($serverInterface, $loggers) {
     // SyncPolicy starting today
     $syncPolicy = new TZIntellitimeSimpleSyncPolicy(
@@ -59,9 +61,7 @@ class IntellitimeSynchronizationDriver {
     $userJobsMappingPolicy = new TZIntellitimeUserJobsMappingPolicy(tzbase_user_jobs_mapper(), $this->account);
 
     $ctrlr = new TZIntellitimeSyncController($syncPolicy, $weekFactory, $reportStorage, $userJobsMappingPolicy, $this->account);
-    foreach ($loggers as $logger) {
-      $ctrlr->registerLogger($logger);
-    }
+    $ctrlr->registerLogger($loggers);
     return $ctrlr->synchronize();
   }
 
@@ -75,14 +75,14 @@ class IntellitimeSynchronizationDriver {
       $this->warning('Error page while syncing availability: ' . $e->getMessage());
     }
   }
-  
+
   private function createIntellitimeAvailabilityFactory() {
     $day_range = $this->makeRange(TZINTELLITIME_SYNC_AVAILABILITY_DAY);
     $evening_range = $this->makeRange(TZINTELLITIME_SYNC_AVAILABILITY_EVENING);
     $night_range = $this->makeRange(TZINTELLITIME_SYNC_AVAILABILITY_NIGHT);
     return new IntellitimeAvailabilityFactory($day_range, $evening_range, $night_range);
   }
-  
+
   private function makeRange($range_text) {
     $range_parts = explode('-', $range_text);
     return array_combine(array('start', 'end'), $range_parts);

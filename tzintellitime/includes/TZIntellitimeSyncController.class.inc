@@ -35,9 +35,9 @@ class TZIntellitimeSyncController {
   private $account;
 
   /**
-   * @var TZIntellitimeLogger loggers extra loggers
+   * @var TZIntellitimeLogger logger extra logger
    */
-  private $loggers;
+  private $logger;
 
   function __construct($syncPolicy, $weekFactory, $reportStorage, $userJobsMappingPolicy, $account = null) {
     tzbase_include_proto_classes();
@@ -46,7 +46,6 @@ class TZIntellitimeSyncController {
     $this->reportStorage = $reportStorage;
     $this->userJobsMappingPolicy = $userJobsMappingPolicy;
     $this->account = $account;
-    $this->loggers = array();
   }
 
   /**
@@ -99,17 +98,25 @@ class TZIntellitimeSyncController {
   }
 
   function registerLogger($logger) {
-    $this->loggers[] = $logger;
+    $this->logger = $logger;
   }
 
   private function logException($message, $weekDate, $exception) {
+    if (empty($this->logger)) {
+      return;
+    }
     $message = $weekDate->format('o\WW') . ': ' . $message;
     if (!empty($this->account->name)) {
       $message = $this->account->name . ' ' . $message;
     }
-    foreach ($this->loggers as $logger) {
-      $logger->logException($message, $exception);
+    $this->logger->logException($message, $exception);
+  }
+
+  private function logData($message, $data) {
+    if (empty($this->logger)) {
+      return;
     }
+    $this->logger->logData($message, $data);
   }
 
   private function mapReportsToJobs($tzreports, $tzjobs) {
@@ -173,10 +180,8 @@ class TZIntellitimeSyncController {
       } else {
         $nid = $modifiedReport->nid;
         if(!isset($originalReportMap[$nid])) {
-          foreach ($this->loggers as $logger) {
-            $logger->logData('Unknown nid in filterChangedReports',
-              print_r($modifiedReports, TRUE) . print_r($originalReportMap, TRUE));
-          }
+          $this->logData('Unknown nid in filterChangedReports',
+            print_r($modifiedReports, TRUE) . print_r($originalReportMap, TRUE));
           continue;
         }
 
