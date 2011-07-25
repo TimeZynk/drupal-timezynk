@@ -7,15 +7,15 @@ class TZCompositeLogger implements TZIntellitimeLogger {
    */
   private $children;
 
-  function logException($message, $exception) {
+  function logException($message, $exception, $logLevel = TZIntellitimeLogger::INFO) {
     foreach ($this->children as $child) {
-      $child->logException($message, $exception);
+      $child->logException($message, $exception, $logLevel);
     }
   }
 
-  function logData($message, $data) {
+  function logData($message, $data, $logLevel = TZIntellitimeLogger::INFO) {
     foreach ($this->children as $child) {
-      $child->logData($message, $data);
+      $child->logData($message, $data, $logLevel);
     }
   }
 

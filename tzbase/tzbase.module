@@ -817,7 +817,7 @@ function tzbase_list_jobs($parentjobid = 0, $prefix = '', $trail = 'nid:') {
   return $list;
 }
 
-function tzbase_watchdog_with_data($tag, $message, $data) {
+function tzbase_watchdog_with_data($tag, $message, $data, $logLevel = WATCHDOG_INFO) {
   $actual_filename = 0;
 
   if(!empty($data)) {
@@ -830,10 +830,10 @@ function tzbase_watchdog_with_data($tag, $message, $data) {
   }
 
   if($actual_filename !== 0) {
-    watchdog($tag, $message, array(), WATCHDOG_DEBUG,
+    watchdog($tag, $message, array(), $logLevel,
       l('View', file_create_url($actual_filename)));
   } else {
-    watchdog($tag, $message, array(), WATCHDOG_DEBUG);
+    watchdog($tag, $message, array(), $logLevel);
   }
 }
 

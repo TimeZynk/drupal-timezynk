@@ -53,6 +53,23 @@ class TZCompositeLoggerTest extends PHPUnit_Framework_TestCase {
     $this->subject->logData($expectedMessage, $expectedData);
   }
 
+  public function testForwardsLogLevel() {
+    $expectedLogLevel = TZIntellitimeLogger::EMERGENCY;
+    $child = $this->getMock('TZCompositeLogger');
+
+    $child->expects($this->once())
+      ->method('logData')
+      ->with($this->anything(), $this->anything(), $expectedLogLevel);
+
+    $child->expects($this->once())
+      ->method('logException')
+      ->with($this->anything(), $this->anything(), $expectedLogLevel);
+
+    $this->subject->add($child);
+    $this->subject->logData(NULL, NULL, $expectedLogLevel);
+    $this->subject->logException(NULL, NULL, $expectedLogLevel);
+  }
+
 
 
 }

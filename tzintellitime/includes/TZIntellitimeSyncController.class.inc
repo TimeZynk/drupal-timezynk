@@ -77,19 +77,21 @@ class TZIntellitimeSyncController {
           throw $syncResult->exception;
         }
       } catch (TZIntellitimeErrorPageException $e) {
-        $this->logException('Error page when syncing', $weekDate, $e);
+        // An error caused by our sync code is business critical.
+        $this->logException('Error page when syncing', $weekDate, $e, TZIntellitimeLogger::CRITICAL);
         $status = TZIntellitimeSyncController::NETWORK_FAILURE;
         continue;
       } catch (TZNetworkFailureException $e) {
-        $this->logException('Network failure', $weekDate, $e);
+        $this->logException('Network failure', $weekDate, $e, TZIntellitimeLogger::NOTICE);
         $status = TZIntellitimeSyncController::NETWORK_FAILURE;
         continue;
       } catch (TZIntellitimeInconsistentPost $e) {
-        $this->logException('Inconsistent post', $weekDate, $e);
+        // Inconsistent posts require immediate operator intervention.
+        $this->logException('Inconsistent post', $weekDate, $e, TZIntellitimeLogger::ALERT);
         $status = TZIntellitimeSyncController::NETWORK_FAILURE;
         continue;
       } catch (TZAuthenticationFailureException $e) {
-        $this->logException('Session expired', $weekDate, $e);
+        $this->logException('Session expired', $weekDate, $e, TZIntellitimeLogger::INFO);
         $status = TZIntellitimeSyncController::AUTH_FAILURE;
         break;
       }
@@ -101,7 +103,7 @@ class TZIntellitimeSyncController {
     $this->logger = $logger;
   }
 
-  private function logException($message, $weekDate, $exception) {
+  private function logException($message, $weekDate, $exception, $logLevel) {
     if (empty($this->logger)) {
       return;
     }
@@ -109,14 +111,14 @@ class TZIntellitimeSyncController {
     if (!empty($this->account->name)) {
       $message = $this->account->name . ' ' . $message;
     }
-    $this->logger->logException($message, $exception);
+    $this->logger->logException($message, $exception, $logLevel);
   }
 
-  private function logData($message, $data) {
+  private function logData($message, $data, $logLevel) {
     if (empty($this->logger)) {
       return;
     }
-    $this->logger->logData($message, $data);
+    $this->logger->logData($message, $data, $logLevel);
   }
 
   private function mapReportsToJobs($tzreports, $tzjobs) {
@@ -181,7 +183,7 @@ class TZIntellitimeSyncController {
         $nid = $modifiedReport->nid;
         if(!isset($originalReportMap[$nid])) {
           $this->logData('Unknown nid in filterChangedReports',
-            print_r($modifiedReports, TRUE) . print_r($originalReportMap, TRUE));
+            print_r($modifiedReports, TRUE) . print_r($originalReportMap, TRUE), TZIntellitimeLogger::DEBUG);
           continue;
         }
 

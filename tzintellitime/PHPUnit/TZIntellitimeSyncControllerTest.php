@@ -86,7 +86,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
     $loggerMock->expects($this->once())
         ->method('logException')
-        ->with($this->stringContains('Inconsistent post'), $this->equalTo($expectedException));
+        ->with($this->stringContains('Inconsistent post'), $this->equalTo($expectedException), $this->equalTo(TZIntellitimeLogger::ALERT));
 
     $this->syncController->synchronize();
   }
@@ -129,10 +129,10 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
     $loggerMock->expects($this->once())
         ->method('logException')
-        ->with($this->stringContains('Inconsistent post'), $this->equalTo($expectedException));
+        ->with($this->stringContains('Inconsistent post'), $this->equalTo($expectedException), $this->equalTo(TZIntellitimeLogger::ALERT));
     $loggerMock2->expects($this->once())
         ->method('logException')
-        ->with($this->stringContains('Inconsistent post'), $this->equalTo($expectedException));
+        ->with($this->stringContains('Inconsistent post'), $this->equalTo($expectedException), $this->equalTo(TZIntellitimeLogger::ALERT));
 
     $this->syncController->synchronize();
   }

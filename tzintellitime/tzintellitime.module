@@ -215,7 +215,7 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
     } catch(TZIntellitimeErrorPageException $e) {
       $message = t('Error page when authenticating @user: @msg',
                    array('@user' => $username, '@msg' => $e->getMessage()));
-      tzbase_watchdog_with_data('tzintellitime', $message, $e->getRawData());
+      tzbase_watchdog_with_data('tzintellitime', $message, $e->getRawData(), WATCHDOG_DEBUG);
     } catch(TZAuthenticationFailureException $e) {
       watchdog('tzintellitime', 'Failed to authenticate @user',
         array('@user' => $username),
