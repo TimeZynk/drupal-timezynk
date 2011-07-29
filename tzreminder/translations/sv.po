@@ -11,10 +11,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TimeZynk\n"
-"POT-Creation-Date: 2011-03-13 20:25+0100\n"
-"PO-Revision-Date: 2011-03-13 20:27+0100\n"
-"Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
+"POT-Creation-Date: 2011-08-16 11:00+0200\n"
+"PO-Revision-Date: 2011-08-16 11:11+0100\n"
+"Last-Translator: TimeZynk <dev@timezynk.com>\n"
 "Language-Team: Swedish <dev@timezynk.com>\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,13 +25,13 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Bookmarks: -1,-1,5,-1,-1,-1,-1,-1,-1,-1\n"
 
-#: tzreminder.module:141
+#: tzreminder.module:136
 msgid "tzreminder"
 msgstr ""
 
-#: tzreminder.module:141
-msgid "Sending reminder to @mobile"
-msgstr "Skickar påminnelse till @mobile"
+#: tzreminder.module:136
+msgid "Sending @policy_type reminder to @mobile"
+msgstr "Skickar @policy_type-påminnelse till @mobile"
 
 #: tzreminder.module:21
 msgid "configure reminders"
@@ -52,17 +53,17 @@ msgstr "Skicka påminnelser till våra användare"
 msgid "TimeZynk"
 msgstr ""
 
-#: includes/TZDelayedReminderPolicy.class.inc:40
+#: includes/TZAbstractReminderPolicy.class.inc:8
 msgid "Hi! We are waiting for @count of your time reports. Please fill !third-person-personal-pronoun in!"
 msgstr "Hej! Vi väntar på @count av dina tidrapporter, fyll i och skicka in !third-person-personal-pronoun. Tack på förhand!"
 
-#: includes/TZDelayedReminderPolicy.class.inc:42
+#: includes/TZAbstractReminderPolicy.class.inc:10
 msgid "one"
 msgid_plural "@count"
 msgstr[0] "en"
 msgstr[1] "@count"
 
-#: includes/TZDelayedReminderPolicy.class.inc:43
+#: includes/TZAbstractReminderPolicy.class.inc:11
 msgid "it"
 msgid_plural "them"
 msgstr[0] "den"
@@ -104,23 +105,51 @@ msgstr "Fördröjning i minuter"
 msgid "Delay in minutes before the reminder is sent. Leave empty for no reminder."
 msgstr "Fördröjning i minuter innan påminnelsen skickas. Lämna tom för att avaktivera påminnelser helt."
 
-#: includes/tzreminder.form.inc:42
+#: includes/tzreminder.form.inc:44
+msgid "Fixed reminder settings"
+msgstr "Inställningar för påminnelse på fasta datum"
+
+#: includes/tzreminder.form.inc:47
+msgid "Days on which to remind"
+msgstr "Dagar att skicka påminnelse på"
+
+#: includes/tzreminder.form.inc:48
+msgid "Days on which to remind the users. Valid values are 1-28. Add multiple comma separated entries to set more than one reminder. Leave empty for no reminder."
+msgstr "Dagar att skicka påminnelse på. Giltiga värden är 1-28. För att ställa in mer än en påminnelse, mata in flera dagar separerade med komma. Lämna fältet tomt för att inte skicka några påminnelser."
+
+#: includes/tzreminder.form.inc:54
+msgid "Hour on which to remind"
+msgstr "Timme då påminnelse skall skickas"
+
+#: includes/tzreminder.form.inc:55
+msgid "Send reminders after this hour. Valid values are 0-23. Do not set this to fall within the quiet period."
+msgstr "Skicka påminnelser efter denna timme. Giltiga värden är 0-23. Sätt inte detta värde så att det faller inom den tysta perioden."
+
+#: includes/tzreminder.form.inc:63
 msgid "Save"
 msgstr "Spara"
 
-#: includes/tzreminder.form.inc:50
+#: includes/tzreminder.form.inc:71
 msgid "Could not understand time format, please use HH:MM"
 msgstr "Kunde inte förstå tidsformatet. Vänligen använd TT:MM."
 
-#: includes/tzreminder.form.inc:55
+#: includes/tzreminder.form.inc:76
 msgid "Please specify end of quiet period"
 msgstr "Specificera slutet på den tysta perioden"
 
-#: includes/tzreminder.form.inc:59
+#: includes/tzreminder.form.inc:80
 msgid "Please specify delay in minutes as a positive integer value"
 msgstr "Specificera fördröjningen som ett positivt heltal"
 
-#: includes/tzreminder.form.inc:75
+#: includes/tzreminder.form.inc:87
+msgid "Please specify days as positive integer values between 1 and 28 separated by commas"
+msgstr "Specificera påminnelsedagar som kommaseparerade, positiva heltal mellan 1 och 28"
+
+#: includes/tzreminder.form.inc:94
+msgid "Please specify the hour as an integer between 0 and 23."
+msgstr "Vänligen specificera timmen som ett heltal mellan 0 och 23."
+
+#: includes/tzreminder.form.inc:123
 msgid "New configuration stored"
 msgstr "Nya inställningar sparade!"
 

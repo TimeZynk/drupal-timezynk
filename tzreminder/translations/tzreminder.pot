@@ -5,14 +5,14 @@
 # Generated from files:
 #  tzreminder.module: n/a
 #  tzreminder.info: n/a
-#  includes/TZDelayedReminderPolicy.class.inc: n/a
+#  includes/TZAbstractReminderPolicy.class.inc: n/a
 #  includes/tzreminder.form.inc: n/a
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-03-13 20:25+0100\n"
+"POT-Creation-Date: 2011-08-16 11:00+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -21,12 +21,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: tzreminder.module:141
+#: tzreminder.module:136
 msgid "tzreminder"
 msgstr ""
 
-#: tzreminder.module:141
-msgid "Sending reminder to @mobile"
+#: tzreminder.module:136
+msgid "Sending @policy_type reminder to @mobile"
 msgstr ""
 
 #: tzreminder.module:21
@@ -49,17 +49,17 @@ msgstr ""
 msgid "TimeZynk"
 msgstr ""
 
-#: includes/TZDelayedReminderPolicy.class.inc:40
+#: includes/TZAbstractReminderPolicy.class.inc:8
 msgid "Hi! We are waiting for @count of your time reports. Please fill !third-person-personal-pronoun in!"
 msgstr ""
 
-#: includes/TZDelayedReminderPolicy.class.inc:42
+#: includes/TZAbstractReminderPolicy.class.inc:10
 msgid "one"
 msgid_plural "@count"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/TZDelayedReminderPolicy.class.inc:43
+#: includes/TZAbstractReminderPolicy.class.inc:11
 msgid "it"
 msgid_plural "them"
 msgstr[0] ""
@@ -101,23 +101,51 @@ msgstr ""
 msgid "Delay in minutes before the reminder is sent. Leave empty for no reminder."
 msgstr ""
 
-#: includes/tzreminder.form.inc:42
-msgid "Save"
+#: includes/tzreminder.form.inc:44
+msgid "Fixed reminder settings"
 msgstr ""
 
-#: includes/tzreminder.form.inc:50
-msgid "Could not understand time format, please use HH:MM"
+#: includes/tzreminder.form.inc:47
+msgid "Days on which to remind"
+msgstr ""
+
+#: includes/tzreminder.form.inc:48
+msgid "Days on which to remind the users. Valid values are 1-28. Add multiple comma separated entries to set more than one reminder. Leave empty for no reminder."
+msgstr ""
+
+#: includes/tzreminder.form.inc:54
+msgid "Hour on which to remind"
 msgstr ""
 
 #: includes/tzreminder.form.inc:55
+msgid "Send reminders after this hour. Valid values are 0-23. Do not set this to fall within the quiet period."
+msgstr ""
+
+#: includes/tzreminder.form.inc:63
+msgid "Save"
+msgstr ""
+
+#: includes/tzreminder.form.inc:71
+msgid "Could not understand time format, please use HH:MM"
+msgstr ""
+
+#: includes/tzreminder.form.inc:76
 msgid "Please specify end of quiet period"
 msgstr ""
 
-#: includes/tzreminder.form.inc:59
+#: includes/tzreminder.form.inc:80
 msgid "Please specify delay in minutes as a positive integer value"
 msgstr ""
 
-#: includes/tzreminder.form.inc:75
+#: includes/tzreminder.form.inc:87
+msgid "Please specify days as positive integer values between 1 and 28 separated by commas"
+msgstr ""
+
+#: includes/tzreminder.form.inc:94
+msgid "Please specify the hour as an integer between 0 and 23."
+msgstr ""
+
+#: includes/tzreminder.form.inc:123
 msgid "New configuration stored"
 msgstr ""
 

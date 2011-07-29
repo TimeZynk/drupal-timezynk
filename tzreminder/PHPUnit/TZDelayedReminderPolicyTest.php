@@ -95,4 +95,9 @@ class TZDelayedReminderPolicyTest extends PHPUnit_Framework_TestCase {
       $this->assertNotNull($e);
     }
   }
+
+  function testGetNameOfPolicy() {
+    $this->assertEquals('delay', $this->policy->getName());
+  }
+
 }

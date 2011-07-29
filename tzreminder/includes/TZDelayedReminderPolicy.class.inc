@@ -2,7 +2,7 @@
 
 tzbase_include_proto_classes();
 
-class TZDelayedReminderPolicy implements TZReminderPolicy {
+class TZDelayedReminderPolicy extends TZAbstractReminderPolicy {
 
   /**
    *
@@ -31,19 +31,6 @@ class TZDelayedReminderPolicy implements TZReminderPolicy {
     return $queryBuilder->build();
   }
 
-  public function getMessage($numberOfReports) {
-    if (empty($numberOfReports)) {
-      throw new InvalidArgumentException("Missing arguments to getMessage");
-    }
-
-    return
-      t('Hi! We are waiting for @count of your time reports. Please fill !third-person-personal-pronoun in!',
-        array(
-          '@count' => format_plural($numberOfReports, 'one', '@count'),
-          '!third-person-personal-pronoun' => format_plural($numberOfReports, 'it', 'them'),
-        ));
-  }
-
   public function shouldSendMessage($timeNow, $timeLastCalled) {
     if (empty($timeNow) || empty($timeLastCalled)) {
       throw new InvalidArgumentException('You must specify when the policy was last invoked and what the time is now.');
@@ -51,5 +38,9 @@ class TZDelayedReminderPolicy implements TZReminderPolicy {
     $lastCalled = clone($timeLastCalled);
     $lastCalled->modify("+$this->minutes minutes");
     return $timeNow >= $lastCalled;
+  }
+
+  public function getName() {
+    return "delay";
   }
 }

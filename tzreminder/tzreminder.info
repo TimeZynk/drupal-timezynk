@@ -2,7 +2,9 @@ name = TimeZynk Reminder
 description = Send reminders to our users
 package = TimeZynk
 
+files[] = includes/TZAbstractReminderPolicy.class.inc
 files[] = includes/TZDelayedReminderPolicy.class.inc
+files[] = includes/TZFixedDateReminderPolicy.class.inc
 files[] = includes/TZQuery.class.inc
 files[] = includes/TZQueryBuilder.class.inc
 files[] = includes/TZReminderPolicy.class.inc

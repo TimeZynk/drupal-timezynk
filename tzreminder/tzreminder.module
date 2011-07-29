@@ -23,40 +23,19 @@ function tzreminder_perm() {
 
 function tzreminder_cron() {
   $config = tzreminder_get_config();
-  if(empty($config->delay_minutes)) {
-    return;
-  }
 
   $now = tzbase_make_date();
   if (_tzreminder_is_in_quiet_period($config, $now)) {
     return;
   }
-
-  $delayPolicy = new TZDelayedReminderPolicy($config->delay_minutes);
-  $query = $delayPolicy->getQuery($now);
-  if(!$query) {
-    return;
+  if (!empty($config->delay_minutes)) {
+    $delayPolicy = new TZDelayedReminderPolicy($config->delay_minutes);
+    _tzreminder_run_policy($delayPolicy, $config, $now);
   }
-
-  $userFilter = new TZUserFilter($config->delay_user_policy, $config->delay_user_list);
-
-  $result = db_query($query->getQueryString(), $query->getQueryArgs());
-  $reportCountForUser = array();
-  while($tzreport = db_fetch_object($result)) {
-    $uid = $tzreport->assignedto;
-    if (!$userFilter->isIncluded($uid)) {
-      continue;
-    }
-
-    if(!isset($reportCountForUser[$uid])) {
-      $reportCountForUser[$uid] = 0;
-    }
-    $reportCountForUser[$uid]++;
-  }
-
-  foreach($reportCountForUser as $uid => $count) {
-    if(_tzreminder_send_reminder($delayPolicy, $now, $config, $uid, $count)) {
-      $config->last_call[$uid]['delay'] = $now->format('U');
+  if (!empty($config->fixed_days)) {
+    foreach($config->fixed_days as $day) {
+      $fixedPolicy = new TZFixedDateReminderPolicy(intval($day,10), intval($config->fixed_hour));
+      _tzreminder_run_policy($fixedPolicy, $config, $now);
     }
   }
 
@@ -97,6 +76,22 @@ function tzreminder_fill_default_config($config) {
     $config->last_call = array();
   }
 
+  if(!isset($config->fixed_user_policy)) {
+    $config->fixed_user_policy = 'include';
+  }
+
+  if(!isset($config->fixed_user_list)) {
+    $config->fixed_user_list = array();
+  }
+
+  if (!isset($config->fixed_days)) {
+    $config->fixed_days = array();
+  }
+
+  if (!isset($config->fixed_hour)) {
+    $config->fixed_hour = '17';
+  }
+
   return $config;
 }
 
@@ -126,22 +121,57 @@ function _tzreminder_is_in_quiet_period($config, $time) {
   return FALSE;
 }
 
-function _tzreminder_send_reminder($delayPolicy, $now, $config, $uid, $count) {
+function _tzreminder_send_reminder($policy, $now, $config, $uid, $count) {
   $account = user_load($uid);
   if(empty($account->tzuser['mobile'])) {
     return FALSE;
   }
 
-  $last_call = _tzreminder_get_last_call($config, 'delay', $uid);
-  if(!$delayPolicy->shouldSendMessage($now, $last_call)) {
+  $last_call = _tzreminder_get_last_call($config, $policy->getName(), $uid);
+  if(!$policy->shouldSendMessage($now, $last_call)) {
     return FALSE;
   }
 
-  $message = $delayPolicy->getMessage($count);
-  watchdog('tzreminder', 'Sending reminder to @mobile',
-      array('@mobile' => $account->tzuser['mobile']),
+  $message = $policy->getMessage($count);
+  watchdog('tzreminder', 'Sending @policy_type reminder to @mobile',
+      array(
+        '@policy_type' => $policy->getName(),
+        '@mobile' => $account->tzuser['mobile']
+      ),
       WATCHDOG_INFO,
       theme('username', $account));
   tzsms_send(TZSMS_TYPE_AUTO_REMINDER_SMS, $account->tzuser['mobile'], $message);
   return TRUE;
+}
+
+function _tzreminder_run_policy($policy, $config, $now) {
+
+  $query = $policy->getQuery($now);
+  if(!$query) {
+    return;
+  }
+  // Hacky, not sure this is safe..
+  $user_policy = $policy->getName() . '_user_policy';
+  $user_list = $policy->getName() . '_user_list';
+  $userFilter = new TZUserFilter($config->$user_policy, $config->$user_list);
+
+  $result = db_query($query->getQueryString(), $query->getQueryArgs());
+  $reportCountForUser = array();
+  while($tzreport = db_fetch_object($result)) {
+    $uid = $tzreport->assignedto;
+    if (!$userFilter->isIncluded($uid)) {
+      continue;
+    }
+
+    if(!isset($reportCountForUser[$uid])) {
+      $reportCountForUser[$uid] = 0;
+    }
+    $reportCountForUser[$uid]++;
+  }
+
+  foreach($reportCountForUser as $uid => $count) {
+    if(_tzreminder_send_reminder($policy, $now, $config, $uid, $count)) {
+      $config->last_call[$uid][$policy->getName()] = $now->format('U');
+    }
+  }
 }

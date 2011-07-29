@@ -1,9 +1,9 @@
 <?php
 
 interface TZReminderPolicy {
- 
+
   /**
-   * Returns a preconfigured query primed to return results relevant 
+   * Returns a preconfigured query primed to return results relevant
    * for the specified time
    * @param DateTime $time the date and time to run the query for
    * @return TZQuery | NULL
@@ -28,4 +28,11 @@ interface TZReminderPolicy {
    * @return boolean
    */
   public function shouldSendMessage($timeNow, $timeLastCalled);
+
+  /**
+   * Returns the short name of the policy as a string. Useful when storing configuration
+   * values for a specific policy type.
+   * @return string the short name of the policy
+   */
+  public function getName();
 }
