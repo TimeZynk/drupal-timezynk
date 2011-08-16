@@ -114,7 +114,10 @@ function tzreminder_config_form_submit($form, &$form_state) {
   $day_strings = explode(',', $form_state['values']['fixed_reminder']['days']);
   $config->fixed_days = array();
   foreach ($day_strings as $day) {
-    $config->fixed_days[]= trim($day);
+    $trimmed_day = trim($day);
+    if (!empty($trimmed_day)) {
+      $config->fixed_days[]= $trimmed_day;
+    }
   }
   sort($config->fixed_days, SORT_NUMERIC);
   $config->fixed_hour = $form_state['values']['fixed_reminder']['hour'];
