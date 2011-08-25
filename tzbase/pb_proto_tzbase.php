@@ -692,6 +692,36 @@ class TZAvailability extends PBMessage
     return $this->_set_value("3", $value);
   }
 }
+class TZAvailabilityInterval extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZAvailabilityInterval"]["1"] = "TZTime";
+    $this->values["1"] = "";
+    self::$fieldNames["TZAvailabilityInterval"]["1"] = "from";
+    self::$fields["TZAvailabilityInterval"]["2"] = "TZTime";
+    $this->values["2"] = "";
+    self::$fieldNames["TZAvailabilityInterval"]["2"] = "to";
+  }
+  function from()
+  {
+    return $this->_get_value("1");
+  }
+  function set_from($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+  function to()
+  {
+    return $this->_get_value("2");
+  }
+  function set_to($value)
+  {
+    return $this->_set_value("2", $value);
+  }
+}
 class TZGetUserCmd extends PBMessage
 {
   var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
@@ -1289,6 +1319,77 @@ class TZDeleteAvailabilityCmd extends PBMessage
     return $this->_set_value("1", $value);
   }
 }
+class TZGetAvailabilityIntervalsCmd extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZGetAvailabilityIntervalsCmd"]["1"] = "PBInt";
+    $this->values["1"] = "";
+    self::$fieldNames["TZGetAvailabilityIntervalsCmd"]["1"] = "unused";
+  }
+  function unused()
+  {
+    return $this->_get_value("1");
+  }
+  function set_unused($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+}
+class TZGetAvailabilityIntervalsResult extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZGetAvailabilityIntervalsResult"]["1"] = "PBBool";
+    $this->values["1"] = "";
+    $this->values["1"] = new PBBool();
+    $this->values["1"]->value = false;
+    self::$fieldNames["TZGetAvailabilityIntervalsResult"]["1"] = "enabled";
+    self::$fields["TZGetAvailabilityIntervalsResult"]["2"] = "TZAvailabilityInterval";
+    $this->values["2"] = array();
+    self::$fieldNames["TZGetAvailabilityIntervalsResult"]["2"] = "interval";
+  }
+  function enabled()
+  {
+    return $this->_get_value("1");
+  }
+  function set_enabled($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+  function interval($offset)
+  {
+    return $this->_get_arr_value("2", $offset);
+  }
+  function add_interval()
+  {
+    return $this->_add_arr_value("2");
+  }
+  function set_interval($index, $value)
+  {
+    $this->_set_arr_value("2", $index, $value);
+  }
+  function set_all_intervals($values)
+  {
+    return $this->_set_arr_values("2", $values);
+  }
+  function remove_last_interval()
+  {
+    $this->_remove_last_arr_value("2");
+  }
+  function intervals_size()
+  {
+    return $this->_get_arr_size("2");
+  }
+  function get_intervals()
+  {
+    return $this->_get_value("2");
+  }
+}
 class TZCommand extends PBMessage
 {
   var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
@@ -1327,6 +1428,9 @@ class TZCommand extends PBMessage
     self::$fields["TZCommand"]["10"] = "TZDeleteAvailabilityCmd";
     $this->values["10"] = "";
     self::$fieldNames["TZCommand"]["10"] = "delete_availability_cmd";
+    self::$fields["TZCommand"]["11"] = "TZGetAvailabilityIntervalsCmd";
+    $this->values["11"] = "";
+    self::$fieldNames["TZCommand"]["11"] = "get_availability_intervals_cmd";
   }
   function client_handle()
   {
@@ -1408,6 +1512,14 @@ class TZCommand extends PBMessage
   {
     return $this->_set_value("10", $value);
   }
+  function get_availability_intervals_cmd()
+  {
+    return $this->_get_value("11");
+  }
+  function set_get_availability_intervals_cmd($value)
+  {
+    return $this->_set_value("11", $value);
+  }
 }
 class TZResult extends PBMessage
 {
@@ -1453,6 +1565,9 @@ class TZResult extends PBMessage
     self::$fields["TZResult"]["12"] = "TZSaveAvailabilityResult";
     $this->values["12"] = "";
     self::$fieldNames["TZResult"]["12"] = "save_availability_result";
+    self::$fields["TZResult"]["13"] = "TZGetAvailabilityIntervalsResult";
+    $this->values["13"] = "";
+    self::$fieldNames["TZResult"]["13"] = "get_availability_intervals_result";
   }
   function client_handle()
   {
@@ -1589,6 +1704,14 @@ class TZResult extends PBMessage
   function set_save_availability_result($value)
   {
     return $this->_set_value("12", $value);
+  }
+  function get_availability_intervals_result()
+  {
+    return $this->_get_value("13");
+  }
+  function set_get_availability_intervals_result($value)
+  {
+    return $this->_set_value("13", $value);
   }
 }
 class TZRequest extends PBMessage

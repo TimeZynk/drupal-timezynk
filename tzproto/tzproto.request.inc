@@ -106,6 +106,11 @@ function _tzproto_handle_cmd($cmd, &$result, $protocol_version) {
   else if ($cmd->delete_availability_cmd()) {
     tzproto_handle_delete_availability_cmd($cmd, $result);
   }
+  else if ($cmd->get_availability_intervals_cmd()) {
+    require_once 'includes/GetAvailabilityIntervalHandler.class.inc';
+    $handler = new GetAvailabilityIntervalHandler(tzbase_availability_store());
+    $handler->handle($cmd, $result);
+  }
   else {
     throw new TZProtoException('Not implemented', 501);
   }

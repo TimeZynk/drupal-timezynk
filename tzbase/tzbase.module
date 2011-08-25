@@ -41,6 +41,15 @@ function tzbase_menu() {
     'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/tzbase.admin.inc',
   );
+  $items['admin/settings/timezynk/availability'] = array(
+    'title' => 'Availability',
+    'description' => 'Configure TimeZynk availability.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tzbase_availability_settings_form'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/availability_admin.inc',
+  );
   $items['user_jobs'] = array(
     'title' => 'User Jobs',
     'page callback' => 'drupal_get_form',
@@ -864,7 +873,6 @@ function tzbase_availability_store() {
   tzbase_include_proto_classes();
   return new AvailabilityStore(tzbase_db_wrapper());
 }
-
 
 function _tzbase_calculate_correct_endtime($begin_datetime, $end_datetime) {
   // Set the same date as for begintime, but keep the hour and minute for the endtime.

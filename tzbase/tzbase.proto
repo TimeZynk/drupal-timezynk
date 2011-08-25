@@ -135,6 +135,11 @@ message TZAvailability {
   optional TZTimeSpan time_span = 3;
 }
 
+message TZAvailabilityInterval {
+  optional TZTime from = 1;
+  optional TZTime to = 2;
+}
+
 // RPC messages
 
 message TZGetUserCmd {
@@ -240,6 +245,15 @@ message TZDeleteAvailabilityCmd {
   optional int32 id = 1;
 }
 
+message TZGetAvailabilityIntervalsCmd {
+  optional int32 unused = 1;
+}
+
+message TZGetAvailabilityIntervalsResult {
+  optional bool enabled = 1 [default = false];
+  repeated TZAvailabilityInterval interval = 2;
+}
+
 // Generic single RPC command, must be wrapped in a TZRequest
 message TZCommand {
   optional int32 client_handle = 1 [default = 0]; // request id from client for tracking
@@ -257,6 +271,7 @@ message TZCommand {
   optional TZGetAvailabilityCmd get_availability_cmd = 8;
   optional TZSaveAvailabilityCmd save_availability_cmd = 9;
   optional TZDeleteAvailabilityCmd delete_availability_cmd = 10;
+  optional TZGetAvailabilityIntervalsCmd get_availability_intervals_cmd = 11;
 }
 
 // Generic single RPC result, must be wrapped in a TZResponse
@@ -280,6 +295,7 @@ message TZResult {
 
   optional TZGetAvailabilityResult get_availability_result = 11;
   optional TZSaveAvailabilityResult save_availability_result = 12;
+  optional TZGetAvailabilityIntervalsResult get_availability_intervals_result = 13;
 }
 
 //

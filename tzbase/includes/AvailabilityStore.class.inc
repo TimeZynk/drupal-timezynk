@@ -80,6 +80,14 @@ class AvailabilityStore {
     return new Availability(NULL, $this->dbWrapper);
   }
 
+  function getAvailabilityIntervals() {
+    return variable_get('tzbase_availability_intervals', new stdClass());
+  }
+
+  function setAvailabilityIntervals($intervals) {
+    variable_set('tzbase_availability_intervals', $intervals);
+  }
+
   private function dateToTimeStamp($date, $hour, $minute, $second) {
     $new_date = clone($date);
     $new_date->setTime($hour, $minute, $second);
