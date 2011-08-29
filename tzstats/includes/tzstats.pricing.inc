@@ -41,5 +41,12 @@ function tzstats_administer_pricing() {
     '#size' => 10,
     '#default_value' => TIMEZYNK_MINIMUM_MONTH_USERS_START_DATE,
   );
+  $form['timezynk_excluded_users'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Excluded users'),
+    '#description' => t('Comma-separated list of user IDs'),
+    '#size' => 10,
+    '#default_value' => TIMEZYNK_EXCLUDED_USERS,
+  );
   return system_settings_form($form);
 }

@@ -46,6 +46,15 @@ function _tzstats_invoice_month($month) {
   return $invoice->format();
 }
 
+function tzstats_invoice_excluded_users() {
+  $list = explode(',', TIMEZYNK_EXCLUDED_USERS);
+  $users = array_map('trim', $list);
+  $users = array_filter($users);
+  $users = array_fill_keys($users, TRUE);
+  $users['1'] = TRUE;
+  return $users;
+}
+
 class TZStatsInvoice {
   /**
    * @var DateTime
@@ -57,6 +66,7 @@ class TZStatsInvoice {
    */
   private $end_date;
 
+  private $excluded_users;
   private $user_costs;
   private $sms_costs;
   private $minimum_costs;
@@ -73,15 +83,16 @@ class TZStatsInvoice {
     $this->end_date->modify('+1 month');
     $this->end_date->modify('-1 second');
 
+    $this->excluded_users = tzstats_invoice_excluded_users();
+
     $this->user_costs = $this->calculate_user_costs();
-    $this->minimum_costs = $this->calculate_minimum_cost($this->user_costs);
     $this->availability_costs = $this->calculate_availability_cost();
+    $this->minimum_costs = $this->calculate_minimum_cost($this->user_costs);
     $this->sms_costs = $this->calculate_sms_costs();
   }
 
   function total_cost() {
     $total_costs = $this->total_user_cost();
-    $total_costs += $this->total_availability_cost();
     $total_costs += $this->sms_costs->total;
     return $total_costs;
   }
@@ -97,7 +108,6 @@ class TZStatsInvoice {
     $rows = array();
     $this->add_user_cost_rows($rows);
     $this->add_user_total_cost_rows($rows);
-    $this->add_availability_cost_rows($rows);
     $this->add_sms_cost_rows($rows);
     $this->add_grand_total_row($rows);
     return theme('table', $headers, $rows, array('class' => 'tzstats-invoice-table'));
@@ -193,13 +203,14 @@ class TZStatsInvoice {
 
   private function add_user_cost_rows(&$rows) {
     $this->fill_cost_entry_rows($rows, $this->user_costs->day);
-
     $this->fill_cost_entry_rows($rows, $this->user_costs->month);
+    $this->fill_availability_cost_rows($rows);
     $rows[] = $this->format_subtotal($this->user_costs->day, 'day users');
     $rows[] = $this->format_subtotal($this->user_costs->month, 'month users');
+    $rows[] = $this->format_availability_subtotal();
   }
 
-  private function add_availability_cost_rows(&$rows) {
+  private function fill_availability_cost_rows(&$rows) {
     foreach ($this->availability_costs as $uid => $cost_entry) {
       if (!is_numeric($uid)) {
         continue;
@@ -212,9 +223,12 @@ class TZStatsInvoice {
         $this->money_cell($cost_entry->cost),
       );
     }
-    $rows[] = array(
+  }
+
+  private function format_availability_subtotal() {
+    return array(
       'data' => array(
-        'Total availability cost',
+        'Subtotal availability',
         $this->availability_costs['total_count'] . ' users',
         $this->money_cell($this->availability_costs['total_cost']/$this->availability_costs['total_count']),
         $this->money_cell($this->availability_costs['total_cost']),
@@ -236,16 +250,14 @@ class TZStatsInvoice {
     return $this->minimum_costs;
   }
 
-  private function total_availability_cost() {
-    return $this->availability_costs['total_cost'];
-  }
-
   private function actual_user_days() {
     return $this->user_costs->day['total_days'] + $this->user_costs->month['total_days'];
   }
 
   private function actual_user_cost() {
-    return $this->user_costs->day['total_cost'] + $this->user_costs->month['total_cost'];
+    return $this->user_costs->day['total_cost'] +
+           $this->user_costs->month['total_cost'] +
+           $this->availability_costs['total_cost'];
   }
 
   private function calculate_sms_costs() {
@@ -267,6 +279,9 @@ class TZStatsInvoice {
     $result = db_query($sql, $this->start_date->format('U'), $this->end_date->format('U'));
     $cost_entries = array();
     while ($row = db_fetch_object($result)) {
+      if (!empty($this->excluded_users[$row->uid])) {
+        continue;
+      }
       $cost_entries[$row->uid] = (object)array(
         'uid' => $row->uid,
         'count' => 1,
@@ -320,7 +335,7 @@ class TZStatsInvoice {
 
     $result = db_query($sql, $this->start_date->format('U'), $this->end_date->format('U'));
     while ($entry = db_fetch_object($result)) {
-      if ($entry->uid == 1) {
+      if (!empty($this->excluded_users[$entry->uid])) {
         continue;
       }
 
@@ -334,7 +349,11 @@ class TZStatsInvoice {
 
     $result = db_query($sql, $this->start_date->format('U'), $this->end_date->format('U'));
     while ($entry = db_fetch_object($result)) {
-      if ($entry->uid == 1) {
+      if (!empty($this->excluded_users[$entry->uid])) {
+        continue;
+      }
+
+      if (empty($user_bucket[$entry->uid])) {
         continue;
       }
 
