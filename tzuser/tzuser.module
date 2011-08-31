@@ -130,12 +130,17 @@ function tzuser_theme_registry_alter(&$theme_registry) {
 
 function tzuser_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'user_register' || $form_id == 'user_profile_form') {
-    /* Hide e-mail field in the user registration and user edit forms,
-     * since we don't really care about it and it is cumbersome to
-     * have to enter it just to satisfy drupal.
-     */
-    $form['account']['mail']['#type'] = 'hidden';
-    $form['account']['mail']['#value'] = _tzuser_generate_fake_email();
+    if (empty($form['account']['mail']['#default_value'])) {
+      $form['account']['mail']['#default_value'] = _tzuser_generate_fake_email();
+    }
+    if (!user_access('administer site configuration')) {
+      /* Hide e-mail field in the user registration and user edit forms,
+       * since we don't really care about it and it is cumbersome to
+       * have to enter it just to satisfy drupal.
+       */
+      $form['account']['mail']['#type'] = 'hidden';
+      $form['account']['mail']['#value'] = $form['account']['mail']['#default_value'];
+    }
   } else if ($form_id == 'user_login' || $form_id == 'user_login_block') {
     if (isset($form['#validate']) && is_array($form['#validate'])) {
       /* Allow users to login with mobile number instead of username */
