@@ -375,7 +375,7 @@ function _tzuser_show_entry(&$account) {
   $account->content['last_login'] = array(
     '#type' => 'user_profile_item',
     '#title' => t('Last login'),
-    '#value' => theme('time_ago', $account->login),
+    '#value' => format_date($account->login, 'small'),
     '#weight' => -7,
   );
 }

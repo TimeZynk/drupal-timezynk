@@ -68,7 +68,7 @@ function tzintellitime_user($op, &$edit, &$account, $category = NULL) {
         '#type' => 'user_profile_item',
         '#title' => t('Intelliplan session age'),
         '#description' => t('When was the intelliplan session created?'),
-        '#value' => theme('time_ago', $session_data['created'])
+        '#value' => format_date($session_data['created'], 'small'),
       );
     }
 
@@ -79,7 +79,7 @@ function tzintellitime_user($op, &$edit, &$account, $category = NULL) {
         '#title' => t('Intelliplan last sync'),
         '#description' => t('Last synchronization with intelliplan'),
         '#value' => (empty($account->intellitime_active) ? 'Inactive: ' : 'Active: ') .
-                    theme('time_ago', $account->intellitime_last_sync),
+                    format_date($account->intellitime_last_sync, 'small'),
       );
     }
   }
