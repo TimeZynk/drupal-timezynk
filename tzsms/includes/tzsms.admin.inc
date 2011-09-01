@@ -59,7 +59,7 @@ function tzsms_admin_settings_validate(&$form, &$form_state) {
   /* Country code must be all numeric and contain a maximum of 4 digits since
    * a couple of countries like Barbados and Jamaica have 4 digit country codes */
   $country_code = $form_state['values']['tzsms_default_country_code'];
-  if(strlen($country_code) > 4 || !ctype_digit($country_code)) {
+  if(strlen($country_code) > 0 && !ctype_digit($country_code)) {
     form_set_error('tzsms_default_country_code', t('You must enter a numeric country code (e.g. 46 for Sweden)!'));
   }
 
