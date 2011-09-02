@@ -700,24 +700,24 @@ class TZAvailabilityInterval extends PBMessage
     parent::__construct($reader);
     self::$fields["TZAvailabilityInterval"]["1"] = "TZTime";
     $this->values["1"] = "";
-    self::$fieldNames["TZAvailabilityInterval"]["1"] = "from";
+    self::$fieldNames["TZAvailabilityInterval"]["1"] = "start";
     self::$fields["TZAvailabilityInterval"]["2"] = "TZTime";
     $this->values["2"] = "";
-    self::$fieldNames["TZAvailabilityInterval"]["2"] = "to";
+    self::$fieldNames["TZAvailabilityInterval"]["2"] = "end";
   }
-  function from()
+  function start()
   {
     return $this->_get_value("1");
   }
-  function set_from($value)
+  function set_start($value)
   {
     return $this->_set_value("1", $value);
   }
-  function to()
+  function end()
   {
     return $this->_get_value("2");
   }
-  function set_to($value)
+  function set_end($value)
   {
     return $this->_set_value("2", $value);
   }

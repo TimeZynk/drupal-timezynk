@@ -41,10 +41,10 @@ class GetAvailabilityIntervalHandlerTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue($this->result->get_availability_intervals_result()->enabled());
     $this->assertEquals(1, $this->result->get_availability_intervals_result()->intervals_size());
     $tzinterval =  $this->result->get_availability_intervals_result()->interval(0);
-    $this->assertEquals(12, $tzinterval->from()->hour());
-    $this->assertEquals(19, $tzinterval->from()->minute());
-    $this->assertEquals(17, $tzinterval->to()->hour());
-    $this->assertEquals(32, $tzinterval->to()->minute());
+    $this->assertEquals(12, $tzinterval->start()->hour());
+    $this->assertEquals(19, $tzinterval->start()->minute());
+    $this->assertEquals(17, $tzinterval->end()->hour());
+    $this->assertEquals(32, $tzinterval->end()->minute());
   }
 
   function testReturnMultipleIntervals() {
@@ -64,9 +64,9 @@ class GetAvailabilityIntervalHandlerTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue($this->result->get_availability_intervals_result()->enabled());
     $this->assertEquals(3, $this->result->get_availability_intervals_result()->intervals_size());
     $tzinterval =  $this->result->get_availability_intervals_result()->interval(2);
-    $this->assertEquals(21, $tzinterval->from()->hour());
-    $this->assertEquals(20, $tzinterval->from()->minute());
-    $this->assertEquals(4, $tzinterval->to()->hour());
-    $this->assertEquals(9, $tzinterval->to()->minute());
+    $this->assertEquals(21, $tzinterval->start()->hour());
+    $this->assertEquals(20, $tzinterval->start()->minute());
+    $this->assertEquals(4, $tzinterval->end()->hour());
+    $this->assertEquals(9, $tzinterval->end()->minute());
   }
 }

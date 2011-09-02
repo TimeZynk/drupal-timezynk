@@ -136,8 +136,8 @@ message TZAvailability {
 }
 
 message TZAvailabilityInterval {
-  optional TZTime from = 1;
-  optional TZTime to = 2;
+  optional TZTime start = 1;
+  optional TZTime end = 2;
 }
 
 // RPC messages
