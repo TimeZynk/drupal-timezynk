@@ -40,10 +40,17 @@ function _tzstats_invoice_month($month) {
   drupal_add_css(drupal_get_path('module', 'tzstats') . '/style/tzstats.css');
 
   $date = date_make_date($month . "-01");
-  $invoice = new TZStatsInvoice($date);
+  $detailed = !empty($_GET['detailed']);
+  $invoice = new TZStatsInvoice($date, $detailed);
 
   drupal_set_title($invoice->title());
-  return $invoice->format();
+  $content = $invoice->format();
+  if ($detailed) {
+    $content .= l('Hide details', 'admin/reports/invoice/' . $month);
+  } else {
+    $content .= l('Show details', 'admin/reports/invoice/' . $month, array('query' => array('detailed' => TRUE)));
+  }
+  return $content;
 }
 
 function tzstats_invoice_excluded_users() {
@@ -66,13 +73,14 @@ class TZStatsInvoice {
    */
   private $end_date;
 
+  private $detailed;
   private $excluded_users;
   private $user_costs;
   private $sms_costs;
   private $minimum_costs;
   private $availability_costs;
 
-  function __construct($month_date) {
+  function __construct($month_date, $detailed) {
     $this->start_date = clone($month_date);
     // Move to 00:00:00 first day of month
     $this->start_date->setTime(0, 0, 0);
@@ -83,6 +91,7 @@ class TZStatsInvoice {
     $this->end_date->modify('+1 month');
     $this->end_date->modify('-1 second');
 
+    $this->detailed = $detailed;
     $this->excluded_users = tzstats_invoice_excluded_users();
 
     $this->user_costs = $this->calculate_user_costs();
@@ -202,9 +211,11 @@ class TZStatsInvoice {
   }
 
   private function add_user_cost_rows(&$rows) {
-    $this->fill_cost_entry_rows($rows, $this->user_costs->day);
-    $this->fill_cost_entry_rows($rows, $this->user_costs->month);
-    $this->fill_availability_cost_rows($rows);
+    if ($this->detailed) {
+      $this->fill_cost_entry_rows($rows, $this->user_costs->day);
+      $this->fill_cost_entry_rows($rows, $this->user_costs->month);
+      $this->fill_availability_cost_rows($rows);
+    }
     $rows[] = $this->format_subtotal($this->user_costs->day, 'day users');
     $rows[] = $this->format_subtotal($this->user_costs->month, 'month users');
     $rows[] = $this->format_availability_subtotal();
