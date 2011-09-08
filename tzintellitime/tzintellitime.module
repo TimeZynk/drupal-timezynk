@@ -217,9 +217,10 @@ function tzintellitime_login_authenticate_validate($form, &$form_state) {
                    array('@user' => $username, '@msg' => $e->getMessage()));
       tzbase_watchdog_with_data('tzintellitime', $message, $e->getRawData(), WATCHDOG_DEBUG);
     } catch(TZAuthenticationFailureException $e) {
-      watchdog('tzintellitime', 'Failed to authenticate @user',
-        array('@user' => $username),
-        WATCHDOG_WARNING);
+      tzbase_watchdog_with_data('tzintellitime',
+                                t('Failed to authenticate @user', array('@user' => $username)),
+                                $e->getRawData(),
+                                WATCHDOG_WARNING);
       // Set form error to stop login
       form_set_error('name', t('Invalid username or password for %name.', array('%name' => $username)));
     }
