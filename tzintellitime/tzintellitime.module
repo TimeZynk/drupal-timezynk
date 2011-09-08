@@ -267,18 +267,16 @@ function tzintellitime_server_auth($account, $username, $password) {
     $bot = new TZIntellitimeBot($curl, TZINTELLITIME_BASE_URL);
     $fullname = $bot->login($username, $password);
 
-    $account = tzuser_add_user(
-      $fullname,
-      $username,
-      $password,
-      '',
+    $account = tzuser_update_user($username, $password, $fullname,
       array(
            'login' => time(),
            'intellitime_user' => TRUE,
            'intellitime_session_data' => $curl->getSessionData(),
       )
     );
-
+    if (!$account) {
+      throw new TZAuthenticationFailureException();
+    }
     return $account;
 
   } catch (TZIntellitimeServerException $e) {

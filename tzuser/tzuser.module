@@ -265,6 +265,35 @@ function tzuser_add_user($fullname, $username, $password = '', $mobile_number = 
   return $account;
 }
 
+function tzuser_update_user($username, $password, $fullname, $extra_data = array()) {
+  if(empty($fullname) || empty($username) || empty($password)) {
+    return FALSE;
+  }
+
+  // Try to load account
+  $account = user_load(array('name' => $username, 'status' => 1));
+  if (!$account) {
+    return FALSE;
+  }
+
+  if(!is_array($extra_data)) {
+    $extra_data = array();
+  }
+
+  $user_data = $extra_data;
+  $user_data['tzuser'] = array(
+      'fullname' => $fullname,
+  );
+  $user_data['pass'] = $password;
+
+  $account = user_save($account, $user_data);
+  if (!$account) {
+    return FALSE;
+  }
+
+  return $account;
+}
+
 /**
  * Validate a mobile phone number and strip out all extra characters
  * @param string $number phone number to validate
