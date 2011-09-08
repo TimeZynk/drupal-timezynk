@@ -7,18 +7,11 @@ function tzintellitime_sync_admin_settings() {
     '#description' => t('Minimum interval in minutes between two synchronizations of the same user. The actual synchronization times are also affected by the current cron-interval.'),
     '#default_value' => TZINTELLITIME_SYNC_INTERVAL_MINUTES,
   );
-  $form['tzintellitime_sync_users_per_run'] = array(
+  $form['tzintellitime_sync_users_per_thread'] = array(
     '#type' => 'textfield',
-    '#title' => t('Users per synchronization'),
-    '#description' => t('Maximum number of users to synchronize per session'),
-    '#default_value' => TZINTELLITIME_SYNC_USERS_PER_RUN,
-  );
-  $form['tzintellitime_sync_parallel_threads'] = array(
-    '#type' => 'select',
-    '#title' => t('Number of synchronization threads'),
-    '#options' => array_combine(range(1,30), range(1,30)),
-    '#description' => t('Total number of parallel synchronization threads to start'),
-    '#default_value' => TZINTELLITIME_SYNC_PARALLEL_THREADS,
+    '#title' => t('Maximum users per synchronization thread'),
+    '#description' => t('Maximum number of users to synchronize per thread'),
+    '#default_value' => TZINTELLITIME_SYNC_USERS_PER_THREAD,
   );
   $form['tzintellitime_sync_weeks_forward'] = array(
     '#type' => 'textfield',
@@ -106,5 +99,4 @@ function tzintellitime_sync_admin_settings_validate($form, &$form_state) {
   if(1 !== preg_match('/^\d{2}:\d{2}-\d{2}:\d{2}$/', $form_state['values']['tzintellitime_sync_availability_night'])) {
     form_set_error('tzintellitime_sync_availability_night', 'Enter time span as HH:MM-HH:MM');
   }
-
 }

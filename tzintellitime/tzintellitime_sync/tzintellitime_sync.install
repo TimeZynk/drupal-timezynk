@@ -13,7 +13,7 @@ function tzintellitime_sync_install() {
 function tzintellitime_sync_uninstall() {
   // Remove tables.
   drupal_uninstall_schema('tzintellitime_sync');
-  variable_del('tzintellitime_sync_users_per_run');
+  variable_del('tzintellitime_sync_users_per_thread');
 }
 
 function tzintellitime_sync_update_6000() {

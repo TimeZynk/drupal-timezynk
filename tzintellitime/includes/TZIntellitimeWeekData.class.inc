@@ -156,8 +156,6 @@ class TZIntellitimeWeekData {
     return array_values($updatedReports);
   }
 
-
-
   /**
    * Creates a new array where the reports in $tzreports have updated
    * intellitime_last_state fields according to what was found on the
@@ -231,8 +229,6 @@ class TZIntellitimeWeekData {
     }
     return TRUE;
   }
-
-
 
   private function findReportRow($tzreport) {
     $id = tzintellitime_get_intellitime_id($tzreport);

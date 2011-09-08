@@ -32,14 +32,20 @@ function tzintellitime_sync_drush_help($section) {
 }
 
 function tzintellitime_sync_drush_partition() {
-  $partitions = array();
+  $users = array();
   $sync_limit = time() - TZINTELLITIME_SYNC_INTERVAL_MINUTES*60;
-  $result = db_query_range('SELECT u.uid FROM {tzintellitime_sync} tz INNER JOIN {users} u ON u.uid = tz.uid WHERE u.status = 1 AND tz.intellitime_active = 1 AND tz.intellitime_last_sync <= %d ORDER BY tz.intellitime_last_sync ASC', $sync_limit, 0, TZINTELLITIME_SYNC_USERS_PER_RUN);
-  $i = 0;
+  $result = db_query('SELECT u.uid FROM {tzintellitime_sync} tz INNER JOIN {users} u ON u.uid = tz.uid WHERE u.status = 1 AND tz.intellitime_active = 1 AND tz.intellitime_last_sync <= %d ORDER BY tz.intellitime_last_sync ASC', $sync_limit);
   while($uid = db_result($result)) {
+    $users[] = $uid;
+  }
+
+  $number_of_partitions = ceil(count($users) / TZINTELLITIME_SYNC_USERS_PER_THREAD);
+  $partitions = array();
+  $i = 0;
+  while ($uid = array_shift($users)) {
     $partitions[$i][] = $uid;
     $i++;
-    if($i == TZINTELLITIME_SYNC_PARALLEL_THREADS) {
+    if($i == $number_of_partitions) {
       $i = 0;
     }
   }

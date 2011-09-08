@@ -1,8 +1,7 @@
 <?php
 
-define('TZINTELLITIME_SYNC_INTERVAL_MINUTES', variable_get('tzintellitime_sync_interval_minutes', 0));
-define('TZINTELLITIME_SYNC_USERS_PER_RUN', variable_get('tzintellitime_sync_users_per_run', 100));
-define('TZINTELLITIME_SYNC_PARALLEL_THREADS', variable_get('tzintellitime_sync_parallel_threads', 2));
+define('TZINTELLITIME_SYNC_INTERVAL_MINUTES', variable_get('tzintellitime_sync_interval_minutes', 10));
+define('TZINTELLITIME_SYNC_USERS_PER_THREAD', variable_get('tzintellitime_sync_users_per_thread', 15));
 define('TZINTELLITIME_SYNC_WEEKS_FORWARD', variable_get('tzintellitime_sync_weeks_forward', 2));
 define('TZINTELLITIME_SYNC_WEEKS_BACKWARD', variable_get('tzintellitime_sync_weeks_backward', 2));
 
@@ -159,7 +158,7 @@ function tzintellitime_sync_unschedule_user($uid) {
  */
 function tzintellitime_sync_synchronize_users() {
   $sync_limit = time() - TZINTELLITIME_SYNC_INTERVAL_MINUTES*60;
-  $result = db_query_range('SELECT uid FROM {tzintellitime_sync} WHERE intellitime_active = 1 AND intellitime_last_sync <= %d ORDER BY intellitime_last_sync ASC', $sync_limit, 0, TZINTELLITIME_SYNC_USERS_PER_RUN);
+  $result = db_query('SELECT uid FROM {tzintellitime_sync} WHERE intellitime_active = 1 AND intellitime_last_sync <= %d ORDER BY intellitime_last_sync ASC', $sync_limit);
   while($uid = db_result($result)) {
     tzintellitime_sync_synchronize_user($uid);
   }
