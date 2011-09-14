@@ -4,7 +4,7 @@ class IntellitimeAvailabilityAddPostTest extends PHPUnit_Framework_TestCase {
   function setUp() {
     $this->bot = $this->getMock('TZIntellitimeBot');
 
-    $this->form = $this->getMock('IntellitimeForm');
+    $this->form = $this->getMockBuilder('IntellitimeForm')->disableOriginalConstructor()->getMock();
     $this->formAction = "Availability.aspx?MId=Availability";
     $this->expectedAction = "Availability/Availability.aspx?MId=Availability";
     $this->form->expects($this->once())

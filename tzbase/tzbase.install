@@ -207,6 +207,18 @@ function tzbase_update_6007() {
   return $ret;
 }
 
+function tzbase_update_6008() {
+  $ret = array();
+  db_add_field($ret, 'tzavailability', 'local_changes', array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => 'Availability have unsynchronized changes',
+  ));
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
@@ -380,6 +392,13 @@ function tzbase_schema() {
         'not null' => TRUE,
         'default' => 0,
         'description' => t('End timestamp'),
+      ),
+      'local_changes' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Availability have unsynchronized changes',
       ),
     ),
     'primary key' => array('id'),

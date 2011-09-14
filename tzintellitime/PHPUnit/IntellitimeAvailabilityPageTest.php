@@ -32,14 +32,14 @@ class IntellitimeAvailabilityPageTest extends PHPUnit_Framework_TestCase {
   public function testShouldReturnCorrectDateForPageWithOneAvailableDay() {
     $page = $this->build_from_page('availability-1-day.txt');
     $days = $page->getAvailableDays();
-    $expected_dates = array ('2011-07-14');
+    $expected_dates = array_fill_keys(array ('2011-07-14'), TRUE);
     $this->checkForDates($days, $expected_dates);
   }
 
   public function testShouldReturnCorrectDatesInOrderForPageWith8AvailableDays() {
     $page = $this->build_from_page('availability-8-days.txt');
     $days = $page->getAvailableDays();
-    $expected_dates = array(
+    $expected_dates = array_fill_keys(array(
       '2011-07-14',
       '2011-07-15',
       '2011-07-20',
@@ -48,8 +48,30 @@ class IntellitimeAvailabilityPageTest extends PHPUnit_Framework_TestCase {
       '2011-07-28',
       '2011-07-29',
       '2011-08-11',
-    );
+    ), TRUE);
     $this->checkForDates($days, $expected_dates);
+  }
+
+  public function testShouldReturnCorrectFieldsForPageWithOneAvailableDay() {
+    $page = $this->build_from_page('availability-1-day.txt');
+    $days = $page->getAvailableDays();
+    $ia = $days['2011-07-14'];
+    $this->assertTrue($ia->isAvailableDuringDay());
+    $this->assertTrue($ia->isAvailableDuringEvening());
+    $this->assertTrue($ia->isAvailableDuringNight());
+  }
+
+  public function testShouldReturnCorrectFieldsForPageWithEightAvailableDays() {
+    $page = $this->build_from_page('availability-8-days.txt');
+    $days = $page->getAvailableDays();
+
+    $this->assertTrue($days['2011-07-14']->isAvailableDuringDay());
+    $this->assertFalse($days['2011-07-14']->isAvailableDuringEvening());
+    $this->assertTrue($days['2011-07-14']->isAvailableDuringNight());
+
+    $this->assertTrue($days['2011-08-11']->isAvailableDuringDay());
+    $this->assertFalse($days['2011-08-11']->isAvailableDuringEvening());
+    $this->assertFalse($days['2011-08-11']->isAvailableDuringNight());
   }
 
   /**
@@ -98,8 +120,10 @@ class IntellitimeAvailabilityPageTest extends PHPUnit_Framework_TestCase {
 
   private function checkForDates($days, $expected_dates) {
     $this->assertEquals(count($days), count($expected_dates));
-    foreach ($days as $i => $day) {
-      $this->assertEquals($day->getDate()->format('Y-m-d'), $expected_dates[$i]);
+    foreach ($days as $day) {
+      $date_string = $day->getDate()->format('Y-m-d');
+      $this->assertTrue($expected_dates[$date_string]);
+      $expected_dates[$date_string] = FALSE;
     }
   }
 

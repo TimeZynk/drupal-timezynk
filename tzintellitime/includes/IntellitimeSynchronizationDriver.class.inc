@@ -24,7 +24,7 @@ class IntellitimeSynchronizationDriver {
 
       if ($result === TZIntellitimeSyncController::SYNC_OK &&
           user_access('create availability content', $this->account)) {
-        $this->syncAvailability($serverInterface);
+        $this->syncAvailability($serverInterface, $loggers);
       }
 
       $curl->close();  // Make sure curl writes its session to disk
@@ -65,10 +65,11 @@ class IntellitimeSynchronizationDriver {
     return $ctrlr->synchronize();
   }
 
-  private function syncAvailability($serverInterface) {
+  private function syncAvailability($serverInterface, $loggers) {
     $availabilityStore = tzbase_availability_store();
-    $intellitimeAvailabilityFactory = $this->createIntellitimeAvailabilityFactory();
+    $intellitimeAvailabilityFactory = $this->createIntellitimeAvailabilityFactory($availabilityStore);
     $controller = new IntellitimeAvailabilitySyncController($this->account, $availabilityStore, $intellitimeAvailabilityFactory, $serverInterface);
+    $controller->registerLogger($loggers);
     try {
       $controller->synchronize();
     } catch (TZIntellitimeServerException $e) {
@@ -76,16 +77,11 @@ class IntellitimeSynchronizationDriver {
     }
   }
 
-  private function createIntellitimeAvailabilityFactory() {
-    $day_range = $this->makeRange(TZINTELLITIME_SYNC_AVAILABILITY_DAY);
-    $evening_range = $this->makeRange(TZINTELLITIME_SYNC_AVAILABILITY_EVENING);
-    $night_range = $this->makeRange(TZINTELLITIME_SYNC_AVAILABILITY_NIGHT);
-    return new IntellitimeAvailabilityFactory($day_range, $evening_range, $night_range);
-  }
-
-  private function makeRange($range_text) {
-    $range_parts = explode('-', $range_text);
-    return array_combine(array('start', 'end'), $range_parts);
+  private function createIntellitimeAvailabilityFactory($availabilityStore) {
+    return new IntellitimeAvailabilityFactory($availabilityStore,
+                                              TZINTELLITIME_SYNC_AVAILABILITY_DAY,
+                                              TZINTELLITIME_SYNC_AVAILABILITY_EVENING,
+                                              TZINTELLITIME_SYNC_AVAILABILITY_NIGHT);
   }
 
   private function warning($message) {

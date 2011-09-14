@@ -5,8 +5,12 @@ class IntellitimeAvailabilityPage extends IntellitimePage {
   private $addedDays = array();
   private $updatedDays = array();
 
+  /**
+   *
+   * @return Array map of ISO-date => IntellitimeAvailability
+   */
   public function getAvailableDays() {
-    return array_values($this->parseCheckboxListsToAvailabilities());
+    return $this->parseCheckboxListsToAvailabilities();
   }
 
   /**
@@ -54,24 +58,31 @@ class IntellitimeAvailabilityPage extends IntellitimePage {
     if (empty($checkboxlists)) {
       return array();
     }
+    $formValues = $this->getForm()->getFormValues();
     foreach ($checkboxlists as $checkboxlist) {
       $prefix = $this->findDayPrefix($checkboxlist);
       if (empty($prefix)) {
         continue;
       }
-      $a = $this->populateNewAvailability($prefix);
+      $a = $this->populateNewAvailability($prefix, $formValues);
       $available_days[$a->getDate()->format('Y-m-d')] = $a;
     }
     return $available_days;
   }
 
-  private function populateNewAvailability($prefix) {
+  private function populateNewAvailability($prefix, $formValues) {
     $day = new IntellitimeAvailability();
     $day->setFormId($prefix);
+
     $labelId = str_replace(':', '_', $prefix) . '_LabelAvailabilityShortDate';
     $dateLabel = $this->doc->xpath('//span[@id="' . $labelId . '"]');
     $date = date_make_date((string)$dateLabel[0] . 'T00:00:00');
     $day->setDate($date);
+
+    $day->setDay(!empty($formValues[$prefix . ':AvailabilityCheckBoxList:0']));
+    $day->setEvening(!empty($formValues[$prefix . ':AvailabilityCheckBoxList:1']));
+    $day->setNight(!empty($formValues[$prefix . ':AvailabilityCheckBoxList:2']));
+
     return $day;
   }
 
@@ -116,6 +127,6 @@ class IntellitimeAvailabilityFinalPage extends IntellitimeAvailabilityPage {
   }
   public function setAvailabilities($availabilities) {
     // Do nothing
-    
+
   }
 }

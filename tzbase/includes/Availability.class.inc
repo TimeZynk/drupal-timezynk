@@ -1,11 +1,16 @@
 <?php
 
 class Availability {
+  const AVAILABLE = TZAvailabilityType::AVAILABLE;
+  const NOT_AVAILABLE = TZAvailabilityType::NOT_AVAILABLE;
+  const DELETED = 255;
+
   private $id;
   private $uid;
   private $type;
   private $start_time;
   private $end_time;
+  private $local_changes = FALSE;
   private $dbWrapper;
 
   function __construct($dbRow = NULL, $dbWrapper = NULL) {
@@ -19,6 +24,7 @@ class Availability {
 
   public function setUserId($uid) {
     $this->uid = $uid;
+    return $this;
   }
 
   public function getUserId() {
@@ -27,6 +33,7 @@ class Availability {
 
   public function setStartTime($start_time) {
     $this->start_time = clone($start_time);
+    return $this;
   }
 
   public function getStartTime() {
@@ -38,6 +45,7 @@ class Availability {
 
   public function setEndTime($end_time) {
     $this->end_time = clone($end_time);
+    return $this;
   }
 
   public function getEndTime() {
@@ -49,6 +57,7 @@ class Availability {
 
   public function setType($type) {
     $this->type = $type;
+    return $this;
   }
 
   public function getType() {
@@ -56,11 +65,16 @@ class Availability {
   }
 
   public function isAvailable() {
-    return $this->type == TZAvailabilityType::AVAILABLE;
+    return $this->type == Availability::AVAILABLE;
+  }
+
+  public function isDeleted() {
+    return $this->type == Availability::DELETED;
   }
 
   public function setDBWrapper($dbWrapper) {
     $this->dbWrapper = $dbWrapper;
+    return $this;
   }
 
   public function isOverlappingRange($from, $to) {
@@ -72,10 +86,20 @@ class Availability {
     return $this->start_time < $to_date && $this->end_time > $from_date;
   }
 
+  public function setLocalChanges($local_changes = TRUE) {
+    $this->local_changes = $local_changes;
+    return $this;
+  }
+
+  public function haveLocalChanges() {
+    return $this->local_changes;
+  }
+
   public function save() {
     $this->validate();
     $written_record = $this->dbWrapper->writeRecord('tzavailability', $this->getFields());
     $this->setFields($written_record);
+    return $this;
   }
 
   public function validate() {
@@ -95,6 +119,7 @@ class Availability {
     if ($exception->hasErrors()) {
       throw $exception;
     }
+    return $this;
   }
 
   private function setFields($record) {
@@ -112,6 +137,7 @@ class Availability {
     if (!empty($record->end_time)) {
       $this->end_time = tzbase_make_date($record->end_time);
     }
+    $this->local_changes = $record->local_changes != 0;
   }
 
   private function getFields() {
@@ -127,6 +153,7 @@ class Availability {
     if (!empty($this->end_time)) {
       $fields['end_time'] = $this->end_time->format('U');
     }
+    $fields['local_changes'] = $this->local_changes ? 1 : 0;
     return $fields;
   }
 }

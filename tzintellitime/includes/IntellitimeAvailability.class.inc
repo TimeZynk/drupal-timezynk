@@ -14,6 +14,7 @@ class IntellitimeAvailability {
   private $dayAvailable = FALSE;
   private $eveningAvailable = FALSE;
   private $nightAvailable = FALSE;
+  private $localChanges = FALSE;
 
   /**
    * Models an availability list for a given date in intellitime.
@@ -25,6 +26,7 @@ class IntellitimeAvailability {
 
   function setDate($date) {
     $this->date = clone $date;
+    return $this;
   }
 
   function getDate() {
@@ -33,6 +35,7 @@ class IntellitimeAvailability {
 
   function setFormId($formId) {
     $this->formId = $formId;
+    return $this;
   }
 
   function getFormId() {
@@ -41,6 +44,7 @@ class IntellitimeAvailability {
 
   function setDay($isAvailable) {
     $this->dayAvailable = $isAvailable;
+    return $this;
   }
 
   function isAvailableDuringDay() {
@@ -49,6 +53,7 @@ class IntellitimeAvailability {
 
   function setEvening($isAvailable) {
     $this->eveningAvailable = $isAvailable;
+    return $this;
   }
 
   function isAvailableDuringEvening() {
@@ -57,9 +62,19 @@ class IntellitimeAvailability {
 
   function setNight($isAvailable) {
     $this->nightAvailable = $isAvailable;
+    return $this;
   }
 
   function isAvailableDuringNight() {
     return $this->nightAvailable;
+  }
+
+  function setLocalChanges() {
+    $this->localChanges = TRUE;
+    return $this;
+  }
+
+  function haveLocalChanges() {
+    return $this->localChanges;
   }
 }

@@ -3,7 +3,6 @@
 class TZDBValidationException extends Exception {
   private $errors = array();
 
-
   function addError($message) {
     $this->errors[] = $message;
   }
@@ -16,4 +15,7 @@ class TZDBValidationException extends Exception {
     return count($this->errors) > 0;
   }
 
+  function getRawData() {
+    return implode("\n", $this->errors);
+  }
 }

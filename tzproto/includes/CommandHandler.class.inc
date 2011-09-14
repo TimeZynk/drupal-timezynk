@@ -7,5 +7,5 @@ interface CommandHandler {
    * @param TZResult $result results after handling should be written here.
    * @throws TZProtoException if handling fails
    */
-  public function handle($command, &$result);
+  public function handle($command, &$result, $protocol_version = 0);
 }

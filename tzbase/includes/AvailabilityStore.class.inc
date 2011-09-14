@@ -42,7 +42,7 @@ class AvailabilityStore {
     return $availability;
   }
 
-  function findBetween($uid, $start, $end) {
+  function findBetween($uid, $start, $end, $max_type = Availability::NOT_AVAILABLE) {
     $filter_strings = array();
     $filter_args = array();
 
@@ -58,6 +58,10 @@ class AvailabilityStore {
       $filter_strings[] = 'start_time < %d';
       $filter_args[] = $end->format('U');
     }
+
+    $filter_strings[] = 'availability_type <= %d';
+    $filter_args[] = $max_type;
+
     $filter_string = implode(' AND ', $filter_strings);
 
     $availabilities = array();

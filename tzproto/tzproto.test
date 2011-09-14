@@ -434,9 +434,9 @@ class TZProtoTestCase extends DrupalWebTestCase {
     $end_date = clone($start_date);
     $end_date->modify('+4 hours');
     $time_span = new TZTimeSpan();
-    $time_span->set_date(tzproto_create_tzdate($start_date));
-    $time_span->set_start(tzproto_create_tztime($start_date));
-    $time_span->set_end(tzproto_create_tztime($end_date));
+    $time_span->set_date($this->create_tzdate($start_date));
+    $time_span->set_start($this->create_tztime($start_date));
+    $time_span->set_end($this->create_tztime($end_date));
     $availability->set_time_span($time_span);
 
     $save_availability_cmd = new TZSaveAvailabilityCmd();
@@ -612,9 +612,9 @@ public function doCreateReportTimeSpan($jobid, $flags = TZFLags::CREATED, $time_
       $end = clone($begin);
       $end->modify('+1 hour');
       $time_span = new TZTimeSpan();
-      $time_span->set_date(tzproto_create_tzdate($begin));
-      $time_span->set_start(tzproto_create_tztime($begin));
-      $time_span->set_end(tzproto_create_tztime($end));
+      $time_span->set_date($this->create_tzdate($begin));
+      $time_span->set_start($this->create_tztime($begin));
+      $time_span->set_end($this->create_tztime($end));
     }
 
     $report->set_worked_time($time_span);
@@ -643,8 +643,8 @@ public function doCreateReportTimeSpan($jobid, $flags = TZFLags::CREATED, $time_
     // Load node and check results
     $node = node_load($create_report_result->id(), NULL, TRUE);
 
-    $expected_begin = tzproto_create_datetime($time_span->date(), $time_span->start());
-    $expected_end = tzproto_create_datetime($time_span->date(), $time_span->end());
+    $expected_begin = $this->create_datetime($time_span->date(), $time_span->start());
+    $expected_end = $this->create_datetime($time_span->date(), $time_span->end());
     if ($expected_end < $expected_begin) {
       $expected_end->modify('+1 day');
     }
@@ -708,5 +708,40 @@ public function doCreateReportTimeSpan($jobid, $flags = TZFLags::CREATED, $time_
     $time->set_hour($hour);
     $time->set_minute($minute);
     return $time;
+  }
+
+  private function create_tzdate($datetime) {
+    $date = new TZDate();
+    $date->set_year(intval($datetime->format('Y'), 10));
+    $date->set_month(intval($datetime->format('n'), 10)); // Month w.o. leading zeroes.
+    $date->set_day(intval($datetime->format('j'), 10)); // Day w.o. leading zeroes.
+    return $date;
+  }
+
+
+  private function create_tztime($datetime) {
+    $time = new TZTime();
+    $time->set_hour(intval($datetime->format('G'), 10));
+    $time->set_minute(intval($datetime->format('i'), 10));
+    return $time;
+  }
+
+  private function create_datetime($tzdate, $tztime) {
+    $datetime = NULL;
+
+    $year = $tzdate->year();
+    $month = $tzdate->month();
+    $day = $tzdate->day();
+    $hour = $tztime->hour();
+    $minute = $tztime->minute();
+
+    if (!empty($year) && !empty($month) && !empty($day) &&
+    $hour !== NULL && $minute !== NULL ) {
+      $datetime = new DateTime();
+      $datetime->setTimezone(date_default_timezone(FALSE));
+      $datetime->setDate($year, $month, $day);
+      $datetime->setTime($hour, $minute);
+    }
+    return $datetime;
   }
 }

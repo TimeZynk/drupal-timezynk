@@ -12,7 +12,7 @@ class GetAvailabilityIntervalHandler implements CommandHandler {
     $this->availability_store = $availability_store;
   }
 
-  public function handle($command, &$result) {
+  public function handle($cmd, &$result, $protocol_version = 0) {
     $intervals = $this->availability_store->getAvailabilityIntervals();
     $intervals_result = new TZGetAvailabilityIntervalsResult();
 

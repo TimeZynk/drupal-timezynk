@@ -4,7 +4,10 @@ class TZWatchdogLogger implements TZIntellitimeLogger {
   function logException($message, $exception, $logLevel = TZIntellitimeLogger::INFO) {
     $data = '';
     if ($exception) {
-      $data = $exception->getRawData();
+      $message .= ': ' . $exception->getMessage();
+      if (is_callable(array($exception, 'getRawData'))) {
+        $data = $exception->getRawData();
+      }
     }
     $this->logData($message, $data, $logLevel);
   }

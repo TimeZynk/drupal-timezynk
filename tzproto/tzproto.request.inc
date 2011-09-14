@@ -4,9 +4,6 @@
  * Request handler for the TimeZynk protocol
  */
 
-class TZProtoException extends Exception {};
-
-
 /**
  * Request dispatcher
  */
@@ -98,18 +95,24 @@ function _tzproto_handle_cmd($cmd, &$result, $protocol_version) {
     tzproto_handle_create_report_cmd($cmd, $result);
   }
   else if ($cmd->get_availability_cmd()) {
-    tzproto_handle_get_availability_cmd($cmd, $result);
+    require_once 'includes/GetAvailabilityHandler.class.inc';
+    $handler = new GetAvailabilityHandler($GLOBALS['user'], tzbase_availability_store());
+    $handler->handle($cmd->get_availability_cmd(), $result);
   }
   else if ($cmd->save_availability_cmd()) {
-    tzproto_handle_save_availability_cmd($cmd, $result);
+    require_once 'includes/SaveAvailabilityHandler.class.inc';
+    $handler = new SaveAvailabilityHandler($GLOBALS['user'], tzbase_availability_store());
+    $handler->handle($cmd->save_availability_cmd(), $result);
   }
   else if ($cmd->delete_availability_cmd()) {
-    tzproto_handle_delete_availability_cmd($cmd, $result);
+    require_once 'includes/DeleteAvailabilityHandler.class.inc';
+    $handler = new DeleteAvailabilityHandler($GLOBALS['user'], tzbase_availability_store());
+    $handler->handle($cmd->delete_availability_cmd(), $result);
   }
   else if ($cmd->get_availability_intervals_cmd()) {
     require_once 'includes/GetAvailabilityIntervalHandler.class.inc';
     $handler = new GetAvailabilityIntervalHandler(tzbase_availability_store());
-    $handler->handle($cmd, $result);
+    $handler->handle($cmd->get_availability_intervals_cmd(), $result);
   }
   else {
     throw new TZProtoException('Not implemented', 501);
@@ -422,126 +425,6 @@ function tzproto_handle_create_report_cmd(&$cmd, &$result) {
     $reportresult->set_id($report->nid);
   }
   $result->set_create_report_result($reportresult);
-}
-
-function _tzproto_get_availabilities($get_availability_cmd) {
-  global $user;
-  $availabilities = array();
-  $store = tzbase_availability_store();
-
-  if ($get_availability_cmd->id()) {
-    // Get single availability
-    $availability = $store->find($get_availability_cmd->id());
-    if (empty($availability)) {
-      throw new TZProtoException("Availability not found", 404);
-    }
-    if ($availability->getUserId() != $user->uid) {
-      throw new TZProtoException("May not read other user's availability", 403);
-    }
-    $availabilities[] = $availability;
-  } else {
-    // Get all within date range
-    $range = tzproto_create_datetime_range($get_availability_cmd->date_range());
-    $availabilities = $store->findBetween($user->uid, $range->start, $range->end);
-  }
-  return $availabilities;
-}
-
-/**
- * Populates a TZAvailability object from one Availability DB entry.
- * @param TZAvailability $tzavailability the TZAvailability object to populate.
- * @param Availability $availability a database entry for availability.
- */
-function tzproto_populate_tzavailability(&$tzavailability, $availability) {
-  $tzavailability->set_id($availability->getId());
-  $tzavailability->set_type($availability->getType());
-
-  $time_span = tzproto_create_tztimespan($availability->getStartTime()->format('U'),
-                                         $availability->getEndTime()->format('U'));
-  $tzavailability->set_time_span($time_span);
-}
-
-function tzproto_handle_get_availability_cmd(&$cmd, &$result) {
-  if (!user_access('view own availability content')) {
-    throw new TZProtoException('May not view availability', 403);
-  }
-
-  $get_availability_result = new TZGetAvailabilityResult();
-  $availabilities = _tzproto_get_availabilities($cmd->get_availability_cmd());
-  foreach ($availabilities as $availability) {
-    $tzavailability = $get_availability_result->add_availability();
-    tzproto_populate_tzavailability($tzavailability, $availability);
-  }
-  $result->set_get_availability_result($get_availability_result);
-}
-
-function tzproto_handle_save_availability_cmd(&$cmd, &$result) {
-  global $user;
-
-  if (!user_access('create availability content')) {
-    throw new TZProtoException('May not create availability', 403);
-  }
-
-  $save_availability_cmd = $cmd->save_availability_cmd();
-  $save_availability_result = new TZSaveAvailabilityResult();
-
-  $tzavailability = $save_availability_cmd->availability();
-  if (!$tzavailability) {
-    return;
-  }
-
-  $availability = NULL;
-  $store = tzbase_availability_store();
-
-  if ($tzavailability->id()) {
-    $availability = $store->find($tzavailability->id());
-    if (empty($availability)) {
-      throw new TZProtoException("Availability not found", 404);
-    }
-    if ($availability->getUserId() != $user->uid) {
-      throw new TZProtoException("May not modify other user's availability report", 403);
-    }
-  } else {
-    $availability = $store->createAvailability();
-    $availability->setUserId($user->uid);
-  }
-
-  $availability->setType($tzavailability->type());
-
-  $time_span = $tzavailability->time_span();
-  if (!$time_span) {
-    throw new TZProtoException('Missing time span in availability', 400);
-  }
-
-  $start_date = tzproto_create_datetime($time_span->date(), $time_span->start());
-  $end_date = tzproto_create_datetime($time_span->date(), $time_span->end());
-  if ($end_date <= $start_date) {
-    $end_date->modify('+1 day');
-  }
-  $availability->setStartTime($start_date);
-  $availability->setEndTime($end_date);
-  try {
-    $availability->save();
-  } catch (TZDBValidationException $e) {
-    throw new TZProtoException("Validation failed", 400);
-  }
-
-  $save_availability_result->set_id($availability->getId());
-  $result->set_save_availability_result($save_availability_result);
-}
-
-function tzproto_handle_delete_availability_cmd(&$cmd, &$result) {
-  global $user;
-
-  if (!user_access('remove own availability content')) {
-    throw new TZProtoException('May not remove availability', 403);
-  }
-
-  $delete_availability_cmd = $cmd->delete_availability_cmd();
-  $store = tzbase_availability_store();
-  if (!$store->delete($user->uid, $delete_availability_cmd->id())) {
-    throw new TZProtoException('Availability ID not found', 404);
-  }
 }
 
 /**

@@ -1,11 +1,13 @@
 <?php
+
+class TZProtoException extends Exception {};
+
 /**
  * Maps up the server URL for the protobuf based RPC protocol.
  * If you use a specific version of the protocol, tag it on at the
  * end of the path.
  * @file implementation of protocol buffer server
  */
-
 function tzproto_menu() {
   $items['tzproto'] = array(
     'title' => 'TimeZynk RPC',

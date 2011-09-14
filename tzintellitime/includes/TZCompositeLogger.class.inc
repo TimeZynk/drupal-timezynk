@@ -5,7 +5,7 @@ class TZCompositeLogger implements TZIntellitimeLogger {
   /**
    * @var Array
    */
-  private $children;
+  private $children = array();
 
   function logException($message, $exception, $logLevel = TZIntellitimeLogger::INFO) {
     foreach ($this->children as $child) {

@@ -22,7 +22,7 @@ class IntellitimeAvailabilityAddPost extends IntellitimePost {
     $data['__EVENTARGUMENT'] =  round(intval($date->format('U'), 10)  / 86400);
     return $data;
   }
-  
+
   protected function getAction() {
     return 'Availability/' . parent::getAction();
   }
