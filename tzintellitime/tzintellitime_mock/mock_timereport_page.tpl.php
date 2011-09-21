@@ -109,7 +109,7 @@ href="../css/Style.css" type=text/css rel=STYLESHEET>
         <form name="TimeReport" method="post" action="TimeReport.aspx?DateInWeek=<?php print $DateInWeek ?>" id="TimeReport" onkeydown="OnKeyDown();" onsubmit="return PostForm();">
 <input type="hidden" name="__EVENTTARGET" value="" />
 <input type="hidden" name="__EVENTARGUMENT" value="" />
-<input type="hidden" name="__VIEWSTATE" value="<? print $ctlmap ?>"/>
+<input type="hidden" name="__VIEWSTATE" value="<?php print $ctlmap ?>"/>
 
 <script language="javascript" type="text/javascript">
 <!--

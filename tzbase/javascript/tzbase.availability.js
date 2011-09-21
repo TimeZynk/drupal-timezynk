@@ -4,7 +4,7 @@ Drupal.behaviors.Availability = function(context) {
 		$('#edit-to').timeEntry({show24Hours: true});
 		$('#edit-submit').click(function(event) {
 	        event.preventDefault();
-	        var form_data = $('#tzbase-availability-form fieldset').serialize();
+	        var form_data = $('#tzbase-availability-form').serialize();
 	        $.get('availability/data', form_data, displayData);
 	    });
 	}

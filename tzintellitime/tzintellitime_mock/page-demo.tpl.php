@@ -6,18 +6,27 @@
     <title>Demo</title>
     <link rel="icon" href="favicon.ico" type="image/vnd.microsoft.icon">
     <style type="text/css">
+    body {
+      font-family: sans-serif;
+      font-size: 22px;
+    }
     input {
-      font-size: 2em;
-      top: 100px;
-      position: absolute;
+      font-size: 40px;
+      margin-top: 1em;
+    }
+    select {
+      display: block;
+      font-size: 22px;
     }
     .messages {
-      border: 2px solid green;
-      background: #ccff99;
       padding: 5px;
       margin: 5px;
-      font-family: sans-serif;
-      font-size: 1.2em;
+      border: 2px solid green;
+      background: #ccff99;
+    }
+    .messages.error {
+      border: 2px solid red;
+      background: #ffcc99;
     }
     </style>
   </head>

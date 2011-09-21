@@ -7,10 +7,13 @@
 #  tzbase.module: n/a
 #  tzbase.info: n/a
 #  includes/views/tzbase.views.inc: n/a
+#  includes/tzbase.availability.inc: n/a
 #  includes/tzbase.userjobs.inc: n/a
 #  tzbase.install: n/a
 #  PHPUnit/TZUserJobMappingTest.php: n/a
+#  includes/Availability.class.inc: n/a
 #  includes/TZUserJobMapping.class.inc: n/a
+#  includes/availability_admin.inc: n/a
 #  includes/tzbase.admin.inc: n/a
 #  includes/views/handlers/tzbase_handler_argument_begintime.inc: n/a
 #  includes/views/handlers/tzbase_handler_field_date.inc: n/a
@@ -20,7 +23,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-06-27 17:45+0200\n"
+"POT-Creation-Date: 2011-09-21 16:32+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -41,219 +44,219 @@ msgstr ""
 msgid "Provides TimeZynk data types and relations"
 msgstr ""
 
-#: tzbase.module:69 includes/views/tzbase.views.inc:14
+#: tzbase.module:92 includes/views/tzbase.views.inc:14
 msgid "Time Report"
 msgstr ""
 
-#: tzbase.module:71
+#: tzbase.module:94
 msgid "A time report for a specific project"
 msgstr ""
 
-#: tzbase.module:73;84
+#: tzbase.module:96;107
 msgid "Description"
 msgstr ""
 
-#: tzbase.module:75
+#: tzbase.module:98
 msgid "Comments"
 msgstr ""
 
-#: tzbase.module:78 includes/views/tzbase.views.inc:134
+#: tzbase.module:101 includes/views/tzbase.views.inc:134
 msgid "Job"
 msgstr ""
 
-#: tzbase.module:80
+#: tzbase.module:103
 msgid "A job that you can report time on"
 msgstr ""
 
-#: tzbase.module:82
+#: tzbase.module:105
 msgid "Subject"
 msgstr ""
 
-#: tzbase.module:210
+#: tzbase.module:231
 msgid "-- No jobs available --"
 msgstr ""
 
-#: tzbase.module:217;569
+#: tzbase.module:238;590 includes/tzbase.availability.inc:17;52
 msgid "Date"
 msgstr ""
 
-#: tzbase.module:245
+#: tzbase.module:266
 msgid "Select job"
 msgstr ""
 
-#: tzbase.module:248
+#: tzbase.module:269
 msgid "Select the job that this time report concerns"
 msgstr ""
 
-#: tzbase.module:265
+#: tzbase.module:286
 msgid "Assigned to user"
 msgstr ""
 
-#: tzbase.module:275
+#: tzbase.module:296
 msgid "Time"
 msgstr ""
 
-#: tzbase.module:288 includes/views/tzbase.views.inc:63
+#: tzbase.module:309 includes/views/tzbase.views.inc:63
 msgid "Start time"
 msgstr ""
 
-#: tzbase.module:302 includes/views/tzbase.views.inc:83
+#: tzbase.module:323 includes/views/tzbase.views.inc:83
 msgid "End time"
 msgstr ""
 
-#: tzbase.module:312 includes/views/tzbase.views.inc:94
+#: tzbase.module:333 includes/views/tzbase.views.inc:94
 msgid "Break duration"
 msgstr ""
 
-#: tzbase.module:322
+#: tzbase.module:343
 msgid "Travel information"
 msgstr ""
 
-#: tzbase.module:329
+#: tzbase.module:350
 msgid "Travel time"
 msgstr ""
 
-#: tzbase.module:338
+#: tzbase.module:359
 msgid "Travel length (km)"
 msgstr ""
 
-#: tzbase.module:360
+#: tzbase.module:381
 msgid "Report status"
 msgstr ""
 
-#: tzbase.module:369
+#: tzbase.module:390
 msgid "Signature"
 msgstr ""
 
-#: tzbase.module:400
+#: tzbase.module:421
 msgid "Administrative assignment code"
 msgstr ""
 
-#: tzbase.module:407
+#: tzbase.module:428
 msgid "Top level assignment"
 msgstr ""
 
-#: tzbase.module:421
+#: tzbase.module:442
 msgid "Parent job"
 msgstr ""
 
-#: tzbase.module:441
+#: tzbase.module:462
 msgid "Assignment active"
 msgstr ""
 
-#: tzbase.module:442
+#: tzbase.module:463
 msgid "Check if this assignment is active and can be used for time reporting"
 msgstr ""
 
-#: tzbase.module:554
+#: tzbase.module:575
 msgid "Home"
 msgstr ""
 
-#: tzbase.module:555
+#: tzbase.module:576
 msgid "Time Reports"
 msgstr ""
 
-#: tzbase.module:565
+#: tzbase.module:586 includes/tzbase.availability.inc:49
 msgid "Name"
 msgstr ""
 
-#: tzbase.module:568 includes/tzbase.userjobs.inc:80
+#: tzbase.module:589 includes/tzbase.userjobs.inc:87
 msgid "Assignment"
 msgstr ""
 
-#: tzbase.module:570
+#: tzbase.module:591
 msgid "Start"
 msgstr ""
 
-#: tzbase.module:571
+#: tzbase.module:592
 msgid "End"
 msgstr ""
 
-#: tzbase.module:572
+#: tzbase.module:593
 msgid "Break"
 msgstr ""
 
-#: tzbase.module:573
+#: tzbase.module:594
 msgid "Total"
 msgstr ""
 
-#: tzbase.module:574
+#: tzbase.module:595
 msgid "Status"
 msgstr ""
 
-#: tzbase.module:499
+#: tzbase.module:520
 msgid "tzbase"
 msgstr ""
 
-#: tzbase.module:499
+#: tzbase.module:520
 msgid "Report (nid: @id, vid: @vid) missing begintime or endtime in tzbase_nodeapi"
 msgstr ""
 
-#: tzbase.module:94
+#: tzbase.module:117
 msgid "create tzreport content"
 msgstr ""
 
-#: tzbase.module:95
+#: tzbase.module:118
 msgid "view any tzreport content"
 msgstr ""
 
-#: tzbase.module:96
+#: tzbase.module:119
 msgid "view own tzreport content"
 msgstr ""
 
-#: tzbase.module:97
+#: tzbase.module:120
 msgid "edit any tzreport content"
 msgstr ""
 
-#: tzbase.module:98
+#: tzbase.module:121
 msgid "edit own tzreport content"
 msgstr ""
 
-#: tzbase.module:99
+#: tzbase.module:122
 msgid "remove own tzreport content"
 msgstr ""
 
-#: tzbase.module:100
+#: tzbase.module:123
 msgid "create tzreport on any tzjob"
 msgstr ""
 
-#: tzbase.module:102
+#: tzbase.module:125
 msgid "create tzjob content"
 msgstr ""
 
-#: tzbase.module:103
+#: tzbase.module:126
 msgid "view any tzjob content"
 msgstr ""
 
-#: tzbase.module:104
+#: tzbase.module:127
 msgid "view own tzjob content"
 msgstr ""
 
-#: tzbase.module:105
+#: tzbase.module:128
 msgid "edit any tzjob content"
 msgstr ""
 
-#: tzbase.module:106
+#: tzbase.module:129
 msgid "edit own tzjob content"
 msgstr ""
 
-#: tzbase.module:108
+#: tzbase.module:131
 msgid "create availability content"
 msgstr ""
 
-#: tzbase.module:109
+#: tzbase.module:132
 msgid "view any availability content"
 msgstr ""
 
-#: tzbase.module:110
+#: tzbase.module:133
 msgid "view own availability content"
 msgstr ""
 
-#: tzbase.module:111
+#: tzbase.module:134
 msgid "remove own availability content"
 msgstr ""
 
-#: tzbase.module:113
+#: tzbase.module:136
 msgid "manage user job mappings"
 msgstr ""
 
@@ -273,7 +276,15 @@ msgstr ""
 msgid "Configure TimeZynk modules."
 msgstr ""
 
-#: tzbase.module:45;53
+#: tzbase.module:45;70 includes/tzbase.availability.inc:53
+msgid "Availability"
+msgstr ""
+
+#: tzbase.module:46
+msgid "Configure TimeZynk availability."
+msgstr ""
+
+#: tzbase.module:54;62
 msgid "User Jobs"
 msgstr ""
 
@@ -281,75 +292,75 @@ msgstr ""
 msgid "Not found"
 msgstr ""
 
-#: tzbase.install:72;241
+#: tzbase.install:72;253
 msgid "The {user}.uid that is assigned to this report"
 msgstr ""
 
-#: tzbase.install:89;269
+#: tzbase.install:89;281
 msgid "Total duration in seconds"
 msgstr ""
 
-#: tzbase.install:126;173;351;392
+#: tzbase.install:126;173;363;411
 msgid "Stores availability information"
 msgstr ""
 
-#: tzbase.install:150;193;375;412
+#: tzbase.install:150;193;387;431
 msgid "Start timestamp"
 msgstr ""
 
-#: tzbase.install:157;198;382;417
+#: tzbase.install:157;198;394;436
 msgid "End timestamp"
 msgstr ""
 
-#: tzbase.install:215;309
+#: tzbase.install:227;321
 msgid "Stores a TimeZynk time report connected to a specific assignment"
 msgstr ""
 
-#: tzbase.install:222;316
+#: tzbase.install:234;328
 msgid "The {node}.nid"
 msgstr ""
 
-#: tzbase.install:229;323
+#: tzbase.install:241;335
 msgid "The {node_revision}.vid"
 msgstr ""
 
-#: tzbase.install:235
+#: tzbase.install:247
 msgid "The {tzjob}.nid"
 msgstr ""
 
-#: tzbase.install:248
+#: tzbase.install:260
 msgid "Timestamp for the beginning"
 msgstr ""
 
-#: tzbase.install:255
+#: tzbase.install:267
 msgid "Timestamp for the end"
 msgstr ""
 
-#: tzbase.install:262
+#: tzbase.install:274
 msgid "Total break time in seconds"
 msgstr ""
 
-#: tzbase.install:276
+#: tzbase.install:288
 msgid "Total travel time in seconds"
 msgstr ""
 
-#: tzbase.install:283
+#: tzbase.install:295
 msgid "Total travel length in kilometers"
 msgstr ""
 
-#: tzbase.install:289
+#: tzbase.install:301
 msgid "Signature text"
 msgstr ""
 
-#: tzbase.install:296;342
+#: tzbase.install:308;354
 msgid "Bit-combined flags"
 msgstr ""
 
-#: tzbase.install:329
+#: tzbase.install:341
 msgid "Account code for this job"
 msgstr ""
 
-#: tzbase.install:335
+#: tzbase.install:347
 msgid "The {tzjob}.nid of the parent job"
 msgstr ""
 
@@ -357,7 +368,7 @@ msgstr ""
 msgid "TimeZynk Base"
 msgstr ""
 
-#: PHPUnit/TZUserJobMappingTest.php:40 includes/TZUserJobMapping.class.inc:92
+#: PHPUnit/TZUserJobMappingTest.php:40 includes/Availability.class.inc:108 includes/TZUserJobMapping.class.inc:92
 msgid "Missing user ID"
 msgstr ""
 
@@ -365,8 +376,36 @@ msgstr ""
 msgid "Missing job ID"
 msgstr ""
 
-#: PHPUnit/TZUserJobMappingTest.php:59 includes/TZUserJobMapping.class.inc:98
+#: PHPUnit/TZUserJobMappingTest.php:59 includes/Availability.class.inc:117 includes/TZUserJobMapping.class.inc:98
 msgid "Inverted interval"
+msgstr ""
+
+#: includes/Availability.class.inc:111
+msgid "Missing start time"
+msgstr ""
+
+#: includes/Availability.class.inc:114
+msgid "Missing end time"
+msgstr ""
+
+#: includes/availability_admin.inc:12
+msgid "Availability intervals"
+msgstr ""
+
+#: includes/availability_admin.inc:17
+msgid "Enable intervals"
+msgstr ""
+
+#: includes/availability_admin.inc:31
+msgid "Valid intervals"
+msgstr ""
+
+#: includes/availability_admin.inc:32
+msgid "Availability intervals, written as HH:MM-HH:MM"
+msgstr ""
+
+#: includes/availability_admin.inc:36
+msgid "Save"
 msgstr ""
 
 #: includes/tzbase.admin.inc:19
@@ -377,27 +416,51 @@ msgstr ""
 msgid "Perform operation"
 msgstr ""
 
+#: includes/tzbase.availability.inc:22
+msgid "From"
+msgstr ""
+
+#: includes/tzbase.availability.inc:28
+msgid "To"
+msgstr ""
+
+#: includes/tzbase.availability.inc:33
+msgid "Search"
+msgstr ""
+
+#: includes/tzbase.availability.inc:50
+msgid "Mobile"
+msgstr ""
+
+#: includes/tzbase.availability.inc:51
+msgid "Manager"
+msgstr ""
+
+#: includes/tzbase.availability.inc:73
+msgid "No available employees found"
+msgstr ""
+
 #: includes/tzbase.userjobs.inc:39;45
 msgid "Add"
 msgstr ""
 
-#: includes/tzbase.userjobs.inc:78
+#: includes/tzbase.userjobs.inc:85
 msgid "ID"
 msgstr ""
 
-#: includes/tzbase.userjobs.inc:79
+#: includes/tzbase.userjobs.inc:86
 msgid "Employee"
 msgstr ""
 
-#: includes/tzbase.userjobs.inc:81
+#: includes/tzbase.userjobs.inc:88
 msgid "Start date"
 msgstr ""
 
-#: includes/tzbase.userjobs.inc:82
+#: includes/tzbase.userjobs.inc:89
 msgid "End date"
 msgstr ""
 
-#: includes/tzbase.userjobs.inc:99
+#: includes/tzbase.userjobs.inc:106
 msgid "delete"
 msgstr ""
 

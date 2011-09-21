@@ -10,14 +10,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Drupal 6.x\n"
-"POT-Creation-Date: 2011-06-27 17:45+0200\n"
-"PO-Revision-Date: 2011-06-27 17:58+0100\n"
-"Last-Translator: TimeZynk <dev@timezynk.com>\n"
+"POT-Creation-Date: 2011-09-21 16:32+0200\n"
+"PO-Revision-Date: 2011-09-21 16:44+0100\n"
+"Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: TimeZynk AB <dev@timezynk.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Language: Swedish\n"
 "X-Poedit-Country: SWEDEN\n"
@@ -36,227 +36,227 @@ msgstr "Skapade revision !vid av rapport !nid via drush"
 msgid "Provides TimeZynk data types and relations"
 msgstr "Implementerar TimeZynks datatyper och relationer"
 
-#: tzbase.module:69
+#: tzbase.module:92
 #: includes/views/tzbase.views.inc:14
 msgid "Time Report"
 msgstr "Tidrapport"
 
-#: tzbase.module:71
+#: tzbase.module:94
 msgid "A time report for a specific project"
 msgstr "En tidrapport för ett specifikt uppdrag"
 
-#: tzbase.module:73;84
+#: tzbase.module:96;107
 msgid "Description"
 msgstr "Beskrivning"
 
-#: tzbase.module:75
+#: tzbase.module:98
 msgid "Comments"
 msgstr "Kommentarer"
 
-#: tzbase.module:78
+#: tzbase.module:101
 #: includes/views/tzbase.views.inc:134
 msgid "Job"
 msgstr "Uppdrag"
 
-#: tzbase.module:80
+#: tzbase.module:103
 msgid "A job that you can report time on"
 msgstr "Ett uppdrag som går att tidrapportera mot"
 
-#: tzbase.module:82
+#: tzbase.module:105
 msgid "Subject"
 msgstr "Ämne"
 
-#: tzbase.module:210
+#: tzbase.module:231
 msgid "-- No jobs available --"
 msgstr "-- Inga tillgängliga uppdrag --"
 
-#: tzbase.module:217;569
+#: tzbase.module:238;590
+#: includes/tzbase.availability.inc:17;52
 msgid "Date"
 msgstr "Datum"
 
-#: tzbase.module:245
+#: tzbase.module:266
 msgid "Select job"
 msgstr "Välj uppdrag"
 
-#: tzbase.module:248
+#: tzbase.module:269
 msgid "Select the job that this time report concerns"
 msgstr "Välj uppdrag att koppla tidrapporten till"
 
-#: tzbase.module:265
+#: tzbase.module:286
 msgid "Assigned to user"
 msgstr "Tilldelad till"
 
-#: tzbase.module:275
+#: tzbase.module:296
 msgid "Time"
 msgstr "Tid"
 
-#: tzbase.module:288
+#: tzbase.module:309
 #: includes/views/tzbase.views.inc:63
 msgid "Start time"
 msgstr "Starttid"
 
-#: tzbase.module:302
+#: tzbase.module:323
 #: includes/views/tzbase.views.inc:83
 msgid "End time"
 msgstr "Sluttid"
 
-#: tzbase.module:312
+#: tzbase.module:333
 #: includes/views/tzbase.views.inc:94
 msgid "Break duration"
 msgstr "Rastlängd"
 
-#: tzbase.module:322
+#: tzbase.module:343
 msgid "Travel information"
 msgstr "Resor och kilometerersättning"
 
-#: tzbase.module:329
+#: tzbase.module:350
 msgid "Travel time"
 msgstr "Restid"
 
-#: tzbase.module:338
+#: tzbase.module:359
 msgid "Travel length (km)"
 msgstr "Reslängd (km)"
 
-#: tzbase.module:360
+#: tzbase.module:381
 msgid "Report status"
 msgstr "Rapportstatus"
 
-#: tzbase.module:369
+#: tzbase.module:390
 msgid "Signature"
 msgstr "Signatur"
 
-#: tzbase.module:400
+#: tzbase.module:421
 msgid "Administrative assignment code"
 msgstr "Uppdrags-kod för administration"
 
-#: tzbase.module:407
+#: tzbase.module:428
 msgid "Top level assignment"
 msgstr "Uppdrag på topp-nivå"
 
-#: tzbase.module:421
+#: tzbase.module:442
 msgid "Parent job"
 msgstr "Underuppdrag till"
 
-#: tzbase.module:441
+#: tzbase.module:462
 msgid "Assignment active"
 msgstr "Aktivt uppdrag"
 
-#: tzbase.module:442
+#: tzbase.module:463
 msgid "Check if this assignment is active and can be used for time reporting"
 msgstr "Kryssa i ifall uppdraget är aktivt och kan användas för tidrapportering"
 
-#: tzbase.module:554
+#: tzbase.module:575
 msgid "Home"
 msgstr "Hem"
 
-#: tzbase.module:555
+#: tzbase.module:576
 msgid "Time Reports"
 msgstr "Tidrapporter"
 
-#: tzbase.module:565
+#: tzbase.module:586
+#: includes/tzbase.availability.inc:49
 msgid "Name"
 msgstr "Namn"
 
-#: tzbase.module:568
-#: includes/tzbase.userjobs.inc:80
+#: tzbase.module:589
+#: includes/tzbase.userjobs.inc:87
 msgid "Assignment"
 msgstr "Uppdrag"
 
-#: tzbase.module:570
-#, fuzzy
+#: tzbase.module:591
 msgid "Start"
-msgstr "Starttid"
+msgstr "Start"
 
-#: tzbase.module:571
+#: tzbase.module:592
 msgid "End"
 msgstr "Slut"
 
-#: tzbase.module:572
+#: tzbase.module:593
 msgid "Break"
 msgstr "Rast"
 
-#: tzbase.module:573
+#: tzbase.module:594
 msgid "Total"
 msgstr "Totalt"
 
-#: tzbase.module:574
-#, fuzzy
+#: tzbase.module:595
 msgid "Status"
-msgstr "Statusflaggor"
+msgstr "Status"
 
-#: tzbase.module:499
+#: tzbase.module:520
 msgid "tzbase"
 msgstr ""
 
-#: tzbase.module:499
+#: tzbase.module:520
 msgid "Report (nid: @id, vid: @vid) missing begintime or endtime in tzbase_nodeapi"
 msgstr ""
 
-#: tzbase.module:94
+#: tzbase.module:117
 msgid "create tzreport content"
 msgstr ""
 
-#: tzbase.module:95
+#: tzbase.module:118
 msgid "view any tzreport content"
 msgstr ""
 
-#: tzbase.module:96
+#: tzbase.module:119
 msgid "view own tzreport content"
 msgstr ""
 
-#: tzbase.module:97
+#: tzbase.module:120
 msgid "edit any tzreport content"
 msgstr ""
 
-#: tzbase.module:98
+#: tzbase.module:121
 msgid "edit own tzreport content"
 msgstr ""
 
-#: tzbase.module:99
+#: tzbase.module:122
 msgid "remove own tzreport content"
 msgstr ""
 
-#: tzbase.module:100
+#: tzbase.module:123
 msgid "create tzreport on any tzjob"
 msgstr ""
 
-#: tzbase.module:102
+#: tzbase.module:125
 msgid "create tzjob content"
 msgstr ""
 
-#: tzbase.module:103
+#: tzbase.module:126
 msgid "view any tzjob content"
 msgstr ""
 
-#: tzbase.module:104
+#: tzbase.module:127
 msgid "view own tzjob content"
 msgstr ""
 
-#: tzbase.module:105
+#: tzbase.module:128
 msgid "edit any tzjob content"
 msgstr ""
 
-#: tzbase.module:106
+#: tzbase.module:129
 msgid "edit own tzjob content"
 msgstr ""
 
-#: tzbase.module:108
+#: tzbase.module:131
 msgid "create availability content"
 msgstr ""
 
-#: tzbase.module:109
+#: tzbase.module:132
 msgid "view any availability content"
 msgstr ""
 
-#: tzbase.module:110
+#: tzbase.module:133
 msgid "view own availability content"
 msgstr ""
 
-#: tzbase.module:111
+#: tzbase.module:134
 msgid "remove own availability content"
 msgstr ""
 
-#: tzbase.module:113
+#: tzbase.module:136
 msgid "manage user job mappings"
 msgstr ""
 
@@ -277,7 +277,16 @@ msgstr ""
 msgid "Configure TimeZynk modules."
 msgstr "Konfigurera TimeZynk-moduler"
 
-#: tzbase.module:45;53
+#: tzbase.module:45;70
+#: includes/tzbase.availability.inc:53
+msgid "Availability"
+msgstr "Tillgänglighet"
+
+#: tzbase.module:46
+msgid "Configure TimeZynk availability."
+msgstr "Konfigurera tillgänglighet"
+
+#: tzbase.module:54;62
 msgid "User Jobs"
 msgstr "Uppdragskopplingar"
 
@@ -285,77 +294,77 @@ msgstr "Uppdragskopplingar"
 msgid "Not found"
 msgstr "Kunde inte hittas"
 
-#: tzbase.install:72;241
+#: tzbase.install:72;253
 msgid "The {user}.uid that is assigned to this report"
 msgstr ""
 
-#: tzbase.install:89;269
+#: tzbase.install:89;281
 msgid "Total duration in seconds"
 msgstr "Totaltid"
 
-#: tzbase.install:126;173;351;392
+#: tzbase.install:126;173;363;411
 msgid "Stores availability information"
 msgstr ""
 
-#: tzbase.install:150;193;375;412
+#: tzbase.install:150;193;387;431
 #, fuzzy
 msgid "Start timestamp"
 msgstr "Starttid"
 
-#: tzbase.install:157;198;382;417
+#: tzbase.install:157;198;394;436
 #, fuzzy
 msgid "End timestamp"
 msgstr "Sluttid"
 
-#: tzbase.install:215;309
+#: tzbase.install:227;321
 msgid "Stores a TimeZynk time report connected to a specific assignment"
 msgstr "Sparar en TimeZynk-tidrapport kopplad till ett specifikt uppdrag"
 
-#: tzbase.install:222;316
+#: tzbase.install:234;328
 msgid "The {node}.nid"
 msgstr ""
 
-#: tzbase.install:229;323
+#: tzbase.install:241;335
 msgid "The {node_revision}.vid"
 msgstr ""
 
-#: tzbase.install:235
+#: tzbase.install:247
 msgid "The {tzjob}.nid"
 msgstr ""
 
-#: tzbase.install:248
+#: tzbase.install:260
 msgid "Timestamp for the beginning"
 msgstr ""
 
-#: tzbase.install:255
+#: tzbase.install:267
 msgid "Timestamp for the end"
 msgstr ""
 
-#: tzbase.install:262
+#: tzbase.install:274
 msgid "Total break time in seconds"
 msgstr ""
 
-#: tzbase.install:276
+#: tzbase.install:288
 msgid "Total travel time in seconds"
 msgstr ""
 
-#: tzbase.install:283
+#: tzbase.install:295
 msgid "Total travel length in kilometers"
 msgstr ""
 
-#: tzbase.install:289
+#: tzbase.install:301
 msgid "Signature text"
 msgstr ""
 
-#: tzbase.install:296;342
+#: tzbase.install:308;354
 msgid "Bit-combined flags"
 msgstr ""
 
-#: tzbase.install:329
+#: tzbase.install:341
 msgid "Account code for this job"
 msgstr "Uppdragskod för det här uppdraget"
 
-#: tzbase.install:335
+#: tzbase.install:347
 msgid "The {tzjob}.nid of the parent job"
 msgstr ""
 
@@ -364,6 +373,7 @@ msgid "TimeZynk Base"
 msgstr "TimeZynk Bas"
 
 #: PHPUnit/TZUserJobMappingTest.php:40
+#: includes/Availability.class.inc:108
 #: includes/TZUserJobMapping.class.inc:92
 msgid "Missing user ID"
 msgstr "Användar-ID saknas"
@@ -374,9 +384,38 @@ msgid "Missing job ID"
 msgstr "Saknar uppdrags-ID"
 
 #: PHPUnit/TZUserJobMappingTest.php:59
+#: includes/Availability.class.inc:117
 #: includes/TZUserJobMapping.class.inc:98
 msgid "Inverted interval"
 msgstr "Inverterat intervall"
+
+#: includes/Availability.class.inc:111
+msgid "Missing start time"
+msgstr "Saknar starttid"
+
+#: includes/Availability.class.inc:114
+msgid "Missing end time"
+msgstr "Saknar sluttid"
+
+#: includes/availability_admin.inc:12
+msgid "Availability intervals"
+msgstr ""
+
+#: includes/availability_admin.inc:17
+msgid "Enable intervals"
+msgstr "Använd fasta intervall"
+
+#: includes/availability_admin.inc:31
+msgid "Valid intervals"
+msgstr "Giltiga intervall"
+
+#: includes/availability_admin.inc:32
+msgid "Availability intervals, written as HH:MM-HH:MM"
+msgstr ""
+
+#: includes/availability_admin.inc:36
+msgid "Save"
+msgstr "Spara"
 
 #: includes/tzbase.admin.inc:19
 msgid "Delete all TimeZynk content"
@@ -386,27 +425,51 @@ msgstr "Ta bort allt TimeZynk-innehåll"
 msgid "Perform operation"
 msgstr "Utför"
 
+#: includes/tzbase.availability.inc:22
+msgid "From"
+msgstr "Från"
+
+#: includes/tzbase.availability.inc:28
+msgid "To"
+msgstr "Till"
+
+#: includes/tzbase.availability.inc:33
+msgid "Search"
+msgstr "Sök"
+
+#: includes/tzbase.availability.inc:50
+msgid "Mobile"
+msgstr "Mobil"
+
+#: includes/tzbase.availability.inc:51
+msgid "Manager"
+msgstr "Chef"
+
+#: includes/tzbase.availability.inc:73
+msgid "No available employees found"
+msgstr "Hittade inga tillgängliga anställda"
+
 #: includes/tzbase.userjobs.inc:39;45
 msgid "Add"
 msgstr "Lägg till"
 
-#: includes/tzbase.userjobs.inc:78
+#: includes/tzbase.userjobs.inc:85
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
-#: includes/tzbase.userjobs.inc:79
+#: includes/tzbase.userjobs.inc:86
 msgid "Employee"
 msgstr "Anställd"
 
-#: includes/tzbase.userjobs.inc:81
+#: includes/tzbase.userjobs.inc:88
 msgid "Start date"
 msgstr "Startdatum"
 
-#: includes/tzbase.userjobs.inc:82
+#: includes/tzbase.userjobs.inc:89
 msgid "End date"
 msgstr "Slutdatum"
 
-#: includes/tzbase.userjobs.inc:99
+#: includes/tzbase.userjobs.inc:106
 msgid "delete"
 msgstr "ta bort"
 

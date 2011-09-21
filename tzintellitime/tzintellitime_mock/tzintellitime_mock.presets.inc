@@ -1,6 +1,26 @@
 <?php
 
+define('TZINTELLITIME_MOCK_DEFAULT_TITLE', 'Demo Company, Task One');
+
 function tzintellitime_mock_presets(&$form_state) {
+  $users = tzintellitime_mock_get_users();
+  $user_ids = array_map(function($u) { return $u->user_id; }, $users);
+  $user_names = array_map(function($u) { return $u->login; }, $users);
+
+  $selected_users = array();
+  if (!empty($_COOKIE['tzintellitime_mock_presets_selected_users'])) {
+    $selected_users = unserialize($_COOKIE['tzintellitime_mock_presets_selected_users']);
+  }
+
+  $form['users'] = array(
+    '#type' => 'select',
+    '#title' => 'Select user to reset',
+    '#options' => array_combine($user_ids, $user_names),
+    '#multiple' => TRUE,
+    '#size' => 1,
+    '#required' => TRUE,
+    '#default_value' => $selected_users,
+  );
   $form['reset'] = array(
     '#type' => 'submit',
     '#value' => 'Reset demo',
@@ -10,12 +30,27 @@ function tzintellitime_mock_presets(&$form_state) {
 }
 
 function tzintellitime_mock_presets_submit($form, $form_state) {
-  // Reset all data
-  db_query('DELETE FROM {tzintellitime_mock_data');
+  $selected_users = array_filter($form_state['values']['users']);
+  setcookie('tzintellitime_mock_presets_selected_users', serialize($selected_users), time()+365*24*3600);
 
-  // Create assignment
-  $assignment = new TZIntellitimeAssignment('Demoföretag, demouppgift');
-  $assignment_id = tzintellitime_mock_store_object($assignment);
+  // Reset data for selected users
+  $query_fragments = array_fill(0, count($selected_users), "user_id = %d");
+  $query_args = array_values($selected_users);
+  db_query('DELETE FROM {tzintellitime_mock_data} WHERE ' . implode(' OR ', $query_fragments), $query_args);
+
+  // Find or create assignment
+  $assignment = NULL;
+  $assignment_id = 0;
+  $assignments = tzintellitime_mock_get_assignments();
+  $assignments = array_filter($assignments, function($a) {return $a->title == TZINTELLITIME_MOCK_DEFAULT_TITLE;});
+  if (empty($assignments)) {
+    $assignment = new TZIntellitimeAssignment(TZINTELLITIME_MOCK_DEFAULT_TITLE);
+    unset($assignment->id);
+    $assignment_id = tzintellitime_mock_store_object($assignment);
+  } else {
+    $assignment = $assignments[0];
+    $assignment_id = $assignment->id;
+  }
 
   // Build up new reports
   $today = tzbase_make_date();
@@ -62,16 +97,14 @@ function tzintellitime_mock_presets_submit($form, $form_state) {
   }
 
   // Save the reports once for every user
-  $result = db_query('SELECT user_id FROM {tzintellitime_mock_users}');
-  while($user_id = db_result($result)) {
+  foreach ($selected_users as $user_id) {
     foreach($reports as $report) {
       $report_clone = clone($report);
-      $report_clone->user_id = $user_id;
+      $report_clone->user_id = intval($user_id);
       tzintellitime_mock_store_object($report_clone);
     }
+    tzintellitime_mock_schedule_user($user_id);
   }
-
-  tzintellitime_mock_schedule_all_users();
 
   drupal_set_message(t('Last reset @date', array('@date' => date_format_date(tzbase_make_date()))));
 }
