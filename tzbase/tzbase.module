@@ -877,6 +877,7 @@ function tzbase_availability_store() {
 function tzbase_add_progress_js() {
   jquery_ui_add(array('ui.core', 'ui.draggable', 'ui.dialog', 'ui.progressbar'));
   drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/base/ui.all.css');
+  drupal_add_js(drupal_get_path('module', 'tzbase') . '/javascript/json2.js');
   drupal_add_js(drupal_get_path('module', 'tzbase') . '/javascript/tzbase.progress.js');
 }
 
