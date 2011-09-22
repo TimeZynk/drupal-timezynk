@@ -874,6 +874,12 @@ function tzbase_availability_store() {
   return new AvailabilityStore(tzbase_db_wrapper());
 }
 
+function tzbase_add_progress_js() {
+  jquery_ui_add(array('ui.core', 'ui.draggable', 'ui.dialog', 'ui.progressbar'));
+  drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/base/ui.all.css');
+  drupal_add_js(drupal_get_path('module', 'tzbase') . '/javascript/tzbase.progress.js');
+}
+
 function _tzbase_calculate_correct_endtime($begin_datetime, $end_datetime) {
   // Set the same date as for begintime, but keep the hour and minute for the endtime.
   $new_end_datetime = clone($begin_datetime);

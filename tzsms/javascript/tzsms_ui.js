@@ -62,8 +62,12 @@
             dialog.dialog('close');
             dialog.remove();
 
-            $.runWithProgressBar(employees, 5, function(employees, on_success) {
-                sendTextSMS(text, employees, on_success);
+            $.runWithProgressBar(employees, {
+            	chunk_size: 5,
+            	on_process: function(employees, on_success) {
+                    sendTextSMS(text, employees, on_success);
+                },
+                on_finished: clearAllCheckBoxes
             });
         };
 
@@ -71,56 +75,6 @@
             buttons: buttons,
             width: "450px"
         });
-    };
-    
-    $.runWithProgressBar = function(employees, chunk_size, on_process) {
-        var dialog,
-            progressbar,
-            info;
-
-        $('#send-sms-progress-dialog').remove();
-        dialog = $('<div id="send-sms-progress-dialog" title="' + Drupal.t('Sending') + '..."></div>');
-
-        progressbar = $('<div></div>');
-        dialog.append(progressbar);
-        progressbar.progressbar();
-
-        info = $('<div class="messages status"></div>');
-        dialog.append(info);
-
-        dialog.dialog({
-            modal: true
-        });
-
-        function processEmployeeChunks() {
-            var sent = 0,
-                total = employees.length;
-
-            function nextEmployeeChunk() {
-                sent += chunk_size;
-                sent = Math.min(total, sent);
-                progressbar.progressbar('value', sent*100/total);
-                info.text(Drupal.t('Sent @count of @total', {
-                    "@count": sent,
-                    "@total": total
-                }));
-
-                if (sent < total) {
-                    on_process(employees.slice(sent, sent + chunk_size), nextEmployeeChunk);
-                } else {
-                    clearAllCheckBoxes();
-                    setTimeout(function() {
-                        dialog.dialog('close');
-                        dialog.remove();
-                    }, 1000);
-                }
-            }
-
-            // Slice employees into chunks of 5
-            on_process(employees.slice(sent, sent + chunk_size), nextEmployeeChunk);
-        }
-
-        processEmployeeChunks();
     };
     
     function clearAllCheckBoxes() {

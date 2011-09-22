@@ -41,7 +41,7 @@ function tzuser_add_users_form(&$form_state) {
     if (!empty($form_state['values']['rows'][$row_id]['manager'])) {
       $default_manager = $form_state['values']['rows'][$row_id]['manager'];
     }
-    
+
     $row = array(
       'mobile' => !empty($form_state['values']['rows'][$row_id]['number']) ? $form_state['values']['rows'][$row_id]['number'] : '',
       'username' => !empty($form_state['values']['rows'][$row_id]['username']) ? $form_state['values']['rows'][$row_id]['username'] : '',
@@ -160,7 +160,7 @@ function tzuser_add_users_form_validate($form, &$form_state) {
         'manager' => $manager_user_id,
       );
     }
-    
+
     $form_state['storage']['csv_rows'] = $csv_rows;
   }
 }
@@ -176,27 +176,11 @@ function tzuser_add_users_form_validate($form, &$form_state) {
 function tzuser_add_users_form_submit($form, &$form_state) {
   // We only do full submit if we are called by the submit button
   if($form_state['values']['op'] === t('Add employees')) {
-
     // Run batch if no file is set
     if (empty($form_state['storage']['csv_rows'])) {
-      $batch = array(
-        'operations' => array(),
-        'finished' => 'tzuser_add_users_batch_finished',
-        'title' => t('Adding employees'),
-        'init_message' => t('Starting to add employees'),
-        'progress_message' => t('Step @current of @total'),
-        'error_message' => t('Errors while adding employees'),
-        'file' => __FILE__,
-      );
-
-      foreach ($form_state['storage']['numbers'] as $current_user) {
-        $batch['operations'][] = array('tzuser_add_users_batch_process', array($current_user));
-      }
-
-      batch_set($batch);
-
-      // All sent, clear the form
-      unset($form_state['storage']);
+      tzbase_add_progress_js();
+      drupal_add_js(array('tzuser_new_entries' => array_values($form_state['storage']['numbers'])), 'setting');
+      drupal_add_js(drupal_get_path('module', 'tzuser') . '/javascript/tzuser.add.js');
     }
   }
 }
@@ -227,7 +211,6 @@ function tzuser_add_password_field($default_value = '') {
 
 function tzuser_add_find_manager_id($manager_user_name) {
   $account = user_load(array('name' => $manager_user_name));
-
   if ($account) {
     return $account->uid;
   }
@@ -244,44 +227,33 @@ function tzuser_add_row_fields($index, $row) {
   return $row_fields;
 }
 
-function tzuser_add_users_batch_process($new_user, &$context) {
-  $account = tzuser_add_user(
-    $new_user['username'],
-    $new_user['username'],
-    $new_user['password'],
-    $new_user['mobile'],
-    array(),
-    $new_user['manager']
-  );
+function tzuser_add_ajax() {
+  $result = array();
+  // Read POST data
+  $raw_data = file_get_contents('php://input');
+  $users = json_decode($raw_data);
+  foreach ($users as $u) {
+    $account = tzuser_add_user(
+      $u->username,
+      $u->username,
+      $u->password,
+      $u->mobile,
+      array(),
+      $u->manager
+    );
 
-  if($account) {
-    module_invoke_all('tzuser_add_user_notify', $account, $new_user['password']);
-    $context['message'] = t('Created employee @username with mobile @number',
-                           array('@username' => $account->name,
-                                '@number' => $account->tzuser['mobile']));
-    watchdog('tzuser', $context['message']);
-    $context['results'][$account->tzuser['mobile']] = $account->name;
-  } else {
-    $context['message'] = t('Failed to add employee @username with mobile @number',
-                            array('@username' => $new_user['username'],
-                                 '@number' => $new_user['mobile']));
-  }
-}
-
-function tzuser_add_users_batch_finished($success, $results, $operations) {
-  if ($success) {
-    drupal_set_message(t('All @count employees added successfully!', array('@count' => count($results))));
-    foreach ($results as $mobile => $user_name) {
-      drupal_set_message(t('Created employee @username with mobile @number', array('@username' => $user_name, '@number' => $mobile)));
+    if ($account) {
+      module_invoke_all('tzuser_add_user_notify', $account, $u->password);
+      $result[$u->mobile]['message'] = t('Created employee @username with mobile @number',
+                                             array('@username' => $account->name,
+                                                   '@number' => $account->tzuser['mobile']));
+      watchdog('tzuser', $result[$u->mobile]['message']);
+    } else {
+      $result[$u->mobile]['error'] = t('Failed to add employee @username with mobile @number',
+                                           array('@username' => $u>username,
+                                                 '@number' => $u->mobile));
+      watchdog('tzuser', $result[$u->mobile]['message'], WATCHDOG_WARNING);
     }
-  } else {
-    $error_operation = reset($operations);
-    $operation = array_shift($error_operation);
-    $arguments = array_shift($error_operation);
-    $arguments_as_string = implode(', ', $arguments);
-    drupal_set_message(t('An error occurred during @op with @arguments',
-                         array('@op' => $operation, '@arguments' => $arguments_as_string)), 'error');
-    watchdog('tzuser', 'An error occurred during @op with @arguments',
-             array('@op' => $operation, '@arguments' => $arguments_as_string), WATCHDOG_ERROR);
   }
+  print drupal_json($result);
 }

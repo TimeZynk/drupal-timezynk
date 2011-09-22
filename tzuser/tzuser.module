@@ -38,6 +38,12 @@ function tzuser_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => -9,
   );
+  $items['tzuser/add/ajax'] = array(
+    'page callback' => 'tzuser_add_ajax',
+    'access arguments' => array('manage employees'),
+    'file' => 'includes/tzuser.add.inc',
+    'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 

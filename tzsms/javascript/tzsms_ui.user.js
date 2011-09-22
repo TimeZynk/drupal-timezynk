@@ -14,9 +14,13 @@ Drupal.behaviors.TZSMSUserOverview = function(context) {
     }
 
     function sendInstallSMS(employees, on_success) {
-        $.post('tzsms/install_sms_ajax', {
+        $.post('/tzsms/install_sms_ajax', {
             "selected_users[]": employees
         }, on_success);
+    }
+    
+    function clearAllCheckBoxes() {
+        $('tbody :checked').removeAttr('checked').click();
     }
 
     $('#edit-send-install-sms').click(function(event) {
@@ -25,7 +29,11 @@ Drupal.behaviors.TZSMSUserOverview = function(context) {
         event.preventDefault();
 
         if (employees.length > 0) {
-            $.runWithProgressBar(employees, 5, sendInstallSMS);
+            $.runWithProgressBar(employees, {
+            	chunk_size: 5, 
+            	on_process: sendInstallSMS,
+            	on_finished: clearAllCheckBoxes
+            });
         }
     });
 
