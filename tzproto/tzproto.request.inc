@@ -127,7 +127,6 @@ function _tzproto_log_request($request, $response) {
     return;
   }
   if ($user->tzuser['log_level'] >= TZUSER_LOG_LEVEL_MEDIUM) {
-    watchdog('tzproto', 'Request from !name', array('!name' => $user->name));
     watchdog('tzproto_medium', 'var http_vars = ' . json_encode(tzbase_http_server_vars()) . ';');
   }
   if ($user->tzuser['log_level'] >= TZUSER_LOG_LEVEL_VERBOSE) {

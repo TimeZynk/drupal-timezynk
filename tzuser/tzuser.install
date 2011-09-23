@@ -58,6 +58,18 @@ function tzuser_update_6003() {
   return $ret;
 }
 
+function tzuser_update_6004() {
+  $ret = array();
+
+  db_add_field($ret, 'tzuser', 'user_agent',
+    array(
+      'type' => 'varchar',
+      'length' => 255,
+    )
+  );
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
@@ -93,6 +105,10 @@ function tzuser_schema() {
         'not null' => TRUE,
         'default' => 0,
         'description' => 'Log level for user',
+      ),
+      'user_agent' => array(
+        'type' => 'varchar',
+        'length' => 255,
       ),
     ),
     'primary key' => array('uid'),

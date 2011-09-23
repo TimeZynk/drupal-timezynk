@@ -104,6 +104,12 @@ function tzuser_user($op, &$edit, &$account, $category = NULL) {
       $account->tzuser = _tzuser_load_entry($account);
       break;
 
+    case 'login':
+      if (empty($account->tzuser['user_agent']) || $account->tzuser['user_agent'] != $_SERVER['HTTP_USER_AGENT']) {
+        _tzuser_store_user_agent($account, $_SERVER['HTTP_USER_AGENT']);
+      }
+      break;
+
     case 'update':
       _tzuser_save_entry($edit, $account);
       break;
@@ -419,13 +425,21 @@ function _tzuser_show_entry(&$account) {
     '#type' => 'user_profile_item',
     '#title' => t('Log level'),
     '#value' => $account->tzuser['log_level'],
+    '#access' => user_access('administer site configuration'),
     '#weight' => -7,
+  );
+  $account->content['user_agent'] = array(
+    '#type' => 'user_profile_item',
+    '#title' => t('User agent'),
+    '#value' => $account->tzuser['user_agent'],
+    '#access' => user_access('administer site configuration'),
+    '#weight' => -6,
   );
   $account->content['last_login'] = array(
     '#type' => 'user_profile_item',
     '#title' => t('Last login'),
     '#value' => format_date($account->login, 'small'),
-    '#weight' => -6,
+    '#weight' => -5,
   );
 }
 
@@ -520,4 +534,13 @@ function tzuser_manager_role_id() {
 
 function _tzuser_generate_fake_email() {
   return uniqid('user', TRUE) . '@' . $_SERVER['HTTP_HOST'];
+}
+
+function _tzuser_store_user_agent($account, $user_agent) {
+  $edit = array(
+    'tzuser' => array(
+      'user_agent' => $user_agent,
+    )
+  );
+  _tzuser_save_entry($edit, $account);
 }
