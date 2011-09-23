@@ -43,6 +43,21 @@ function tzuser_update_6002() {
   return $ret;
 }
 
+function tzuser_update_6003() {
+  $ret = array();
+
+  db_add_field($ret, 'tzuser', 'log_level',
+    array(
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+      'default' => 0,
+      'description' => 'Log level for user',
+    )
+  );
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
@@ -71,6 +86,13 @@ function tzuser_schema() {
         'unsigned' => TRUE,
         'not null' => FALSE,
         'description' => 'Manager user ID from {users}.uid.',
+      ),
+      'log_level' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Log level for user',
       ),
     ),
     'primary key' => array('uid'),

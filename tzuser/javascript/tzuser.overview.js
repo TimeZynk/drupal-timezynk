@@ -20,17 +20,17 @@ Drupal.behaviors.TZUserOverview = function(context) {
              * Try to fallback to comparing the name
              * since it should always be unique.
              */
-            if (field != 'name') {
-                return makeFieldComparator('name')(a,b);
+            if (field != 'name_value') {
+                return makeFieldComparator('name_value')(a,b);
             }
             return 0;
-        }
+        };
     }
 
     function reverse(fn) {
         return function(a,b) {
             return fn(b,a);
-        }
+        };
     }
 
     function updateSortBy(hash) {
@@ -42,7 +42,7 @@ Drupal.behaviors.TZUserOverview = function(context) {
                 comparator = makeFieldComparator('status_value');
                 break;
             case Drupal.t('Username'):
-                comparator = makeFieldComparator('name');
+                comparator = makeFieldComparator('name_value');
                 break;
             case Drupal.t('Full name'):
                 comparator = makeFieldComparator('fullname');

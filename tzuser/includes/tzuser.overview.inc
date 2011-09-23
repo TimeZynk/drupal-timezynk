@@ -46,6 +46,7 @@ function tzuser_user_overview(&$form_state) {
   $form['filter']['manager'] = tzuser_select_manager_field($GLOBALS['user']->uid);
   $form['filter']['manager']['#title'] = t('Show with manager');
   $form['filter']['manager']['#description'] = t('Select which managers employees to show');
+  $form['filter']['manager']['#options'][0] = '-- ' . t('All') . ' --';
 
   $form['filter']['date'] = array(
     '#type' => 'date_popup',
@@ -120,7 +121,8 @@ function tzuser_overview_ajax() {
       'checkbox' => drupal_render($checkbox),
       'status' => theme('traffic_light', $status_code),
       'status_value' => $status_code,
-      'name' => $user_entry->name,
+      'name' => l($user_entry->name, "user/$user_entry->uid", array('query' => 'destination=tzuser')),
+      'name_value' => $user_entry->name,
       'fullname' => $user_entry->fullname,
       'mobile' => $user_entry->mobile,
       'due_count' => theme('due_reports_count', $status->getNumberOfDueReports()),

@@ -881,6 +881,16 @@ function tzbase_add_progress_js() {
   drupal_add_js(drupal_get_path('module', 'tzbase') . '/javascript/tzbase.progress.js');
 }
 
+function tzbase_http_server_vars() {
+  $vars = array();
+  foreach ($_SERVER as $key => $v) {
+    if(substr($key, 0, 5) === 'HTTP_') {
+      $vars[$key] = $v;
+    }
+  }
+  return $vars;
+}
+
 function _tzbase_calculate_correct_endtime($begin_datetime, $end_datetime) {
   // Set the same date as for begintime, but keep the hour and minute for the endtime.
   $new_end_datetime = clone($begin_datetime);

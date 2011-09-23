@@ -45,7 +45,7 @@ function tzproto_request() {
 
   // Authenticate user
   if(0 == tzproto_login($req)) {
-    for($i = 0; $i < $req->commands_size(); $i++) {
+    for ($i = 0; $i < $req->commands_size(); $i++) {
       $cmd = $req->command($i);
 
       // Return client request ID
@@ -61,8 +61,10 @@ function tzproto_request() {
     }
   }
 
+  _tzproto_log_request($req, $response);
+
   $response_data = $response->SerializeToString();
-  if($use_base64) {
+  if ($use_base64) {
     $response_data = base64_encode($response_data);
   }
 
@@ -119,6 +121,20 @@ function _tzproto_handle_cmd($cmd, &$result, $protocol_version) {
   }
 }
 
+function _tzproto_log_request($request, $response) {
+  global $user;
+  if (empty($user->tzuser['log_level'])) {
+    return;
+  }
+  if ($user->tzuser['log_level'] >= TZUSER_LOG_LEVEL_MEDIUM) {
+    watchdog('tzproto', 'Request from !name', array('!name' => $user->name));
+    watchdog('tzproto_medium', 'var http_vars = ' . json_encode(tzbase_http_server_vars()) . ';');
+  }
+  if ($user->tzuser['log_level'] >= TZUSER_LOG_LEVEL_VERBOSE) {
+    watchdog('tzproto_verbose', 'var request = ' . $request->toJson() . ";\n\nvar response = " . $response->toJson() . ';');
+  }
+}
+
 /**
  * Validate login credentials and authenticate user
  * @param $req TZCommand
@@ -140,7 +156,6 @@ function tzproto_login($req) {
   drupal_execute('user_login', $form_state);
 
   if ($user->uid) {
-    watchdog('tzproto', 'Login for !name', array('!name' => $user->name));
     return 0;
   }
   module_invoke_all('tzproto_login_failed', $req->username(), $_SERVER['HTTP_USER_AGENT']);

@@ -1,6 +1,9 @@
 <?php
 
 define('TZUSER_OVERVIEW_RED_LIMIT', 14*24*3600);
+define('TZUSER_LOG_LEVEL_NONE', 0);
+define('TZUSER_LOG_LEVEL_MEDIUM', 1);
+define('TZUSER_LOG_LEVEL_VERBOSE', 2);
 
 function tzuser_menu() {
   $items['admin/user/tzuser/ajax/autocomplete/user'] = array(
@@ -412,11 +415,17 @@ function _tzuser_show_entry(&$account) {
       '#weight' => -8,
     );
   }
+  $account->content['log_level'] = array(
+    '#type' => 'user_profile_item',
+    '#title' => t('Log level'),
+    '#value' => $account->tzuser['log_level'],
+    '#weight' => -7,
+  );
   $account->content['last_login'] = array(
     '#type' => 'user_profile_item',
     '#title' => t('Last login'),
     '#value' => format_date($account->login, 'small'),
-    '#weight' => -7,
+    '#weight' => -6,
   );
 }
 
@@ -464,6 +473,19 @@ function _tzuser_user_form($account) {
   );
   $form['tzuser']['manager']['#title'] = t('Manager');
   $form['tzuser']['manager']['#description'] = t('Select employees manager');
+  $form['tzuser']['log_level'] = array(
+    '#type' => 'select',
+    '#required' => FALSE,
+    '#access' => user_access('administer site configuration'),
+    '#title' => t('Log level'),
+    '#description' => t('Current logging level for this user'),
+    '#default_value' => empty($account->tzuser['log_level']) ? 0 : $account->tzuser['log_level'],
+    '#options' => array(
+      TZUSER_LOG_LEVEL_NONE => t('No extra logging'),
+      TZUSER_LOG_LEVEL_MEDIUM => t('Medium logging'),
+      TZUSER_LOG_LEVEL_VERBOSE => t('Verbose logging'),
+    ),
+  );
 
   return $form;
 }

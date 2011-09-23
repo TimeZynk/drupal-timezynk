@@ -1,326 +1,264 @@
-# #-#-#-#-#  sv.po (Drupal 6.x)  #-#-#-#-#
-# Swedish translation of TimeZynk ExcelExport
-# Copyright 2010 TimeZynk AB <dev@timezynk.com>
-# Generated from files:
-#  excelexport.inc: n/a
-#  excelexport.module: n/a
-#  excelexport.info: n/a
-#
-# #-#-#-#-#  sv.po (Drupal 6.x)  #-#-#-#-#
-# Swedish translation of Drupal (TimeZynk Base module)
-# Copyright 2010 TimeZynk AB <dev@timezynk.com>
-# Generated from files:
-#  tzbase.admin.inc: n/a
-#  tzbase.import.inc: n/a
-#  tzbase.module: n/a
-#  tzbase.info: n/a
-#  tzbase.install: n/a
-#
-# #-#-#-#-#  sv.po (TZIntellitime)  #-#-#-#-#
 # $Id$
 #
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  tzintellitime.admin.inc: n/a
-#  tzintellitime.module: n/a
-#  tzintellitime.info: n/a
+#  excelexport/excelexport.inc: n/a
+#  tzbase/tzbase.module: n/a
+#  tzbase/includes/tzbase.userjobs.inc: n/a
+#  tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc: n/a
+#  tzmobile/tzmobile.js: n/a
+#  tzreports/includes/TZReportsTimeReports.class.inc: n/a
+#  tzreports/includes/tzreports.timereports.inc: n/a
+#  tzbase/includes/views/tzbase.views.inc: n/a
+#  tzuser/javascript/tzuser.overview.js: n/a
+#  tzreports/includes/tzreports.views_default.inc: n/a
+#  tzuser/includes/tzuser.theme.inc: n/a
+#  excelexport/excelexport.module: n/a
+#  excelexport/excelexport.install: n/a
+#  tzbase/tzbase.install: n/a
+#  excelexport/excelexport.info: n/a
+#  jadmaker/jadmaker.info: n/a
+#  tzbase/tzbase.info: n/a
+#  tzintellitime/tzintellitime.info: n/a
+#  tzintellitime/tzintellitime_mock/tzintellitime_mock.info: n/a
+#  tzintellitime/tzintellitime_sync/tzintellitime_sync.info: n/a
+#  tzmobile/tzmobile.info: n/a
+#  tzproto/tzproto.info: n/a
+#  tzreminder/tzreminder.info: n/a
+#  tzreports/tzreports.info: n/a
+#  tzsms/tzsms.info: n/a
+#  tzsms/tzsms_ui.info: n/a
+#  tzstats/tzstats.info: n/a
+#  tzuser/tzuser.info: n/a
+#  jadmaker/jadmaker.inc: n/a
+#  jadmaker/jadmaker.views.inc: n/a
+#  jadmaker/jadmaker.module: n/a
+#  jadmaker/jadmaker.install: n/a
+#  timezynk_basic_feature/timezynk_basic_feature.info: n/a
+#  timezynk_intelliplan_feature/timezynk_intelliplan_feature.info: n/a
+#  tzbase/tzbase.drush.inc: n/a
+#  tzproto/tzproto.request.inc: n/a
+#  tzbase/includes/tzbase.availability.inc: n/a
+#  tzreports/tzreports.module: n/a
+#  tzuser/includes/tzuser.overview.inc: n/a
+#  tzintellitime/tzintellitime.install: n/a
+#  tzbase/PHPUnit/TZUserJobMappingTest.php: n/a
+#  tzbase/includes/Availability.class.inc: n/a
+#  tzbase/includes/TZUserJobMapping.class.inc: n/a
+#  tzbase/includes/availability_admin.inc: n/a
+#  tzproto/acceptance_test/generate_dst_reports.php: n/a
+#  tzreminder/includes/tzreminder.form.inc: n/a
+#  tzbase/includes/tzbase.admin.inc: n/a
+#  tzuser/tzuser.module: n/a
+#  tzbase/includes/views/handlers/tzbase_handler_argument_begintime.inc: n/a
+#  tzbase/includes/views/handlers/tzbase_handler_field_date.inc: n/a
+#  tzbase/includes/views/handlers/tzbase_handler_field_tzjob_flags.inc: n/a
+#  tzbase/javascript/tzbase.progress.js: n/a
+#  tzintellitime/tzintellitime.admin.inc: n/a
+#  tzintellitime/tzintellitime.module: n/a
+#  tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc: n/a
+#  tzintellitime/tzintellitime_sync/tzintellitime_sync.module: n/a
+#  tzstats/includes/tzstats.views.inc: n/a
+#  tzintellitime/tzintellitime_mock/tzintellitime_mock.reports.inc: n/a
+#  tzintellitime/tzintellitime_mock/tzintellitime_mock.presets.inc: n/a
+#  tzintellitime/tzintellitime_mock/tzintellitime_mock.module: n/a
+#  tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc: n/a
+#  tzintellitime/tzintellitime_sync/tzintellitime_sync.install: n/a
+#  tzmobile/tzmobile.module: n/a
+#  tzproto/tzproto.module: n/a
+#  tzreminder/tzreminder.module: n/a
+#  tzreminder/includes/TZAbstractReminderPolicy.class.inc: n/a
+#  tzsms/tzsms.module: n/a
+#  tzsms/includes/tzsms_ui.send.inc: n/a
+#  tzsms/tzsms_ui.module: n/a
+#  tzsms/javascript/tzsms_ui.js: n/a
+#  tzsms/includes/BeepSend.class.inc: n/a
+#  tzsms/includes/LogOnlyBackend.class.inc: n/a
+#  tzsms/includes/SmsBackendFactory.class.inc: n/a
+#  tzsms/includes/tzsms.admin.inc: n/a
+#  tzsms/javascript/tzsms_ui.user.js: n/a
+#  tzstats/tzstats.module: n/a
+#  tzstats/tzstats.install: n/a
+#  tzstats/includes/tzstats.pricing.inc: n/a
+#  tzuser/includes/tzuser.add.inc: n/a
+#  tzuser/tzuser.install: n/a
+#  tzuser/includes/tzuser.views.inc: n/a
+#  tzuser/includes/tzuser_handler_filter_user_name.inc: n/a
+#  tzuser/javascript/tzuser.add.js: n/a
 #
-# #-#-#-#-#  sv.po (TZIntellitimeSync)  #-#-#-#-#
-# $Id$
-#
-# LANGUAGE translation of Drupal (general)
-# Copyright YEAR NAME <EMAIL@ADDRESS>
-# Generated from files:
-#  tzintellitime_sync.module: n/a
-#  tzintellitime_sync.install: n/a
-#  tzintellitime_sync.info: n/a
-#
-# #-#-#-#-#  sv.po (Drupal 6.x)  #-#-#-#-#
-# Swedish translation of TimeZynk Mobile
-# Copyright 2010 TimeZynk AB <dev@timezynk.com>
-# Generated from files:
-#  excelexport.inc: n/a
-#  excelexport.module: n/a
-#  excelexport.info: n/a
-#
-# #-#-#-#-#  sv.po (TimeZynk)  #-#-#-#-#
-# $Id$
-#
-# LANGUAGE translation of Drupal (general)
-# Copyright YEAR NAME <EMAIL@ADDRESS>
-# Generated from files:
-#  tzreminder.module: n/a
-#  tzreminder.info: n/a
-#  includes/TZDelayedReminderPolicy.class.inc: n/a
-#  includes/tzreminder.form.inc: n/a
-#
-# #-#-#-#-#  sv.po (tzbase)  #-#-#-#-#
-# Swedish translation of tzstats
-# Copyright 2010 TimeZynk AB <dev@timezynk.com>
-# Generated from files:
-#  tzstats.invoice.inc: n/a
-#  tzstats.module: n/a
-#  tzstats.info: n/a
-#
-# #-#-#-#-#  sv.po (TimeZynk)  #-#-#-#-#
-# $Id$
-#
-# LANGUAGE translation of Drupal (general)
-# Copyright YEAR NAME <EMAIL@ADDRESS>
-# Generated from files:
-#  tzuser.module: n/a
-#  tzuser.install: n/a
-#  tzuser.info: n/a
-#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: TimeZynk\n"
+"Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: 2011-09-23 17:15+0200\n"
-"PO-Revision-Date: 2011-09-23 18:07+0100\n"
-"Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
-"Language-Team: Swedish <dev@timezynk.com>\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Language: Swedish\n"
-"X-Poedit-Country: SWEDEN\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"Language: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Language: Swedish\n"
-"X-Poedit-Country: SWEDEN\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Language: Swedish\n"
-"X-Poedit-Country: SWEDEN\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Bookmarks: -1,-1,204,-1,-1,-1,-1,10,-1,-1\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Language: Swedish\n"
-"X-Poedit-Country: SWEDEN\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Language: Swedish\n"
-"X-Poedit-Country: SWEDEN\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"Language: sv\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Language: Swedish\n"
-"X-Poedit-Country: SWEDEN\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Bookmarks: -1,-1,5,-1,-1,-1,-1,-1,-1,-1\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Language: Swedish\n"
-"X-Poedit-Country: SWEDEN\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Bookmarks: -1,-1,30,-1,-1,-1,-1,25,-1,8\n"
-"X-Poedit-Language: Swedish\n"
-"X-Poedit-Country: SWEDEN\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Language: Swedish\n"
-"X-Poedit-Country: SWEDEN\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Bookmarks: -1,-1,28,-1,-1,-1,-1,-1,-1,-1\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: excelexport/excelexport.inc:19
 msgid "Id"
-msgstr "Id"
+msgstr ""
 
-#: excelexport/excelexport.inc:19
-#: tzbase/tzbase.module:105
+#: excelexport/excelexport.inc:19 tzbase/tzbase.module:105
 msgid "Subject"
-msgstr "Ämne"
+msgstr ""
 
-#: excelexport/excelexport.inc:19
-#: tzbase/tzbase.module:96;107
+#: excelexport/excelexport.inc:19 tzbase/tzbase.module:96;107
 msgid "Description"
-msgstr "Beskrivning"
+msgstr ""
 
-#: excelexport/excelexport.inc:19
-#: tzbase/tzbase.module:589
-#: tzbase/includes/tzbase.userjobs.inc:87
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:214
-#: tzmobile/tzmobile.js:0;0;0;0
-#: tzreports/includes/TZReportsTimeReports.class.inc:21
-#: tzreports/includes/tzreports.timereports.inc:126
+#: excelexport/excelexport.inc:19 tzbase/tzbase.module:589 tzbase/includes/tzbase.userjobs.inc:87 tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:214 tzmobile/tzmobile.js:0;0;0;0 tzreports/includes/TZReportsTimeReports.class.inc:21 tzreports/includes/tzreports.timereports.inc:126
 msgid "Assignment"
-msgstr "Uppdrag"
+msgstr ""
 
 #: excelexport/excelexport.inc:19
 msgid "Assignment description"
-msgstr "Uppgiftsbeskrivning"
+msgstr ""
 
-#: excelexport/excelexport.inc:20
-#: tzbase/tzbase.module:309
-#: tzbase/includes/views/tzbase.views.inc:63
+#: excelexport/excelexport.inc:20 tzbase/tzbase.module:309 tzbase/includes/views/tzbase.views.inc:63
 msgid "Start time"
-msgstr "Starttid"
+msgstr ""
 
-#: excelexport/excelexport.inc:20
-#: tzbase/tzbase.module:323
-#: tzbase/includes/views/tzbase.views.inc:83
+#: excelexport/excelexport.inc:20 tzbase/tzbase.module:323 tzbase/includes/views/tzbase.views.inc:83
 msgid "End time"
-msgstr "Sluttid"
+msgstr ""
 
-#: excelexport/excelexport.inc:20
-#: tzbase/tzbase.module:333
-#: tzbase/includes/views/tzbase.views.inc:94
-#: tzmobile/tzmobile.js:0
+#: excelexport/excelexport.inc:20 tzbase/tzbase.module:333 tzbase/includes/views/tzbase.views.inc:94 tzmobile/tzmobile.js:0
 msgid "Break duration"
-msgstr "Rastlängd"
+msgstr ""
 
-#: excelexport/excelexport.inc:20
-#: tzbase/tzbase.module:594
-#: tzreports/includes/TZReportsTimeReports.class.inc:26;83
-#: tzuser/javascript/tzuser.overview.js:0
+#: excelexport/excelexport.inc:20 tzbase/tzbase.module:594 tzreports/includes/TZReportsTimeReports.class.inc:26;83 tzuser/javascript/tzuser.overview.js:0
 msgid "Total"
-msgstr "Totalt"
+msgstr ""
 
-#: excelexport/excelexport.inc:20
-#: tzreports/includes/tzreports.views_default.inc:662
+#: excelexport/excelexport.inc:20 tzreports/includes/tzreports.views_default.inc:662
 msgid "State"
-msgstr "Tillstånd"
+msgstr ""
 
 #: excelexport/excelexport.inc:20
 msgid "Assigned to"
-msgstr "Tilldelad till"
+msgstr ""
 
 #: excelexport/excelexport.inc:128
 msgid "New"
-msgstr "Ny"
+msgstr ""
 
 #: excelexport/excelexport.inc:131
 msgid "Signed in"
-msgstr "Instämplad"
+msgstr ""
 
 #: excelexport/excelexport.inc:134
 msgid "Reported"
-msgstr "Rapporterad"
+msgstr ""
 
 #: excelexport/excelexport.inc:137
 msgid "Approved"
-msgstr "Attesterad"
+msgstr ""
 
 #: excelexport/excelexport.inc:140
 msgid "Locked"
-msgstr "Låst"
+msgstr ""
 
-#: excelexport/excelexport.inc:142
-#: tzuser/includes/tzuser.theme.inc:101
+#: excelexport/excelexport.inc:142 tzuser/includes/tzuser.theme.inc:101
 msgid "Unknown"
-msgstr "Okänt"
+msgstr ""
 
 #: excelexport/excelexport.inc:81
 msgid "Excel export"
-msgstr "Excelexport"
+msgstr ""
 
 #: excelexport/excelexport.inc:81
 msgid "Could not autosize columns, no such instance of PHPExcel"
-msgstr "Kunde inte skala om kolumner, felaktig PHPExcel-instans"
+msgstr ""
 
 #: excelexport/excelexport.module:23
 msgid "export timereports to excel"
-msgstr "exportera tidrapporter till excel"
+msgstr ""
 
 #: excelexport/excelexport.module:12
 msgid "To Excel"
-msgstr "Till Excel"
+msgstr ""
 
 #: excelexport/excelexport.install:16
 msgid "PHPExcel installed under %path."
-msgstr "PHPExcel hittad under %path."
+msgstr ""
 
-#: excelexport/excelexport.install:19
-#: tzbase/tzbase.install:57
+#: excelexport/excelexport.install:19 tzbase/tzbase.install:57
 msgid "Not found"
-msgstr "Kunde inte hittas"
+msgstr ""
 
 #: excelexport/excelexport.install:20
 msgid "Please install PHPExcel 1.7.4 or newer under sites/all/libraries/phpexcel."
-msgstr "Installera PHPExcel 1.7.4 eller nyare under sites/all/libraries/phpexcel."
+msgstr ""
 
 #: excelexport/excelexport.info:0
 msgid "TimeZynk Excel Exporter"
-msgstr "Excel-exportör för TimeZynk"
+msgstr ""
 
 #: excelexport/excelexport.info:0
 msgid "Exports time reports to excel"
-msgstr "Exporterar till Excel"
+msgstr ""
 
-#: excelexport/excelexport.info:0
-#: jadmaker/jadmaker.info:0
-#: tzbase/tzbase.module:37
-#: tzbase/tzbase.info:0
-#: tzintellitime/tzintellitime.info:0
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.info:0
-#: tzintellitime/tzintellitime_sync/tzintellitime_sync.info:0
-#: tzmobile/tzmobile.info:0
-#: tzproto/tzproto.info:0
-#: tzreminder/tzreminder.info:0
-#: tzreports/tzreports.info:0
-#: tzsms/tzsms.info:0
-#: tzsms/tzsms_ui.info:0
-#: tzstats/tzstats.info:0
-#: tzuser/tzuser.info:0
+#: excelexport/excelexport.info:0 jadmaker/jadmaker.info:0 tzbase/tzbase.module:37 tzbase/tzbase.info:0 tzintellitime/tzintellitime.info:0 tzintellitime/tzintellitime_mock/tzintellitime_mock.info:0 tzintellitime/tzintellitime_sync/tzintellitime_sync.info:0 tzmobile/tzmobile.info:0 tzproto/tzproto.info:0 tzreminder/tzreminder.info:0 tzreports/tzreports.info:0 tzsms/tzsms.info:0 tzsms/tzsms_ui.info:0 tzstats/tzstats.info:0 tzuser/tzuser.info:0
 msgid "TimeZynk"
-msgstr "TimeZynk"
+msgstr ""
 
 #: jadmaker/jadmaker.inc:38;176;191
 msgid "jadmaker"
-msgstr "jadmaker"
+msgstr ""
 
 #: jadmaker/jadmaker.inc:38
 msgid "File not found: \"@path\""
-msgstr "Filen hittades inte: \"@path\""
+msgstr ""
 
 #: jadmaker/jadmaker.inc:176
 msgid "Error @error when opening \"@path\""
-msgstr "Fel @error under öppning av \"@path\""
+msgstr ""
 
 #: jadmaker/jadmaker.inc:191
 msgid "Error when reading manifest from \"@path\""
-msgstr "Fel vid läsning av manifest från \"@path\""
+msgstr ""
 
-#: jadmaker/jadmaker.views.inc:5
-#: jadmaker/jadmaker.info:0
+#: jadmaker/jadmaker.views.inc:5 jadmaker/jadmaker.info:0
 msgid "JAD Maker"
-msgstr "JAD Maker"
+msgstr ""
 
 #: jadmaker/jadmaker.views.inc:8
 msgid "JAD Downloads"
-msgstr "JAD-nedladdningar"
+msgstr ""
 
 #: jadmaker/jadmaker.views.inc:9
 msgid "Statistics over JAD file downloads"
-msgstr "Statistik över JAD-nedladdningar"
+msgstr ""
 
 #: jadmaker/jadmaker.views.inc:15
 msgid "Download ID"
-msgstr "Nedladdnings-ID"
+msgstr ""
 
 #: jadmaker/jadmaker.views.inc:16
 msgid "JAD Download ID"
-msgstr "JAD-nedladdnings-ID"
+msgstr ""
 
 #: jadmaker/jadmaker.views.inc:25
 msgid "Download Timestamp"
-msgstr "Nedladdningsklockslag"
+msgstr ""
 
 #: jadmaker/jadmaker.views.inc:26
 msgid "Date and time for JAD download"
-msgstr "Datum och tid för JAD-nedladdning"
+msgstr ""
 
 #: jadmaker/jadmaker.views.inc:41
 msgid "HTTP Variables"
-msgstr "HTTP-variabler"
+msgstr ""
 
 #: jadmaker/jadmaker.views.inc:42
 msgid "HTTP variables sent from client"
-msgstr "HTTP-variabler från klient"
+msgstr ""
 
 #: jadmaker/jadmaker.module:13
 msgid "Generates jad files while taking the visiting mobile phone to account. Requires browscap."
@@ -328,184 +266,163 @@ msgstr ""
 
 #: jadmaker/jadmaker.module:26
 msgid "Jad Maker"
-msgstr "Jad Maker"
+msgstr ""
 
 #: jadmaker/jadmaker.install:23;58
 msgid "Stores information about downloads from jadmaker"
-msgstr "Lagrar information om nedladdningar från jadmaker"
+msgstr ""
 
 #: jadmaker/jadmaker.info:0
 msgid "Generates and serves jad files"
-msgstr "Skapar dynamiska jad-filer"
+msgstr ""
 
 #: timezynk_basic_feature/timezynk_basic_feature.info:0
 msgid "TimeZynk basic feature"
-msgstr "TimeZynk's basfunktioner"
+msgstr ""
 
 #: timezynk_basic_feature/timezynk_basic_feature.info:0
 msgid "Basic TimeZynk Feature package"
 msgstr ""
 
-#: timezynk_basic_feature/timezynk_basic_feature.info:0
-#: timezynk_intelliplan_feature/timezynk_intelliplan_feature.info:0
+#: timezynk_basic_feature/timezynk_basic_feature.info:0 timezynk_intelliplan_feature/timezynk_intelliplan_feature.info:0
 msgid "Features"
-msgstr "Funktionspaket"
+msgstr ""
 
 #: timezynk_intelliplan_feature/timezynk_intelliplan_feature.info:0
 msgid "TimeZynk Intelliplan Feature"
-msgstr "TimeZynk's intelliplan-funktioner"
+msgstr ""
 
 #: timezynk_intelliplan_feature/timezynk_intelliplan_feature.info:0
 msgid "Configure the site for intelliplan customers"
-msgstr "Konfigurera servern för intelliplan-kunder"
+msgstr ""
 
-#: tzbase/tzbase.drush.inc:81
-#: tzproto/tzproto.request.inc:130;185;593;602;662;668
+#: tzbase/tzbase.drush.inc:81 tzproto/tzproto.request.inc:130;185;593;602;662;668
 msgid "tzproto"
-msgstr "tzproto"
+msgstr ""
 
 #: tzbase/tzbase.drush.inc:81
 msgid "Created revision !vid of report !nid via drush"
-msgstr "Skapade revision !vid av rapport !nid via drush"
+msgstr ""
 
-#: tzbase/tzbase.module:17;19
-#: tzbase/tzbase.info:0
+#: tzbase/tzbase.module:17;19 tzbase/tzbase.info:0
 msgid "Provides TimeZynk data types and relations"
-msgstr "Implementerar TimeZynks datatyper och relationer"
+msgstr ""
 
-#: tzbase/tzbase.module:92
-#: tzbase/includes/views/tzbase.views.inc:14
+#: tzbase/tzbase.module:92 tzbase/includes/views/tzbase.views.inc:14
 msgid "Time Report"
-msgstr "Tidrapport"
+msgstr ""
 
 #: tzbase/tzbase.module:94
 msgid "A time report for a specific project"
-msgstr "En tidrapport för ett specifikt uppdrag"
+msgstr ""
 
-#: tzbase/tzbase.module:98
-#: tzreports/includes/tzreports.timereports.inc:164
+#: tzbase/tzbase.module:98 tzreports/includes/tzreports.timereports.inc:164
 msgid "Comments"
-msgstr "Kommentarer"
+msgstr ""
 
-#: tzbase/tzbase.module:101
-#: tzbase/includes/views/tzbase.views.inc:134
+#: tzbase/tzbase.module:101 tzbase/includes/views/tzbase.views.inc:134
 msgid "Job"
-msgstr "Uppdrag"
+msgstr ""
 
 #: tzbase/tzbase.module:103
 msgid "A job that you can report time on"
-msgstr "Ett uppdrag som går att tidrapportera mot"
+msgstr ""
 
 #: tzbase/tzbase.module:231
 msgid "-- No jobs available --"
-msgstr "-- Inga tillgängliga uppdrag --"
+msgstr ""
 
-#: tzbase/tzbase.module:238;590
-#: tzbase/includes/tzbase.availability.inc:17;52
-#: tzmobile/tzmobile.js:0
-#: tzreports/includes/TZReportsTimeReports.class.inc:22
+#: tzbase/tzbase.module:238;590 tzbase/includes/tzbase.availability.inc:17;52 tzmobile/tzmobile.js:0 tzreports/includes/TZReportsTimeReports.class.inc:22
 msgid "Date"
-msgstr "Datum"
+msgstr ""
 
 #: tzbase/tzbase.module:266
 msgid "Select job"
-msgstr "Välj uppdrag"
+msgstr ""
 
 #: tzbase/tzbase.module:269
 msgid "Select the job that this time report concerns"
-msgstr "Välj uppdrag att koppla tidrapporten till"
+msgstr ""
 
 #: tzbase/tzbase.module:286
 msgid "Assigned to user"
-msgstr "Tilldelad till"
+msgstr ""
 
 #: tzbase/tzbase.module:296
 msgid "Time"
-msgstr "Tid"
+msgstr ""
 
 #: tzbase/tzbase.module:343
 msgid "Travel information"
-msgstr "Resor och kilometerersättning"
+msgstr ""
 
 #: tzbase/tzbase.module:350
 msgid "Travel time"
-msgstr "Restid"
+msgstr ""
 
 #: tzbase/tzbase.module:359
 msgid "Travel length (km)"
-msgstr "Reslängd (km)"
+msgstr ""
 
 #: tzbase/tzbase.module:381
 msgid "Report status"
-msgstr "Rapportstatus"
+msgstr ""
 
 #: tzbase/tzbase.module:390
 msgid "Signature"
-msgstr "Signatur"
+msgstr ""
 
 #: tzbase/tzbase.module:421
 msgid "Administrative assignment code"
-msgstr "Uppdrags-kod för administration"
+msgstr ""
 
 #: tzbase/tzbase.module:428
 msgid "Top level assignment"
-msgstr "Uppdrag på topp-nivå"
+msgstr ""
 
 #: tzbase/tzbase.module:442
 msgid "Parent job"
-msgstr "Underuppdrag till"
+msgstr ""
 
 #: tzbase/tzbase.module:462
 msgid "Assignment active"
-msgstr "Aktivt uppdrag"
+msgstr ""
 
 #: tzbase/tzbase.module:463
 msgid "Check if this assignment is active and can be used for time reporting"
-msgstr "Kryssa i ifall uppdraget är aktivt och kan användas för tidrapportering"
+msgstr ""
 
-#: tzbase/tzbase.module:575
-#: tzmobile/tzmobile.js:0;0
+#: tzbase/tzbase.module:575 tzmobile/tzmobile.js:0;0
 msgid "Home"
-msgstr "Hem"
+msgstr ""
 
-#: tzbase/tzbase.module:576
-#: tzreports/tzreports.module:12
+#: tzbase/tzbase.module:576 tzreports/tzreports.module:12
 msgid "Time Reports"
-msgstr "Tidrapporter"
+msgstr ""
 
-#: tzbase/tzbase.module:586
-#: tzbase/includes/tzbase.availability.inc:49
-#: tzreports/includes/TZReportsTimeReports.class.inc:20
+#: tzbase/tzbase.module:586 tzbase/includes/tzbase.availability.inc:49 tzreports/includes/TZReportsTimeReports.class.inc:20
 msgid "Name"
-msgstr "Namn"
+msgstr ""
 
-#: tzbase/tzbase.module:591
-#: tzmobile/tzmobile.js:0;0
-#: tzreports/includes/TZReportsTimeReports.class.inc:23
+#: tzbase/tzbase.module:591 tzmobile/tzmobile.js:0;0 tzreports/includes/TZReportsTimeReports.class.inc:23
 msgid "Start"
-msgstr "Start"
+msgstr ""
 
-#: tzbase/tzbase.module:592
-#: tzmobile/tzmobile.js:0;0
-#: tzreports/includes/TZReportsTimeReports.class.inc:24
+#: tzbase/tzbase.module:592 tzmobile/tzmobile.js:0;0 tzreports/includes/TZReportsTimeReports.class.inc:24
 msgid "End"
-msgstr "Slut"
+msgstr ""
 
-#: tzbase/tzbase.module:593
-#: tzmobile/tzmobile.js:0
-#: tzreports/includes/TZReportsTimeReports.class.inc:25
+#: tzbase/tzbase.module:593 tzmobile/tzmobile.js:0 tzreports/includes/TZReportsTimeReports.class.inc:25
 msgid "Break"
-msgstr "Rast"
+msgstr ""
 
-#: tzbase/tzbase.module:595
-#: tzuser/includes/tzuser.overview.inc:8
-#: tzuser/javascript/tzuser.overview.js:0
+#: tzbase/tzbase.module:595 tzuser/includes/tzuser.overview.inc:8 tzuser/javascript/tzuser.overview.js:0
 msgid "Status"
-msgstr "Status"
+msgstr ""
 
 #: tzbase/tzbase.module:520
 msgid "tzbase"
-msgstr "tzbase"
+msgstr ""
 
 #: tzbase/tzbase.module:520
 msgid "Report (nid: @id, vid: @vid) missing begintime or endtime in tzbase_nodeapi"
@@ -513,96 +430,95 @@ msgstr ""
 
 #: tzbase/tzbase.module:117
 msgid "create tzreport content"
-msgstr "create tzreport content"
+msgstr ""
 
 #: tzbase/tzbase.module:118
 msgid "view any tzreport content"
-msgstr "view any tzreport content"
+msgstr ""
 
 #: tzbase/tzbase.module:119
 msgid "view own tzreport content"
-msgstr "view own tzreport content"
+msgstr ""
 
 #: tzbase/tzbase.module:120
 msgid "edit any tzreport content"
-msgstr "edit any tzreport content"
+msgstr ""
 
 #: tzbase/tzbase.module:121
 msgid "edit own tzreport content"
-msgstr "edit own tzreport content"
+msgstr ""
 
 #: tzbase/tzbase.module:122
 msgid "remove own tzreport content"
-msgstr "remove own tzreport content"
+msgstr ""
 
 #: tzbase/tzbase.module:123
 msgid "create tzreport on any tzjob"
-msgstr "create tzreport on any tzjob"
+msgstr ""
 
 #: tzbase/tzbase.module:125
 msgid "create tzjob content"
-msgstr "create tzjob content"
+msgstr ""
 
 #: tzbase/tzbase.module:126
 msgid "view any tzjob content"
-msgstr "view any tzjob content"
+msgstr ""
 
 #: tzbase/tzbase.module:127
 msgid "view own tzjob content"
-msgstr "view own tzjob content"
+msgstr ""
 
 #: tzbase/tzbase.module:128
 msgid "edit any tzjob content"
-msgstr "edit any tzjob content"
+msgstr ""
 
 #: tzbase/tzbase.module:129
 msgid "edit own tzjob content"
-msgstr "edit own tzjob content"
+msgstr ""
 
 #: tzbase/tzbase.module:131
 msgid "create availability content"
-msgstr "create availability content"
+msgstr ""
 
 #: tzbase/tzbase.module:132
 msgid "view any availability content"
-msgstr "view any availability content"
+msgstr ""
 
 #: tzbase/tzbase.module:133
 msgid "view own availability content"
-msgstr "view own availability content"
+msgstr ""
 
 #: tzbase/tzbase.module:134
 msgid "remove own availability content"
-msgstr "remove own availability content"
+msgstr ""
 
 #: tzbase/tzbase.module:136
 msgid "manage user job mappings"
-msgstr "manage user job mappings"
+msgstr ""
 
 #: tzbase/tzbase.module:28
 msgid "TimeZynk content"
-msgstr "TimeZynk-innehåll"
+msgstr ""
 
 #: tzbase/tzbase.module:29
 msgid "Handle TimeZynk content."
-msgstr "Hantera TimeZynk-innehåll"
+msgstr ""
 
 #: tzbase/tzbase.module:38
 msgid "Configure TimeZynk modules."
-msgstr "Konfigurera TimeZynk-moduler"
+msgstr ""
 
-#: tzbase/tzbase.module:45;70
-#: tzbase/includes/tzbase.availability.inc:53
+#: tzbase/tzbase.module:45;70 tzbase/includes/tzbase.availability.inc:53
 msgid "Availability"
-msgstr "Tillgänglighet"
+msgstr ""
 
 #: tzbase/tzbase.module:46
 msgid "Configure TimeZynk availability."
-msgstr "Konfigurera tillgänglighet"
+msgstr ""
 
 #: tzbase/tzbase.module:54;62
 msgid "User Jobs"
-msgstr "Uppdragskopplingar"
+msgstr ""
 
 #: tzbase/tzbase.install:72;253
 msgid "The {user}.uid that is assigned to this report"
@@ -610,7 +526,7 @@ msgstr ""
 
 #: tzbase/tzbase.install:89;281
 msgid "Total duration in seconds"
-msgstr "Totaltid"
+msgstr ""
 
 #: tzbase/tzbase.install:126;173;363;411
 msgid "Stores availability information"
@@ -618,25 +534,23 @@ msgstr ""
 
 #: tzbase/tzbase.install:150;193;387;431
 msgid "Start timestamp"
-msgstr "Starttid"
+msgstr ""
 
 #: tzbase/tzbase.install:157;198;394;436
 msgid "End timestamp"
-msgstr "Sluttid"
+msgstr ""
 
 #: tzbase/tzbase.install:227;321
 msgid "Stores a TimeZynk time report connected to a specific assignment"
-msgstr "Sparar en TimeZynk-tidrapport kopplad till ett specifikt uppdrag"
+msgstr ""
 
-#: tzbase/tzbase.install:234;328
-#: tzintellitime/tzintellitime.install:81
+#: tzbase/tzbase.install:234;328 tzintellitime/tzintellitime.install:81
 msgid "The {node}.nid"
-msgstr "Från {node}.nid"
+msgstr ""
 
-#: tzbase/tzbase.install:241;335
-#: tzintellitime/tzintellitime.install:88
+#: tzbase/tzbase.install:241;335 tzintellitime/tzintellitime.install:88
 msgid "The {node_revision}.vid"
-msgstr "Från {node}.vid"
+msgstr ""
 
 #: tzbase/tzbase.install:247
 msgid "The {tzjob}.nid"
@@ -664,1545 +578,1499 @@ msgstr ""
 
 #: tzbase/tzbase.install:301
 msgid "Signature text"
-msgstr "Signature text"
+msgstr ""
 
 #: tzbase/tzbase.install:308;354
 msgid "Bit-combined flags"
-msgstr "Bit-combined flags"
+msgstr ""
 
 #: tzbase/tzbase.install:341
 msgid "Account code for this job"
-msgstr "Uppdragskod för det här uppdraget"
+msgstr ""
 
 #: tzbase/tzbase.install:347
 msgid "The {tzjob}.nid of the parent job"
-msgstr "The {tzjob}.nid of the parent job"
+msgstr ""
 
 #: tzbase/tzbase.info:0
 msgid "TimeZynk Base"
-msgstr "TimeZynk Bas"
+msgstr ""
 
-#: tzbase/PHPUnit/TZUserJobMappingTest.php:40
-#: tzbase/includes/Availability.class.inc:108
-#: tzbase/includes/TZUserJobMapping.class.inc:92
+#: tzbase/PHPUnit/TZUserJobMappingTest.php:40 tzbase/includes/Availability.class.inc:108 tzbase/includes/TZUserJobMapping.class.inc:92
 msgid "Missing user ID"
-msgstr "Användar-ID saknas"
+msgstr ""
 
-#: tzbase/PHPUnit/TZUserJobMappingTest.php:40
-#: tzbase/includes/TZUserJobMapping.class.inc:95
+#: tzbase/PHPUnit/TZUserJobMappingTest.php:40 tzbase/includes/TZUserJobMapping.class.inc:95
 msgid "Missing job ID"
-msgstr "Saknar uppdrags-ID"
+msgstr ""
 
-#: tzbase/PHPUnit/TZUserJobMappingTest.php:59
-#: tzbase/includes/Availability.class.inc:117
-#: tzbase/includes/TZUserJobMapping.class.inc:98
+#: tzbase/PHPUnit/TZUserJobMappingTest.php:59 tzbase/includes/Availability.class.inc:117 tzbase/includes/TZUserJobMapping.class.inc:98
 msgid "Inverted interval"
-msgstr "Inverterat intervall"
+msgstr ""
 
 #: tzbase/includes/Availability.class.inc:111
 msgid "Missing start time"
-msgstr "Saknar starttid"
+msgstr ""
 
 #: tzbase/includes/Availability.class.inc:114
 msgid "Missing end time"
-msgstr "Saknar sluttid"
+msgstr ""
 
 #: tzbase/includes/availability_admin.inc:12
 msgid "Availability intervals"
-msgstr "Tillgänglighetsintervall"
+msgstr ""
 
 #: tzbase/includes/availability_admin.inc:17
 msgid "Enable intervals"
-msgstr "Använd fasta intervall"
+msgstr ""
 
 #: tzbase/includes/availability_admin.inc:31
 msgid "Valid intervals"
-msgstr "Giltiga intervall"
+msgstr ""
 
 #: tzbase/includes/availability_admin.inc:32
 msgid "Availability intervals, written as HH:MM-HH:MM"
-msgstr "Tillgänglighetsintervall, skriv som HH:MM-HH:MM"
+msgstr ""
 
-#: tzbase/includes/availability_admin.inc:36
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:35
-#: tzproto/acceptance_test/generate_dst_reports.php:36
-#: tzreminder/includes/tzreminder.form.inc:63
+#: tzbase/includes/availability_admin.inc:36 tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:35 tzproto/acceptance_test/generate_dst_reports.php:36 tzreminder/includes/tzreminder.form.inc:63
 msgid "Save"
-msgstr "Spara"
+msgstr ""
 
 #: tzbase/includes/tzbase.admin.inc:19
 msgid "Delete all TimeZynk content"
-msgstr "Ta bort allt TimeZynk-innehåll"
+msgstr ""
 
 #: tzbase/includes/tzbase.admin.inc:24
 msgid "Perform operation"
-msgstr "Utför"
+msgstr ""
 
 #: tzbase/includes/tzbase.availability.inc:22
 msgid "From"
-msgstr "Från"
+msgstr ""
 
 #: tzbase/includes/tzbase.availability.inc:28
 msgid "To"
-msgstr "Till"
+msgstr ""
 
 #: tzbase/includes/tzbase.availability.inc:33
 msgid "Search"
-msgstr "Sök"
+msgstr ""
 
-#: tzbase/includes/tzbase.availability.inc:50
-#: tzuser/includes/tzuser.overview.inc:11
-#: tzuser/javascript/tzuser.overview.js:0
+#: tzbase/includes/tzbase.availability.inc:50 tzuser/includes/tzuser.overview.inc:11 tzuser/javascript/tzuser.overview.js:0
 msgid "Mobile"
-msgstr "Mobilnummer"
+msgstr ""
 
-#: tzbase/includes/tzbase.availability.inc:51
-#: tzuser/tzuser.module:413;474
-#: tzuser/includes/tzuser.theme.inc:68
+#: tzbase/includes/tzbase.availability.inc:51 tzuser/tzuser.module:413;474 tzuser/includes/tzuser.theme.inc:68
 msgid "Manager"
-msgstr "Chef"
+msgstr ""
 
 #: tzbase/includes/tzbase.availability.inc:73
 msgid "No available employees found"
-msgstr "Hittade inga tillgängliga anställda"
+msgstr ""
 
 #: tzbase/includes/tzbase.userjobs.inc:39;45
 msgid "Add"
-msgstr "Lägg till"
+msgstr ""
 
-#: tzbase/includes/tzbase.userjobs.inc:85
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:146;166
+#: tzbase/includes/tzbase.userjobs.inc:85 tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:146;166
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #: tzbase/includes/tzbase.userjobs.inc:86
 msgid "Employee"
-msgstr "Anställd"
+msgstr ""
 
-#: tzbase/includes/tzbase.userjobs.inc:88
-#: tzreports/includes/tzreports.timereports.inc:104
+#: tzbase/includes/tzbase.userjobs.inc:88 tzreports/includes/tzreports.timereports.inc:104
 msgid "Start date"
-msgstr "Startdatum"
+msgstr ""
 
-#: tzbase/includes/tzbase.userjobs.inc:89
-#: tzreports/includes/tzreports.timereports.inc:110
+#: tzbase/includes/tzbase.userjobs.inc:89 tzreports/includes/tzreports.timereports.inc:110
 msgid "End date"
-msgstr "Slutdatum"
+msgstr ""
 
 #: tzbase/includes/tzbase.userjobs.inc:106
 msgid "delete"
-msgstr "ta bort"
+msgstr ""
 
 #: tzbase/includes/views/tzbase.views.inc:26
 msgid "The ID of the linked Job"
-msgstr "ID-nummer för länkat uppdrag"
+msgstr ""
 
 #: tzbase/includes/views/tzbase.views.inc:44
 msgid "Assigned user"
-msgstr "Tilldelad till"
+msgstr ""
 
 #: tzbase/includes/views/tzbase.views.inc:45
 msgid "The user assigned to this report"
-msgstr "Tilldelad användare"
+msgstr ""
 
 #: tzbase/includes/views/tzbase.views.inc:64
 msgid "Time Report start time"
-msgstr "Starttid för tidrapport"
+msgstr ""
 
 #: tzbase/includes/views/tzbase.views.inc:84
 msgid "Time Report end time"
-msgstr "Sluttid för tidrapport"
+msgstr ""
 
 #: tzbase/includes/views/tzbase.views.inc:95
 msgid "Time Report break duration"
-msgstr "Rastlängd i tidrapport"
+msgstr ""
 
 #: tzbase/includes/views/tzbase.views.inc:105
 msgid "Total duration"
-msgstr "Totaltid"
+msgstr ""
 
 #: tzbase/includes/views/tzbase.views.inc:106
 msgid "Time Report total duration"
-msgstr "Totaltid för tidrapport"
+msgstr ""
 
 #: tzbase/includes/views/tzbase.views.inc:117;164
 msgid "Status flags"
-msgstr "Statusflaggor"
+msgstr ""
 
 #: tzbase/includes/views/tzbase.views.inc:146
 msgid "The ID of the parent Job"
-msgstr "ID-nummer för överliggande uppdrag"
+msgstr ""
 
 #: tzbase/includes/views/handlers/tzbase_handler_argument_begintime.inc:22
 msgid "Select comparison"
-msgstr "Välj jämförelse"
+msgstr ""
 
 #: tzbase/includes/views/handlers/tzbase_handler_argument_begintime.inc:23
 msgid "Controls whether to filter for reports filed before or after the argument date"
-msgstr "Väljer att filtrera ut rapporter före eller efter valt datum"
+msgstr ""
 
 #: tzbase/includes/views/handlers/tzbase_handler_argument_begintime.inc:25
 msgid "Get reports that start after the argument"
-msgstr "Hämta rapporter som börjar efter datumet"
+msgstr ""
 
 #: tzbase/includes/views/handlers/tzbase_handler_argument_begintime.inc:26
 msgid "Get reports that start before the argument"
-msgstr "Hämta rapporter som börjar före datumet"
+msgstr ""
 
 #: tzbase/includes/views/handlers/tzbase_handler_field_date.inc:26
 msgid "Date format"
-msgstr "Datumformat"
+msgstr ""
 
 #: tzbase/includes/views/handlers/tzbase_handler_field_date.inc:31
 msgid "Custom"
-msgstr "Anpassat"
+msgstr ""
 
 #: tzbase/includes/views/handlers/tzbase_handler_field_date.inc:38
 msgid "Custom date format"
-msgstr "Anpassat datumformat"
+msgstr ""
 
 #: tzbase/includes/views/handlers/tzbase_handler_field_date.inc:39
 msgid "See <a href=\"http://us.php.net/manual/en/function.date.php\" target=\"_blank\">the PHP docs</a> for date formats."
-msgstr "Se <a href=\"http://us.php.net/manual/en/function.date.php\" target=\"_blank\">PHP dokumentationen</a> för tillgängliga datumformat."
+msgstr ""
 
 #: tzbase/includes/views/handlers/tzbase_handler_field_tzjob_flags.inc:15
 msgid "Active"
-msgstr "Aktiv"
+msgstr ""
 
 #: tzbase/includes/views/handlers/tzbase_handler_field_tzjob_flags.inc:17
 msgid "Inactive"
-msgstr "Inaktiv"
+msgstr ""
 
 #: tzbase/javascript/tzbase.progress.js:0
 msgid "Sending"
-msgstr "Skickar"
+msgstr ""
 
 #: tzbase/javascript/tzbase.progress.js:0
 msgid "@count of @total"
-msgstr "@count av @total"
+msgstr ""
 
 #: tzintellitime/tzintellitime.admin.inc:6
 msgid "Intellitime base URL"
-msgstr "Bas-URL för Intellitime"
+msgstr ""
 
 #: tzintellitime/tzintellitime.admin.inc:8
 msgid "Customer specific URL for the portal login page. Using HTTPS is strongly recommended!"
-msgstr "Kundspecifik URL för inloggningsportalen. Användning av HTTPS rekommenderas starkt!"
+msgstr ""
 
 #: tzintellitime/tzintellitime.admin.inc:24
 msgid "Invalid URL, please enter a correct intelliplan login URL."
-msgstr "Ogiltig URL, vänligen mata in en korrekt inloggnings-URL för intelliplan."
+msgstr ""
 
 #: tzintellitime/tzintellitime.admin.inc:26
 msgid "We can only handle HTTP or HTTPS connections to intellitime"
-msgstr "Ange en HTTP eller HTTPS länk för anslutning till intellitime"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:27
 msgid "Intelliplan"
-msgstr "Intelliplan"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:33
 msgid "Intelliplan User"
-msgstr "Intelliplananvändare"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:34
 msgid "Is this user an intelliplan user?"
-msgstr "Är den här användaren en intelliplananvändare?"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:63
 msgid "Intelliplan session"
-msgstr "Intelliplansession"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:64
 msgid "Paste into firebug console of empty window"
-msgstr "Klipp-och-klistra till en firebug-konsoll på ett tomt fönster"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:69
 msgid "Intelliplan session age"
-msgstr "Intelliplan-session skapad"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:70
 msgid "When was the intelliplan session created?"
-msgstr "När skapades intelliplan-sessionen?"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:79
 msgid "Intelliplan last sync"
-msgstr "Senaste intelliplansynk"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:80
 msgid "Last synchronization with intelliplan"
-msgstr "Senaste synkronisering med intellitime"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:215
 msgid "Error page when authenticating @user: @msg"
-msgstr "Felsida vid autentisering av @user: @msg"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:220
 msgid "Failed to authenticate @user"
-msgstr "Kunde inte autentisera @user"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:224
 msgid "Invalid username or password for %name."
-msgstr "Felaktigt användarnamn eller lösenord för %name."
+msgstr ""
 
-#: tzintellitime/tzintellitime.module:211
-#: tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc:97
-#: tzintellitime/tzintellitime_sync/tzintellitime_sync.module:171
+#: tzintellitime/tzintellitime.module:211 tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc:97 tzintellitime/tzintellitime_sync/tzintellitime_sync.module:171
 msgid "tzintellitime"
-msgstr "tzintellitime"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:211
 msgid "Network problem when authenticating @user: @msg"
-msgstr "Nätverksproblem vid autentisering av @user: @msg"
+msgstr ""
 
-#: tzintellitime/tzintellitime.module:12
-#: tzstats/includes/tzstats.views.inc:5
+#: tzintellitime/tzintellitime.module:12 tzstats/includes/tzstats.views.inc:5
 msgid "Intellitime"
-msgstr "Intellitime"
+msgstr ""
 
 #: tzintellitime/tzintellitime.module:13
 msgid "Sitewide settings for the TimeZynk Intellitime bridge."
-msgstr "Inställningar för TimeZynks intellitime-brygga."
+msgstr ""
 
 #: tzintellitime/tzintellitime.install:74
 msgid "Stores extra tzintellitime fields for tzjob and tzreport nodes"
-msgstr "Sparar extra tzintellitime-fält länkade till tzjob- och tzreport-noder"
+msgstr ""
 
 #: tzintellitime/tzintellitime.install:94
 msgid "Node ID in intellitime"
-msgstr "Rapport-ID i Intellitime"
+msgstr ""
 
 #: tzintellitime/tzintellitime.install:101
 msgid "The node has local changes not yet transmitted to intellitime"
-msgstr "Noden har lokala ändringar som ännu ej överförts till intellitime"
+msgstr ""
 
 #: tzintellitime/tzintellitime.info:0
 msgid "TimeZynk intellitime integration"
-msgstr "Intellitime-integration för TimeZynk"
+msgstr ""
 
 #: tzintellitime/tzintellitime.info:0
 msgid "Provides TimeZynk intellitime integration"
-msgstr "Tillhandahåller Intellitime-integration för TimeZynk"
+msgstr ""
 
 #: tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc:97
 msgid "@message, @name (@uid), last sync @interval ago, session created @age ago"
-msgstr "@message, @name (@uid), last sync @interval ago, session created @age ago"
+msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:7
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.reports.inc:7
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:7 tzintellitime/tzintellitime_mock/tzintellitime_mock.reports.inc:7
 msgid "Delay in milliseconds"
-msgstr "Fördröjning i millisekunder"
+msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:8
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.reports.inc:8
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:8 tzintellitime/tzintellitime_mock/tzintellitime_mock.reports.inc:8
 msgid "Extra delay in milliseconds before returning time reports"
-msgstr "Extra fördröjning i millisekunder innan tidrapporter returneras"
+msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:13
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.reports.inc:13
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:13 tzintellitime/tzintellitime_mock/tzintellitime_mock.reports.inc:13
 msgid "Enable comments"
-msgstr "Tillåt kommentarer"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:20
 msgid "Error code"
-msgstr "Felkod"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:26
 msgid "Error code for returned from mock"
-msgstr "Felkod returnerad från mock"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:44
 msgid "Users"
-msgstr "Användare"
+msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:63
-#: tzreports/includes/tzreports.timereports.inc:153
-#: tzreports/includes/tzreports.views_default.inc:606;817;854
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:63 tzreports/includes/tzreports.timereports.inc:153 tzreports/includes/tzreports.views_default.inc:606;817;854
 msgid "Assignments"
-msgstr "Uppdrag"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:92
 msgid "Deleted user with mock id @id"
-msgstr "Tog bort användare med id @id"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:95
 msgid "Updated user with mock id @id"
-msgstr "Uppdaterade användare med mock id @id"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:99
 msgid "Created new user with mock id @id"
-msgstr "Skapade användare med mock-id @id"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:112
 msgid "@action assignment with mock id @id"
-msgstr "@action uppdrag med mock id @id"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:121
 msgid "Deleted assignment with mock id @id"
-msgstr "Tog bort uppdrag med mock id @id"
+msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:146
-#: tzreports/includes/tzreports.views_default.inc:629
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:146 tzreports/includes/tzreports.views_default.inc:629
 msgid "Title"
-msgstr "Titel"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:146
 msgid "Type"
-msgstr "Typ"
+msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166
-#: tzuser/includes/tzuser.overview.inc:9
-#: tzuser/includes/tzuser.theme.inc:68
-#: tzuser/javascript/tzuser.overview.js:0
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/includes/tzuser.overview.inc:9 tzuser/includes/tzuser.theme.inc:68 tzuser/javascript/tzuser.overview.js:0
 msgid "Username"
-msgstr "Användarnamn"
+msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166
-#: tzuser/tzuser.module:396;460
-#: tzuser/includes/tzuser.overview.inc:10
-#: tzuser/javascript/tzuser.overview.js:0;0
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/tzuser.module:396;460 tzuser/includes/tzuser.overview.inc:10 tzuser/javascript/tzuser.overview.js:0;0
 msgid "Full name"
-msgstr "Fullständigt namn"
+msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166
-#: tzuser/includes/tzuser.theme.inc:68
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/includes/tzuser.theme.inc:68
 msgid "Password"
-msgstr "Lösenord"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:215
 msgid "Absence"
-msgstr "Frånvaro"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.presets.inc:109
 msgid "Last reset @date"
-msgstr "Senaste återställning @date"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.module:21
 msgid "Intellitime Demo"
-msgstr "Intellitime Demo"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.module:30
 msgid "Intellitime Demo Login"
-msgstr "Intellitime Demo-inloggning"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.module:37
 msgid "Intellitime Mock"
-msgstr "Intellitime Mock"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.module:38
 msgid "Settings for Intellitime Mockup site"
-msgstr "Inställningar för Intellitime-mock"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.info:0
 msgid "TimeZynk Mock intellitime site"
-msgstr "TimeZynk's intellitime-mock"
+msgstr ""
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.info:0
 msgid "Provides TimeZynk intellitime mockup"
-msgstr "Tillhandahåller Intellitime-mockup för TimeZynk"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:6
 msgid "Minutes between synchronizations"
-msgstr "Antal minuter mellan synkroniseringar"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:7
 msgid "Minimum interval in minutes between two synchronizations of the same user. The actual synchronization times are also affected by the current cron-interval."
-msgstr "Minsta intervall i minuter mellan två synkroniseringar. Det faktiska intervallet beror även på de nuvarande cron-inställningarna."
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:12
 msgid "Maximum users per synchronization thread"
-msgstr "Max användare per synkroniseringstråd"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:13
 msgid "Maximum number of users to synchronize per thread"
-msgstr "Maximalt antal användare per synkroniseringstråd"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:18
 msgid "Number of weeks forward in time to synchronize"
-msgstr "Antal veckor framåt att synkronisera"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:19
 msgid "Enter 0 for only the current week, 1 for the current week and next week, and so on."
-msgstr "Skriv in 0 för endast nuvarande vecka, 1 för nuvarande och nästa vecka, och så vidare."
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:24
 msgid "Number of weeks backward in time to synchronize"
-msgstr "Antal veckor bakåt att synkronisera"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:25
 msgid "Enter 0 for only the current week, 1 for the current week and previous week, and so on."
-msgstr "Skriv in 0 för endast nuvarande vecka, 1 för nuvarande och föregående vecka, och så vidare."
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:30
 msgid "Initial synchronization"
-msgstr "Inledande synkronisering"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:32
 msgid "Do a full synchronization for both new users and users with a expired session."
-msgstr "Synkronisera direkt för både nya användare och användare med en ogiltig sessionsnyckel."
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:33
 msgid "Only for new users. Users with expired session are synchronized at the next scheduled synchronization."
-msgstr "Endast nya användare. Användare med ogiltig sessionsnyckel synkroniseras vid nästa schemalagda tillfälle."
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:34
 msgid "Never do initial synchronization, always defer to the next scheduled synchronization."
-msgstr "Synkronisera aldrig vid inloggning, vänta alltid till nästa schemalagda tillfälle."
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:36
 msgid "Configure how to handle synchronization on login"
-msgstr "Konfigurera synkronisering vid inloggning"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:80
 msgid "Invalid synchronization interval, enter number of minutes."
-msgstr "Ogiltigt synkroniseringsintervall, skriv in antal minuter."
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:82
 msgid "Synchronization interval must be greater than 0"
-msgstr "Synkroniseringsintervallet måste vara längre än 0 minuter"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.admin.inc:86;90
 msgid "Enter number of weeks as a positive integer."
-msgstr "Skriv in antalet veckor att synkronisera som ett positivt heltal."
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.module:85
 msgid "Synchronize user with Intelliplan"
-msgstr "Synkronisera användare med Intelliplan"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.module:171
 msgid "Tried to start synchronization for illegal user id \"@uid\""
-msgstr "Försökte synkronisera ogilitigt användar-id \"@uid\""
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.module:69
 msgid "Intellitime Sync"
-msgstr "Intellitimesynk"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.module:70
 msgid "Data synchronization settings for the TimeZynk Intellitime bridge."
-msgstr "Synkroniseringsinställningar för bryggan mellan TimeZynk och Intellitime."
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.install:43
 msgid "Stores synchronization info for tzintellitime"
-msgstr "Lagrar synkroniseringsinformation för tzintellitime"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.info:0
 msgid "TimeZynk intellitime synchronization"
-msgstr "Synkronisering mellan intellitime och TimeZynk"
+msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.info:0
 msgid "Provides TimeZynk intellitime synchronization"
-msgstr "Tillhandlahåller data-synkronisering mellan intellitime och TimeZynk"
+msgstr ""
 
-#: tzmobile/tzmobile.module:26
-#: tzmobile/tzmobile.info:0
+#: tzmobile/tzmobile.module:26 tzmobile/tzmobile.info:0
 msgid "TimeZynk Mobile"
-msgstr "TimeZynk Mobil"
+msgstr ""
 
 #: tzmobile/tzmobile.module:54
 msgid "Please enable javascript"
-msgstr "Vänligen aktivera JavaScript"
+msgstr ""
 
 #: tzmobile/tzmobile.module:55
 msgid "No javascript"
-msgstr "JavaScript stöds inte"
+msgstr ""
 
 #: tzmobile/tzmobile.module:73
 msgid "Please remember to send your time report today. Best Regards / TimeZynk"
-msgstr "Hej! Kom ihåg att skicka din tidrapport idag. Hälsningar / TimeZynk"
+msgstr ""
 
 #: tzmobile/tzmobile.info:0
 msgid "Provides mobile web application for TimeZynk"
-msgstr "Mobil webb-applikation för TimeZynk"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Cancel"
-msgstr "Avbryt"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Create new assignment"
-msgstr "Skapa nytt uppdrag"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0;0
 msgid "My team"
-msgstr "Min grupp"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "View team status"
-msgstr "Visa gruppstatus"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Show"
-msgstr "Visa"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "View time reports"
-msgstr "Visa tidrapporter"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0;0
 msgid "Next"
-msgstr "Nästa"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Submit"
-msgstr "Spara"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Summary"
-msgstr "Översikt"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Hour"
-msgstr "Timme"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Minute"
-msgstr "Minut"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Sending reminder..."
-msgstr "Skickar påminnelse..."
+msgstr ""
 
 #: tzmobile/tzmobile.js:0;0
 msgid "Send reminder"
-msgstr "Skicka påminnelse"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Sent"
-msgstr "Skickad"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0;0
 msgid "Today"
-msgstr "Idag"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0;0
 msgid "No time report today"
-msgstr "Inga tidrapporter idag"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Week"
-msgstr "Vecka"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Month"
-msgstr "Månad"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Call mobile"
-msgstr "Ring mobil"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Send SMS"
-msgstr "Skicka SMS"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "Show time reports"
-msgstr "Visa tidrapporter"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "hours"
-msgstr "timmar"
+msgstr ""
 
 #: tzmobile/tzmobile.js:0
 msgid "minutes"
-msgstr "minuter"
+msgstr ""
 
 #: tzproto/tzproto.request.inc:26
 msgid "No input data"
-msgstr "Ingen indata"
+msgstr ""
 
 #: tzproto/tzproto.request.inc:155
 msgid "Log in"
-msgstr "Logga in"
+msgstr ""
 
 #: tzproto/tzproto.request.inc:162
 msgid "Wrong username or password."
-msgstr "Fel användarnamn eller lösenord"
+msgstr ""
 
 #: tzproto/tzproto.request.inc:130
 msgid "Request from !name"
-msgstr "Anrop från !name"
+msgstr ""
 
 #: tzproto/tzproto.request.inc:185
 msgid "Error !code: @error"
-msgstr "Error !code: @error"
+msgstr ""
 
 #: tzproto/tzproto.request.inc:593
 msgid "Created revision !vid of report !nid"
-msgstr "Skapade revision !vid av rapport !nid"
+msgstr ""
 
 #: tzproto/tzproto.request.inc:602
 msgid "Inserted report !nid"
-msgstr "Lade till rapport !nid"
+msgstr ""
 
 #: tzproto/tzproto.request.inc:662
 msgid "Updated job !nid"
-msgstr "Uppdaterade jobb !nid"
+msgstr ""
 
 #: tzproto/tzproto.request.inc:668
 msgid "Inserted job !nid"
-msgstr "Lade till jobb !nid"
+msgstr ""
 
 #: tzproto/tzproto.module:13
 msgid "TimeZynk RPC"
-msgstr "TimeZynk RPC"
+msgstr ""
 
 #: tzproto/tzproto.info:0
 msgid "TimeZynk RPC Protocol"
-msgstr "TimeZynk RPC-protokoll"
+msgstr ""
 
 #: tzproto/tzproto.info:0
 msgid "Communicates using Protocol Buffer messages"
-msgstr "Communicates using Protocol Buffer messages"
+msgstr ""
 
 #: tzreminder/tzreminder.module:136
 msgid "tzreminder"
-msgstr "tzreminder"
+msgstr ""
 
 #: tzreminder/tzreminder.module:136
 msgid "Sending @policy_type reminder to @mobile"
-msgstr "Skickar @policy_type-påminnelse till @mobile"
+msgstr ""
 
 #: tzreminder/tzreminder.module:21
 msgid "configure reminders"
-msgstr "configure reminders"
+msgstr ""
 
 #: tzreminder/tzreminder.module:6
 msgid "Reminders"
-msgstr "Påminnelser"
+msgstr ""
 
 #: tzreminder/tzreminder.info:0
 msgid "TimeZynk Reminder"
-msgstr "TimeZynk Påminnare"
+msgstr ""
 
 #: tzreminder/tzreminder.info:0
 msgid "Send reminders to our users"
-msgstr "Skicka påminnelser till våra användare"
+msgstr ""
 
 #: tzreminder/includes/TZAbstractReminderPolicy.class.inc:8
 msgid "Hi! We are waiting for @count of your time reports. Please fill !third-person-personal-pronoun in!"
-msgstr "Hej! Vi väntar på @count av dina tidrapporter, fyll i och skicka in !third-person-personal-pronoun. Tack på förhand!"
+msgstr ""
 
 #: tzreminder/includes/TZAbstractReminderPolicy.class.inc:10
 msgid "one"
 msgid_plural "@count"
-msgstr[0] "en"
-msgstr[1] "@count"
+msgstr[0] ""
+msgstr[1] ""
 
 #: tzreminder/includes/TZAbstractReminderPolicy.class.inc:11
 msgid "it"
 msgid_plural "them"
-msgstr[0] "den"
-msgstr[1] "dem"
+msgstr[0] ""
+msgstr[1] ""
 
 #: tzreminder/includes/tzreminder.form.inc:11
 msgid "Quiet period"
-msgstr "Tyst period"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:12
 msgid "Configure a time of day when no reminders are sent"
-msgstr "Ställ in klockslag på dagen mellan vilka inga påminnelser skickas"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:16
 msgid "From (HH:MM)"
-msgstr "Från (TT:MM)"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:17
 msgid "Start of the quiet period, written as HH:MM"
-msgstr "Start på den tysta perioder, skrivet som TT:MM"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:22
 msgid "To (HH:MM)"
-msgstr "Till (TT:MM)"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:23
 msgid "End of the quiet period, written as HH:MM"
-msgstr "Slutet på den tysta perioder, skrivet som TT:MM"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:31
 msgid "Delayed reminder settings"
-msgstr "Inställningar för fördröjd påminnelse"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:34
 msgid "Delay in minutes"
-msgstr "Fördröjning i minuter"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:35
 msgid "Delay in minutes before the reminder is sent. Leave empty for no reminder."
-msgstr "Fördröjning i minuter innan påminnelsen skickas. Lämna tom för att avaktivera påminnelser helt."
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:44
 msgid "Fixed reminder settings"
-msgstr "Inställningar för påminnelse på fasta datum"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:47
 msgid "Days on which to remind"
-msgstr "Dagar att skicka påminnelse på"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:48
 msgid "Days on which to remind the users. Valid values are 1-28. Add multiple comma separated entries to set more than one reminder. Leave empty for no reminder."
-msgstr "Dagar att skicka påminnelse på. Giltiga värden är 1-28. För att ställa in mer än en påminnelse, mata in flera dagar separerade med komma. Lämna fältet tomt för att inte skicka några påminnelser."
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:54
 msgid "Hour on which to remind"
-msgstr "Timme då påminnelse skall skickas"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:55
 msgid "Send reminders after this hour. Valid values are 0-23. Do not set this to fall within the quiet period."
-msgstr "Skicka påminnelser efter denna timme. Giltiga värden är 0-23. Sätt inte detta värde så att det faller inom den tysta perioden."
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:71
 msgid "Could not understand time format, please use HH:MM"
-msgstr "Kunde inte förstå tidsformatet. Vänligen använd TT:MM."
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:76
 msgid "Please specify end of quiet period"
-msgstr "Specificera slutet på den tysta perioden"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:80
 msgid "Please specify delay in minutes as a positive integer value"
-msgstr "Specificera fördröjningen som ett positivt heltal"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:87
 msgid "Please specify days as positive integer values between 1 and 28 separated by commas"
-msgstr "Specificera påminnelsedagar som kommaseparerade, positiva heltal mellan 1 och 28"
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:94
 msgid "Please specify the hour as an integer between 0 and 23."
-msgstr "Vänligen specificera timmen som ett heltal mellan 0 och 23."
+msgstr ""
 
 #: tzreminder/includes/tzreminder.form.inc:126
 msgid "New configuration stored"
-msgstr "Nya inställningar sparade!"
+msgstr ""
 
 #: tzreports/tzreports.module:41
 msgid "use timezynk report generator"
-msgstr "use timezynk report generator"
+msgstr ""
 
 #: tzreports/tzreports.module:21
 msgid "List"
-msgstr "Lista"
+msgstr ""
 
 #: tzreports/tzreports.info:0
 msgid "TimeZynk report generator"
-msgstr "Rapportgenerator för TimeZynk"
+msgstr ""
 
 #: tzreports/tzreports.info:0
 msgid "Provides TimeZynk reports"
-msgstr "Tillhandahåller rapporter för TimeZynk"
+msgstr ""
 
-#: tzreports/includes/TZReportsTimeReports.class.inc:50
-#: tzuser/includes/tzuser.overview.inc:131;138
+#: tzreports/includes/TZReportsTimeReports.class.inc:50 tzuser/includes/tzuser.overview.inc:131;138
 msgid "edit"
-msgstr "redigera"
+msgstr ""
 
 #: tzreports/includes/TZReportsTimeReports.class.inc:77
 msgid "Subtotal for <em>!path</em>"
-msgstr "Delsumma för <em>!path</em>"
+msgstr ""
 
 #: tzreports/includes/tzreports.timereports.inc:120
 msgid "All assignments"
-msgstr "Alla uppdrag"
+msgstr ""
 
-#: tzreports/includes/tzreports.timereports.inc:140;152
-#: tzuser/tzuser.module:16
+#: tzreports/includes/tzreports.timereports.inc:140;152 tzuser/tzuser.module:16
 msgid "Employees"
-msgstr "Anställda"
+msgstr ""
 
 #: tzreports/includes/tzreports.timereports.inc:150
 msgid "Group by"
-msgstr "Gruppera efter"
+msgstr ""
 
 #: tzreports/includes/tzreports.timereports.inc:166
 msgid "Show comments"
-msgstr "Visa kommentarer"
+msgstr ""
 
 #: tzreports/includes/tzreports.views_default.inc:616
 msgid "Parent"
-msgstr "Överliggande"
+msgstr ""
 
 #: tzreports/includes/tzreports.views_default.inc:727
 msgid "Parent assignment"
-msgstr "Överliggande uppdrag"
+msgstr ""
 
 #: tzreports/includes/tzreports.views_default.inc:746
 msgid "Top level"
-msgstr "Översta nivån"
+msgstr ""
 
 #: tzreports/includes/tzreports.views_default.inc:855
 msgid "Show and edit available assignments"
-msgstr "Visa och ändra tillgängliga uppdrag"
+msgstr ""
 
 #: tzsms/tzsms.module:56
 msgid "Reset password and send new TimeZynk installation SMS"
-msgstr "Skapa nytt TimeZynk-lösenord och skicka via installations-SMS"
+msgstr ""
 
 #: tzsms/tzsms.module:60
 msgid "Send new TimeZynk installation SMS"
-msgstr "Skicka nytt installations-SMS för TimeZynk"
+msgstr ""
 
 #: tzsms/tzsms.module:149
 msgid "Your mobile phone number or e-mail address"
-msgstr "Skriv ditt mobilnummer eller din e-postadress"
+msgstr ""
 
 #: tzsms/tzsms.module:150
 msgid "Send new password over SMS"
-msgstr "Skicka nytt lösenord över SMS"
+msgstr ""
 
 #: tzsms/tzsms.module:161
 msgid "New password has been sent to you over SMS"
-msgstr "Ditt nya lösenord har skickats till dig över SMS"
+msgstr ""
 
 #: tzsms/tzsms.module:230
 msgid "Welcome to mobile time reporting! Visit !url to install, then login using \"!username\" as username and \"!password\" as password."
-msgstr "Välkommen till mobil tidrapportering! Besök !url för att installera och logga sedan in med \"!username\" som användarnamn och \"!password\" som lösenord."
+msgstr ""
 
 #: tzsms/tzsms.module:244
 msgid "Welcome to mobile time reporting! Visit !url to install, then login using \"!username\" as username."
-msgstr "Välkommen till mobil tidrapportering! Besök !url för att installera och logga sedan in med \"!username\" som användarnamn."
+msgstr ""
 
-#: tzsms/tzsms.module:78;95;98;160;202
-#: tzsms/includes/tzsms_ui.send.inc:55
+#: tzsms/tzsms.module:78;95;98;160;202 tzsms/includes/tzsms_ui.send.inc:55
 msgid "tzsms"
-msgstr "tzsms"
+msgstr ""
 
 #: tzsms/tzsms.module:78
 msgid "Failed to send SMS to invalid number: @number"
-msgstr "Kunde inte skicka SMS till ogiltigt nummer: @number"
+msgstr ""
 
 #: tzsms/tzsms.module:95
 msgid "Failed to send SMS message: @error"
-msgstr "Kunde inte skicka SMS: @error"
+msgstr ""
 
 #: tzsms/tzsms.module:98
 msgid "Message successfully sent with id: \"@id\""
-msgstr "SMS skickat med id: \"@id\""
+msgstr ""
 
 #: tzsms/tzsms.module:160
 msgid "Requested new password over SMS"
-msgstr "Begärde nytt lösenord över SMS"
+msgstr ""
 
 #: tzsms/tzsms.module:202
 msgid "Sending SMS to !nbr"
-msgstr "Skickar SMS till !nbr"
+msgstr ""
 
-#: tzsms/tzsms.module:39
-#: tzsms/tzsms_ui.module:8
-#: tzstats/includes/tzstats.views.inc:81
+#: tzsms/tzsms.module:39 tzsms/tzsms_ui.module:8 tzstats/includes/tzstats.views.inc:81
 msgid "SMS"
-msgstr "SMS"
+msgstr ""
 
 #: tzsms/tzsms.module:40
 msgid "Sitewide settings for SMS."
-msgstr "Systeminställningar för SMS"
+msgstr ""
 
 #: tzsms/tzsms_ui.module:62
 msgid "Recipients"
-msgstr "Mottagare"
+msgstr ""
 
 #: tzsms/tzsms_ui.module:68
 msgid "Select recipients"
-msgstr "Välj mottagare"
+msgstr ""
 
 #: tzsms/tzsms_ui.module:70
 msgid "Send ONLY to the users marked below"
-msgstr "Skicka ENDAST till användare markerade nedan"
+msgstr ""
 
 #: tzsms/tzsms_ui.module:71
 msgid "Send to EVERYONE, except the users marked below"
-msgstr "Skicka till ALLA, utom användare markerade nedan"
+msgstr ""
 
 #: tzsms/tzsms_ui.module:105
 msgid "Send reminder SMS"
-msgstr "Skicka påminnelse-SMS"
+msgstr ""
 
 #: tzsms/tzsms_ui.module:110
 msgid "New install SMS"
-msgstr "Nytt installations-SMS"
+msgstr ""
 
-#: tzsms/tzsms_ui.module:115;125
-#: tzsms/javascript/tzsms_ui.js:0
+#: tzsms/tzsms_ui.module:115;125 tzsms/javascript/tzsms_ui.js:0
 msgid "Send text-SMS"
-msgstr "Skicka text-SMS"
+msgstr ""
 
 #: tzsms/tzsms_ui.module:154;167
 msgid "Sent @count SMS messages"
-msgstr "Skickade @count SMS-meddelande"
+msgstr ""
 
 #: tzsms/tzsms_ui.module:39
 msgid "send sms"
-msgstr "send sms"
+msgstr ""
 
-#: tzsms/tzsms_ui.module:16
-#: tzsms/includes/tzsms_ui.send.inc:19
-#: tzsms/javascript/tzsms_ui.js:0
+#: tzsms/tzsms_ui.module:16 tzsms/includes/tzsms_ui.send.inc:19 tzsms/javascript/tzsms_ui.js:0
 msgid "Send"
-msgstr "Skicka"
+msgstr ""
 
 #: tzsms/tzsms.info:0
 msgid "TimeZynk SMS"
-msgstr "TimeZynk SMS"
+msgstr ""
 
 #: tzsms/tzsms.info:0
 msgid "Provides TimeZynk SMS services"
-msgstr "Tillhandahåller funktionalitet för TimeZynk-SMS"
+msgstr ""
 
 #: tzsms/tzsms_ui.info:0
 msgid "TimeZynk SMS UI"
-msgstr "TimeZynk SMS UI"
+msgstr ""
 
 #: tzsms/tzsms_ui.info:0
 msgid "Provides TimeZynk SMS sending UI"
-msgstr "Tillhandahåller gränssnitt för TimeZynk-SMS"
+msgstr ""
 
 #: tzsms/includes/BeepSend.class.inc:15
 msgid "LogHttp"
-msgstr "LogHttp"
+msgstr ""
 
 #: tzsms/includes/BeepSend.class.inc:15
 msgid "Requesting SMS URL: \"@url\""
-msgstr "Hämtar SMS URL: \"@url\""
+msgstr ""
 
 #: tzsms/includes/LogOnlyBackend.class.inc:5
 msgid "sms_log"
-msgstr "sms_log"
+msgstr ""
 
 #: tzsms/includes/LogOnlyBackend.class.inc:5
 msgid "SMS Sent from \"@from\" to \"@to\": @message"
-msgstr "SMS Skickades från \"@from\" till \"@to\": @message"
+msgstr ""
 
 #: tzsms/includes/SmsBackendFactory.class.inc:35
 msgid "Log only"
-msgstr "Endast loggning"
+msgstr ""
 
 #: tzsms/includes/SmsBackendFactory.class.inc:36
 msgid "BeepSend"
-msgstr "BeepSend"
+msgstr ""
 
 #: tzsms/includes/SmsBackendFactory.class.inc:39
 msgid "SMS Framework"
-msgstr "SMS-ramverk"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:12
 msgid "SMS Backend"
-msgstr "SMS-Koppling"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:18
 msgid "Default country code for this site"
-msgstr "Standardlandskod för att skicka SMS"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:20
 msgid "The country code will be used to send installation SMS to the users registered on this site"
-msgstr "Landskoden kommer att användas för att skicka installations-SMS till användarna"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:24
 msgid "Default SMS sender"
-msgstr "SMS-avsändare"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:26
 msgid "Default SMS sender ID, alphanumeric max 11 characters."
-msgstr "Avsändare för SMS, max 11 alfanumeriska tecken."
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:30
 msgid "The content of the SMS"
-msgstr "Mall för installationsmeddelande"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:32
 msgid "The available variables are: !url, !username and !password"
-msgstr "Tillgängliga variabler är: !url, !username och !password"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:36
 msgid "The content of the SMS when keeping the same password"
-msgstr "Text för installations-SMS utan lösenordsfält"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:38
 msgid "The available variables are: !url and !username"
-msgstr "Tillgängliga variabler är: !url och !username"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:42
 msgid "Reciever of debug log SMS"
-msgstr "Mottagare av debug-SMS"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:44
 msgid "Enter a mobile number unto which debug SMSes will be delivered"
-msgstr "Skriv in mobilnummer som ska ta emot debug-SMS"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:63
 msgid "You must enter a numeric country code (e.g. 46 for Sweden)!"
-msgstr "Du måste skriva en numerisk landskod (t.ex. 46 för Sverige)!"
+msgstr ""
 
 #: tzsms/includes/tzsms.admin.inc:67
 msgid "Sender must be alphanumeric with maximum 11 characters"
-msgstr "Avsändare måste bestå av max 11 alfanumeriska tecken"
+msgstr ""
 
 #: tzsms/includes/tzsms_ui.send.inc:10
 msgid "SMS Message"
-msgstr "SMS-meddelande"
+msgstr ""
 
 #: tzsms/includes/tzsms_ui.send.inc:11
 msgid "Enter any text you want to send as SMS. Maximum message length 459 characters."
-msgstr "Skriv in text att skicka som SMS. Maximal längd är 459 tecken."
+msgstr ""
 
 #: tzsms/includes/tzsms_ui.send.inc:27
 msgid "Message cannot exceed 459 characters in length. Current length !length"
-msgstr "Meddelandet får inte överskrida 459 tecken. Nuvarande längd är !length tecken."
+msgstr ""
 
 #: tzsms/includes/tzsms_ui.send.inc:62
 msgid "Sent message to @count mobiles"
-msgstr "Skickade meddelandet till @count mobiler"
+msgstr ""
 
 #: tzsms/includes/tzsms_ui.send.inc:55
 msgid "Sent custom message to @number (!user)"
-msgstr "Skickade installations-SMS till @number (!user)"
+msgstr ""
 
 #: tzsms/javascript/tzsms_ui.js:0
 msgid "Used @count of 459 characters. (@count_sms SMS-messages)"
-msgstr "Använt @count av 459 tecken. (@count_sms SMS-meddelande)"
+msgstr ""
 
 #: tzsms/javascript/tzsms_ui.js:0
 msgid "No employees selected"
-msgstr "Inga anställda valda"
+msgstr ""
 
 #: tzsms/javascript/tzsms_ui.js:0
 msgid "Empty SMS message"
-msgstr "Tomt SMS-meddelande"
+msgstr ""
 
 #: tzsms/javascript/tzsms_ui.js:0
 msgid "SMS too long"
-msgstr "SMS för långt"
+msgstr ""
 
 #: tzsms/javascript/tzsms_ui.user.js:0
 msgid "Hi! We are waiting for some of your time reports, please fill them in."
-msgstr "Hej! Vi väntar på några av dina tidrapporter, fyll i och skicka in dem. Tack på förhand!"
+msgstr ""
 
 #: tzstats/tzstats.module:107;165
 msgid "tzstats"
-msgstr "tzstats"
+msgstr ""
 
 #: tzstats/tzstats.module:107
 msgid "Synchronized !successful/!count users in !seconds seconds using @module"
-msgstr "Synkade !successful/!count användare på !seconds sekunder med @module"
+msgstr ""
 
 #: tzstats/tzstats.module:165
 msgid "Cleared !count rows from tzsync_stats"
-msgstr "Rensade !count rader från tzsync_stats"
+msgstr ""
 
 #: tzstats/tzstats.module:14
 msgid "Invoice"
-msgstr "Faktura"
+msgstr ""
 
 #: tzstats/tzstats.module:22
 msgid "Failed logins"
-msgstr "Misslyckade inloggningar"
+msgstr ""
 
 #: tzstats/tzstats.module:30
 msgid "Pricing"
-msgstr "Pris"
+msgstr ""
 
 #: tzstats/tzstats.module:31
 msgid "Customer pricing levels"
-msgstr "Prisinställningar för kund"
+msgstr ""
 
 #: tzstats/tzstats.module:39
 msgid "User Stats (JSON)"
-msgstr "Användarstatistik i JSON-format"
+msgstr ""
 
 #: tzstats/tzstats.install:21;343
 msgid "Stores statistics on synchronized users"
-msgstr "Stores statistics on synchronized users"
+msgstr ""
 
 #: tzstats/tzstats.install:69;303
 msgid "Stores statistics on sent SMS messages"
-msgstr "Sparar statistik över skickade SMS-meddelande"
+msgstr ""
 
 #: tzstats/tzstats.install:117;380
 msgid "Stores statistics on user status"
-msgstr "Stores statistics on user status"
+msgstr ""
 
 #: tzstats/tzstats.install:150;411
 msgid "Stores statistics on incoming time reports"
-msgstr "Stores statistics on incoming time reports"
+msgstr ""
 
 #: tzstats/tzstats.install:185;441
 msgid "Stores statistics on user logins"
-msgstr "Stores statistics on user logins"
+msgstr ""
 
 #: tzstats/tzstats.install:219;464
 msgid "Stores statistics on failed user logins"
-msgstr "Stores statistics on failed user logins"
+msgstr ""
 
 #: tzstats/tzstats.install:254;495
 msgid "Stores statistics on availability usage"
-msgstr "Stores statistics on availability usage"
+msgstr ""
 
 #: tzstats/tzstats.info:0
 msgid "TimeZynk Statistics"
-msgstr "TimeZynk Statistics"
+msgstr ""
 
 #: tzstats/tzstats.info:0
 msgid "Provides TimeZynk statistics"
-msgstr "Tillhandahåller funktionalitet för statistik"
+msgstr ""
 
 #: tzstats/includes/tzstats.pricing.inc:6
 msgid "Price per day"
-msgstr "Dagspris"
+msgstr ""
 
 #: tzstats/includes/tzstats.pricing.inc:8
 msgid "Price per user per day in preferred currency"
-msgstr "Pris per användare och dag i kundens valuta"
+msgstr ""
 
 #: tzstats/includes/tzstats.pricing.inc:13
 msgid "Price per month"
-msgstr "Månadspris"
+msgstr ""
 
 #: tzstats/includes/tzstats.pricing.inc:15
 msgid "Maximum price per month per user"
-msgstr "Maximal kostnad per användare och månad"
+msgstr ""
 
 #: tzstats/includes/tzstats.pricing.inc:20
 msgid "Price per month for availability users"
-msgstr "Månadspris för tillgänglighetsanvändare"
+msgstr ""
 
 #: tzstats/includes/tzstats.pricing.inc:26
 msgid "Price per SMS"
-msgstr "Pris per SMS"
+msgstr ""
 
 #: tzstats/includes/tzstats.pricing.inc:32
 msgid "Minimum month users"
-msgstr "Miniminivå månadsanvändare"
+msgstr ""
 
 #: tzstats/includes/tzstats.pricing.inc:38
 msgid "Minimum month users start date"
-msgstr "Startdatum för miniminivå"
+msgstr ""
 
 #: tzstats/includes/tzstats.pricing.inc:40
 msgid "After this date, we will never invoice less than minimum month users"
-msgstr "Efter det här datumet, så faktureras alltid minstaantalet månadsanvändare"
+msgstr ""
 
 #: tzstats/includes/tzstats.pricing.inc:46
 msgid "Excluded users"
-msgstr "Exkluderade användare"
+msgstr ""
 
 #: tzstats/includes/tzstats.pricing.inc:47
 msgid "Comma-separated list of user IDs"
-msgstr "Skriv in en komma-separerad lista på användar-IDn"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:8
 msgid "Intellitime Synchronizations"
-msgstr "Intellitimesynkroniseringar"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:9
 msgid "Statistics over Intellitime synchronizations"
-msgstr "Statistik över intellitimesynkroniseringar"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:15
 msgid "Sync. ID"
-msgstr "Synk-ID"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:16
 msgid "Intellitime sync. ID"
-msgstr "Synkroniserings-ID"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:25
 msgid "Synch Timestamp"
-msgstr "Synkroniseringsklockslag"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:26
 msgid "Date and time for sync."
-msgstr "Datum och tid för synk."
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:41
 msgid "Calling module"
-msgstr "Anropande modul"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:42
 msgid "Name of the module causing synch"
-msgstr "Modulnamn som initierade synkronisering"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:51
 msgid "User count"
-msgstr "Antal användare"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:52
 msgid "Number of users for which sync. was attempted."
-msgstr "Antal användare i synkronisering"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:61
 msgid "# of successful syncs"
-msgstr "# lyckade synkroniseringar"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:62
 msgid "Number of users for which sync. was successful."
-msgstr "Antal användare där synkroniseringen lyckades"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:71
 msgid "Time to sync."
-msgstr "Tidsåtgång för synk."
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:72
 msgid "Number of seconds the synchronization took."
-msgstr "Synkroniseringslängd i sekunder"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:84
 msgid "SMS statistics"
-msgstr "SMS-statistik"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:85
 msgid "Statistics over SMS"
-msgstr "Statistik över SMS"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:91;92
 msgid "User ID"
-msgstr "Användar-ID"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:106
 msgid "Timestamp"
-msgstr "Tidsstämpel"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:107
 msgid "Date and time for SMS."
-msgstr "Datum och tid för SMS"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:122;123
 msgid "SMS Type"
-msgstr "SMS-typ"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:135;136
 msgid "SMS length"
-msgstr "SMS-längd"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:145
 msgid "Destination"
-msgstr "Destination"
+msgstr ""
 
 #: tzstats/includes/tzstats.views.inc:146
 msgid "Destination mobile number"
-msgstr "Mobilnummer för destination"
+msgstr ""
 
-#: tzuser/tzuser.module:404;467
-#: tzuser/includes/tzuser.theme.inc:68
+#: tzuser/tzuser.module:404;467 tzuser/includes/tzuser.theme.inc:68
 msgid "Mobile number"
-msgstr "Mobilnummer"
+msgstr ""
 
 #: tzuser/tzuser.module:420;480
 msgid "Log level"
-msgstr "Lognivå"
+msgstr ""
 
-#: tzuser/tzuser.module:426
-#: tzuser/includes/tzuser.overview.inc:13
-#: tzuser/javascript/tzuser.overview.js:0
+#: tzuser/tzuser.module:426 tzuser/includes/tzuser.overview.inc:13 tzuser/javascript/tzuser.overview.js:0
 msgid "Last login"
-msgstr "Senast inloggad"
+msgstr ""
 
-#: tzuser/tzuser.module:440
-#: tzuser/includes/tzuser.add.inc:115
+#: tzuser/tzuser.module:440 tzuser/includes/tzuser.add.inc:115
 msgid "Please enter a valid mobile number"
-msgstr "Skriv in ett giltigt mobilnummer"
+msgstr ""
 
 #: tzuser/tzuser.module:454
 msgid "TimeZynk Information"
-msgstr "TimeZynk Information"
+msgstr ""
 
 #: tzuser/tzuser.module:461
 msgid "The users full name"
-msgstr "Användarens fullständiga namn"
+msgstr ""
 
 #: tzuser/tzuser.module:468
 msgid "The users mobile number without country code"
-msgstr "Användarens mobilnummer utan landskod"
+msgstr ""
 
 #: tzuser/tzuser.module:475
 msgid "Select employees manager"
-msgstr "Välj chef till den anställde"
+msgstr ""
 
 #: tzuser/tzuser.module:481
 msgid "Current logging level for this user"
-msgstr "Nuvarande logg-nivå för användaren"
+msgstr ""
 
 #: tzuser/tzuser.module:484
 msgid "No extra logging"
-msgstr "Ingen extra loggning"
+msgstr ""
 
 #: tzuser/tzuser.module:485
 msgid "Medium logging"
-msgstr "Medium-loggning"
+msgstr ""
 
 #: tzuser/tzuser.module:486
 msgid "Verbose logging"
-msgstr "Utförlig loggning"
+msgstr ""
 
 #: tzuser/tzuser.module:54
 msgid "view employees"
-msgstr "view employees"
+msgstr ""
 
 #: tzuser/tzuser.module:54
 msgid "manage employees"
-msgstr "manage employees"
+msgstr ""
 
 #: tzuser/tzuser.module:54
 msgid "bulk add employees"
-msgstr "bulk add employees"
+msgstr ""
 
 #: tzuser/tzuser.module:24
 msgid "Employee overview"
-msgstr "Översikt över anställda"
+msgstr ""
 
-#: tzuser/tzuser.module:36
-#: tzuser/includes/tzuser.add.inc:87;178
+#: tzuser/tzuser.module:36 tzuser/includes/tzuser.add.inc:87;178
 msgid "Add employees"
-msgstr "Lägg till anställda"
+msgstr ""
 
 #: tzuser/tzuser.install:66
 msgid "Stores TimeZynk user data"
-msgstr "Lagrar användardata för TimeZynk"
+msgstr ""
 
 #: tzuser/tzuser.info:0
 msgid "TimeZynk Base User"
-msgstr "TimeZynk bas-användare"
+msgstr ""
 
 #: tzuser/tzuser.info:0
 msgid "Provides TimeZynk user data"
-msgstr "Tillhandahåller användardata för TimeZynk"
+msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:17;70
 msgid "Add more rows"
-msgstr "Fler rader..."
+msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:23
 msgid "To add more users to TimeZynk, fill in their mobile numbers and usernames below. If you need more rows use the <em>Add more rows</em> button."
-msgstr "För att lägga till fler anställda till TimeZynk, fyll i mobilnummer och användarnamn nedan. Om du behöver fler rader använder du <em>Fler rader..</em> knappen nedan."
+msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:80
 msgid "Load from file"
-msgstr "Ladda från fil"
+msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:81
 msgid "Fill the fields from a CSV file"
-msgstr "Fyll fälten från en CSV-fil"
+msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:91
 msgid "Reset"
-msgstr "Rensa"
+msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:117
 msgid "Please enter username"
-msgstr "Skriv in ett användarnamn"
+msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:129
 msgid "Mobile number entered twice"
-msgstr "Mobilnumret finns med två gånger"
+msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:139
 msgid "Must be in CSV format"
-msgstr "Måste vara i CSV-format"
+msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:152
 msgid "Unknown manager \"@manager\""
-msgstr "Okänd chef \"@manager\""
+msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:247
 msgid "Created employee @username with mobile @number"
-msgstr "Skapade användare @username med mobilnummer @number"
+msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:252
 msgid "Failed to add employee @username with mobile @number"
-msgstr "Kunde inte skapa användare @username med mobilnummer @number"
+msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:12
-#: tzuser/javascript/tzuser.overview.js:0
+#: tzuser/includes/tzuser.overview.inc:12 tzuser/javascript/tzuser.overview.js:0
 msgid "Due reports"
-msgstr "Orapporterade pass"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:32
 msgid "Employees with all time reported"
-msgstr "Anställda med alla pass rapporterade"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:33
 msgid "Employees that have or might have late reports"
-msgstr "Anställda som har eller kan ha försenade rapporter"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:34
 msgid "Employees inactive for more than @redlimit"
-msgstr "Anställda som varit inaktiva mer än @redlimit"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:35
 msgid "Employees who have never logged in"
-msgstr "Anställda som aldrig har loggat in"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:40
 msgid "Show status"
-msgstr "Visa status"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:41
 msgid "Select which statuses you want to show"
-msgstr "Välj vilka anställda du vill visa"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:47
 msgid "Show with manager"
-msgstr "Visa anställda för"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:48
 msgid "Select which managers employees to show"
-msgstr "Välj vilken chef du vill visa anställda för"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:49
 msgid "All"
-msgstr "Alla"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:54
 msgid "Show status until"
-msgstr "Visa för datum"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:55
 msgid "Show the status until and including date"
-msgstr "Visa status fram till och med datum"
+msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:63
 msgid "<strong>Tip:</strong> Hold the SHIFT key to select many employees"
-msgstr "<strong>Tips:</strong> Håll ner SKIFT-tangenten för att välja många anställda i följd"
+msgstr ""
 
 #: tzuser/includes/tzuser.theme.inc:18
 msgid "View user profile."
-msgstr "Visa användarprofil."
+msgstr ""
 
 #: tzuser/includes/tzuser.theme.inc:31
 msgid "Loading employees, please wait..."
-msgstr "Läser in anställda..."
+msgstr ""
 
 #: tzuser/includes/tzuser.theme.inc:76
 msgid "@time ago"
-msgstr "@time sedan"
+msgstr ""
 
 #: tzuser/includes/tzuser.theme.inc:76
 msgid "never"
-msgstr "aldrig"
+msgstr ""
 
 #: tzuser/includes/tzuser.views.inc:5
 msgid "User"
-msgstr "Användare"
+msgstr ""
 
 #: tzuser/includes/tzuser.views.inc:30
 msgid "Users full name"
-msgstr "Användarens fullständiga namn"
+msgstr ""
 
 #: tzuser/includes/tzuser.views.inc:45
 msgid "Users mobile number"
-msgstr "Mobilnummer"
+msgstr ""
 
 #: tzuser/includes/tzuser_handler_filter_user_name.inc:25
 msgid "Full names"
-msgstr "Fullständiga namn"
+msgstr ""
 
 #: tzuser/includes/tzuser_handler_filter_user_name.inc:26
 msgid "Enter a comma separated list of full user names."
-msgstr "Skriv in en komma-separerad lista på namn"
+msgstr ""
 
 #: tzuser/includes/tzuser_handler_filter_user_name.inc:68
 msgid "Unable to find user: @users"
 msgid_plural "Unable to find users: @users"
-msgstr[0] "Kunde inte hitta användare: @users"
-msgstr[1] "Kunde inte hitta användare: @users"
+msgstr[0] ""
+msgstr[1] ""
 
 #: tzuser/javascript/tzuser.add.js:0
 msgid "Adding employees"
-msgstr "Lägger till anställda"
+msgstr ""
 
