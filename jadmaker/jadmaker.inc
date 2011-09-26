@@ -16,7 +16,8 @@ function jadmaker_create_jad() {
     drupal_goto('mobile');
   }
 
-  if (FALSE !== strpos($ua, 'Android')) {
+  if (FALSE !== strpos($ua, 'Android') ||
+      FALSE !== strpos($ua, 'HTC_Sensation_Z710e')) {
     $package = jadmaker_android_package_name();
     if (jadmaker_available_in_google_market($package)) {
       // Force redirect, drupal_goto doesn't handle market-protocol
@@ -157,7 +158,7 @@ function jadmaker_available_in_google_market($package) {
 
   $response = drupal_http_request(ANDROID_MARKET_URL . $package, array(), 'HEAD');
   $available = ($response->code < 400);
-  cache_set($cache_id, $available, 'cache', time() + 7200);
+  cache_set($cache_id, $available, 'cache', time() + 24*3600);
   return $available;
 }
 
