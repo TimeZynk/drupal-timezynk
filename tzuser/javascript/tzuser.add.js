@@ -11,7 +11,6 @@ $(function() {
 	
 	function add_users(users, on_success) {
 		$.post('/tzuser/add/ajax', JSON.stringify(users), function(data, textStatus) {
-			console.log(data);
 			$.extend(results, data);
 			on_success();
 		}, 'json');
@@ -20,8 +19,6 @@ $(function() {
 	function add_users_finished() {
 		var messages = [],
 			errors = [];
-		
-		console.log(results);
 
 		for(var key in results) {
 			if (results[key].message) {
@@ -37,5 +34,9 @@ $(function() {
 		if (errors.length) {
 			$('#tzuser-add-users-form > div').prepend('<div class="messages error">' + errors.join('<br/>') + '</div>');
 		}
+
+		// Clear all input fields
+		$('input.form-text').val('');
+		$('select.form-select').val(0);
 	}
 });
