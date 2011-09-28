@@ -363,7 +363,7 @@ function tzuser_save_support_log($uid, $log_text) {
       'changed' => time(),
     );
     drupal_write_record('tzuser_support_log', $record);
-  } else {
+  } else if ($record->support_log != $log_text) {
     $record->support_log = $log_text;
     $record->changed = time();
     drupal_write_record('tzuser_support_log', $record, 'uid');
