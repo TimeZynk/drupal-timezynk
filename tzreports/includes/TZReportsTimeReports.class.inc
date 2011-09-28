@@ -40,7 +40,7 @@ class TZReportsTimeReports {
 
     $row = array(
       theme('timereport_status', $report),
-      $report->fullname,
+      l($report->fullname, 'user/' . $report->assignedto),
       $body,
       $report->begin_date->format('Y-m-d'),
       array('data' => $report->begin_date->format('H:i'), 'class' => 'timereports-align-right'),
@@ -57,7 +57,11 @@ class TZReportsTimeReports {
       $group_title = $report->assignment_path;
     }
     $this->group_rows[$group_key][] = $row;
-    $this->group_total[$group_key] += $report->totalduration;
+    if (empty($this->group_total[$group_key])) {
+      $this->group_total[$group_key] = $report->totalduration;
+    } else {
+      $this->group_total[$group_key] += $report->totalduration;
+    }
     $this->group_title[$group_key] = $group_title;
     $this->total_duration += $report->totalduration;
   }

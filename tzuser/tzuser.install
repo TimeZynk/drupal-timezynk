@@ -70,6 +70,33 @@ function tzuser_update_6004() {
   return $ret;
 }
 
+function tzuser_update_6005() {
+  $ret = array();
+
+  $schema['tzuser_support_log'] = array(
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'support_log' => array(
+        'type' => 'text',
+        'size' => 'normal',
+      ),
+      'changed' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('uid'),
+  );
+
+  db_create_table($ret, 'tzuser_support_log', $schema['tzuser_support_log']);
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
@@ -115,6 +142,26 @@ function tzuser_schema() {
     'indexes' => array(
       'manager' => array('manager'),
     ),
+  );
+
+  $schema['tzuser_support_log'] = array(
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'support_log' => array(
+        'type' => 'text',
+        'size' => 'normal',
+      ),
+      'changed' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('uid'),
   );
 
   return $schema;

@@ -349,6 +349,27 @@ function tzuser_get_user_status($account, $now) {
   return $status;
 }
 
+function tzuser_get_support_log($uid) {
+  $log = db_fetch_object(db_query('SELECT * FROM {tzuser_support_log} WHERE uid = %d', $uid));
+  return $log;
+}
+
+function tzuser_save_support_log($uid, $log_text) {
+  $record = tzuser_get_support_log($uid);
+  if (empty($record)) {
+    $record = (object)array(
+      'uid' => $uid,
+      'support_log' => $log_text,
+      'changed' => time(),
+    );
+    drupal_write_record('tzuser_support_log', $record);
+  } else {
+    $record->support_log = $log_text;
+    $record->changed = time();
+    drupal_write_record('tzuser_support_log', $record, 'uid');
+  }
+}
+
 function tzuser_list_users() {
   $users = array();
   $result = db_query('SELECT u.uid FROM {users} u INNER JOIN {tzuser} tz ON u.uid = tz.uid WHERE u.status = 1 ORDER BY tz.fullname');
@@ -373,26 +394,29 @@ function _tzuser_load_entry($account) {
 }
 
 function _tzuser_save_entry(&$edit, $account) {
-  if (empty($edit['tzuser'])) {
-    return;
+  if (!empty($edit['tzuser'])) {
+    $entry = array('uid' => $account->uid);
+    if(!empty($account->tzuser)) {
+      $entry = array_merge($entry, $account->tzuser);
+    }
+    $entry = array_merge($entry, $edit['tzuser']);
+
+    if (!empty($entry['mobile'])) {
+      $entry['mobile'] = tzuser_validate_phone_number($entry['mobile']);
+    }
+
+    if(empty($account->tzuser)) {
+      drupal_write_record('tzuser', $entry);
+    } else {
+      drupal_write_record('tzuser', $entry, 'uid');
+    }
+    $edit['tzuser'] = NULL;
   }
 
-  $entry = array('uid' => $account->uid);
-  if(!empty($account->tzuser)) {
-    $entry = array_merge($entry, $account->tzuser);
+  if (!empty($edit['support_log'])) {
+    tzuser_save_support_log($account->uid, $edit['support_log']);
+    $edit['support_log'] = NULL;
   }
-  $entry = array_merge($entry, $edit['tzuser']);
-
-  if (!empty($entry['mobile'])) {
-    $entry['mobile'] = tzuser_validate_phone_number($entry['mobile']);
-  }
-
-  if(empty($account->tzuser)) {
-    drupal_write_record('tzuser', $entry);
-  } else {
-    drupal_write_record('tzuser', $entry, 'uid');
-  }
-  $edit['tzuser'] = NULL;
 }
 
 function _tzuser_show_entry(&$account) {
@@ -441,7 +465,25 @@ function _tzuser_show_entry(&$account) {
     '#value' => format_date($account->login, 'small'),
     '#weight' => -5,
   );
+  $account->content['support_log'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Support log'),
+    '#collapsible' => TRUE,
+    '#access' => user_access('administer site configuration'),
+    '#weight' => -4,
+  );
+  $log_entry = tzuser_get_support_log($account->uid);
+  if (!empty($log_entry)) {
+    $account->content['support_log']['log'] = array(
+      '#type' => 'user_profile_item',
+      '#title' => t('Last update @date', array('@date' => format_date($log_entry->changed, 'small'))),
+      '#value' => '<pre>' . check_plain($log_entry->support_log) . '</pre>',
+      '#access' => user_access('administer site configuration'),
+    );
+  }
 }
+
+
 
 function _tzuser_validate_entry($edit) {
   if(!isset($edit['tzuser'])) {
@@ -499,6 +541,19 @@ function _tzuser_user_form($account) {
       TZUSER_LOG_LEVEL_MEDIUM => t('Medium logging'),
       TZUSER_LOG_LEVEL_VERBOSE => t('Verbose logging'),
     ),
+  );
+
+  $log = tzuser_get_support_log($account->uid);
+  $form['tzuser_support_log'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Support log'),
+    '#access' => user_access('administer site configuration'),
+  );
+  $form['tzuser_support_log']['support_log'] = array(
+    '#type' => 'textarea',
+    '#required' => FALSE,
+    '#access' => user_access('administer site configuration'),
+    '#default_value' => empty($log->support_log) ? '' : $log->support_log,
   );
 
   return $form;
