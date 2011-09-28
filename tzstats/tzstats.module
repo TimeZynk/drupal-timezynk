@@ -138,6 +138,12 @@ function tzstats_db_write_record_tzavailability($record) {
 }
 
 function tzstats_cron() {
+  $date = date_make_date('now');
+  if ($date->format('H') != "23") {
+    return;
+  }
+
+  watchdog('tzstats', 'Recording user stats');
   require_once(dirname(__FILE__) . '/includes/tzstats.user.inc');
   tzstats_record_user_status();
   tzstats_clean_sync_stats();
