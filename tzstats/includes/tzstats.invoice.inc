@@ -95,13 +95,14 @@ class TZStatsInvoice {
     $this->excluded_users = tzstats_invoice_excluded_users();
 
     $this->user_costs = $this->calculate_user_costs();
-    $this->availability_costs = $this->calculate_availability_cost();
     $this->minimum_costs = $this->calculate_minimum_cost($this->user_costs);
+    $this->availability_costs = $this->calculate_availability_cost();
     $this->sms_costs = $this->calculate_sms_costs();
   }
 
   function total_cost() {
     $total_costs = $this->total_user_cost();
+    $total_costs += $this->availability_costs['total_cost'];
     $total_costs += $this->sms_costs->total;
     return $total_costs;
   }
@@ -117,6 +118,7 @@ class TZStatsInvoice {
     $rows = array();
     $this->add_user_cost_rows($rows);
     $this->add_user_total_cost_rows($rows);
+    $this->add_availability_cost_rows($rows);
     $this->add_sms_cost_rows($rows);
     $this->add_grand_total_row($rows);
     return theme('table', $headers, $rows, array('class' => 'tzstats-invoice-table'));
@@ -214,10 +216,15 @@ class TZStatsInvoice {
     if ($this->detailed) {
       $this->fill_cost_entry_rows($rows, $this->user_costs->day);
       $this->fill_cost_entry_rows($rows, $this->user_costs->month);
-      $this->fill_availability_cost_rows($rows);
     }
     $rows[] = $this->format_subtotal($this->user_costs->day, 'day users');
     $rows[] = $this->format_subtotal($this->user_costs->month, 'month users');
+  }
+
+  private function add_availability_cost_rows(&$rows) {
+    if ($this->detailed) {
+      $this->fill_availability_cost_rows($rows);
+    }
     $rows[] = $this->format_availability_subtotal();
   }
 
@@ -267,8 +274,7 @@ class TZStatsInvoice {
 
   private function actual_user_cost() {
     return $this->user_costs->day['total_cost'] +
-           $this->user_costs->month['total_cost'] +
-           $this->availability_costs['total_cost'];
+           $this->user_costs->month['total_cost'];
   }
 
   private function calculate_sms_costs() {
