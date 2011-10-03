@@ -165,7 +165,7 @@ class TZStatsInvoice {
 
   private function calculate_minimum_cost(&$rows) {
     $minimum_date = date_make_date(TIMEZYNK_MINIMUM_MONTH_USERS_START_DATE);
-    if ($minimum_date > $this->start_date) {
+    if ($minimum_date > $this->end_date) {
       return $this->actual_user_cost();
     }
 
