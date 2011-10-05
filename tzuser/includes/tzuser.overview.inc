@@ -124,7 +124,7 @@ function tzuser_overview_ajax() {
       'name' => l($user_entry->name, "user/$user_entry->uid", array('query' => 'destination=tzuser')),
       'name_value' => $user_entry->name,
       'fullname' => $user_entry->fullname,
-      'mobile' => $user_entry->mobile,
+      'mobile' => empty($user_entry->mobile) ? '' : $user_entry->mobile,
       'due_count' => theme('due_reports_count', $status->getNumberOfDueReports()),
       'login' => theme('time_ago', $user_entry->login),
       'login_value' => $user_entry->login,
