@@ -41,12 +41,27 @@ function tzuser_menu() {
     'page arguments' => array('tzuser_add_users_form'),
     'file' => 'includes/tzuser.add.inc',
     'type' => MENU_LOCAL_TASK,
-    'weight' => -9,
+    'weight' => -5,
   );
   $items['tzuser/add/ajax'] = array(
     'page callback' => 'tzuser_add_ajax',
     'access arguments' => array('manage employees'),
     'file' => 'includes/tzuser.add.inc',
+    'type' => MENU_CALLBACK,
+  );
+  $items['tzuser/support_log'] = array(
+    'title' => 'Support log',
+    'page callback' => 'tzuser_support_log_page',
+    'access arguments' => array('manage employees'),
+    'file' => 'includes/support_log.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -9,
+  );
+  $items['tzuser/support_log/%'] = array(
+    'page callback' => 'tzuser_support_log_ajax',
+    'page arguments' => array(2),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/support_log.inc',
     'type' => MENU_CALLBACK,
   );
   return $items;
@@ -96,6 +111,7 @@ function tzuser_user($op, &$edit, &$account, $category = NULL) {
   switch($op) {
     case 'delete':
       db_query('DELETE FROM {tzuser} WHERE uid = %d', $account->uid);
+      tzuser_delete_support_log($account->uid);
       break;
 
     case 'insert':
@@ -327,7 +343,16 @@ function tzuser_get_support_log($uid) {
   return $log;
 }
 
+function tzuser_delete_support_log($uid) {
+  db_query('DELETE FROM {tzuser_support_log} WHERE uid = %d', $uid);
+}
+
 function tzuser_save_support_log($uid, $log_text) {
+  if (empty($log_text)) {
+    tzuser_delete_support_log($uid);
+    return;
+  }
+
   $record = tzuser_get_support_log($uid);
   if (empty($record)) {
     $record = (object)array(
@@ -386,10 +411,8 @@ function _tzuser_save_entry(&$edit, $account) {
     $edit['tzuser'] = NULL;
   }
 
-  if (!empty($edit['support_log'])) {
-    tzuser_save_support_log($account->uid, $edit['support_log']);
-    $edit['support_log'] = NULL;
-  }
+  tzuser_save_support_log($account->uid, $edit['support_log']);
+  $edit['support_log'] = NULL;
 }
 
 function _tzuser_show_entry(&$account) {
@@ -450,7 +473,7 @@ function _tzuser_show_entry(&$account) {
     $account->content['support_log']['log'] = array(
       '#type' => 'user_profile_item',
       '#title' => t('Last update @date', array('@date' => format_date($log_entry->changed, 'small'))),
-      '#value' => '<pre>' . check_plain($log_entry->support_log) . '</pre>',
+      '#value' => check_markup($log_entry->support_log),
       '#access' => user_access('administer site configuration'),
     );
   }

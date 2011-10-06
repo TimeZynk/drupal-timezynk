@@ -117,6 +117,14 @@ function tzuser_overview_ajax() {
       '#parents' => array(''),
     );
 
+    $operations = array();
+    if (user_edit_access($user_entry)) {
+      $operations[] = l(t('edit'), "user/$user_entry->uid/edit", array('query' => 'destination=tzuser'));
+    }
+    if (user_access('administer site configuration')) {
+      $operations[] = l(t('log'), '', array('fragment' => ' ', 'external' => TRUE, 'attributes' => array('class' => 'edit-log-link')));
+    }
+
     $overview[] = array(
       'checkbox' => drupal_render($checkbox),
       'status' => theme('traffic_light', $status_code),
@@ -128,7 +136,7 @@ function tzuser_overview_ajax() {
       'due_count' => theme('due_reports_count', $status->getNumberOfDueReports()),
       'login' => theme('time_ago', $user_entry->login),
       'login_value' => $user_entry->login,
-      'operations' => user_edit_access($user_entry) ? l(t('edit'), "user/$user_entry->uid/edit", array('query' => 'destination=tzuser')) : '',
+      'operations' => implode(' | ', $operations),
     );
   }
   return drupal_json($overview);
