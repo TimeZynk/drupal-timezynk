@@ -6,7 +6,7 @@ class SaveAvailabilityHandlerTest extends PHPUnit_Framework_TestCase {
                         ->disableOriginalConstructor()
                         ->getMock();
     $this->account = new stdClass();
-    $this->handler = new SaveAvailabilityHandler($this->account, $this->store);
+    $this->handler = new SaveAvailabilityHandler(0, $this->account, $this->store);
     $this->command = new TZSaveAvailabilityCmd();
     $this->result = new TZResult();
   }

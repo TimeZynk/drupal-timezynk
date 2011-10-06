@@ -1,16 +1,17 @@
 <?php
 
-class GetAvailabilityIntervalHandler implements CommandHandler {
+class GetAvailabilityIntervalHandler extends CommandHandler {
   /**
    * @var AvailabilityStore
    */
   private $availability_store;
 
-  public function __construct($availability_store) {
+  public function __construct($protocol_version, $availability_store) {
+    parent::__construct($protocol_version);
     $this->availability_store = $availability_store;
   }
 
-  public function handle($cmd, &$result, $protocol_version = 0) {
+  public function handle($cmd, &$result) {
     $intervals = $this->availability_store->getAvailabilityIntervals();
     $intervals_result = new TZGetAvailabilityIntervalsResult();
 

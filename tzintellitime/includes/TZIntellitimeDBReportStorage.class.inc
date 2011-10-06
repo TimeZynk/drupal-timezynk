@@ -54,6 +54,7 @@ class TZIntellitimeDBReportStorage implements TZIntellitimeReportStorage {
     $node->jobcode = empty($tzjob->jobcode) ? '' : $tzjob->jobcode;
     $node->flags = $tzjob->flags;
     $node->intellitime_local_changes = 0;
+    $node->allow_overlap = FALSE;
   }
 
   private function storeNode($node) {

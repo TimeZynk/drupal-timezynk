@@ -5,7 +5,7 @@ class GetAvailabilityIntervalHandlerTest extends PHPUnit_Framework_TestCase {
     $this->store = $this->getMockBuilder('AvailabilityStore')
                         ->disableOriginalConstructor()
                         ->getMock();
-    $this->handler = new GetAvailabilityIntervalHandler($this->store);
+    $this->handler = new GetAvailabilityIntervalHandler(0, $this->store);
     $this->command = new TZGetAvailabilityIntervalsCmd();
     $this->result = new TZResult();
   }

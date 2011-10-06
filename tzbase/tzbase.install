@@ -69,7 +69,6 @@ function tzbase_update_6001() {
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => FALSE,
-        'description' => t('The {user}.uid that is assigned to this report'),
       ));
 
   return $ret;
@@ -86,7 +85,6 @@ function tzbase_update_6002() {
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Total duration in seconds'),
       ));
   db_query('UPDATE {tzreport} SET totalduration = (endtime - begintime - breakduration)');
   return $ret;
@@ -123,7 +121,6 @@ function tzbase_update_6006() {
   $ret = array();
 
   $schema['tzavailability'] = array(
-    'description' => t('Stores availability information'),
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -134,27 +131,23 @@ function tzbase_update_6006() {
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-        'description' => "{users}.uid.",
       ),
       'availability_type' => array(
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-        'description' => "AvailabilityType",
       ),
       'start_time' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Start timestamp'),
       ),
       'end_time' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('End timestamp'),
       ),
     ),
     'primary key' => array('id'),
@@ -170,7 +163,6 @@ function tzbase_update_6006() {
 function tzbase_update_6007() {
   $ret = array();
   $schema['tzusers_tzjobs'] = array(
-    'description' => t('Stores availability information'),
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -180,22 +172,18 @@ function tzbase_update_6007() {
       'uid' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => "{users}.uid.",
       ),
       'jobid' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => "{tzjob}.nid",
       ),
       'start_time' => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'description' => t('Start timestamp'),
       ),
       'end_time' => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'description' => t('End timestamp'),
       ),
     ),
     'primary key' => array('id'),
@@ -214,7 +202,17 @@ function tzbase_update_6008() {
     'unsigned' => TRUE,
     'not null' => TRUE,
     'default' => 0,
-    'description' => 'Availability have unsynchronized changes',
+  ));
+  return $ret;
+}
+
+function tzbase_update_6009() {
+  $ret = array();
+  db_add_field($ret, 'tzjob', 'allow_overlap', array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 1,
   ));
   return $ret;
 }
@@ -224,88 +222,75 @@ function tzbase_update_6008() {
  */
 function tzbase_schema() {
   $schema['tzreport'] = array(
-    'description' => t('Stores a TimeZynk time report connected to a specific assignment'),
     'fields' => array(
       'nid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('The {node}.nid'),
       ),
       'vid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('The {node_revision}.vid'),
       ),
       'jobid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => FALSE,
-        'description' => t('The {tzjob}.nid'),
       ),
       'assignedto' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => FALSE,
-        'description' => t('The {user}.uid that is assigned to this report'),
       ),
       'begintime' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Timestamp for the beginning'),
       ),
       'endtime' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Timestamp for the end'),
       ),
       'breakduration' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Total break time in seconds'),
       ),
       'totalduration' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Total duration in seconds'),
       ),
       'travelduration' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Total travel time in seconds'),
       ),
       'travelkm' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Total travel length in kilometers'),
       ),
       'signature' => array(
         'type' => 'varchar',
         'length' => 255,
         'not null' => FALSE,
-        'description' => t('Signature text'),
       ),
       'flags' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Bit-combined flags'),
       ),
     ),
     'primary key' => array('nid', 'vid'),
@@ -318,40 +303,40 @@ function tzbase_schema() {
   );
 
   $schema['tzjob'] = array(
-    'description' => t('Stores a TimeZynk time report connected to a specific assignment'),
     'fields' => array(
       'nid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('The {node}.nid'),
       ),
       'vid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('The {node_revision}.vid'),
       ),
       'jobcode' => array(
         'type' => 'varchar',
         'length' => 255,
         'not null' => FALSE,
-        'description' => t('Account code for this job'),
       ),
       'parentid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => FALSE,
-        'description' => t('The {tzjob}.nid of the parent job'),
       ),
       'flags' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Bit-combined flags'),
+      ),
+      'allow_overlap' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 1,
       ),
     ),
     'primary key' => array('nid', 'vid'),
@@ -360,7 +345,6 @@ function tzbase_schema() {
   );
 
   $schema['tzavailability'] = array(
-    'description' => t('Stores availability information'),
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -371,34 +355,29 @@ function tzbase_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-        'description' => "{users}.uid.",
       ),
       'availability_type' => array(
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-        'description' => "AvailabilityType",
       ),
       'start_time' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Start timestamp'),
       ),
       'end_time' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('End timestamp'),
       ),
       'local_changes' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => 'Availability have unsynchronized changes',
       ),
     ),
     'primary key' => array('id'),
@@ -408,7 +387,6 @@ function tzbase_schema() {
   );
 
   $schema['tzusers_tzjobs'] = array(
-    'description' => t('Stores availability information'),
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -418,22 +396,18 @@ function tzbase_schema() {
       'uid' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => "{users}.uid.",
       ),
       'jobid' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => "{tzjob}.nid",
       ),
       'start_time' => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'description' => t('Start timestamp'),
       ),
       'end_time' => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'description' => t('End timestamp'),
       ),
     ),
     'primary key' => array('id'),

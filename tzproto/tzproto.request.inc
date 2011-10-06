@@ -81,9 +81,6 @@ function _tzproto_handle_cmd($cmd, &$result, $protocol_version) {
   if($cmd->get_user_cmd()) {
     tzproto_handle_get_user($cmd, $result);
   }
-  else if($cmd->sync_cmd()) {
-    tzproto_handle_sync_cmd($cmd, $result, $protocol_version);
-  }
   else if($cmd->get_job_cmd()) {
     tzproto_handle_get_job_cmd($cmd, $result);
   }
@@ -94,22 +91,23 @@ function _tzproto_handle_cmd($cmd, &$result, $protocol_version) {
     tzproto_handle_create_job_cmd($cmd, $result);
   }
   else if($cmd->create_report_cmd()) {
-    tzproto_handle_create_report_cmd($cmd, $result);
+    $handler = new CreateReportHandler($protocol_version, new TZDrupalDBWrapper());
+    $handler->handle($cmd->create_report_cmd(), $result);
   }
   else if ($cmd->get_availability_cmd()) {
-    $handler = new GetAvailabilityHandler($GLOBALS['user'], tzbase_availability_store());
+    $handler = new GetAvailabilityHandler($protocol_version, $GLOBALS['user'], tzbase_availability_store());
     $handler->handle($cmd->get_availability_cmd(), $result);
   }
   else if ($cmd->save_availability_cmd()) {
-    $handler = new SaveAvailabilityHandler($GLOBALS['user'], tzbase_availability_store());
+    $handler = new SaveAvailabilityHandler($protocol_version, $GLOBALS['user'], tzbase_availability_store());
     $handler->handle($cmd->save_availability_cmd(), $result);
   }
   else if ($cmd->delete_availability_cmd()) {
-    $handler = new DeleteAvailabilityHandler($GLOBALS['user'], tzbase_availability_store());
+    $handler = new DeleteAvailabilityHandler($protocol_version, $GLOBALS['user'], tzbase_availability_store());
     $handler->handle($cmd->delete_availability_cmd(), $result);
   }
   else if ($cmd->get_availability_intervals_cmd()) {
-    $handler = new GetAvailabilityIntervalHandler(tzbase_availability_store());
+    $handler = new GetAvailabilityIntervalHandler($protocol_version, tzbase_availability_store());
     $handler->handle($cmd->get_availability_intervals_cmd(), $result);
   }
   else {
@@ -199,49 +197,6 @@ function tzproto_handle_get_user(&$cmd, &$result) {
 
   $result->set_user($tzuser);
 }
-
-/**
- * Handle the sync command
- */
-function tzproto_handle_sync_cmd(&$cmd, &$result, $protocol_version = 0) {
-  global $user;
-
-  $sync_cmd = $cmd->sync_cmd();
-
-  $last_sync = 0;
-  if($sync_cmd->last_sync()) {
-    $last_sync = $sync_cmd->last_sync();
-  }
-
-  for($i = 0; $i < $sync_cmd->new_jobs_size(); $i++) {
-    $job = tzproto_create_tzjob_from_protobuf($sync_cmd->new_job($i));
-  }
-
-  // Store new reports
-  for($i = 0; $i < $sync_cmd->new_reports_size(); $i++) {
-    $report = tzproto_create_tzreport_from_protobuf($sync_cmd->new_report($i));
-  }
-
-  // Load jobs
-  $sql = "SELECT n.nid FROM {node} n WHERE type = 'tzjob' AND status = 1 AND changed > %d";
-  $db_result = db_query(db_rewrite_sql($sql), $last_sync);
-  while($data = db_fetch_object($db_result)) {
-    $node = node_load($data->nid, NULL, TRUE);
-    $tzjob = $result->add_job();
-    tzproto_fill_from_node($tzjob, $node);
-  }
-
-  // Load reports
-  $sql = "SELECT n.nid FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE type = 'tzreport' AND status = 1 AND changed > %d AND tz.assignedto = %d";
-  $db_result = db_query(db_rewrite_sql($sql), $last_sync, $user->uid);
-  while($data = db_fetch_object($db_result)) {
-    $node = node_load($data->nid, NULL, TRUE);
-    $tzreport = $result->add_report();
-    tzproto_fill_from_node($tzreport, $node, $protocol_version);
-  }
-}
-
-
 
 /**
  * Handle the get job command
@@ -421,23 +376,6 @@ function tzproto_handle_create_job_cmd(&$cmd, &$result) {
 }
 
 /**
- * Handle create report command.
- * Receives a new tzreport over protobuf and saves it to the database.
- */
-function tzproto_handle_create_report_cmd(&$cmd, &$result) {
-  $reportcmd = $cmd->create_report_cmd();
-  $reportresult = new TZCreateReportResult();
-
-  // Store new reports
-  $new_report = $reportcmd->new_report();
-  if($new_report) {
-    $report = tzproto_create_tzreport_from_protobuf($new_report);
-    $reportresult->set_id($report->nid);
-  }
-  $result->set_create_report_result($reportresult);
-}
-
-/**
  * Fill a protobuf object from a node object
  * @param $proto protobuf object to fill
  * @param $node node data
@@ -477,146 +415,6 @@ function tzproto_fill_from_node(&$proto, $node, $protocol_version = 0) {
     $proto->set_may_remove(user_access('remove own tzreport content'));
   }
 }
-
-function tzproto_create_tzreport_from_protobuf($data) {
-  global $user;
-
-  // Find new job node id
-  if(!$data->job_id()) {
-    throw new TZProtoException('no job id', 400);
-  }
-
-  $report = new stdClass();
-  $original_report = NULL;
-
-  // Load node if this is an update
-  if($data->id()) {
-    $report = node_load($data->id());
-    if(!node_access('update', $report)) {
-      throw new TZProtoException('access denied', 403);
-    }
-
-    // Save original so we can check if anything really changed later
-    $original_report = clone($report);
-  } else {
-    if(!node_access('create', 'tzreport')) {
-      throw new TZProtoException('access denied', 403);
-    }
-    $report->type = 'tzreport';
-    $report->created = $data->changed();
-  }
-
-  $report->jobid = $data->job_id();
-
-  // Set title if available
-  if($data->title()) {
-    $report->title = $data->title();
-  } else {
-    // Get title from job
-    $title = db_result(db_query("SELECT title FROM {node} WHERE nid = %d", $report->jobid));
-    $report->title = $title ? $title : 'Time Report from ' . $user->name;
-  }
-
-  $report->body = $data->description();
-
-  // Parse start and finish
-  $worked_time = $data->worked_time();
-
-  if (!empty($worked_time)) {
-    $start = $worked_time->start();
-    $end = $worked_time->end();
-    $date = $worked_time->date();
-    if (empty($date) || empty($start) || empty($end)) {
-      throw new TZProtoException('Report lacked a date, start time or end time value.', 400);
-    }
-    $begin_date_time = tzproto_create_datetime($worked_time->date(), $worked_time->start());
-    $end_date_time = tzproto_create_datetime($worked_time->date(), $worked_time->end());
-    if (empty($begin_date_time) || empty($end_date_time)) {
-      throw new TZProtoException('Report lacked start time or end time value.', 400);
-    }
-
-    // We only handle this case for proto version 1 or higher,
-    if ($end_date_time < $begin_date_time) {
-      $end_date_time->modify('+1 day');
-    }
-
-    $report->begintime = $begin_date_time->format('U');
-    $report->endtime = $end_date_time->format('U');
-  } else {
-    $report->begintime = $data->begin_time();
-    $report->endtime = $data->end_time();
-    if ($report->endtime < $report->begintime) {
-      throw new TZProtoException('Report ends before it begins.', 400);
-    }
-  }
-  $report->breakduration = $data->break_duration();
-
-  $report->travelduration = 0;
-  $report->travelkm = 0;
-  $report->signature = "";
-
-  // Check for permissions to set the requested flags
-  if(empty($report->flags) || ($report->flags != $data->flags())) {
-    if($data->flags() != TZFlags::DELETED || user_access('remove own tzreport content')) {
-      $report->flags = $data->flags();
-    } else {
-      throw new TZProtoException('access denied', 403);
-    }
-  }
-
-  $report->assignedto = $user->uid;
-
-  // Set author and date
-  $report->uid = $user->uid;
-  $report->name = $user->name;
-
-
-  // Submit and save if there are changes
-  if($report != $original_report) {
-    if(!empty($report->nid)) {
-      // Create new revision of existing reports to avoid race conditions
-      $report->revision = TRUE;
-    }
-    $report = node_submit($report);
-    _tzproto_validate_report($report);
-    node_save($report);
-
-    // Invoke hook to allow modules to collect statistics or billing info
-    module_invoke_all('tzproto_saved_report', $report);
-
-    if($data->id()) {
-      watchdog('tzproto', 'Created revision !vid of report !nid', array('!vid' => $report->vid, '!nid' => $report->nid),
-      WATCHDOG_NOTICE,
-      l('View', 'node/' . $report->nid));
-
-      /* If the node has been updated and is immediately
-       * reloaded after update, it will
-       *  load the OLD cached version. */
-      node_load(0, NULL, TRUE);
-    } else {
-      watchdog('tzproto', 'Inserted report !nid', array('!nid' => $report->nid), WATCHDOG_NOTICE, l('View', 'node/' . $report->nid));
-    }
-  }
-
-  return $report;
-}
-
-function _tzproto_validate_report($report) {
-  global $user;
-  if (!empty($report->nid)) {
-    // Updates are always allowed
-    return;
-  }
-  if (user_access('create tzreport on any tzjob')) {
-    return;
-  }
-  $mapper = tzbase_user_jobs_mapper();
-  $may_create_report = $mapper->userMayCreateReport($user->uid, $report->jobid, $report->begintime);
-  if (!$may_create_report) {
-    throw new TZProtoException('May not create report on this date for this assignment', 403);
-  }
-}
-
 
 function tzproto_create_tzjob_from_protobuf($data) {
   global $user;

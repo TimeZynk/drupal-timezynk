@@ -448,6 +448,7 @@ function tzbase_form($node) {
       '#weight' => -3,
       '#maxlength' => 60,
     );
+
     $form['body_filter']['#weight'] = -2;
     $form['body_filter']['body'] = array(
       '#type' => 'textarea',
@@ -466,6 +467,15 @@ function tzbase_form($node) {
       '#default_value' => isset($node->flags) ? ($node->flags != TZJobFlags::INACTIVE) : TRUE,
       '#required' => FALSE,
     );
+
+    $form['allow_overlap'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Allow reports to overlap'),
+      '#description' => t('Allow reports on this assignment to overlap other reports'),
+      '#default_value' => $node->allow_overlap,
+      '#required' => FALSE,
+    );
+
     return $form;
   }
 }

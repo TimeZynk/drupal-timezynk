@@ -1,18 +1,19 @@
 <?php
 
-class SaveAvailabilityHandler implements CommandHandler {
+class SaveAvailabilityHandler extends CommandHandler {
   private $account;
   /**
    * @var AvailabilityStore
    */
   private $availability_store;
 
-  public function __construct($account, $availability_store) {
+  public function __construct($protocol_version, $account, $availability_store) {
+    parent::__construct($protocol_version);
     $this->account = $account;
     $this->availability_store = $availability_store;
   }
 
-  public function handle($save_availability_cmd, &$result, $protocol_version = 0) {
+  public function handle($save_availability_cmd, &$result) {
     if (!user_access('create availability content', $this->account)) {
       throw new TZProtoException('May not create availability', 403);
     }

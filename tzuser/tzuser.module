@@ -349,7 +349,9 @@ function tzuser_delete_support_log($uid) {
 
 function tzuser_save_support_log($uid, $log_text) {
   if (empty($log_text)) {
-    tzuser_delete_support_log($uid);
+    if ($log_text === '') {
+      tzuser_delete_support_log($uid);
+    }
     return;
   }
 
@@ -411,8 +413,10 @@ function _tzuser_save_entry(&$edit, $account) {
     $edit['tzuser'] = NULL;
   }
 
-  tzuser_save_support_log($account->uid, $edit['support_log']);
-  $edit['support_log'] = NULL;
+  if (isset($edit['support_log'])) {
+    tzuser_save_support_log($account->uid, $edit['support_log']);
+    $edit['support_log'] = NULL;
+  }
 }
 
 function _tzuser_show_entry(&$account) {

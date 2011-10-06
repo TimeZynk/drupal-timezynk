@@ -4,6 +4,9 @@ function __tzproto_autoload($class_name) {
     case 'CommandHandler':
       require dirname(__FILE__) . '/includes/CommandHandler.class.inc';
       return TRUE;
+    case 'CreateReportHandler':
+      require dirname(__FILE__) . '/includes/CreateReportHandler.class.inc';
+      return TRUE;
     case 'DeleteAvailabilityHandler':
       require dirname(__FILE__) . '/includes/DeleteAvailabilityHandler.class.inc';
       return TRUE;
