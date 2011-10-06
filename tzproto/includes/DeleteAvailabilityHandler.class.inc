@@ -1,7 +1,5 @@
 <?php
 
-require_once 'CommandHandler.class.inc';
-
 class DeleteAvailabilityHandler implements CommandHandler {
   private $account;
   /**

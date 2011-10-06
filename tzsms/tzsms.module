@@ -3,6 +3,8 @@
  * @file Provide SMS services for TimeZynk
  */
 
+require_once dirname(__FILE__) . '/tzsms.autoload.inc';
+
 /**
  * SMS type definition for standard user SMS messages
  */

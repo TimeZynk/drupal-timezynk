@@ -1,5 +1,6 @@
 <?php
 
+require_once dirname(__FILE__) . '/tzreminder.autoload.inc';
 
 function tzreminder_menu() {
   $items['tzsms/reminder'] = array(

@@ -3,6 +3,8 @@
 define('TZINTELLITIME_BASE_URL', variable_get('tzintellitime_base_url', ''));
 define('TZINTELLITIME_SESSION_LIFETIME', 3600);
 
+require_once(dirname(__FILE__) . '/tzintellitime.autoload.inc');
+
 /**
  * Implementation of hook_menu().
  */

@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__FILE__) . '/tzuser.autoload.inc';
+
 define('TZUSER_OVERVIEW_RED_LIMIT', 28*24*3600);
 define('TZUSER_LOG_LEVEL_NONE', 0);
 define('TZUSER_LOG_LEVEL_MEDIUM', 1);

@@ -4,6 +4,8 @@
  * Provides TimeZynk statistics and reports
  */
 
+require_once dirname(__FILE__) . '/tzreports.autoload.inc';
+
 /**
  * Implementation of hook_menu()
  */

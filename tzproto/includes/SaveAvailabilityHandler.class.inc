@@ -1,7 +1,5 @@
 <?php
 
-require_once 'CommandHandler.class.inc';
-
 class SaveAvailabilityHandler implements CommandHandler {
   private $account;
   /**

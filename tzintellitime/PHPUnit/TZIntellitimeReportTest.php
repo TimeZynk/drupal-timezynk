@@ -87,8 +87,7 @@ class TZIntellitimeReportTest extends PHPUnit_Framework_TestCase {
   }
 
   function testConstructorHandlesDELETED() {
-    $tzreport = createMockReport(NULL, "2010-10-10", "10:10", "22:10");
-    $tzreport->flags = TZFlags::DELETED;
+    $tzreport = createMockReport('mhbLP96iqH2Zr7CDtWyWb84hbku5Eii3', "2010-10-10", "10:10", "22:10", 30, 1, TZFlags::DELETED);
     $itreport = new TZIntellitimeReport($tzreport);
     $this->assertEquals(TZIntellitimeReport::STATE_DELETED, $itreport->state);
   }

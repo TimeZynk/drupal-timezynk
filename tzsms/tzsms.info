@@ -1,12 +1,6 @@
 name = TimeZynk SMS
 description = Provides TimeZynk SMS services
 package = TimeZynk
-dependencies[] = autoload
 dependencies[] = genpass
 dependencies[] = tzuser
-files[] = includes/BeepSend.class.inc
-files[] = includes/LogOnlyBackend.class.inc
-files[] = includes/SmsBackend.class.inc
-files[] = includes/SmsBackendFactory.class.inc
-files[] = includes/SmsFrameworkBackend.class.inc
 core = 6.x

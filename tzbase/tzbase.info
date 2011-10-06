@@ -2,18 +2,9 @@ name = TimeZynk Base
 description = Provides TimeZynk data types and relations
 package = TimeZynk
 
-files[] = includes/Availability.class.inc
-files[] = includes/AvailabilityStore.class.inc
-files[] = includes/TZDBValidationException.class.inc
-files[] = includes/TZDBWrapper.class.inc
-files[] = includes/TZDrupalDBWrapper.class.inc
-files[] = includes/TZUserJobMapping.class.inc
-files[] = includes/TZUserJobsMapper.class.inc
-
 dependencies[] = tzuser
 dependencies[] = libraries
 dependencies[] = date_api
 dependencies[] = date_timezone
 dependencies[] = tzsms
-dependencies[] = autoload
 core = 6.x

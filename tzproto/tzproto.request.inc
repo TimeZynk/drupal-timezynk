@@ -97,22 +97,18 @@ function _tzproto_handle_cmd($cmd, &$result, $protocol_version) {
     tzproto_handle_create_report_cmd($cmd, $result);
   }
   else if ($cmd->get_availability_cmd()) {
-    require_once 'includes/GetAvailabilityHandler.class.inc';
     $handler = new GetAvailabilityHandler($GLOBALS['user'], tzbase_availability_store());
     $handler->handle($cmd->get_availability_cmd(), $result);
   }
   else if ($cmd->save_availability_cmd()) {
-    require_once 'includes/SaveAvailabilityHandler.class.inc';
     $handler = new SaveAvailabilityHandler($GLOBALS['user'], tzbase_availability_store());
     $handler->handle($cmd->save_availability_cmd(), $result);
   }
   else if ($cmd->delete_availability_cmd()) {
-    require_once 'includes/DeleteAvailabilityHandler.class.inc';
     $handler = new DeleteAvailabilityHandler($GLOBALS['user'], tzbase_availability_store());
     $handler->handle($cmd->delete_availability_cmd(), $result);
   }
   else if ($cmd->get_availability_intervals_cmd()) {
-    require_once 'includes/GetAvailabilityIntervalHandler.class.inc';
     $handler = new GetAvailabilityIntervalHandler(tzbase_availability_store());
     $handler->handle($cmd->get_availability_intervals_cmd(), $result);
   }

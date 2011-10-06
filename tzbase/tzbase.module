@@ -3,6 +3,8 @@
  * Provides TimeZynk data types
  */
 
+require_once dirname(__FILE__) . '/tzbase.autoload.inc';
+
 /**
  * Flag marking that a time report for this job needs a signature at every submission
  */
