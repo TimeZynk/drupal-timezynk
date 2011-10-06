@@ -9,13 +9,14 @@ class TZIntellitimeDBReportStorage implements TZIntellitimeReportStorage {
 
   public function getTZReports($from, $to) {
     $reports = array();
-    $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE t.assignedto = %d AND t.begintime >= %d AND t.begintime < %d AND t.flags != 255 AND n.status = 1',
+    $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE t.assignedto = %d AND t.begintime >= %d AND t.begintime < %d',
                        $this->account->uid, $from->format('U'), $to->format('U'));
     while($nid = db_result($result)) {
       $node = node_load($nid, NULL, TRUE);
-      if(!empty($node->intellitime_id)) {
-        $reports[] = $node;
+      if ($node->flags == TZFlags::DELETED && empty($node->intellitime_local_changes)) {
+        continue;
       }
+      $reports[] = $node;
     }
     return $reports;
   }
@@ -55,6 +56,7 @@ class TZIntellitimeDBReportStorage implements TZIntellitimeReportStorage {
     $node->flags = $tzjob->flags;
     $node->intellitime_local_changes = 0;
     $node->allow_overlap = FALSE;
+    $node->jobtype = $tzjob->jobtype;
   }
 
   private function storeNode($node) {

@@ -1,10 +1,6 @@
 <?php
 
 class IntellitimeFormTest extends PHPUnit_Framework_TestCase {
-  public function setUp() {
-    $this->bot = $this->getMock('TZIntellitimeBot');
-  }
-
   public function testWhenBuildingFromLoginPage_ItShouldParseCorrectFormAction() {
     $form = $this->build_from_page('intellitime-login-page.html');
     $this->assertEquals('Login.aspx?Gw27UDttLdgps9TM4HqqoQ%3d%3d', $form->getAction());
@@ -46,7 +42,7 @@ class IntellitimeFormTest extends PHPUnit_Framework_TestCase {
     $handle = fopen($full_name, "r");
     $contents = fread($handle, filesize($full_name));
     fclose($handle);
-    $page = new IntellitimePage($contents, $this->bot);
+    $page = new IntellitimePage($contents);
     return $page->getForm();
   }
 }

@@ -94,6 +94,10 @@ class TZIntellitimeSyncController {
         $this->logException('Session expired', $weekDate, $e, TZIntellitimeLogger::INFO);
         $status = TZIntellitimeSyncController::AUTH_FAILURE;
         break;
+      } catch (TZIntellitimeServerException $e) {
+        $this->logException('Server exception', $weekDate, $e, TZIntellitimeLogger::ALERT);
+        $status = TZIntellitimeSyncController::NETWORK_FAILURE;
+        continue;
       }
     }
     return $status;

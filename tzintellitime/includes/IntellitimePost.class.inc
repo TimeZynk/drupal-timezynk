@@ -1,23 +1,34 @@
 <?php
 
 abstract class IntellitimePost {
-  private $bot;
+  /**
+   * @var IntellitimeServer
+   */
+  private $server;
+
+  /**
+   * @var IntellitimeForm
+   */
   protected $form;
 
-  public function __construct($bot, $form) {
-    $this->bot = $bot;
+  public function __construct($server, $form) {
+    $this->server = $server;
     $this->form = $form;
   }
 
   public function post() {
-    $html = $this->bot->post($this->getAction(), $this->getPostData());
-    return $this->createPage($html, $this->bot);
+    $html = $this->server->post($this->getAction(), $this->getPostData());
+    return $this->createPage($html, $this->server);
   }
 
   protected function getAction() {
-    return $this->form->getAction();
+    return $this->getActionPrefix() . $this->form->getAction();
+  }
+
+  protected function getActionPrefix() {
+    return "";
   }
 
   abstract protected function getPostData();
-  abstract protected function createPage($html_string, $bot);
+  abstract protected function createPage($html_string, $server);
 }

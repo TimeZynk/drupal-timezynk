@@ -11,17 +11,17 @@ class IntellitimeAvailabilityUpdatePost extends IntellitimePost {
    * date, will result in 'day', 'evening' and 'night' set to available for
    * that date.
    *
-   * @param TZIntellitimeBot $bot the bot that will do the actuall uploading
+   * @param IntellitimeServer $server the server that will do the actuall uploading
    * @param IntellitimeForm $form the availability form from Intellitime.
    * @param Array $availabilities an array containing IntellitimeAvailability
    * objects to push to the server.
    * @throws InvalidArgumentException if availabilites are not given.
    */
-  public function __construct($bot, $form, $availabilities) {
+  public function __construct($server, $form, $availabilities) {
     if (!isset($availabilities)) {
       throw new InvalidArgumentException('Missing availabilities');
     }
-    parent::__construct($bot, $form);
+    parent::__construct($server, $form);
     $this->availabilities = $availabilities;
   }
 
@@ -36,13 +36,13 @@ class IntellitimeAvailabilityUpdatePost extends IntellitimePost {
 
     return $data;
   }
-  
+
   protected function getAction() {
     return 'Availability/' . parent::getAction();
   }
 
-  protected function createPage($html_string, $bot) {
-    return new IntellitimeAvailabilityFinalPage($html_string, $bot);
+  protected function createPage($html_string, $server) {
+    return new IntellitimeAvailabilityFinalPage($html_string, $server);
   }
 
   private function clearAllCheckboxes(&$data) {

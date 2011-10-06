@@ -2,7 +2,7 @@
 
 class IntellitimeAvailabilityPageTest extends PHPUnit_Framework_TestCase {
   public function setUp() {
-    $this->bot = $this->getMock('TZIntellitimeBot');
+    $this->server = $this->getMock('IntellitimeServer');
   }
 
   public function testWhenBuildingFromEmptyPage_ItShouldReturnNoAvailableDays() {
@@ -132,6 +132,6 @@ class IntellitimeAvailabilityPageTest extends PHPUnit_Framework_TestCase {
     $handle = fopen($full_name, "r");
     $contents = fread($handle, filesize($full_name));
     fclose($handle);
-    return new IntellitimeAvailabilityPage($contents, $this->bot);
+    return new IntellitimeAvailabilityPage($contents, $this->server);
   }
 }

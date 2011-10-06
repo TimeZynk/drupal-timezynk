@@ -2,7 +2,7 @@
 
 class IntellitimeAvailabilityUpdatePostTest extends PHPUnit_Framework_TestCase {
   function setUp() {
-    $this->bot = $this->getMock('TZIntellitimeBot');
+    $this->server = $this->getMock('IntellitimeServer');
 
     $this->form = $this->getMock('IntellitimeForm');
     $this->formAction = "Availability.aspx?MId=Availability";
@@ -18,11 +18,11 @@ class IntellitimeAvailabilityUpdatePostTest extends PHPUnit_Framework_TestCase {
     $this->expectedAvailabilities[0]->setDay(TRUE);
     $this->expectedAvailabilities[0]->setEvening(TRUE);
     $this->expectedAvailabilities[0]->setNight(TRUE);
-    $this->post = new IntellitimeAvailabilityUpdatePost($this->bot, $this->form, $this->expectedAvailabilities);
+    $this->post = new IntellitimeAvailabilityUpdatePost($this->server, $this->form, $this->expectedAvailabilities);
   }
 
   public function testCreatesFinalPage() {
-    $this->bot->expects($this->once())
+    $this->server->expects($this->once())
       ->method('post')
       ->will($this->returnValue($this->readfile('availability-1-day.txt')));
     $page = $this->post->post();
@@ -43,7 +43,7 @@ class IntellitimeAvailabilityUpdatePostTest extends PHPUnit_Framework_TestCase {
       ->method('getFormValues')
       ->will($this->returnValue($originalFormValues));
 
-    $this->bot->expects($this->once())
+    $this->server->expects($this->once())
       ->method('post')
       ->with($this->expectedAction, $expectedPostData)
       ->will($this->returnValue($this->readfile('availability-1-day.txt')));
@@ -68,7 +68,7 @@ class IntellitimeAvailabilityUpdatePostTest extends PHPUnit_Framework_TestCase {
     ->method('getFormValues')
     ->will($this->returnValue($originalFormValues));
 
-    $this->bot->expects($this->once())
+    $this->server->expects($this->once())
     ->method('post')
     ->with($this->expectedAction, $expectedPostData)
     ->will($this->returnValue($this->readfile('availability-1-day.txt')));

@@ -1,7 +1,5 @@
 <?php
 
-require_once 'IntellitimeAvailabilityMergeStrategy.class.inc';
-
 class IntellitimeAvailabilitySyncController {
   private $account;
   /**
@@ -15,9 +13,9 @@ class IntellitimeAvailabilitySyncController {
   private $factory;
 
   /**
-   * @var TZIntellitimeServerInterface
+   * @var IntellitimeServer
    */
-  private $serverInterface;
+  private $server;
 
   /**
    * @var IntellitimeAvailabilityMergeStrategy
@@ -29,11 +27,11 @@ class IntellitimeAvailabilitySyncController {
    */
   private $logger;
 
-  function __construct($account, $availabilityStore, $intellitimeAvailabilityFactory, $serverInterface) {
+  function __construct($account, $availabilityStore, $intellitimeAvailabilityFactory, $server) {
     $this->account = $account;
     $this->availabilityStore = $availabilityStore;
     $this->factory = $intellitimeAvailabilityFactory;
-    $this->serverInterface = $serverInterface;
+    $this->server = $server;
     $this->mergeStrategy = new IntellitimeAvailabilityMergeStrategy($this->factory);
     $this->logger = new TZCompositeLogger();
   }
@@ -61,7 +59,7 @@ class IntellitimeAvailabilitySyncController {
 
   private function bootstrapAvailabilityPage() {
     $url = 'Availability/Availability.aspx?MId=Availability';
-    return new IntellitimeAvailabilityPage($this->serverInterface->get($url), $this->serverInterface);
+    return new IntellitimeAvailabilityPage($this->server->get($url), $this->server);
   }
 
   private function fetchAvailabilities() {

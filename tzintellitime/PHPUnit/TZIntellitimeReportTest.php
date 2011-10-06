@@ -75,15 +75,11 @@ class TZIntellitimeReportTest extends PHPUnit_Framework_TestCase {
   }
 
   function testNoIntellitimeIdInReport() {
-    try {
-      $tzReport = createMockReport(NULL, "2010-10-10", "10:10", "22:10");
-      unset($tzReport->intellitime_id);
+    $tzReport = createMockReport(NULL, "2010-10-10", "10:10", "22:10");
+    unset($tzReport->intellitime_id);
 
-      new TZIntellitimeReport($tzReport);
-      $this->fail("No id, no report!");
-    } catch (InvalidArgumentException $e) {
-      $this->assertNotNull($e);
-    }
+    $itreport = new TZIntellitimeReport($tzReport);
+    $this->assertNull($itreport->id);
   }
 
   function testConstructorHandlesDELETED() {

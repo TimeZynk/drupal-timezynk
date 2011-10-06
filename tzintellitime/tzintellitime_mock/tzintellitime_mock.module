@@ -338,8 +338,10 @@ function _tzintellitime_mock_serve_static($filename) {
 }
 
 function tzintellitime_mock_update_report($post, $ctlid, $reportid) {
+  $prefix = 'OldRowsRepeater:_ctl' . $ctlid;
+
   // query to get the report and create a report with information that we cannot from $post
-  if(!empty($post['OldRowsRepeater:_ctl' . $ctlid . ':CheckBoxDelete'])) {
+  if(!empty($post["$prefix:CheckBoxDelete"])) {
     _tzintellitime_mock_delete_report($reportid);
     return;
   }
@@ -351,7 +353,6 @@ function tzintellitime_mock_update_report($post, $ctlid, $reportid) {
 
   $report->state = _tzintellitime_mock_check_state($post, $ctlid);
 
-  $prefix = 'OldRowsRepeater:_ctl' . $ctlid;
   if(isset($post["$prefix:TextboxTimeFrom"])) {
     $report->begin = _tzintellitime_mock_parse_time($post["$prefix:TextboxTimeFrom"]);
   }

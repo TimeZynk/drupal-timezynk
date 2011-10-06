@@ -3,11 +3,11 @@
 class IntellitimeAvailabilityAddPost extends IntellitimePost {
   private $epoch2000_01_01_1200 = '946724400';
 
-  public function __construct($bot, $form, $availability) {
+  public function __construct($server, $form, $availability) {
     if (empty($availability)) {
       throw new InvalidArgumentException('Missing availability');
     }
-    parent::__construct($bot, $form);
+    parent::__construct($server, $form);
     $this->availability = $availability;
   }
 
@@ -27,7 +27,7 @@ class IntellitimeAvailabilityAddPost extends IntellitimePost {
     return 'Availability/' . parent::getAction();
   }
 
-  protected function createPage($html_string, $bot) {
-    return new IntellitimeAvailabilityPage($html_string, $bot);
+  protected function createPage($html_string, $server) {
+    return new IntellitimeAvailabilityPage($html_string, $server);
   }
 }

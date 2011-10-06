@@ -1,13 +1,11 @@
 <?php
 
-class TZAuthenticationFailureException extends TZIntellitimeServerException {}
-
-
+class IntellitimeWeekMaximumIterationsException extends TZIntellitimeServerException {}
 
 class TZIntellitimeWeek {
 
   private $date;
-  private $serverInterface = NULL;
+  private $dataFactory = NULL;
   private $reports;
   private $account;
 
@@ -16,15 +14,15 @@ class TZIntellitimeWeek {
    *
    * @param DateTime $datetime
    * @param TZIntellitimeWeekDataPersister $weekDataPersister
-   * @param TZIntellitimeServerInterface $serverInterface
+   * @param TZIntellitimeWeekDataFactory $dataFactory
    * @param Array $reports
    */
-  public function __construct($datetime, $serverInterface, $reports, $account) {
-    if(!isset($datetime) || !isset($serverInterface) || !isset($reports) || !isset($account)) {
+  public function __construct($datetime, $dataFactory, $reports, $account) {
+    if(!isset($datetime) || !isset($dataFactory) || !isset($reports) || !isset($account)) {
       throw new InvalidArgumentException('NULL argument supplied to TZIntellitimeWeek constructor');
     }
     $this->date = $datetime;
-    $this->serverInterface = $serverInterface;
+    $this->dataFactory = $dataFactory;
     $this->reports = $reports;
     $this->account = $account;
   }
@@ -44,23 +42,11 @@ class TZIntellitimeWeek {
      * just forward to the caller since no reports have been updated
      * yet in this case.
      */
-    $weekData = $this->serverInterface->refreshWeek($this->date);
+    $weekData = $this->dataFactory->createWeekData($this->date);
     $updatedReports = $weekData->updateReports($this->reports, $this->account);
 
     try {
-      $post = $weekData->buildPost($updatedReports);
-
-      while($post) {
-        $weekData = $this->serverInterface->postWeek($post);
-        if($post->isIntermediate()) {
-          $updatedReports = $weekData->updateLastStates($updatedReports);
-          $post = $weekData->buildPost($updatedReports);
-        } else {
-          $post = NULL;
-        }
-      }
-
-      $updatedReports = $weekData->updateReports($updatedReports, $this->account, TRUE);
+      $updatedReports = $this->postNewAndChangedReports($weekData, $updatedReports);
     } catch(TZIntellitimeServerException $e) {
       /* We must return the exceptions instead of throwing them. Since even if
        * some of the POSTs have failed, the reports have still been updated with
@@ -75,5 +61,22 @@ class TZIntellitimeWeek {
     $result->intellitime_assignments = $weekData->getAssignments();
     $result->unfinishedWeeks = $weekData->getUnfinishedWeeks();
     return $result;
+  }
+
+  private function postNewAndChangedReports(&$weekData, &$updatedReports) {
+    $max_iterations = 100;
+    $iterations = 0;
+    $post = $weekData->buildPost($updatedReports);
+    while($post && $iterations < $max_iterations) {
+      $weekData = $this->dataFactory->createWeekDataFromPost($post);
+      $updatedReports = $weekData->postProcessPost($post, $updatedReports, $this->account);
+      $post = $weekData->buildPost($updatedReports);
+      $iterations++;
+    }
+    $updatedReports = $weekData->updateReports($updatedReports, $this->account, TRUE);
+    if ($iterations == $max_iterations) {
+      throw new IntellitimeWeekMaximumIterationsException('Reached maximum number of iterations');
+    }
+    return $updatedReports;
   }
 }

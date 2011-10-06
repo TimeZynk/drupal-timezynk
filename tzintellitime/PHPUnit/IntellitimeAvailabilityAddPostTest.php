@@ -2,7 +2,7 @@
 
 class IntellitimeAvailabilityAddPostTest extends PHPUnit_Framework_TestCase {
   function setUp() {
-    $this->bot = $this->getMock('TZIntellitimeBot');
+    $this->server = $this->getMock('IntellitimeServer');
 
     $this->form = $this->getMockBuilder('IntellitimeForm')->disableOriginalConstructor()->getMock();
     $this->formAction = "Availability.aspx?MId=Availability";
@@ -11,18 +11,18 @@ class IntellitimeAvailabilityAddPostTest extends PHPUnit_Framework_TestCase {
       ->method('getAction')
       ->will($this->returnValue($this->formAction));
     $this->expectedAvailability = new IntellitimeAvailability(date_make_date('2011-07-14'));
-    $this->post = new IntellitimeAvailabilityAddPost($this->bot, $this->form, $this->expectedAvailability);
+    $this->post = new IntellitimeAvailabilityAddPost($this->server, $this->form, $this->expectedAvailability);
   }
 
   function testPostCallsBot() {
-    $this->bot->expects($this->once())
+    $this->server->expects($this->once())
       ->method('post')
       ->will($this->returnValue($this->readfile('availability-1-day.txt')));
     $this->post->post();
   }
 
   function testUsesCorrectActionInPost() {
-    $this->bot->expects($this->once())
+    $this->server->expects($this->once())
       ->method('post')
       ->with($this->expectedAction, $this->anything())
       ->will($this->returnValue($this->readfile('availability-1-day.txt')));
@@ -42,7 +42,7 @@ class IntellitimeAvailabilityAddPostTest extends PHPUnit_Framework_TestCase {
       ->method('getFormValues')
       ->will($this->returnValue($originalFormValues));
 
-    $this->bot->expects($this->once())
+    $this->server->expects($this->once())
       ->method('post')
       ->with($this->expectedAction, $expectedPostData)
       ->will($this->returnValue($this->readfile('availability-1-day.txt')));
@@ -55,7 +55,7 @@ class IntellitimeAvailabilityAddPostTest extends PHPUnit_Framework_TestCase {
       ->method('getFormValues')
       ->will($this->returnValue(array()));
 
-    $this->bot->expects($this->once())
+    $this->server->expects($this->once())
       ->method('post')
       ->will($this->returnValue($this->readfile('availability-1-day.txt')));
 

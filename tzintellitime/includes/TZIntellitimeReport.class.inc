@@ -17,6 +17,7 @@ class TZIntellitimeReport {
   public $break_duration_minutes = 0;
   public $overtime_hours = 0;
   public $comment = '';
+  public $jobid = NULL;
 
   public $stateImmutable = FALSE;
   public $total_hours = 0;
@@ -25,24 +26,26 @@ class TZIntellitimeReport {
    * Construct an intellitime report from a tzreport
    */
   public function __construct($tzreport = NULL) {
-    if(empty($tzreport)) {
+    if (empty($tzreport)) {
       return;
     }
 
-    if(empty($tzreport->intellitime_id)) {
-      throw new InvalidArgumentException('No intellitime_id set in tzreport ' . $tzreport->nid);
+    if (!empty($tzreport->intellitime_id)) {
+      $this->id = tzintellitime_get_intellitime_id($tzreport);
     }
 
-    $this->id = tzintellitime_get_intellitime_id($tzreport);
+    if (!empty($tzreport->intellitime_jobid)) {
+      $this->jobid = $tzreport->intellitime_jobid;
+    }
 
-    if($tzreport->flags < TZFlags::REPORTED) {
+    if ($tzreport->flags < TZFlags::REPORTED) {
       $this->state = TZIntellitimeReport::STATE_OPEN;
-    } elseif($tzreport->flags == TZFlags::REPORTED) {
+    } else if ($tzreport->flags == TZFlags::REPORTED) {
       $this->state = TZIntellitimeReport::STATE_REPORTED;
-    } elseif($tzreport->flags == TZFlags::DELETED) {
+    } else if ($tzreport->flags == TZFlags::DELETED) {
       $this->state = TZIntellitimeReport::STATE_DELETED;
-    } elseif($tzreport->flags == TZFlags::APPROVED ||
-        $tzreport->flags == TZFlags::LOCKED) {
+    } else if ($tzreport->flags == TZFlags::APPROVED ||
+               $tzreport->flags == TZFlags::LOCKED) {
       $this->state = TZIntellitimeReport::STATE_LOCKED;
       $this->stateImmutable = TRUE;
     } else {
@@ -88,6 +91,8 @@ class TZIntellitimeReport {
       $tzreport->signature = '';
       $tzreport->name = $account->name;
       $tzreport->uid = $account->uid;
+    } else {
+      $tzreport = clone($tzreport);
     }
 
     $tzreport->title = $this->title;

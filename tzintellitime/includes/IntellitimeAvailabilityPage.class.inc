@@ -1,6 +1,6 @@
 <?php
 
-class IntellitimeAvailabilityPage extends IntellitimePage {
+class IntellitimeAvailabilityPage extends IntellitimeAuthenticatedPage {
 
   private $addedDays = array();
   private $updatedDays = array();
@@ -47,9 +47,9 @@ class IntellitimeAvailabilityPage extends IntellitimePage {
    */
   public function getPost() {
     if (!empty($this->addedDays)) {
-      return new IntellitimeAvailabilityAddPost($this->bot, $this->getForm(), reset($this->addedDays));
+      return new IntellitimeAvailabilityAddPost($this->server, $this->getForm(), reset($this->addedDays));
     } else {
-      return new IntellitimeAvailabilityUpdatePost($this->bot, $this->getForm(), $this->updatedDays);
+      return new IntellitimeAvailabilityUpdatePost($this->server, $this->getForm(), $this->updatedDays);
     }
   }
 

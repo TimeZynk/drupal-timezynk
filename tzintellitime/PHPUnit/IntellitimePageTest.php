@@ -1,10 +1,6 @@
 <?php
 
 class IntellitimePageTest extends PHPUnit_Framework_TestCase {
-  public function setUp() {
-    $this->bot = $this->getMock('TZIntellitimeBot');
-  }
-
   public function testWhenBuildingFromFormatErrorPage_ItShouldThrowErrorPageException() {
     try {
       $this->build_from_page('errors/System.FormatException.txt');
@@ -25,11 +21,35 @@ class IntellitimePageTest extends PHPUnit_Framework_TestCase {
     }
   }
 
+  public function testNoActionPresent() {
+    $page = new IntellitimePage("<html><head/><body>apa</body></hmtl>");
+    $form = $page->getForm();
+    $this->assertNull($form);
+  }
+
+  public function testCrapForBreakfast() {
+    try {
+      $parser = new IntellitimePage("");
+      $this->fail("Expected exception when feeding crap to page.");
+    } catch (InvalidArgumentException $e) {
+      $this->assertNotNull($e);
+    }
+  }
+
+  public function testParseErrorString() {
+    try {
+      $this->build_from_page('WeekData_ThrowOnErrorPage.txt');
+      $this->fail('expected exception');
+    } catch (TZIntellitimeErrorPageException $e) {
+      $this->assertEquals('Unexpected error', $e->getMessage());
+    }
+  }
+
   private function build_from_page($filename) {
     $full_name = dirname(__FILE__) . "/../tests/$filename";
     $handle = fopen($full_name, "r");
     $contents = fread($handle, filesize($full_name));
     fclose($handle);
-    return new IntellitimePage($contents, $this->bot);
+    return new IntellitimePage($contents);
   }
 }

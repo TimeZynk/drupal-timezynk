@@ -103,13 +103,17 @@ function tzintellitime_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       case 'presave':
         /* By default we assume that we are storing local changes, unless the saving
          * code explicitly sets intellitime_synchronized to TRUE */
-        if(!empty($node->intellitime_id)) {
-          if(empty($node->intellitime_synchronized)) {
+        if (!empty($node->intellitime_id)) {
+          if (empty($node->intellitime_synchronized)) {
             $node->intellitime_local_changes = 1;
           } else {
             $node->intellitime_local_changes = 0;
           }
-        }
+        } /*else if (empty($node->nid)) {
+          // New node!
+          $node->intellitime_local_changes = 1;
+          $node->intellitime_id = "";
+        }*/
         break;
 
       case 'delete':
@@ -121,24 +125,25 @@ function tzintellitime_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         break;
 
       case 'insert':
-        if(isset($node->intellitime_id) && $node->intellitime_id) {
-          drupal_write_record('tzintellitime', $node);
-        }
+        drupal_write_record('tzintellitime', $node);
         break;
 
       case 'load':
-        return db_fetch_array(db_query('SELECT * FROM {tzintellitime} WHERE vid = %d', $node->vid));
+        $fields = db_fetch_array(db_query('SELECT * FROM {tzintellitime} WHERE vid = %d', $node->vid));
+        if (empty($fields['intellitime_id']) && !empty($node->jobid)) {
+          $job = node_load($node->jobid);
+          $fields['intellitime_jobid'] = $job->intellitime_id;
+        }
+        return $fields;
         break;
 
       case 'update':
-        if(isset($node->intellitime_id) && $node->intellitime_id) {
-          if(!empty($node->revision)) {
-            // new revision, treat as insert
-            drupal_write_record('tzintellitime', $node);
-          } else {
-            // update of previous revision
-            drupal_write_record('tzintellitime', $node, 'vid');
-          }
+        if(!empty($node->revision)) {
+          // new revision, treat as insert
+          drupal_write_record('tzintellitime', $node);
+        } else {
+          // update of previous revision
+          drupal_write_record('tzintellitime', $node, 'vid');
         }
         break;
     }
@@ -265,8 +270,8 @@ function tzintellitime_server_auth($account, $username, $password) {
   $curl = new TZCurl();
 
   try {
-    $bot = new TZIntellitimeBot($curl, TZINTELLITIME_BASE_URL);
-    $fullname = $bot->login($username, $password);
+    $server = new IntellitimeServer($curl);
+    $fullname = IntellitimeLoginPage::login($server, TZINTELLITIME_BASE_URL, $username, $password);
 
     $account = tzuser_add_user(
       $fullname,
@@ -305,7 +310,10 @@ function tzintellitime_node_load_by_intellitime_id($intellitime_id) {
 }
 
 function tzintellitime_get_intellitime_id($tzreport) {
-  $id = unserialize($tzreport->intellitime_id);
+  if (empty($tzreport->intellitime_id)) {
+    return 'NEW_NODE_WITH_NID_' . $tzreport->nid;
+  }
+  $id = @unserialize($tzreport->intellitime_id);
   return $id[2];
 }
 

@@ -1,14 +1,7 @@
 <?php
 
 class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
-  private function loadHTMLFile($filename) {
-    $full_name = dirname(__FILE__) . "/../tests/$filename";
-    $handle = fopen($full_name, "r");
-    $contents = fread($handle, filesize($full_name));
-    fclose($handle);
-    $parser = new TZIntellitimeParser($contents);
-    return new TZIntellitimeWeekData($parser);
-  }
+
 
   public function setUp() {
     $this->account = (object)array(
@@ -19,8 +12,8 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
 
   public function testConstructorThrowsOnNullReports() {
     try {
-      $serverInterface = $this->getMock('TZIntellitimeServerInterface');
-      $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $serverInterface, NULL, $this->account);
+      $dataFactory = $this->getMock('TZIntellitimeWeekDataFactory');
+      $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $dataFactory, NULL, $this->account);
       $this->fail("Should have caught exception.");
     } catch (InvalidArgumentException $e) {
       $this->assertNotNull($e);
@@ -29,8 +22,8 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
 
   public function testConstructorDoesNotThrowOnEmptyReports() {
     try {
-      $serverInterface = $this->getMock('TZIntellitimeServerInterface');
-      $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $serverInterface, array(), $this->account);
+      $dataFactory = $this->getMock('TZIntellitimeWeekDataFactory');
+      $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $dataFactory, array(), $this->account);
       $this->assertInstanceOf('TZIntellitimeWeek', $week);
     } catch (InvalidArgumentException $e) {
       $this->fail('Caught unexpected exception');
@@ -40,22 +33,22 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
   public function testV9SyncSingleOpenUpdate() {
     $weekData = $this->loadHTMLFile('intellitime-v9-timereport-single-open.txt');
 
-    $serverInterface = $this->getMock('TZIntellitimeServerInterface');
-    $serverInterface->expects($this->once())
-        ->method('refreshWeek')
+    $dataFactory = $this->getMock('TZIntellitimeWeekDataFactory');
+    $dataFactory->expects($this->once())
+        ->method('createWeekData')
         ->will($this->returnValue($weekData));
 
-    $weekDataAfterPost = $this->loadHTMLFile('intellitime-v9-timereport-single-done.txt');
-    $serverInterface->expects($this->once())
-        ->method('postWeek')
-        ->with($this->logicalAnd($this->isInstanceOf('TZIntellitimePostData'), $this->classHasAttribute('postData')))
+    $weekDataAfterPost = $this->loadHTMLFile('intellitime-v9-timereport-single-done.txt', TRUE);
+    $dataFactory->expects($this->once())
+        ->method('createWeekDataFromPost')
+        ->with($this->isInstanceOf('IntellitimeWeekUpdatePost'))
         ->will($this->returnValue($weekDataAfterPost));
 
     $reports = array(
       createMockReport('mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3', '2011-01-25', '08:30', '17:30'),
     );
 
-    $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $serverInterface, $reports, $this->account);
+    $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $dataFactory, $reports, $this->account);
 
     $syncResult = $week->sync();
     $this->assertNotNull($syncResult);
@@ -68,18 +61,18 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
   public function testV9SyncSingleOpenNew() {
     $weekData = $this->loadHTMLFile('intellitime-v9-timereport-single-open.txt');
 
-    $serverInterface = $this->getMock('TZIntellitimeServerInterface');
-    $serverInterface->expects($this->once())
-        ->method('refreshWeek')
+    $dataFactory = $this->getMock('TZIntellitimeWeekDataFactory');
+    $dataFactory->expects($this->once())
+        ->method('createWeekData')
         ->will($this->returnValue($weekData));
 
     $weekDataAfterPost = $this->loadHTMLFile('intellitime-v9-timereport-single-done.txt');
-    $serverInterface->expects($this->never())
-        ->method('postWeek');
+    $dataFactory->expects($this->never())
+        ->method('createWeekDataFromPost');
 
     $reports = array();
 
-    $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $serverInterface, $reports, $this->account);
+    $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $dataFactory, $reports, $this->account);
 
     $syncResult = $week->sync();
     $this->assertNotNull($syncResult);
@@ -94,30 +87,28 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
   public function testV9SyncFindsTwoNewLockedAndUpdatesTheOneExistingReport() {
     $weekData = $this->loadHTMLFile('intellitime-v9-timereport-locked-week-with-new-report.txt');
 
-    $serverInterface = $this->getMock('TZIntellitimeServerInterface');
-    $serverInterface->expects($this->once())
-        ->method('refreshWeek')
+    $dataFactory = $this->getMock('TZIntellitimeWeekDataFactory');
+    $dataFactory->expects($this->once())
+        ->method('createWeekData')
         ->will($this->returnValue($weekData));
 
-    $weekDataAfterPost = $this->loadHTMLFile('intellitime-v9-timereport-two-locked-one-done.txt');
-
-    $serverInterface->expects($this->once())
-        ->method('postWeek')
-        ->with($this->logicalAnd($this->isInstanceOf('TZIntellitimePostData'), $this->classHasAttribute('postData')))
+    $weekDataAfterPost = $this->loadHTMLFile('intellitime-v9-timereport-two-locked-one-done.txt', TRUE);
+    $dataFactory->expects($this->once())
+        ->method('createWeekDataFromPost')
+        ->with($this->isInstanceOf('IntellitimeWeekUpdatePost'))
         ->will($this->returnValue($weekDataAfterPost));
 
     $reports = array(
       createMockReport('mhbLP96iqH2II35gn6Dx4M4hbku5Eii3', '2010-09-11', '08:00', '12:00', 15),
     );
 
-    $week = new TZIntellitimeWeek(new DateTime('2010-09-11'), $serverInterface, $reports, $this->account);
+    $week = new TZIntellitimeWeek(new DateTime('2010-09-11'), $dataFactory, $reports, $this->account);
 
     $syncResult = $week->sync();
     $this->assertNotNull($syncResult);
 
     $this->assertEquals(3, count($syncResult->tzreports));
     $this->assertReportUpdatedCorrectly($reports[0], $syncResult->tzreports[0]);
-
 
     $this->assertEquals(TZFlags::LOCKED, $syncResult->tzreports[1]->flags);
     $this->assertEquals(TZFlags::LOCKED, $syncResult->tzreports[2]->flags);
@@ -130,22 +121,22 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $weekData = array(
       $this->loadHTMLFile('Week_v9ChangingReportedRowsRequiresTwoPosts_step_1.txt'),
       $this->loadHTMLFile('Week_v9ChangingReportedRowsRequiresTwoPosts_step_2.txt'),
-      $this->loadHTMLFile('Week_v9ChangingReportedRowsRequiresTwoPosts_step_3.txt'),
+      $this->loadHTMLFile('Week_v9ChangingReportedRowsRequiresTwoPosts_step_3.txt', TRUE),
     );
 
-    $serverInterface = $this->getMock('TZIntellitimeServerInterface');
-    $serverInterface->expects($this->once())
-        ->method('refreshWeek')
+    $dataFactory = $this->getMock('TZIntellitimeWeekDataFactory');
+    $dataFactory->expects($this->once())
+        ->method('createWeekData')
         ->will($this->returnValue($weekData[0]));
 
-    $serverInterface->expects($this->at(1))
-        ->method('postWeek')
-        ->with($this->attributeEqualTo('intermediate', TRUE))
+    $dataFactory->expects($this->at(1))
+        ->method('createWeekDataFromPost')
+        ->with($this->isInstanceOf('IntellitimeWeekUnlockPost'))
         ->will($this->returnValue($weekData[1]));
 
-    $serverInterface->expects($this->at(2))
-        ->method('postWeek')
-        ->with($this->attributeEqualTo('intermediate', FALSE))
+    $dataFactory->expects($this->at(2))
+        ->method('createWeekDataFromPost')
+        ->with($this->isInstanceOf('IntellitimeWeekUpdatePost'))
         ->will($this->returnValue($weekData[2]));
 
     $reports = array(
@@ -156,7 +147,7 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $reports[0]->intellitime_local_changes = 0;
     $reports[2]->intellitime_local_changes = 0;
 
-    $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $serverInterface, $reports, $this->account);
+    $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $dataFactory, $reports, $this->account);
 
     $syncResult = $week->sync();
     $this->assertNotNull($syncResult);
@@ -175,15 +166,15 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
   public function testV9SyncDeletedOnServer() {
     $weekData = $this->loadHTMLFile('intellitime-v9-timereport-single-open.txt');
 
-    $serverInterface = $this->getMock('TZIntellitimeServerInterface');
-    $serverInterface->expects($this->once())
-        ->method('refreshWeek')
+    $dataFactory = $this->getMock('TZIntellitimeWeekDataFactory');
+    $dataFactory->expects($this->once())
+        ->method('createWeekData')
         ->will($this->returnValue($weekData));
 
-    $weekDataAfterPost = $this->loadHTMLFile('intellitime-v9-timereport-single-done.txt');
-    $serverInterface->expects($this->once())
-        ->method('postWeek')
-        ->with($this->logicalAnd($this->isInstanceOf('TZIntellitimePostData'), $this->classHasAttribute('postData')))
+    $weekDataAfterPost = $this->loadHTMLFile('intellitime-v9-timereport-single-done.txt', TRUE);
+    $dataFactory->expects($this->once())
+        ->method('createWeekDataFromPost')
+        ->with($this->isInstanceOf('IntellitimeWeekUpdatePost'))
         ->will($this->returnValue($weekDataAfterPost));
 
     $reports = array(
@@ -192,7 +183,7 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
       createMockReport('NONEXISTANT2', '2011-01-26', '08:00', '17:00'),
     );
 
-    $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $serverInterface, $reports, $this->account);
+    $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $dataFactory, $reports, $this->account);
 
     $syncResult = $week->sync();
     $this->assertNotNull($syncResult);
@@ -215,23 +206,23 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $weekData = array(
       $this->loadHTMLFile('Week_v9ChangingReportedRowsRequiresTwoPosts_step_1.txt'),
       $this->loadHTMLFile('Week_v9ChangingReportedRowsRequiresTwoPosts_step_2.txt'),
-      $this->loadHTMLFile('Week_v9ChangingReportedRowsRequiresTwoPosts_step_3.txt'),
     );
+    $expectedException = new TZNetworkFailureException('mock exception');
 
-    $serverInterface = $this->getMock('TZIntellitimeServerInterface');
-    $serverInterface->expects($this->at(0))
-        ->method('refreshWeek')
+    $dataFactory = $this->getMock('TZIntellitimeWeekDataFactory');
+    $dataFactory->expects($this->at(0))
+        ->method('createWeekData')
         ->will($this->returnValue($weekData[0]));
 
-    $serverInterface->expects($this->at(1))
-        ->method('postWeek')
-        ->with($this->attributeEqualTo('intermediate', TRUE))
+    $dataFactory->expects($this->at(1))
+        ->method('createWeekDataFromPost')
+        ->with($this->isInstanceOf('IntellitimeWeekUnlockPost'))
         ->will($this->returnValue($weekData[1]));
 
-    $serverInterface->expects($this->at(2))
-        ->method('postWeek')
-        ->with($this->attributeEqualTo('intermediate', FALSE))
-        ->will($this->throwException(new TZNetworkFailureException()));
+    $dataFactory->expects($this->at(2))
+        ->method('createWeekDataFromPost')
+        ->with($this->isInstanceOf('IntellitimeWeekUpdatePost'))
+        ->will($this->throwException($expectedException));
 
     $reports = array(
       createMockReport('mhbLP96iqH2ZmvPmA4%2fZ0M4hbku5Eii3', '2011-01-24', '08:00', '17:00', 60),
@@ -241,11 +232,11 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
     $reports[0]->intellitime_local_changes = 0;
     $reports[2]->intellitime_local_changes = 0;
 
-    $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $serverInterface, $reports, $this->account);
+    $week = new TZIntellitimeWeek(new DateTime('2011-01-25'), $dataFactory, $reports, $this->account);
 
     $syncResult = $week->sync();
     $this->assertNotNull($syncResult);
-    $this->assertInstanceOf('TZNetworkFailureException', $syncResult->exception);
+    $this->assertSame($expectedException, $syncResult->exception);
 
     foreach($reports as $i => $report) {
       $updatedReport = $syncResult->tzreports[$i];
@@ -298,5 +289,19 @@ class TZIntellitimeWeekTest extends PHPUnit_Framework_TestCase {
       }
     }
     $this->assertTrue(TRUE, "All reports match");
+  }
+
+  private function loadHTMLFile($filename, $final = FALSE) {
+    $full_name = dirname(__FILE__) . "/../tests/$filename";
+    $handle = fopen($full_name, "r");
+    $contents = fread($handle, filesize($full_name));
+    fclose($handle);
+    $parser = NULL;
+    if ($final) {
+      $parser = new IntellitimeWeekPageUpdatedFinal($contents);
+    } else {
+      $parser = new IntellitimeWeekPage($contents);
+    }
+    return new TZIntellitimeWeekData($parser);
   }
 }

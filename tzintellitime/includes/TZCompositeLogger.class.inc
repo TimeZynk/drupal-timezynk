@@ -41,5 +41,4 @@ class TZCompositeLogger implements TZIntellitimeLogger {
   function getChildren() {
     return $this->children;
   }
-
 }

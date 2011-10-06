@@ -15,16 +15,16 @@ class IntellitimeSynchronizationDriver {
 
     try {
       $curl = new TZCurl($this->account->intellitime_session_data);
-      $serverInterface = new TZIntellitimeBot($curl, TZINTELLITIME_BASE_URL);
+      $server = new IntellitimeServer($curl);
 
       $loggers = new TZCompositeLogger();
       $loggers->add(new TZWatchdogLogger());
       $loggers->add(new TZSmsLogger());
-      $result = $this->syncReports($serverInterface, $loggers);
+      $result = $this->syncReports($server, $loggers);
 
       if ($result === TZIntellitimeSyncController::SYNC_OK &&
           user_access('create availability content', $this->account)) {
-        $this->syncAvailability($serverInterface, $loggers);
+        $this->syncAvailability($server, $loggers);
       }
 
       $curl->close();  // Make sure curl writes its session to disk
@@ -48,7 +48,7 @@ class IntellitimeSynchronizationDriver {
     return $result;
   }
 
-  private function syncReports($serverInterface, $loggers) {
+  private function syncReports($server, $loggers) {
     // SyncPolicy starting today
     $syncPolicy = new TZIntellitimeSimpleSyncPolicy(
       $this->account,
@@ -56,7 +56,8 @@ class IntellitimeSynchronizationDriver {
       TZINTELLITIME_SYNC_WEEKS_FORWARD,
       TZINTELLITIME_SYNC_WEEKS_BACKWARD
     );
-    $weekFactory = new TZIntellitimeDefaultWeekFactory($serverInterface, $this->account);
+    $weekDataFactory = new TZIntellitimeWeekDataFactory($server);
+    $weekFactory = new TZIntellitimeWeekFactory($weekDataFactory, $this->account);
     $reportStorage = new TZIntellitimeDBReportStorage($this->account);
     $userJobsMappingPolicy = new TZIntellitimeUserJobsMappingPolicy(tzbase_user_jobs_mapper(), $this->account);
 
@@ -65,10 +66,10 @@ class IntellitimeSynchronizationDriver {
     return $ctrlr->synchronize();
   }
 
-  private function syncAvailability($serverInterface, $loggers) {
+  private function syncAvailability($server, $loggers) {
     $availabilityStore = tzbase_availability_store();
     $intellitimeAvailabilityFactory = $this->createIntellitimeAvailabilityFactory($availabilityStore);
-    $controller = new IntellitimeAvailabilitySyncController($this->account, $availabilityStore, $intellitimeAvailabilityFactory, $serverInterface);
+    $controller = new IntellitimeAvailabilitySyncController($this->account, $availabilityStore, $intellitimeAvailabilityFactory, $server);
     $controller->registerLogger($loggers);
     try {
       $controller->synchronize();

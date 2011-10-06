@@ -1,6 +1,10 @@
 <?php
 function __tzintellitime_autoload($class_name) {
   switch ($class_name) {
+    case 'TZAuthenticationFailureException':
+    case 'IntellitimeAuthenticatedPage':
+      require dirname(__FILE__) . '/includes/IntellitimeAuthenticatedPage.class.inc';
+      return TRUE;
     case 'IntellitimeAvailability':
       require dirname(__FILE__) . '/includes/IntellitimeAvailability.class.inc';
       return TRUE;
@@ -26,6 +30,11 @@ function __tzintellitime_autoload($class_name) {
     case 'IntellitimeForm':
       require dirname(__FILE__) . '/includes/IntellitimeForm.class.inc';
       return TRUE;
+    case 'IntellitimeLoginPage':
+    case 'IntellitimeMainPage':
+    case 'IntellitimeLoginPost':
+      require dirname(__FILE__) . '/includes/IntellitimeLoginPage.class.inc';
+      return TRUE;
     case 'TZIntellitimeErrorPageException':
     case 'IntellitimePage':
       require dirname(__FILE__) . '/includes/IntellitimePage.class.inc';
@@ -33,13 +42,36 @@ function __tzintellitime_autoload($class_name) {
     case 'IntellitimePost':
       require dirname(__FILE__) . '/includes/IntellitimePost.class.inc';
       return TRUE;
+    case 'IntellitimeServer':
+      require dirname(__FILE__) . '/includes/IntellitimeServer.class.inc';
+      return TRUE;
     case 'IntellitimeSynchronizationDriver':
       require dirname(__FILE__) . '/includes/IntellitimeSynchronizationDriver.class.inc';
+      return TRUE;
+    case 'IntellitimeWeekInsertPost':
+      require dirname(__FILE__) . '/includes/IntellitimeWeekInsertPost.class.inc';
+      return TRUE;
+    case 'TZIntellitimeReportRowNotFound':
+    case 'TZIntellitimeInconsistentPost':
+    case 'IntellitimeWeekPage':
+      require dirname(__FILE__) . '/includes/IntellitimeWeekPage.class.inc';
+      return TRUE;
+    case 'IntellitimeWeekPageParser':
+      require dirname(__FILE__) . '/includes/IntellitimeWeekPageParser.class.inc';
+      return TRUE;
+    case 'IntellitimeWeekPost':
+      require dirname(__FILE__) . '/includes/IntellitimeWeekPost.class.inc';
+      return TRUE;
+    case 'IntellitimeWeekUnlockPost':
+      require dirname(__FILE__) . '/includes/IntellitimeWeekUnlockPost.class.inc';
+      return TRUE;
+    case 'IntellitimeWeekUpdatePost':
+    case 'IntellitimeWeekPageUpdatedFinal':
+      require dirname(__FILE__) . '/includes/IntellitimeWeekUpdatePost.class.inc';
       return TRUE;
     case 'TZCompositeLogger':
       require dirname(__FILE__) . '/includes/TZCompositeLogger.class.inc';
       return TRUE;
-    case 'TZIntellitimeServerException':
     case 'TZNetworkFailureException':
     case 'TZCurl':
       require dirname(__FILE__) . '/includes/TZCurl.class.inc';
@@ -47,25 +79,11 @@ function __tzintellitime_autoload($class_name) {
     case 'TZIntellitimeAssignment':
       require dirname(__FILE__) . '/includes/TZIntellitimeAssignment.class.inc';
       return TRUE;
-    case 'TZIntellitimeBot':
-      require dirname(__FILE__) . '/includes/TZIntellitimeBot.class.inc';
-      return TRUE;
     case 'TZIntellitimeDBReportStorage':
       require dirname(__FILE__) . '/includes/TZIntellitimeDBReportStorage.class.inc';
       return TRUE;
-    case 'TZIntellitimeDefaultWeekFactory':
-      require dirname(__FILE__) . '/includes/TZIntellitimeDefaultWeekFactory.class.inc';
-      return TRUE;
     case 'TZIntellitimeLogger':
       require dirname(__FILE__) . '/includes/TZIntellitimeLogger.class.inc';
-      return TRUE;
-    case 'TZIntellitimeReportRowNotFound':
-    case 'TZIntellitimeInconsistentPost':
-    case 'TZIntellitimeParser':
-      require dirname(__FILE__) . '/includes/TZIntellitimeParser.class.inc';
-      return TRUE;
-    case 'TZIntellitimePostData':
-      require dirname(__FILE__) . '/includes/TZIntellitimePostData.class.inc';
       return TRUE;
     case 'TZIntellitimeReport':
       require dirname(__FILE__) . '/includes/TZIntellitimeReport.class.inc';
@@ -73,8 +91,8 @@ function __tzintellitime_autoload($class_name) {
     case 'TZIntellitimeReportStorage':
       require dirname(__FILE__) . '/includes/TZIntellitimeReportStorage.class.inc';
       return TRUE;
-    case 'TZIntellitimeServerInterface':
-      require dirname(__FILE__) . '/includes/TZIntellitimeServerInterface.class.inc';
+    case 'TZIntellitimeServerException':
+      require dirname(__FILE__) . '/includes/TZIntellitimeServerException.class.inc';
       return TRUE;
     case 'TZIntellitimeSimpleSyncPolicy':
       require dirname(__FILE__) . '/includes/TZIntellitimeSimpleSyncPolicy.class.inc';
@@ -91,12 +109,15 @@ function __tzintellitime_autoload($class_name) {
     case 'TZIntellitimeUserStatus':
       require dirname(__FILE__) . '/includes/TZIntellitimeUserStatus.class.inc';
       return TRUE;
-    case 'TZAuthenticationFailureException':
+    case 'IntellitimeWeekMaximumIterationsException':
     case 'TZIntellitimeWeek':
       require dirname(__FILE__) . '/includes/TZIntellitimeWeek.class.inc';
       return TRUE;
     case 'TZIntellitimeWeekData':
       require dirname(__FILE__) . '/includes/TZIntellitimeWeekData.class.inc';
+      return TRUE;
+    case 'TZIntellitimeWeekDataFactory':
+      require dirname(__FILE__) . '/includes/TZIntellitimeWeekDataFactory.class.inc';
       return TRUE;
     case 'TZIntellitimeWeekFactory':
       require dirname(__FILE__) . '/includes/TZIntellitimeWeekFactory.class.inc';

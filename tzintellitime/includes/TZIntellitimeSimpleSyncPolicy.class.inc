@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__FILE__) . '/TZIntellitimeSyncPolicy.class.inc';
+
 class TZIntellitimeSimpleSyncPolicy implements TZIntellitimeSyncPolicy {
   const PENDING = 0;
   const SYNCED = 1;
