@@ -49,6 +49,7 @@
 #  tzbase/includes/availability_admin.inc: n/a
 #  tzproto/acceptance_test/generate_dst_reports.php: n/a
 #  tzreminder/includes/tzreminder.form.inc: n/a
+#  tzuser/javascript/tzuser.support_log.js: n/a
 #  tzbase/includes/tzbase.admin.inc: n/a
 #  tzuser/tzuser.module: n/a
 #  tzbase/includes/views/handlers/tzbase_handler_argument_begintime.inc: n/a
@@ -69,6 +70,7 @@
 #  tzproto/tzproto.module: n/a
 #  tzreminder/tzreminder.module: n/a
 #  tzreminder/includes/TZAbstractReminderPolicy.class.inc: n/a
+#  tzuser/includes/support_log.inc: n/a
 #  tzsms/tzsms.module: n/a
 #  tzsms/includes/tzsms_ui.send.inc: n/a
 #  tzsms/tzsms_ui.module: n/a
@@ -81,7 +83,6 @@
 #  tzstats/tzstats.module: n/a
 #  tzstats/tzstats.install: n/a
 #  tzstats/includes/tzstats.pricing.inc: n/a
-#  tzuser/includes/support_log.inc: n/a
 #  tzuser/includes/tzuser.add.inc: n/a
 #  tzuser/tzuser.install: n/a
 #  tzuser/includes/tzuser.views.inc: n/a
@@ -92,7 +93,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-10-07 00:35+0200\n"
+"POT-Creation-Date: 2011-10-07 13:28+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -633,7 +634,7 @@ msgstr ""
 msgid "Availability intervals, written as HH:MM-HH:MM"
 msgstr ""
 
-#: tzbase/includes/availability_admin.inc:36 tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:35 tzproto/acceptance_test/generate_dst_reports.php:36 tzreminder/includes/tzreminder.form.inc:63 tzuser/javascript/tzuser.overview.js:0
+#: tzbase/includes/availability_admin.inc:36 tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:35 tzproto/acceptance_test/generate_dst_reports.php:36 tzreminder/includes/tzreminder.form.inc:63 tzuser/javascript/tzuser.support_log.js:0
 msgid "Save"
 msgstr ""
 
@@ -1369,7 +1370,7 @@ msgstr ""
 msgid "Provides TimeZynk reports"
 msgstr ""
 
-#: tzreports/includes/TZReportsTimeReports.class.inc:50 tzuser/includes/tzuser.overview.inc:122;146
+#: tzreports/includes/TZReportsTimeReports.class.inc:50 tzuser/includes/support_log.inc:32 tzuser/includes/tzuser.overview.inc:123;147
 msgid "edit"
 msgstr ""
 
@@ -1865,7 +1866,7 @@ msgstr ""
 msgid "User agent"
 msgstr ""
 
-#: tzuser/tzuser.module:460 tzuser/includes/support_log.inc:21 tzuser/includes/tzuser.overview.inc:13 tzuser/javascript/tzuser.overview.js:0
+#: tzuser/tzuser.module:460 tzuser/includes/support_log.inc:24 tzuser/includes/tzuser.overview.inc:13 tzuser/javascript/tzuser.overview.js:0
 msgid "Last login"
 msgstr ""
 
@@ -1945,12 +1946,20 @@ msgstr ""
 msgid "Provides TimeZynk user data"
 msgstr ""
 
-#: tzuser/includes/support_log.inc:23
+#: tzuser/includes/support_log.inc:26
 msgid "Never logged in"
 msgstr ""
 
-#: tzuser/includes/support_log.inc:25
+#: tzuser/includes/support_log.inc:28
+msgid "User added to TimeZynk"
+msgstr ""
+
+#: tzuser/includes/support_log.inc:29
 msgid "Last log update"
+msgstr ""
+
+#: tzuser/includes/support_log.inc:37
+msgid "Contact us at <a href=\"mailto:support@timezynk.com\">support@timezynk.com</a>"
 msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:17;70
@@ -2001,55 +2010,55 @@ msgstr ""
 msgid "Due reports"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:32
+#: tzuser/includes/tzuser.overview.inc:33
 msgid "Employees with all time reported"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:33
+#: tzuser/includes/tzuser.overview.inc:34
 msgid "Employees that have or might have late reports"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:34
+#: tzuser/includes/tzuser.overview.inc:35
 msgid "Employees inactive for more than @redlimit"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:35
+#: tzuser/includes/tzuser.overview.inc:36
 msgid "Employees who have never logged in"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:40
+#: tzuser/includes/tzuser.overview.inc:41
 msgid "Show status"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:41
+#: tzuser/includes/tzuser.overview.inc:42
 msgid "Select which statuses you want to show"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:47
+#: tzuser/includes/tzuser.overview.inc:48
 msgid "Show with manager"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:48
+#: tzuser/includes/tzuser.overview.inc:49
 msgid "Select which managers employees to show"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:49
+#: tzuser/includes/tzuser.overview.inc:50
 msgid "All"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:54
+#: tzuser/includes/tzuser.overview.inc:55
 msgid "Show status until"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:55
+#: tzuser/includes/tzuser.overview.inc:56
 msgid "Show the status until and including date"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:63
+#: tzuser/includes/tzuser.overview.inc:64
 msgid "<strong>Tip:</strong> Hold the SHIFT key to select many employees"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:125
+#: tzuser/includes/tzuser.overview.inc:126
 msgid "log"
 msgstr ""
 
@@ -2099,7 +2108,7 @@ msgstr[1] ""
 msgid "Adding employees"
 msgstr ""
 
-#: tzuser/javascript/tzuser.overview.js:0
+#: tzuser/javascript/tzuser.support_log.js:0
 msgid "Edit support log"
 msgstr ""
 

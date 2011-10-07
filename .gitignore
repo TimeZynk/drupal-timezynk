@@ -1,6 +1,6 @@
 *~
 \#*\#
 *.mo
-
+.DS_Store
 coverage/
 nbproject/

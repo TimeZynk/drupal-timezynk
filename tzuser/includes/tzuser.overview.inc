@@ -19,6 +19,7 @@ function tzuser_user_overview(&$form_state) {
   $form = array();
 
   drupal_add_css(drupal_get_path('module', 'tzuser') . '/style/tzuser.css');
+  drupal_add_js(drupal_get_path('module', 'tzuser') . '/javascript/tzuser.support_log.js');
   drupal_add_js(drupal_get_path('module', 'tzuser') . '/javascript/tzuser.overview.js');
   drupal_add_js(array(
 	  'tzuser' => array('OVERVIEW_REFRESH_RATE' => TZUSER_OVERVIEW_REFRESH_RATE)

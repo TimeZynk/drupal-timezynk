@@ -3,8 +3,11 @@
 function tzuser_support_log_page() {
   $page = '';
   drupal_add_css(drupal_get_path('module', 'tzuser') . '/style/tzuser.css');
+  jquery_ui_add(array('ui.core', 'ui.draggable', 'ui.dialog'));
+  drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/base/ui.all.css');
+  drupal_add_js(drupal_get_path('module', 'tzuser') . '/javascript/tzuser.support_log.js');
 
-  $result = db_query('SELECT log.*,tzu.*,u.login,u.name FROM {tzuser_support_log} log ' .
+  $result = db_query('SELECT log.*,tzu.*,u.login,u.created,u.name FROM {tzuser_support_log} log ' .
                      'INNER JOIN {tzuser} tzu ON log.uid = tzu.uid ' .
                      'INNER JOIN {users} u ON log.uid = u.uid ' .
                      'ORDER BY log.changed DESC');
@@ -18,15 +21,23 @@ function tzuser_support_log_page() {
              l(check_plain($row->fullname) . ' (' . $row->name . ')', 'user/' . $row->uid) .
              '</h2></div>';
     if ($row->login) {
-      $user .= '<div class="entry">' . t('Last login') . ' ' . format_date($row->login, 'short') . '</div>';
+      $user .= '<div class="entry">' . t('Last login') . ' ' . format_date($row->login, 'small') . '</div>';
     } else {
       $user .= '<div class="entry">' . t('Never logged in') . '</div>';
     }
-    $user .= '<div class="entry">' . t('Last log update') . ' ' . format_date($row->changed, 'short') . '</div>';
+    $user .= '<div class="entry">' . t('User added to TimeZynk') . ' ' . format_date($row->created, 'small') . '</div>';
+    $user .= '<div class="entry">' . t('Last log update') . ' ' . format_date($row->changed, 'small') . '</div>';
     $user .= '<div class="log-text">' . check_markup($row->support_log) . '</div>';
+    if (user_access('administer site configuration')) {
+      $user .= '<a href="#" rel="' . $row->uid . '" class="edit-log-link">' . t('edit') . '</a>';
+    }
     $user .= '</div>';
     $page .= $user;
   }
+  $page .= '<p>' . t('Contact us at <a href="mailto:support@timezynk.com">support@timezynk.com</a>') . '</p>';
+  $page .= '<script type="text/javascript">$(function() {' .
+    '$(".edit-log-link").editSupportLogLink(function() { return this.attr("rel"); }, function() {location.reload();});' .
+  '});</script>';
   return $page;
 }
 

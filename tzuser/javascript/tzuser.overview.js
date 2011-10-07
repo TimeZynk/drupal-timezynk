@@ -186,71 +186,13 @@ Drupal.behaviors.TZUserOverview = function(context) {
     }
 
     function bindEditLogLinks(tableBody) {
-        var hash = location.hash;
-        if (!hash) {
-            hash = '#';
-        }
-        tableBody.find('.edit-log-link').attr('href', hash).click(function() {
+        tableBody.find('.edit-log-link').editSupportLogLink(function() {
             var that = $(this),
                 row = that.parents('tr'),
                 uid = row.find('input.form-checkbox').val();
-
-            $.ajax({
-                url: 'tzuser/support_log/' + uid,
-                dataType: 'json',
-                success: function (jsonData) {
-                    showEditLogDialog(jsonData);
-                },
-                error: function () {
-                    //window.location.reload();
-                }
-            });
+            return uid;
         });
     }
-
-
-    function showEditLogDialog(logData) {
-        var dialog,
-            errors,
-            form,
-            textarea,
-            buttons = {};
-
-        $('#edit-support-log-dialog').remove();
-        dialog = $('<div id="edit-support-log-dialog" title="' + Drupal.t('Edit support log') + '"></div>');
-
-        errors = $('<div class="messages error"></div>');
-        errors.hide();
-        dialog.append(errors);
-
-        form = $('<form></form>');
-
-        textarea = $('<textarea cols="80" rows="10" name="text" class="ui-widget-content ui-corner-all"></textarea>');
-        if (logData.support_log) {
-            textarea.val(logData.support_log);
-        }
-        form.append(textarea);
-        dialog.append(form);
-        $('body').append(dialog);
-        dialog.hide();
-
-        buttons[Drupal.t('Save')] = function() {
-            var data = {
-                uid: logData.uid,
-                support_log: textarea.val()
-            };
-
-            dialog.dialog('close');
-            dialog.remove();
-            $.post('tzuser/support_log/' + data.uid, data);
-        };
-
-        dialog.dialog({
-            buttons: buttons,
-            width: "650px"
-        });
-    };
-
 
     function updateOverviewData() {
         var url = 'tzuser/overview/ajax',

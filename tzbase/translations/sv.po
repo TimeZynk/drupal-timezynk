@@ -76,8 +76,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TimeZynk\n"
-"POT-Creation-Date: 2011-10-07 00:35+0200\n"
-"PO-Revision-Date: 2011-10-07 00:38+0100\n"
+"POT-Creation-Date: 2011-10-07 13:28+0200\n"
+"PO-Revision-Date: 2011-10-07 13:29+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: Swedish <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -727,7 +727,7 @@ msgstr "Tillgänglighetsintervall, skriv som HH:MM-HH:MM"
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:35
 #: tzproto/acceptance_test/generate_dst_reports.php:36
 #: tzreminder/includes/tzreminder.form.inc:63
-#: tzuser/javascript/tzuser.overview.js:0
+#: tzuser/javascript/tzuser.support_log.js:0
 msgid "Save"
 msgstr "Spara"
 
@@ -1488,7 +1488,8 @@ msgid "Provides TimeZynk reports"
 msgstr "Tillhandahåller rapporter för TimeZynk"
 
 #: tzreports/includes/TZReportsTimeReports.class.inc:50
-#: tzuser/includes/tzuser.overview.inc:122;146
+#: tzuser/includes/support_log.inc:32
+#: tzuser/includes/tzuser.overview.inc:123;147
 msgid "edit"
 msgstr "redigera"
 
@@ -1993,7 +1994,7 @@ msgid "User agent"
 msgstr "User Agent"
 
 #: tzuser/tzuser.module:460
-#: tzuser/includes/support_log.inc:21
+#: tzuser/includes/support_log.inc:24
 #: tzuser/includes/tzuser.overview.inc:13
 #: tzuser/javascript/tzuser.overview.js:0
 msgid "Last login"
@@ -2077,13 +2078,21 @@ msgstr "TimeZynk bas-användare"
 msgid "Provides TimeZynk user data"
 msgstr "Tillhandahåller användardata för TimeZynk"
 
-#: tzuser/includes/support_log.inc:23
+#: tzuser/includes/support_log.inc:26
 msgid "Never logged in"
 msgstr "Har aldrig loggat in"
 
-#: tzuser/includes/support_log.inc:25
+#: tzuser/includes/support_log.inc:28
+msgid "User added to TimeZynk"
+msgstr "Användare tillagd till TimeZynk"
+
+#: tzuser/includes/support_log.inc:29
 msgid "Last log update"
 msgstr "Senaste logguppdatering"
+
+#: tzuser/includes/support_log.inc:37
+msgid "Contact us at <a href=\"mailto:support@timezynk.com\">support@timezynk.com</a>"
+msgstr "Kontakta oss på <a href=\"mailto:support@timezynk.com\">support@timezynk.com</a>"
 
 #: tzuser/includes/tzuser.add.inc:17;70
 msgid "Add more rows"
@@ -2134,55 +2143,55 @@ msgstr "Kunde inte skapa användare @username med mobilnummer @number"
 msgid "Due reports"
 msgstr "Orapporterade pass"
 
-#: tzuser/includes/tzuser.overview.inc:32
+#: tzuser/includes/tzuser.overview.inc:33
 msgid "Employees with all time reported"
 msgstr "Anställda med alla pass rapporterade"
 
-#: tzuser/includes/tzuser.overview.inc:33
+#: tzuser/includes/tzuser.overview.inc:34
 msgid "Employees that have or might have late reports"
 msgstr "Anställda som har eller kan ha försenade rapporter"
 
-#: tzuser/includes/tzuser.overview.inc:34
+#: tzuser/includes/tzuser.overview.inc:35
 msgid "Employees inactive for more than @redlimit"
 msgstr "Anställda som varit inaktiva mer än @redlimit"
 
-#: tzuser/includes/tzuser.overview.inc:35
+#: tzuser/includes/tzuser.overview.inc:36
 msgid "Employees who have never logged in"
 msgstr "Anställda som aldrig har loggat in"
 
-#: tzuser/includes/tzuser.overview.inc:40
+#: tzuser/includes/tzuser.overview.inc:41
 msgid "Show status"
 msgstr "Visa status"
 
-#: tzuser/includes/tzuser.overview.inc:41
+#: tzuser/includes/tzuser.overview.inc:42
 msgid "Select which statuses you want to show"
 msgstr "Välj vilka anställda du vill visa"
 
-#: tzuser/includes/tzuser.overview.inc:47
+#: tzuser/includes/tzuser.overview.inc:48
 msgid "Show with manager"
 msgstr "Visa anställda för"
 
-#: tzuser/includes/tzuser.overview.inc:48
+#: tzuser/includes/tzuser.overview.inc:49
 msgid "Select which managers employees to show"
 msgstr "Välj vilken chef du vill visa anställda för"
 
-#: tzuser/includes/tzuser.overview.inc:49
+#: tzuser/includes/tzuser.overview.inc:50
 msgid "All"
 msgstr "Alla"
 
-#: tzuser/includes/tzuser.overview.inc:54
+#: tzuser/includes/tzuser.overview.inc:55
 msgid "Show status until"
 msgstr "Visa för datum"
 
-#: tzuser/includes/tzuser.overview.inc:55
+#: tzuser/includes/tzuser.overview.inc:56
 msgid "Show the status until and including date"
 msgstr "Visa status fram till och med datum"
 
-#: tzuser/includes/tzuser.overview.inc:63
+#: tzuser/includes/tzuser.overview.inc:64
 msgid "<strong>Tip:</strong> Hold the SHIFT key to select many employees"
 msgstr "<strong>Tips:</strong> Håll ner SKIFT-tangenten för att välja många anställda i följd"
 
-#: tzuser/includes/tzuser.overview.inc:125
+#: tzuser/includes/tzuser.overview.inc:126
 msgid "log"
 msgstr "logg"
 
@@ -2232,7 +2241,7 @@ msgstr[1] "Kunde inte hitta användare: @users"
 msgid "Adding employees"
 msgstr "Lägger till anställda"
 
-#: tzuser/javascript/tzuser.overview.js:0
+#: tzuser/javascript/tzuser.support_log.js:0
 msgid "Edit support log"
 msgstr "Redigera supportlogg"
 
