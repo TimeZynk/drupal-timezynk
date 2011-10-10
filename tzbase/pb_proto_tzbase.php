@@ -35,13 +35,13 @@ class TZJobFlags extends PBEnum
 }
 class TZConstants extends PBEnum
 {
-  const VERSION  = 1;
+  const VERSION  = 2;
 
   public function __construct($reader=null)
   {
    	parent::__construct($reader);
  	$this->names = array(
-			1 => "VERSION");
+			2 => "VERSION");
    }
 }
 class TZTime extends PBMessage
@@ -732,13 +732,13 @@ class TZGetUserCmd extends PBMessage
     $this->values["1"] = "";
     $this->values["1"] = new PBInt();
     $this->values["1"]->value = 0;
-    self::$fieldNames["TZGetUserCmd"]["1"] = "unused";
+    self::$fieldNames["TZGetUserCmd"]["1"] = "version_code";
   }
-  function unused()
+  function version_code()
   {
     return $this->_get_value("1");
   }
-  function set_unused($value)
+  function set_version_code($value)
   {
     return $this->_set_value("1", $value);
   }
