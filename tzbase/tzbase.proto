@@ -23,8 +23,9 @@ enum TZJobFlags {
 }
 
 enum TZConstants {
-  VERSION = 1;
+  VERSION = 2;
 }
+
 message TZTime {
  optional int32 hour = 1;
  optional int32 minute = 2;
@@ -143,7 +144,7 @@ message TZAvailabilityInterval {
 // RPC messages
 
 message TZGetUserCmd {
-  optional int32 unused = 1 [default = 0];
+  optional int32 version_code = 1 [default = 0];
 }
 
 message TZSyncCmd {
