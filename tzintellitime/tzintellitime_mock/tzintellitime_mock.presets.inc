@@ -1,6 +1,7 @@
 <?php
 
 define('TZINTELLITIME_MOCK_DEFAULT_TITLE', 'Demo Company, Task One');
+define('TZINTELLITIME_MOCK_DEFAULT_ABSENCE_TITLE', 'Semester');
 
 function tzintellitime_mock_presets(&$form_state) {
   $users = tzintellitime_mock_get_users();
@@ -39,18 +40,9 @@ function tzintellitime_mock_presets_submit($form, $form_state) {
   db_query('DELETE FROM {tzintellitime_mock_data} WHERE ' . implode(' OR ', $query_fragments), $query_args);
 
   // Find or create assignment
-  $assignment = NULL;
-  $assignment_id = 0;
   $assignments = tzintellitime_mock_get_assignments();
-  $assignments = array_filter($assignments, function($a) {return $a->title == TZINTELLITIME_MOCK_DEFAULT_TITLE;});
-  if (empty($assignments)) {
-    $assignment = new TZIntellitimeAssignment(TZINTELLITIME_MOCK_DEFAULT_TITLE);
-    unset($assignment->id);
-    $assignment_id = tzintellitime_mock_store_object($assignment);
-  } else {
-    $assignment = $assignments[0];
-    $assignment_id = $assignment->id;
-  }
+  $assignment = _tzintellitime_mock_presets_load_or_create_assignment($assignments, TZINTELLITIME_MOCK_DEFAULT_TITLE);
+  $absence = _tzintellitime_mock_presets_load_or_create_assignment($assignments, TZINTELLITIME_MOCK_DEFAULT_ABSENCE_TITLE, TZIntellitimeAssignment::TYPE_ABSENCE);
 
   // Build up new reports
   $today = tzbase_make_date();
@@ -72,7 +64,7 @@ function tzintellitime_mock_presets_submit($form, $form_state) {
     for($dow = 0; $dow < 5; $dow++, $dayOfWeek->modify('+1 day')) {
       $report = new TZIntellitimeReport();
       $report->title = $assignment->title;
-      $report->assignment_id = $assignment_id;
+      $report->assignment_id = $assignment->id;
       $report->year = $dayOfWeek->format('Y');
       $report->month = $dayOfWeek->format('m');
       $report->day = $dayOfWeek->format('d');
@@ -107,4 +99,16 @@ function tzintellitime_mock_presets_submit($form, $form_state) {
   }
 
   drupal_set_message(t('Last reset @date', array('@date' => date_format_date(tzbase_make_date()))));
+}
+
+function _tzintellitime_mock_presets_load_or_create_assignment($assignments, $title, $type = TZIntellitimeAssignment::TYPE_ASSIGNMENT) {
+  $assignment = NULL;
+  $assignments = array_filter($assignments, function($a) {return $a->title == $title;});
+  if (empty($assignments)) {
+    $assignment = new TZIntellitimeAssignment($title, NULL, NULL, $type);
+    $assignment->id = tzintellitime_mock_store_object($assignment);
+  } else {
+    $assignment = $assignments[0];
+  }
+  return $assignment;
 }

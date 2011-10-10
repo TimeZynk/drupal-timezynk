@@ -24,7 +24,7 @@ function tzbase_user_jobs_form(&$form_state) {
 
     $account = user_load($mapping->getUserId());
     $row['user'] = array('#value' => theme('username', $account));
-    $row['jobid'] = array('#value' => theme('assignment_path', $mapping->getJobId()));
+    $row['jobid'] = array('#value' => l(theme('assignment_path', $mapping->getJobId()), 'node/' . $mapping->getJobId(), array('html' => TRUE)));
 
     $start_date = $mapping->getStartTime();
     $row['start_time'] = array('#value' => empty($start_date) ? '' : $start_date->format('Y-m-d H:i:s'));

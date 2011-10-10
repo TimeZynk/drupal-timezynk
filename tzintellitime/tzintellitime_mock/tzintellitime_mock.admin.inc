@@ -126,7 +126,7 @@ function tzintellitime_mock_admin_settings_submit($form, &$form_state) {
 
 function _assignment_from_form($values) {
   $assignment_id = empty($values['id']) ? NULL : $values['id'];
-  return new TZIntellitimeAssignment(trim($values['title']), NULL, $assignment_id, $values['type']);
+  return new TZIntellitimeAssignment(trim($values['title']), NULL, $assignment_id, intval($values['type'], 10));
 }
 
 function theme_mock_assignments_table($element) {

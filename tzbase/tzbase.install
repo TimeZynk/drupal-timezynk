@@ -217,6 +217,17 @@ function tzbase_update_6009() {
   return $ret;
 }
 
+function tzbase_update_6010() {
+  $ret = array();
+  db_add_field($ret, 'tzjob', 'jobtype', array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 0 /* TZJobType::PRESENCE */,
+  ));
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
@@ -337,6 +348,12 @@ function tzbase_schema() {
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 1,
+      ),
+      'jobtype' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0 /* TZJobType::PRESENCE */,
       ),
     ),
     'primary key' => array('nid', 'vid'),

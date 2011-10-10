@@ -476,6 +476,16 @@ function tzbase_form($node) {
       '#required' => FALSE,
     );
 
+    $form['jobtype'] = array(
+      '#type' => 'radios',
+      '#title' => t('Assignment type'),
+      '#options' => array(
+        TZJobType::PRESENCE => t('Presence'),
+        TZJobType::ABSENCE => t('Absence'),
+      ),
+      '#default_value' => $node->jobtype,
+    );
+
     return $form;
   }
 }
@@ -595,10 +605,10 @@ function tzbase_tzreport_view($node, $teaser = FALSE, $page = FALSE) {
 
   $full_name = db_result(db_query('SELECT fullname FROM tzuser WHERE uid = %d', $node->assignedto));
   if (!empty($full_name)) {
-    $node->content['name'] = tzbase_node_content_entry(t('Name'), check_plain($full_name), 0);
+    $node->content['name'] = tzbase_node_content_entry(t('Name'), l(check_plain($full_name), 'user/' . $node->assignedto), 0);
   }
 
-  $node->content['assignment'] = tzbase_node_content_entry(t('Assignment'), theme('assignment_path', $node->jobid), 1);
+  $node->content['assignment'] = tzbase_node_content_entry(t('Assignment'), l(theme('assignment_path', $node->jobid), 'node/' . $node->jobid, array('html' => TRUE)), 1);
   $node->content['date'] = tzbase_node_content_entry(t('Date'), $begindate->format('Y-m-d'), 2);
   $node->content['start'] = tzbase_node_content_entry(t('Start'), $begindate->format('H:i'), 3);
   $node->content['end'] = tzbase_node_content_entry(t('End'), $enddate->format('H:i'), 4);
@@ -793,6 +803,8 @@ function tzbase_children_for_jobid($jobid) {
 function theme_assignment_path($jobid) {
   static $assignment_path = array();
 
+  tzbase_include_proto_classes();
+
   if (empty($assignment_path[$jobid])) {
     $result = db_query('SELECT * FROM {node} n INNER JOIN {tzjob} tzj ON n.vid = tzj.vid WHERE n.nid = %d', $jobid);
     $job = db_fetch_object($result);
@@ -803,6 +815,8 @@ function theme_assignment_path($jobid) {
     $path = '';
     if ($job->parentid) {
       $path .= theme('assignment_path', $job->parentid) . ' &raquo; ';
+    } else if ($job->jobtype == TZJobType::ABSENCE) {
+      $path .= t('Absence') . ' &raquo; ';
     }
     $path .= $job->title;
 

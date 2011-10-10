@@ -22,6 +22,11 @@ enum TZJobFlags {
   INACTIVE = 255;
 }
 
+enum TZJobType {
+  PRESENCE = 0;
+  ABSENCE = 1;
+}
+
 enum TZConstants {
   VERSION = 2;
 }
@@ -101,6 +106,7 @@ message TZJob {
   optional string title = 5;
   optional string description = 6;
   optional int32 changed = 7; // epoch timestamp
+  optional TZJobType job_type = 8;
 
   // Permissions //
   // User may create a subjob.

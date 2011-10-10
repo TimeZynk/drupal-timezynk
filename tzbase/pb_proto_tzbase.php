@@ -33,6 +33,19 @@ class TZJobFlags extends PBEnum
 			255 => "INACTIVE");
    }
 }
+class TZJobType extends PBEnum
+{
+  const PRESENCE  = 0;
+  const ABSENCE  = 1;
+
+  public function __construct($reader=null)
+  {
+   	parent::__construct($reader);
+ 	$this->names = array(
+			0 => "PRESENCE",
+			1 => "ABSENCE");
+   }
+}
 class TZConstants extends PBEnum
 {
   const VERSION  = 2;
@@ -444,6 +457,9 @@ class TZJob extends PBMessage
     self::$fields["TZJob"]["7"] = "PBInt";
     $this->values["7"] = "";
     self::$fieldNames["TZJob"]["7"] = "changed";
+    self::$fields["TZJob"]["8"] = "TZJobType";
+    $this->values["8"] = "";
+    self::$fieldNames["TZJob"]["8"] = "job_type";
     self::$fields["TZJob"]["18"] = "PBBool";
     $this->values["18"] = "";
     $this->values["18"] = new PBBool();
@@ -515,6 +531,18 @@ class TZJob extends PBMessage
   function set_changed($value)
   {
     return $this->_set_value("7", $value);
+  }
+  function job_type()
+  {
+    return $this->_get_value("8");
+  }
+  function set_job_type($value)
+  {
+    return $this->_set_value("8", $value);
+  }
+  function job_type_string()
+  {
+    return $this->values["8"]->get_description();
   }
   function may_create_child()
   {

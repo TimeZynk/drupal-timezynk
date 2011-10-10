@@ -148,7 +148,7 @@ function tzintellitime_mock_preprocess_mock_timereport_page(&$variables) {
   $assignments = array();
   $absence_codes = array();
   foreach($all_assignments as $assignment) {
-    if(TZIntellitimeAssignment::TYPE_ASSIGNMENT == $assignment->type) {
+    if (TZIntellitimeAssignment::TYPE_ASSIGNMENT == $assignment->type) {
       $assignments[] = $assignment;
     } else {
       $absence_codes[] = $assignment;
@@ -444,7 +444,8 @@ function _tzintellitime_mock_create_new_report($post) {
     $report->comment = $post['AddNoteTextBox'];
   }
   if(!empty($post['AddRowDropDown'])) {
-    $assignment = tzintellitime_mock_load_object($post['AddRowDropDown']);
+    $jobid = str_replace('_AC_', '', $post['AddRowDropDown']);
+    $assignment = tzintellitime_mock_load_object($jobid);
     if(!empty($assignment) && $assignment instanceof TZIntellitimeAssignment) {
       $report->title = $assignment->title;
       $report->assignment_id = $assignment->id;

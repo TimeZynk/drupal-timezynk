@@ -3,6 +3,7 @@
 class TZIntellitimeAssignment {
   const TYPE_ASSIGNMENT = 0;
   const TYPE_ABSENCE = 1;
+  const GENERATE_PLACEHOLDER_ID = FALSE;
 
   public $id = NULL;
   private $search_term = NULL;
@@ -14,10 +15,14 @@ class TZIntellitimeAssignment {
    *
    * @param String $abbreviated_title the (possibly shortened) title.
    */
-  public function __construct($abbreviated_title, $search_term = NULL, $id = NULL, $type = TZIntellitimeAssignment::TYPE_ASSIGNMENT) {
+  public function __construct($abbreviated_title, $search_term = NULL, $id = TZIntellitimeAssignment::GENERATE_PLACEHOLDER_ID, $type = TZIntellitimeAssignment::TYPE_ASSIGNMENT) {
     $this->title = $abbreviated_title;
     $this->search_term = $search_term ? $search_term : $abbreviated_title;
-    $this->id = $id ? $id :  'PLACEHOLDER_ID_' . md5($abbreviated_title);
+    if ($id === TZIntellitimeAssignment::GENERATE_PLACEHOLDER_ID) {
+      $this->id = 'PLACEHOLDER_ID_' . md5($abbreviated_title);
+    } else {
+      $this->id = $id;
+    }
     $this->type = $type;
   }
 
@@ -37,6 +42,7 @@ class TZIntellitimeAssignment {
     $tzjob->flags = TZJobFlags::ACTIVE;
     $tzjob->title = $this->title;
     $tzjob->intellitime_id = $this->id;
+    $tzjob->jobtype = TZIntellitimeAssignment::convert_type($this->type);
     return $tzjob;
   }
 
@@ -84,5 +90,9 @@ class TZIntellitimeAssignment {
       }
     }
     return $match;
+  }
+
+  static function convert_type($type) {
+    return $type == TZIntellitimeAssignment::TYPE_ASSIGNMENT ? TZJobType::PRESENCE : TZJobType::ABSENCE;
   }
 }
