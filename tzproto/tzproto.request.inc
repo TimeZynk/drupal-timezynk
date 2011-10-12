@@ -79,7 +79,7 @@ function tzproto_request() {
 
 function _tzproto_handle_cmd($cmd, &$result, $protocol_version) {
   if($cmd->get_user_cmd()) {
-    tzproto_handle_get_user($cmd, $result);
+    tzproto_handle_get_user($cmd->get_user_cmd(), $result);
   }
   else if($cmd->get_job_cmd()) {
     tzproto_handle_get_job_cmd($cmd, $result);
@@ -183,9 +183,16 @@ function tzproto_error($message, $status) {
 /**
  * Handle the get_user command
  */
-function tzproto_handle_get_user(&$cmd, &$result) {
+function tzproto_handle_get_user(&$get_user_cmd, &$result) {
   global $user;
   $tzuser = new TZUser();
+
+  // Save client version code if available and changed
+  if ($version_code = $get_user_cmd->version_code()) {
+    if (empty($user->tzuser['version_code']) || $version_code != $user->tzuser['version_code']) {
+      $user = user_save($user, array('tzuser' => array('version_code' => $version_code)));
+    }
+  }
 
   // Load basic data
   $tzuser->set_id($user->uid);

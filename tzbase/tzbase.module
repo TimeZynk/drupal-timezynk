@@ -917,6 +917,15 @@ function tzbase_http_server_vars() {
   return $vars;
 }
 
+function format_version_code($version_code) {
+  $version = array();
+  while ($version_code) {
+    $version[] = $version_code & 0xFF;
+    $version_code >>= 8;
+  }
+  return implode('.', array_reverse($version));
+}
+
 function _tzbase_calculate_correct_endtime($begin_datetime, $end_datetime) {
   // Set the same date as for begintime, but keep the hour and minute for the endtime.
   $new_end_datetime = clone($begin_datetime);

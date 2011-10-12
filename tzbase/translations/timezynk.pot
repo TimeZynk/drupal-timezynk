@@ -47,7 +47,6 @@
 #  tzbase/includes/Availability.class.inc: n/a
 #  tzbase/includes/TZUserJobMapping.class.inc: n/a
 #  tzbase/includes/availability_admin.inc: n/a
-#  tzproto/acceptance_test/generate_dst_reports.php: n/a
 #  tzreminder/includes/tzreminder.form.inc: n/a
 #  tzuser/javascript/tzuser.support_log.js: n/a
 #  tzbase/includes/tzbase.admin.inc: n/a
@@ -86,7 +85,6 @@
 #  tzstats/includes/tzstats.failed_login.inc: n/a
 #  tzstats/includes/tzstats.pricing.inc: n/a
 #  tzuser/includes/tzuser.add.inc: n/a
-#  tzuser/tzuser.install: n/a
 #  tzuser/includes/tzuser.views.inc: n/a
 #  tzuser/includes/tzuser_handler_filter_user_name.inc: n/a
 #  tzuser/javascript/tzuser.add.js: n/a
@@ -95,7 +93,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-10-10 18:38+0200\n"
+"POT-Creation-Date: 2011-10-12 16:02+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -300,7 +298,7 @@ msgstr ""
 msgid "Configure the site for intelliplan customers"
 msgstr ""
 
-#: tzbase/tzbase.drush.inc:81 tzproto/tzproto.request.inc:178;455;461 tzproto/includes/CreateReportHandler.class.inc:127;136
+#: tzbase/tzbase.drush.inc:81 tzproto/tzproto.request.inc:178;462;468 tzproto/includes/CreateReportHandler.class.inc:127;136
 msgid "tzproto"
 msgstr ""
 
@@ -584,7 +582,7 @@ msgstr ""
 msgid "Availability intervals, written as HH:MM-HH:MM"
 msgstr ""
 
-#: tzbase/includes/availability_admin.inc:36 tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:35 tzproto/acceptance_test/generate_dst_reports.php:36 tzreminder/includes/tzreminder.form.inc:63 tzuser/javascript/tzuser.support_log.js:0
+#: tzbase/includes/availability_admin.inc:36 tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:35 tzreminder/includes/tzreminder.form.inc:63 tzuser/javascript/tzuser.support_log.js:0
 msgid "Save"
 msgstr ""
 
@@ -612,7 +610,7 @@ msgstr ""
 msgid "Mobile"
 msgstr ""
 
-#: tzbase/includes/tzbase.availability.inc:51 tzuser/tzuser.module:443;530 tzuser/includes/tzuser.theme.inc:68
+#: tzbase/includes/tzbase.availability.inc:51 tzuser/tzuser.module:443;537 tzuser/includes/tzuser.theme.inc:68
 msgid "Manager"
 msgstr ""
 
@@ -784,23 +782,23 @@ msgstr ""
 msgid "Last synchronization with intelliplan"
 msgstr ""
 
-#: tzintellitime/tzintellitime.module:217
+#: tzintellitime/tzintellitime.module:222
 msgid "Error page when authenticating @user: @msg"
 msgstr ""
 
-#: tzintellitime/tzintellitime.module:222
+#: tzintellitime/tzintellitime.module:227
 msgid "Failed to authenticate @user"
 msgstr ""
 
-#: tzintellitime/tzintellitime.module:226
+#: tzintellitime/tzintellitime.module:231
 msgid "Invalid username or password for %name."
 msgstr ""
 
-#: tzintellitime/tzintellitime.module:213 tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc:97 tzintellitime/tzintellitime_sync/tzintellitime_sync.module:171
+#: tzintellitime/tzintellitime.module:218 tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc:98 tzintellitime/tzintellitime_sync/tzintellitime_sync.module:171
 msgid "tzintellitime"
 msgstr ""
 
-#: tzintellitime/tzintellitime.module:213
+#: tzintellitime/tzintellitime.module:218
 msgid "Network problem when authenticating @user: @msg"
 msgstr ""
 
@@ -840,7 +838,7 @@ msgstr ""
 msgid "Provides TimeZynk intellitime integration"
 msgstr ""
 
-#: tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc:97
+#: tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc:98
 msgid "@message, @name (@uid), last sync @interval ago, session created @age ago"
 msgstr ""
 
@@ -904,7 +902,7 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/tzuser.module:426;516 tzuser/includes/tzuser.overview.inc:10 tzuser/javascript/tzuser.overview.js:0;0
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/tzuser.module:426;523 tzuser/includes/tzuser.overview.inc:10 tzuser/javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr ""
 
@@ -1160,11 +1158,11 @@ msgstr ""
 msgid "Error !code: @error"
 msgstr ""
 
-#: tzproto/tzproto.request.inc:455
+#: tzproto/tzproto.request.inc:462
 msgid "Updated job !nid"
 msgstr ""
 
-#: tzproto/tzproto.request.inc:461
+#: tzproto/tzproto.request.inc:468
 msgid "Inserted job !nid"
 msgstr ""
 
@@ -1812,11 +1810,11 @@ msgstr ""
 msgid "Destination mobile number"
 msgstr ""
 
-#: tzuser/tzuser.module:434;523 tzuser/includes/tzuser.theme.inc:68
+#: tzuser/tzuser.module:434;530 tzuser/includes/tzuser.theme.inc:68
 msgid "Mobile number"
 msgstr ""
 
-#: tzuser/tzuser.module:450;536
+#: tzuser/tzuser.module:450;543
 msgid "Log level"
 msgstr ""
 
@@ -1824,51 +1822,55 @@ msgstr ""
 msgid "User agent"
 msgstr ""
 
-#: tzuser/tzuser.module:464 tzuser/includes/support_log.inc:24 tzuser/includes/tzuser.overview.inc:13 tzuser/javascript/tzuser.overview.js:0
+#: tzuser/tzuser.module:464
+msgid "TimeZynk version"
+msgstr ""
+
+#: tzuser/tzuser.module:471 tzuser/includes/support_log.inc:24 tzuser/includes/tzuser.overview.inc:13 tzuser/javascript/tzuser.overview.js:0
 msgid "Last login"
 msgstr ""
 
-#: tzuser/tzuser.module:470;549;53
+#: tzuser/tzuser.module:477;556;53
 msgid "Support log"
 msgstr ""
 
-#: tzuser/tzuser.module:479
+#: tzuser/tzuser.module:486
 msgid "Last update @date"
 msgstr ""
 
-#: tzuser/tzuser.module:496 tzuser/includes/tzuser.add.inc:115
+#: tzuser/tzuser.module:503 tzuser/includes/tzuser.add.inc:115
 msgid "Please enter a valid mobile number"
 msgstr ""
 
-#: tzuser/tzuser.module:510
+#: tzuser/tzuser.module:517
 msgid "TimeZynk Information"
 msgstr ""
 
-#: tzuser/tzuser.module:517
+#: tzuser/tzuser.module:524
 msgid "The users full name"
 msgstr ""
 
-#: tzuser/tzuser.module:524
+#: tzuser/tzuser.module:531
 msgid "The users mobile number without country code"
 msgstr ""
 
-#: tzuser/tzuser.module:531
+#: tzuser/tzuser.module:538
 msgid "Select employees manager"
 msgstr ""
 
-#: tzuser/tzuser.module:537
+#: tzuser/tzuser.module:544
 msgid "Current logging level for this user"
 msgstr ""
 
-#: tzuser/tzuser.module:540
+#: tzuser/tzuser.module:547
 msgid "No extra logging"
 msgstr ""
 
-#: tzuser/tzuser.module:541
+#: tzuser/tzuser.module:548
 msgid "Medium logging"
 msgstr ""
 
-#: tzuser/tzuser.module:542
+#: tzuser/tzuser.module:549
 msgid "Verbose logging"
 msgstr ""
 
@@ -1890,10 +1892,6 @@ msgstr ""
 
 #: tzuser/tzuser.module:38 tzuser/includes/tzuser.add.inc:87;178
 msgid "Add employees"
-msgstr ""
-
-#: tzuser/tzuser.install:105
-msgid "Stores TimeZynk user data"
 msgstr ""
 
 #: tzuser/tzuser.info:0

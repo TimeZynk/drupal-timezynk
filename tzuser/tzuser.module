@@ -459,6 +459,13 @@ function _tzuser_show_entry(&$account) {
     '#access' => user_access('administer site configuration'),
     '#weight' => -6,
   );
+  $account->content['version_code'] = array(
+    '#type' => 'user_profile_item',
+    '#title' => t('TimeZynk version'),
+    '#value' => format_version_code($account->tzuser['version_code']),
+    '#access' => user_access('administer site configuration'),
+    '#weight' => -6,
+  );
   $account->content['last_login'] = array(
     '#type' => 'user_profile_item',
     '#title' => t('Last login'),
