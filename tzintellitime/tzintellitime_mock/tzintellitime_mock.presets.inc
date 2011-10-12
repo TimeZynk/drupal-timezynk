@@ -103,7 +103,7 @@ function tzintellitime_mock_presets_submit($form, $form_state) {
 
 function _tzintellitime_mock_presets_load_or_create_assignment($assignments, $title, $type = TZIntellitimeAssignment::TYPE_ASSIGNMENT) {
   $assignment = NULL;
-  $assignments = array_filter($assignments, function($a) {return $a->title == $title;});
+  $assignments = array_filter($assignments, function($a) use ($title) { return $a->title == $title; });
   if (empty($assignments)) {
     $assignment = new TZIntellitimeAssignment($title, NULL, NULL, $type);
     $assignment->id = tzintellitime_mock_store_object($assignment);
