@@ -93,7 +93,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-10-14 12:21+0200\n"
+"POT-Creation-Date: 2011-10-14 17:40+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -166,7 +166,7 @@ msgstr ""
 msgid "Locked"
 msgstr ""
 
-#: excelexport/excelexport.inc:142 tzuser/includes/tzuser.theme.inc:101
+#: excelexport/excelexport.inc:142 tzuser/includes/tzuser.theme.inc:105
 msgid "Unknown"
 msgstr ""
 
@@ -610,7 +610,7 @@ msgstr ""
 msgid "Mobile"
 msgstr ""
 
-#: tzbase/includes/tzbase.availability.inc:51 tzuser/tzuser.module:443;537 tzuser/includes/tzuser.theme.inc:68
+#: tzbase/includes/tzbase.availability.inc:51 tzuser/tzuser.module:452;546 tzuser/includes/tzuser.theme.inc:72
 msgid "Manager"
 msgstr ""
 
@@ -898,15 +898,15 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/includes/tzuser.overview.inc:9 tzuser/includes/tzuser.theme.inc:68 tzuser/javascript/tzuser.overview.js:0
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/includes/tzuser.overview.inc:9 tzuser/includes/tzuser.theme.inc:69 tzuser/javascript/tzuser.overview.js:0
 msgid "Username"
 msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/tzuser.module:426;523 tzuser/includes/tzuser.overview.inc:10 tzuser/javascript/tzuser.overview.js:0;0
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/tzuser.module:435;532 tzuser/includes/tzuser.overview.inc:10 tzuser/javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/includes/tzuser.theme.inc:68
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/includes/tzuser.theme.inc:70
 msgid "Password"
 msgstr ""
 
@@ -1810,67 +1810,67 @@ msgstr ""
 msgid "Destination mobile number"
 msgstr ""
 
-#: tzuser/tzuser.module:434;530 tzuser/includes/tzuser.theme.inc:68
+#: tzuser/tzuser.module:443;539 tzuser/includes/tzuser.theme.inc:69
 msgid "Mobile number"
 msgstr ""
 
-#: tzuser/tzuser.module:450;543
+#: tzuser/tzuser.module:459;552
 msgid "Log level"
 msgstr ""
 
-#: tzuser/tzuser.module:457
+#: tzuser/tzuser.module:466
 msgid "User agent"
 msgstr ""
 
-#: tzuser/tzuser.module:464
+#: tzuser/tzuser.module:473
 msgid "TimeZynk version"
 msgstr ""
 
-#: tzuser/tzuser.module:471 tzuser/includes/support_log.inc:24 tzuser/includes/tzuser.overview.inc:13 tzuser/javascript/tzuser.overview.js:0
+#: tzuser/tzuser.module:480 tzuser/includes/support_log.inc:24 tzuser/includes/tzuser.overview.inc:13 tzuser/javascript/tzuser.overview.js:0
 msgid "Last login"
 msgstr ""
 
-#: tzuser/tzuser.module:477;556;53
+#: tzuser/tzuser.module:486;565;53
 msgid "Support log"
 msgstr ""
 
-#: tzuser/tzuser.module:486
+#: tzuser/tzuser.module:495
 msgid "Last update @date"
 msgstr ""
 
-#: tzuser/tzuser.module:503 tzuser/includes/tzuser.add.inc:115
+#: tzuser/tzuser.module:512 tzuser/includes/tzuser.add.inc:116
 msgid "Please enter a valid mobile number"
 msgstr ""
 
-#: tzuser/tzuser.module:517
+#: tzuser/tzuser.module:526
 msgid "TimeZynk Information"
 msgstr ""
 
-#: tzuser/tzuser.module:524
+#: tzuser/tzuser.module:533
 msgid "The users full name"
 msgstr ""
 
-#: tzuser/tzuser.module:531
+#: tzuser/tzuser.module:540
 msgid "The users mobile number without country code"
 msgstr ""
 
-#: tzuser/tzuser.module:538
+#: tzuser/tzuser.module:547
 msgid "Select employees manager"
 msgstr ""
 
-#: tzuser/tzuser.module:544
+#: tzuser/tzuser.module:553
 msgid "Current logging level for this user"
 msgstr ""
 
-#: tzuser/tzuser.module:547
+#: tzuser/tzuser.module:556
 msgid "No extra logging"
 msgstr ""
 
-#: tzuser/tzuser.module:548
+#: tzuser/tzuser.module:557
 msgid "Medium logging"
 msgstr ""
 
-#: tzuser/tzuser.module:549
+#: tzuser/tzuser.module:558
 msgid "Verbose logging"
 msgstr ""
 
@@ -1890,7 +1890,7 @@ msgstr ""
 msgid "Employee overview"
 msgstr ""
 
-#: tzuser/tzuser.module:38 tzuser/includes/tzuser.add.inc:87;177
+#: tzuser/tzuser.module:38 tzuser/includes/tzuser.add.inc:88;177
 msgid "Add employees"
 msgstr ""
 
@@ -1918,7 +1918,7 @@ msgstr ""
 msgid "Contact us at <a href=\"mailto:support@timezynk.com\">support@timezynk.com</a>"
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:17;70
+#: tzuser/includes/tzuser.add.inc:17;71
 msgid "Add more rows"
 msgstr ""
 
@@ -1926,39 +1926,39 @@ msgstr ""
 msgid "To add more users to TimeZynk, fill in their mobile numbers and usernames below. If you need more rows use the <em>Add more rows</em> button."
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:80
+#: tzuser/includes/tzuser.add.inc:81
 msgid "Load from file"
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:81
-msgid "Fill the fields from file (.csv, .xls, .xlsx). Valid headers are \"UserId\", \"MobilePhone\", \"Password\", \"BossUserId\""
+#: tzuser/includes/tzuser.add.inc:82
+msgid "Fill the fields from file (.csv, .xls, .xlsx). Valid headers are \"UserId\", \"MobilePhone\", \"Password\", \"BossUserId\" and \"Email\""
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:91
+#: tzuser/includes/tzuser.add.inc:92
 msgid "Reset"
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:117
+#: tzuser/includes/tzuser.add.inc:118
 msgid "Please enter username"
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:129
+#: tzuser/includes/tzuser.add.inc:128
 msgid "Mobile number entered twice"
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:142
+#: tzuser/includes/tzuser.add.inc:141
 msgid "Must be in .csv,.xls,.xlsx or .ods format"
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:151
+#: tzuser/includes/tzuser.add.inc:150
 msgid "Unknown manager \"@manager\""
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:246
+#: tzuser/includes/tzuser.add.inc:244
 msgid "Created employee @username with mobile @number"
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:251
+#: tzuser/includes/tzuser.add.inc:249
 msgid "Failed to add employee @username with mobile @number"
 msgstr ""
 
@@ -2022,11 +2022,15 @@ msgstr ""
 msgid "Loading employees, please wait..."
 msgstr ""
 
-#: tzuser/includes/tzuser.theme.inc:76
+#: tzuser/includes/tzuser.theme.inc:71
+msgid "Email"
+msgstr ""
+
+#: tzuser/includes/tzuser.theme.inc:80
 msgid "@time ago"
 msgstr ""
 
-#: tzuser/includes/tzuser.theme.inc:76
+#: tzuser/includes/tzuser.theme.inc:80
 msgid "never"
 msgstr ""
 

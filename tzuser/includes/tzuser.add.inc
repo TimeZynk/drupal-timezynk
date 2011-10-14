@@ -79,7 +79,7 @@ function tzuser_add_users_form(&$form_state) {
   $form['file'] = array(
     '#type' => 'file',
     '#title' => t('Load from file'),
-    '#description' => t('Fill the fields from file (.csv, .xls, .xlsx). Valid headers are "UserId", "MobilePhone", "Password", "BossUserId"'),
+    '#description' => t('Fill the fields from file (.csv, .xls, .xlsx). Valid headers are "UserId", "MobilePhone", "Password", "BossUserId" and "Email"'),
     '#access' => user_access('bulk add employees'),
   );
 

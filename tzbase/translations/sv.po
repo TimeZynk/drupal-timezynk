@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TimeZynk\n"
-"POT-Creation-Date: 2011-10-14 12:21+0200\n"
-"PO-Revision-Date: 2011-10-14 12:22+0100\n"
+"POT-Creation-Date: 2011-10-14 17:40+0200\n"
+"PO-Revision-Date: 2011-10-14 17:41+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: Swedish <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
@@ -102,7 +102,7 @@ msgid "Locked"
 msgstr "Låst"
 
 #: excelexport/excelexport.inc:142
-#: tzuser/includes/tzuser.theme.inc:101
+#: tzuser/includes/tzuser.theme.inc:105
 msgid "Unknown"
 msgstr "Okänt"
 
@@ -597,8 +597,8 @@ msgid "Mobile"
 msgstr "Mobilnummer"
 
 #: tzbase/includes/tzbase.availability.inc:51
-#: tzuser/tzuser.module:443;537
-#: tzuser/includes/tzuser.theme.inc:68
+#: tzuser/tzuser.module:452;546
+#: tzuser/includes/tzuser.theme.inc:72
 msgid "Manager"
 msgstr "Chef"
 
@@ -900,20 +900,20 @@ msgstr "Typ"
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166
 #: tzuser/includes/tzuser.overview.inc:9
-#: tzuser/includes/tzuser.theme.inc:68
+#: tzuser/includes/tzuser.theme.inc:69
 #: tzuser/javascript/tzuser.overview.js:0
 msgid "Username"
 msgstr "Användarnamn"
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166
-#: tzuser/tzuser.module:426;523
+#: tzuser/tzuser.module:435;532
 #: tzuser/includes/tzuser.overview.inc:10
 #: tzuser/javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr "Fullständigt namn"
 
 #: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166
-#: tzuser/includes/tzuser.theme.inc:68
+#: tzuser/includes/tzuser.theme.inc:70
 msgid "Password"
 msgstr "Lösenord"
 
@@ -1828,72 +1828,72 @@ msgstr "Destination"
 msgid "Destination mobile number"
 msgstr "Mobilnummer för destination"
 
-#: tzuser/tzuser.module:434;530
-#: tzuser/includes/tzuser.theme.inc:68
+#: tzuser/tzuser.module:443;539
+#: tzuser/includes/tzuser.theme.inc:69
 msgid "Mobile number"
 msgstr "Mobilnummer"
 
-#: tzuser/tzuser.module:450;543
+#: tzuser/tzuser.module:459;552
 msgid "Log level"
 msgstr "Lognivå"
 
-#: tzuser/tzuser.module:457
+#: tzuser/tzuser.module:466
 msgid "User agent"
 msgstr "User Agent"
 
-#: tzuser/tzuser.module:464
+#: tzuser/tzuser.module:473
 msgid "TimeZynk version"
 msgstr "TimeZynk-version"
 
-#: tzuser/tzuser.module:471
+#: tzuser/tzuser.module:480
 #: tzuser/includes/support_log.inc:24
 #: tzuser/includes/tzuser.overview.inc:13
 #: tzuser/javascript/tzuser.overview.js:0
 msgid "Last login"
 msgstr "Senast inloggad"
 
-#: tzuser/tzuser.module:477;556;53
+#: tzuser/tzuser.module:486;565;53
 msgid "Support log"
 msgstr "Supportlogg"
 
-#: tzuser/tzuser.module:486
+#: tzuser/tzuser.module:495
 msgid "Last update @date"
 msgstr "Senaste uppdatering @date"
 
-#: tzuser/tzuser.module:503
-#: tzuser/includes/tzuser.add.inc:115
+#: tzuser/tzuser.module:512
+#: tzuser/includes/tzuser.add.inc:116
 msgid "Please enter a valid mobile number"
 msgstr "Skriv in ett giltigt mobilnummer"
 
-#: tzuser/tzuser.module:517
+#: tzuser/tzuser.module:526
 msgid "TimeZynk Information"
 msgstr "TimeZynk Information"
 
-#: tzuser/tzuser.module:524
+#: tzuser/tzuser.module:533
 msgid "The users full name"
 msgstr "Användarens fullständiga namn"
 
-#: tzuser/tzuser.module:531
+#: tzuser/tzuser.module:540
 msgid "The users mobile number without country code"
 msgstr "Användarens mobilnummer utan landskod"
 
-#: tzuser/tzuser.module:538
+#: tzuser/tzuser.module:547
 msgid "Select employees manager"
 msgstr "Välj chef till den anställde"
 
-#: tzuser/tzuser.module:544
+#: tzuser/tzuser.module:553
 msgid "Current logging level for this user"
 msgstr "Nuvarande logg-nivå för användaren"
 
-#: tzuser/tzuser.module:547
+#: tzuser/tzuser.module:556
 msgid "No extra logging"
 msgstr "Ingen extra loggning"
 
-#: tzuser/tzuser.module:548
+#: tzuser/tzuser.module:557
 msgid "Medium logging"
 msgstr "Medium-loggning"
 
-#: tzuser/tzuser.module:549
+#: tzuser/tzuser.module:558
 msgid "Verbose logging"
 msgstr "Utförlig loggning"
 
@@ -1914,7 +1914,7 @@ msgid "Employee overview"
 msgstr "Översikt över anställda"
 
 #: tzuser/tzuser.module:38
-#: tzuser/includes/tzuser.add.inc:87;177
+#: tzuser/includes/tzuser.add.inc:88;177
 msgid "Add employees"
 msgstr "Lägg till anställda"
 
@@ -1942,7 +1942,7 @@ msgstr "Senaste logguppdatering"
 msgid "Contact us at <a href=\"mailto:support@timezynk.com\">support@timezynk.com</a>"
 msgstr "Kontakta oss på <a href=\"mailto:support@timezynk.com\">support@timezynk.com</a>"
 
-#: tzuser/includes/tzuser.add.inc:17;70
+#: tzuser/includes/tzuser.add.inc:17;71
 msgid "Add more rows"
 msgstr "Fler rader..."
 
@@ -1950,39 +1950,39 @@ msgstr "Fler rader..."
 msgid "To add more users to TimeZynk, fill in their mobile numbers and usernames below. If you need more rows use the <em>Add more rows</em> button."
 msgstr "För att lägga till fler anställda till TimeZynk, fyll i mobilnummer och användarnamn nedan. Om du behöver fler rader använder du <em>Fler rader..</em> knappen nedan."
 
-#: tzuser/includes/tzuser.add.inc:80
+#: tzuser/includes/tzuser.add.inc:81
 msgid "Load from file"
 msgstr "Ladda från fil"
 
-#: tzuser/includes/tzuser.add.inc:81
-msgid "Fill the fields from file (.csv, .xls, .xlsx). Valid headers are \"UserId\", \"MobilePhone\", \"Password\", \"BossUserId\""
-msgstr "Hämta användare från fil (.csv, .xls, .xlsx). Giltiga rubriker är \"UserId\", \"MobilePhone\", \"Password\", \"BossUserId\""
+#: tzuser/includes/tzuser.add.inc:82
+msgid "Fill the fields from file (.csv, .xls, .xlsx). Valid headers are \"UserId\", \"MobilePhone\", \"Password\", \"BossUserId\" and \"Email\""
+msgstr "Hämta användare från fil (.csv, .xls, .xlsx). Giltiga rubriker är \"UserId\", \"MobilePhone\", \"Password\", \"BossUserId\" och \"Email\""
 
-#: tzuser/includes/tzuser.add.inc:91
+#: tzuser/includes/tzuser.add.inc:92
 msgid "Reset"
 msgstr "Rensa"
 
-#: tzuser/includes/tzuser.add.inc:117
+#: tzuser/includes/tzuser.add.inc:118
 msgid "Please enter username"
 msgstr "Skriv in ett användarnamn"
 
-#: tzuser/includes/tzuser.add.inc:129
+#: tzuser/includes/tzuser.add.inc:128
 msgid "Mobile number entered twice"
 msgstr "Mobilnumret finns med två gånger"
 
-#: tzuser/includes/tzuser.add.inc:142
+#: tzuser/includes/tzuser.add.inc:141
 msgid "Must be in .csv,.xls,.xlsx or .ods format"
 msgstr "Måste vara i .csv,.xls,.xlsx eller .ods format"
 
-#: tzuser/includes/tzuser.add.inc:151
+#: tzuser/includes/tzuser.add.inc:150
 msgid "Unknown manager \"@manager\""
 msgstr "Okänd chef \"@manager\""
 
-#: tzuser/includes/tzuser.add.inc:246
+#: tzuser/includes/tzuser.add.inc:244
 msgid "Created employee @username with mobile @number"
 msgstr "Skapade användare @username med mobilnummer @number"
 
-#: tzuser/includes/tzuser.add.inc:251
+#: tzuser/includes/tzuser.add.inc:249
 msgid "Failed to add employee @username with mobile @number"
 msgstr "Kunde inte skapa användare @username med mobilnummer @number"
 
@@ -2047,11 +2047,15 @@ msgstr "Visa användarprofil."
 msgid "Loading employees, please wait..."
 msgstr "Läser in anställda..."
 
-#: tzuser/includes/tzuser.theme.inc:76
+#: tzuser/includes/tzuser.theme.inc:71
+msgid "Email"
+msgstr "Epost"
+
+#: tzuser/includes/tzuser.theme.inc:80
 msgid "@time ago"
 msgstr "@time sedan"
 
-#: tzuser/includes/tzuser.theme.inc:76
+#: tzuser/includes/tzuser.theme.inc:80
 msgid "never"
 msgstr "aldrig"
 
