@@ -1,9 +1,8 @@
 <?php
 function __tzuser_autoload($class_name) {
   switch ($class_name) {
-    case 'MissingColumnException':
-    case 'CsvUserListParser':
-      require dirname(__FILE__) . '/includes/CsvUserListParser.class.inc';
+    case 'BulkUserParser':
+      require dirname(__FILE__) . '/includes/BulkUserParser.class.inc';
       return TRUE;
     case 'TZUserFilter':
       require dirname(__FILE__) . '/includes/TZUserFilter.class.inc';

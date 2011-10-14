@@ -3,5 +3,6 @@ description = Provides TimeZynk user data
 package = TimeZynk
 dependencies[] = ahah_helper
 dependencies[] = permissions_api
+dependencies[] = libraries
 dependencies[] = date_popup
 core = 6.x

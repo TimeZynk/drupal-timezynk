@@ -52,16 +52,16 @@ function tzuser_add_users_form(&$form_state) {
     $form['rows'][$row_id] = tzuser_add_row_fields($i, $row);
   }
 
-  if (!empty($form_state['storage']['csv_rows'])) {
-    $csv_rows = $form_state['storage']['csv_rows'];
+  if (!empty($form_state['storage']['bulk_add_rows'])) {
+    $bulk_add_rows = $form_state['storage']['bulk_add_rows'];
     $i = 0;
-    foreach ($csv_rows as $csv_row) {
+    foreach ($bulk_add_rows as $bulk_row) {
       $row_id = 'row_' . $i;
-      $form['rows'][$row_id] = tzuser_add_row_fields($i, $csv_row);
+      $form['rows'][$row_id] = tzuser_add_row_fields($i, $bulk_row);
       $i += 1;
     }
     $numrows = $i;
-    unset($form_state['storage']['csv_rows']);
+    unset($form_state['storage']['bulk_add_rows']);
   }
 
   // Button to add more rows
@@ -78,7 +78,7 @@ function tzuser_add_users_form(&$form_state) {
   $form['file'] = array(
     '#type' => 'file',
     '#title' => t('Load from file'),
-    '#description' => t('Fill the fields from a CSV file'),
+    '#description' => t('Fill the fields from file (.csv, .xls, .xlsx). Valid headers are "UserId", "MobilePhone", "Password", "BossUserId"'),
     '#access' => user_access('bulk add employees'),
   );
 
@@ -133,35 +133,34 @@ function tzuser_add_users_form_validate($form, &$form_state) {
   $form_state['storage']['numbers'] = $seen_numbers;
 
   // Check and add any rows from CSV-file
-  $csv_file = file_save_upload('file');
-  if ($csv_file) {
-    if ($csv_file->filemime != 'text/csv') {
-      form_set_error("file", t('Must be in CSV format'));
+  $bulk_file = file_save_upload('file');
+  if ($bulk_file) {
+    try {
+      $parser = new BulkUserParser($bulk_file, 'tzuser_add_find_manager_id');
+      $rows = $parser->getRows();
+    } catch (Exception $e) {
+      form_set_error("file", t('Must be in .csv,.xls,.xlsx or .ods format'));
       return;
     }
 
-    $csv_rows = array();
-    $parser = new CsvUserListParser($csv_file->filepath);
-    while ($row = $parser->getNextRow()) {
+    $bulk_add_rows = array_map(function($row) {
       $manager_user_id = 0;
-
-
-      if (!empty($row->BossUserId)) {
-        $manager_user_id = tzuser_add_find_manager_id($row->BossUserId);
+      if (!empty($row->bossuserid)) {
+        $manager_user_id = tzuser_add_find_manager_id($row->bossuserid);
         if (!$manager_user_id) {
-          drupal_set_message(t('Unknown manager "@manager"', array('@manager' => $row->BossUserId)), 'warning', FALSE);
+          drupal_set_message(t('Unknown manager "@manager"', array('@manager' => $row->bossuserid)), 'warning', FALSE);
         }
       }
 
-      $csv_rows[] = array(
-        'mobile' => $row->MobilePhone,
-        'username' => $row->UserId,
-        'password' => $row->Password,
+      return array(
+        'mobile' => $row->mobilephone,
+        'username' => $row->userid,
+        'password' => $row->password,
         'manager' => $manager_user_id,
       );
-    }
+    }, $rows);
 
-    $form_state['storage']['csv_rows'] = $csv_rows;
+    $form_state['storage']['bulk_add_rows'] = $bulk_add_rows;
   }
 }
 
@@ -177,7 +176,7 @@ function tzuser_add_users_form_submit($form, &$form_state) {
   // We only do full submit if we are called by the submit button
   if($form_state['values']['op'] === t('Add employees')) {
     // Run batch if no file is set
-    if (empty($form_state['storage']['csv_rows'])) {
+    if (empty($form_state['storage']['bulk_add_rows'])) {
       tzbase_add_progress_js();
       drupal_add_js(array('tzuser_new_entries' => array_values($form_state['storage']['numbers'])), 'setting');
       drupal_add_js(drupal_get_path('module', 'tzuser') . '/javascript/tzuser.add.js');

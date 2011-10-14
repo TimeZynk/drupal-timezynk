@@ -5,12 +5,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TimeZynk\n"
-"POT-Creation-Date: 2011-10-12 16:02+0200\n"
-"PO-Revision-Date: 2011-10-12 16:06+0100\n"
+"POT-Creation-Date: 2011-10-14 12:21+0200\n"
+"PO-Revision-Date: 2011-10-14 12:22+0100\n"
 "Last-Translator: Johan Heander <johan.heander@timezynk.com>\n"
 "Language-Team: Swedish <dev@timezynk.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Language: Swedish\n"
@@ -216,7 +216,7 @@ msgstr "HTTP-variabler från klient"
 
 #: jadmaker/jadmaker.module:13
 msgid "Generates jad files while taking the visiting mobile phone to account. Requires browscap."
-msgstr ""
+msgstr "Generates jad files while taking the visiting mobile phone to account. Requires browscap."
 
 #: jadmaker/jadmaker.module:26
 msgid "Jad Maker"
@@ -236,7 +236,7 @@ msgstr "TimeZynk's basfunktioner"
 
 #: timezynk_basic_feature/timezynk_basic_feature.info:0
 msgid "Basic TimeZynk Feature package"
-msgstr ""
+msgstr "Basic TimeZynk Feature package"
 
 #: timezynk_basic_feature/timezynk_basic_feature.info:0
 #: timezynk_intelliplan_feature/timezynk_intelliplan_feature.info:0
@@ -1914,7 +1914,7 @@ msgid "Employee overview"
 msgstr "Översikt över anställda"
 
 #: tzuser/tzuser.module:38
-#: tzuser/includes/tzuser.add.inc:87;178
+#: tzuser/includes/tzuser.add.inc:87;177
 msgid "Add employees"
 msgstr "Lägg till anställda"
 
@@ -1955,8 +1955,8 @@ msgid "Load from file"
 msgstr "Ladda från fil"
 
 #: tzuser/includes/tzuser.add.inc:81
-msgid "Fill the fields from a CSV file"
-msgstr "Fyll fälten från en CSV-fil"
+msgid "Fill the fields from file (.csv, .xls, .xlsx). Valid headers are \"UserId\", \"MobilePhone\", \"Password\", \"BossUserId\""
+msgstr "Hämta användare från fil (.csv, .xls, .xlsx). Giltiga rubriker är \"UserId\", \"MobilePhone\", \"Password\", \"BossUserId\""
 
 #: tzuser/includes/tzuser.add.inc:91
 msgid "Reset"
@@ -1970,19 +1970,19 @@ msgstr "Skriv in ett användarnamn"
 msgid "Mobile number entered twice"
 msgstr "Mobilnumret finns med två gånger"
 
-#: tzuser/includes/tzuser.add.inc:139
-msgid "Must be in CSV format"
-msgstr "Måste vara i CSV-format"
+#: tzuser/includes/tzuser.add.inc:142
+msgid "Must be in .csv,.xls,.xlsx or .ods format"
+msgstr "Måste vara i .csv,.xls,.xlsx eller .ods format"
 
-#: tzuser/includes/tzuser.add.inc:152
+#: tzuser/includes/tzuser.add.inc:151
 msgid "Unknown manager \"@manager\""
 msgstr "Okänd chef \"@manager\""
 
-#: tzuser/includes/tzuser.add.inc:247
+#: tzuser/includes/tzuser.add.inc:246
 msgid "Created employee @username with mobile @number"
 msgstr "Skapade användare @username med mobilnummer @number"
 
-#: tzuser/includes/tzuser.add.inc:252
+#: tzuser/includes/tzuser.add.inc:251
 msgid "Failed to add employee @username with mobile @number"
 msgstr "Kunde inte skapa användare @username med mobilnummer @number"
 
@@ -2089,32 +2089,3 @@ msgstr "Lägger till anställda"
 msgid "Edit support log"
 msgstr "Redigera supportlogg"
 
-#~ msgid "Stores TimeZynk user data"
-#~ msgstr "Lagrar användardata för TimeZynk"
-
-#~ msgid "Total duration in seconds"
-#~ msgstr "Totaltid"
-
-#~ msgid "Start timestamp"
-#~ msgstr "Starttid"
-
-#~ msgid "End timestamp"
-#~ msgstr "Sluttid"
-
-#~ msgid "Stores a TimeZynk time report connected to a specific assignment"
-#~ msgstr "Sparar en TimeZynk-tidrapport kopplad till ett specifikt uppdrag"
-
-#~ msgid "Signature text"
-#~ msgstr "Signature text"
-
-#~ msgid "Bit-combined flags"
-#~ msgstr "Bit-combined flags"
-
-#~ msgid "Account code for this job"
-#~ msgstr "Uppdragskod för det här uppdraget"
-
-#~ msgid "The {tzjob}.nid of the parent job"
-#~ msgstr "The {tzjob}.nid of the parent job"
-
-#~ msgid "Request from !name"
-#~ msgstr "Anrop från !name"

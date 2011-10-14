@@ -93,7 +93,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-10-12 16:02+0200\n"
+"POT-Creation-Date: 2011-10-14 12:21+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -1890,7 +1890,7 @@ msgstr ""
 msgid "Employee overview"
 msgstr ""
 
-#: tzuser/tzuser.module:38 tzuser/includes/tzuser.add.inc:87;178
+#: tzuser/tzuser.module:38 tzuser/includes/tzuser.add.inc:87;177
 msgid "Add employees"
 msgstr ""
 
@@ -1931,7 +1931,7 @@ msgid "Load from file"
 msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:81
-msgid "Fill the fields from a CSV file"
+msgid "Fill the fields from file (.csv, .xls, .xlsx). Valid headers are \"UserId\", \"MobilePhone\", \"Password\", \"BossUserId\""
 msgstr ""
 
 #: tzuser/includes/tzuser.add.inc:91
@@ -1946,19 +1946,19 @@ msgstr ""
 msgid "Mobile number entered twice"
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:139
-msgid "Must be in CSV format"
+#: tzuser/includes/tzuser.add.inc:142
+msgid "Must be in .csv,.xls,.xlsx or .ods format"
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:152
+#: tzuser/includes/tzuser.add.inc:151
 msgid "Unknown manager \"@manager\""
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:247
+#: tzuser/includes/tzuser.add.inc:246
 msgid "Created employee @username with mobile @number"
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:252
+#: tzuser/includes/tzuser.add.inc:251
 msgid "Failed to add employee @username with mobile @number"
 msgstr ""
 
