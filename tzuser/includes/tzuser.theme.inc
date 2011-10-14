@@ -50,6 +50,7 @@ function theme_tzuser_add_users_rows($element) {
         drupal_render($element[$rowid]['number']),
         drupal_render($element[$rowid]['username']),
         drupal_render($element[$rowid]['password']),
+        drupal_render($element[$rowid]['email']),
         drupal_render($element[$rowid]['manager']),
       );
     }
@@ -58,14 +59,17 @@ function theme_tzuser_add_users_rows($element) {
   // Add our "Add more rows" button last in the table, with full colspan
   $rows[] = array(array(
     'data' => drupal_render($element['add_more']),
-    'colspan' => 5,
+    'colspan' => 6,
   ));
 
   // Wrap in div for the AHAH-handlers sake
   $output = '<div id="tzuser_add_number_rows">';
 
   // Setup headers and output table
-  $header = array('', t('Mobile number') . '*', t('Username') . '*', t('Password'), t('Manager'));
+  $header = array('', t('Mobile number') . '*', t('Username') . '*');
+  $header[] = user_access('bulk add employees') ? t('Password') : '';
+  $header[] = user_access('bulk add employees') ? t('Email') : '';
+  $header[] = t('Manager');
   $output .= theme('table', $header, $rows);
 
   $output .= '</div>';

@@ -240,52 +240,61 @@ function tzuser_ajax_autocomplete_user($string = '') {
 
 /**
  * Add a new user
- * @param string $fullname Users full name
- * @param string $mobile_number Users mobile number
- * @param string $username Users username
- * @param string $password Users
- * @param Array $extra_data Extra fields to save in the user object
+ * @param Array $user_data
  * @return object Fully loaded user object on success, otherwise FALSE
  */
-function tzuser_add_user($fullname, $username, $password = '', $mobile_number = '', $extra_data = array(), $manager = 0) {
-  if(empty($fullname) || empty($username)) {
+function tzuser_add_user($fields) {
+  if (empty($fields['username'])) {
     return FALSE;
   }
 
   // Try to load account
-  $account = user_load(array('name' => $username));
+  $account = user_load(array('name' => $fields['username']));
 
-  if(!is_array($extra_data)) {
-    $extra_data = array();
-  }
-  $user_data = $extra_data;
-  $user_data['status'] = 1;
-  $user_data['tzuser'] = array(
-    'fullname' => $fullname,
-  );
-
-  if(empty($password)) {
-    /* Generate a password if none is provided. This can be changed by the admin
-     * or when the user is authenticated remotely for the first time.
-     */
-    $password = user_password(10);
-  }
-  $user_data['pass'] = $password;
-
-  $mobile_number = tzuser_validate_phone_number($mobile_number);
-  if (!empty($mobile_number)) {
-    $user_data['tzuser']['mobile'] = $mobile_number;
-  }
-
-  if (!empty($manager)) {
-    $user_data['tzuser']['manager'] = $manager;
+  $user_data = array();
+  if(!empty($fields['extra_data']) && is_array($fields['extra_data'])) {
+    $user_data = array_merge($user_data, $fields['extra_data']);
   }
 
   if (!$account) {
+    $user_data['name'] = $fields['username'];
+  }
+
+  $user_data['status'] = 1;
+
+  if (!empty($fields['fullname'])) {
+    $user_data['tzuser']['fullname'] = $fields['fullname'];
+  } else if (!$account) {
+    $user_data['tzuser']['fullname'] = $fields['username'];
+  }
+
+  if (isset($fields['password'])) {
+    $user_data['pass'] = $fields['password'];
+  } else if (!$account) {
+    /* Generate a password if none is provided. This can be changed by the admin
+     * or when the user is authenticated remotely for the first time.
+     */
+    $user_data['pass'] = user_password(10);
+  }
+
+  if (!empty($fields['mobile'])) {
+    $mobile_number = tzuser_validate_phone_number($fields['mobile']);
+    if (!empty($mobile_number)) {
+      $user_data['tzuser']['mobile'] = $mobile_number;
+    }
+  }
+
+  if (!empty($fields['manager'])) {
+    $user_data['tzuser']['manager'] = $fields['manager'];
+  }
+
+  if (!empty($fields['email'])) {
+    $user_data['mail'] = $fields['email'];
+    $user_data['init'] = $fields['email'];
+  } else if (!$account) {
     $mail = _tzuser_generate_fake_email();
     $user_data['mail'] = $mail;
     $user_data['init'] = $mail;
-    $user_data['name'] = $username;
   }
 
   drupal_alter('tzuser_add_user_data', $user_data);

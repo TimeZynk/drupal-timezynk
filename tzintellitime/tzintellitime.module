@@ -273,17 +273,17 @@ function tzintellitime_server_auth($account, $username, $password) {
     $server = new IntellitimeServer($curl);
     $fullname = IntellitimeLoginPage::login($server, TZINTELLITIME_BASE_URL, $username, $password);
 
-    $account = tzuser_add_user(
-      $fullname,
-      $username,
-      $password,
-      '',
-      array(
-           'login' => time(),
-           'intellitime_user' => TRUE,
-           'intellitime_session_data' => $curl->getSessionData(),
-      )
-    );
+    $account = tzuser_add_user(array(
+      'username' => $username,
+      'fullname' => $fullname,
+      'password' => $password,
+      'extra_data' => array(
+         'login' => time(),
+         'access' => time(),
+         'intellitime_user' => TRUE,
+         'intellitime_session_data' => $curl->getSessionData(),
+      ),
+    ));
 
     return $account;
 

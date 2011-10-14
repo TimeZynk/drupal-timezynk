@@ -46,6 +46,7 @@ function tzuser_add_users_form(&$form_state) {
       'mobile' => !empty($form_state['values']['rows'][$row_id]['number']) ? $form_state['values']['rows'][$row_id]['number'] : '',
       'username' => !empty($form_state['values']['rows'][$row_id]['username']) ? $form_state['values']['rows'][$row_id]['username'] : '',
       'password' => !empty($form_state['values']['rows'][$row_id]['password']) ? $form_state['values']['rows'][$row_id]['password'] : '',
+      'email' => !empty($form_state['values']['rows'][$row_id]['email']) ? $form_state['values']['rows'][$row_id]['email'] : '',
       'manager' => $default_manager,
     );
 
@@ -116,14 +117,12 @@ function tzuser_add_users_form_validate($form, &$form_state) {
       } else if(empty($form_state['values']['rows'][$rowid]['username'])) {
         form_set_error("rows][$rowid][username", t('Please enter username'));
       } else if(empty($seen_numbers[$number])) {
-        $username = trim($form_state['values']['rows'][$rowid]['username']);
-        $password = trim($form_state['values']['rows'][$rowid]['password']);
-        $manager = intval($form_state['values']['rows'][$rowid]['manager']);
         $seen_numbers[$number] = array(
           'mobile' => $number,
-          'username' => $username,
-          'password' => $password,
-          'manager' => $manager
+          'username' => trim($form_state['values']['rows'][$rowid]['username']),
+          'password' => trim($form_state['values']['rows'][$rowid]['password']),
+          'email' => trim($form_state['values']['rows'][$rowid]['email']),
+          'manager' => intval($form_state['values']['rows'][$rowid]['manager']),
         );
       } else {
         form_set_error("rows][$rowid][number", t('Mobile number entered twice'));
@@ -156,6 +155,7 @@ function tzuser_add_users_form_validate($form, &$form_state) {
         'mobile' => $row->mobilephone,
         'username' => $row->userid,
         'password' => $row->password,
+        'email' => $row->email,
         'manager' => $manager_user_id,
       );
     }, $rows);
@@ -184,44 +184,43 @@ function tzuser_add_users_form_submit($form, &$form_state) {
   }
 }
 
-function tzuser_add_mobile_field($default_value = '') {
+function tzuser_add_textfield($default_value = '', $access = TRUE) {
   return array(
     '#type' => 'textfield',
     '#size' => 20,
     '#default_value' => $default_value,
+    '#access' => $access,
   );
 }
 
-function tzuser_add_username_field($default_value = '') {
-  return array(
-    '#type' => 'textfield',
-    '#size' => 20,
-    '#default_value' => $default_value,
-  );
+function tzuser_add_restricted_textfield($default_value = '') {
+  return tzuser_add_textfield($default_value, user_access('bulk add employees'));
 }
 
-function tzuser_add_password_field($default_value = '') {
-  return array(
-    '#type' => 'textfield',
-    '#size' => 20,
-    '#default_value' => $default_value,
-  );
-}
 
 function tzuser_add_find_manager_id($manager_user_name) {
+  static $idmap = array();
+
+  if (!empty($idmap[$manager_user_name])) {
+    return $idmap[$manager_user_name];
+  }
+
   $account = user_load(array('name' => $manager_user_name));
   if ($account) {
+    $idmap[$manager_user_name] = $account->uid;
     return $account->uid;
   }
+
   return 0;
 }
 
 function tzuser_add_row_fields($index, $row) {
   $row_fields = array();
   $row_fields['index'] = array('#value' => $index + 1);
-  $row_fields['number'] = tzuser_add_mobile_field($row['mobile']);
-  $row_fields['username'] = tzuser_add_username_field($row['username']);
-  $row_fields['password'] = tzuser_add_password_field($row['password']);
+  $row_fields['number'] = tzuser_add_textfield($row['mobile']);
+  $row_fields['username'] = tzuser_add_textfield($row['username']);
+  $row_fields['password'] = tzuser_add_restricted_textfield($row['password']);
+  $row_fields['email'] = tzuser_add_restricted_textfield($row['email']);
   $row_fields['manager'] = tzuser_select_manager_field($row['manager']);
   return $row_fields;
 }
@@ -232,14 +231,13 @@ function tzuser_add_ajax() {
   $raw_data = file_get_contents('php://input');
   $users = json_decode($raw_data);
   foreach ($users as $u) {
-    $account = tzuser_add_user(
-      $u->username,
-      $u->username,
-      $u->password,
-      $u->mobile,
-      array(),
-      $u->manager
-    );
+    $account = tzuser_add_user(array(
+      'username' => $u->username,
+      'mobile' => $u->mobile,
+      'password' => $u->password,
+      'manager' => $u->manager,
+      'email' => $u->email,
+    ));
 
     if ($account) {
       module_invoke_all('tzuser_add_user_notify', $account, $u->password);
