@@ -1418,6 +1418,64 @@ class TZGetAvailabilityIntervalsResult extends PBMessage
     return $this->_get_value("2");
   }
 }
+class TZGetReportTemplatesCmd extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZGetReportTemplatesCmd"]["1"] = "PBInt";
+    $this->values["1"] = "";
+    self::$fieldNames["TZGetReportTemplatesCmd"]["1"] = "unused";
+  }
+  function unused()
+  {
+    return $this->_get_value("1");
+  }
+  function set_unused($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+}
+class TZGetReportTemplatesResult extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZGetReportTemplatesResult"]["1"] = "TZReport";
+    $this->values["1"] = array();
+    self::$fieldNames["TZGetReportTemplatesResult"]["1"] = "report";
+  }
+  function report($offset)
+  {
+    return $this->_get_arr_value("1", $offset);
+  }
+  function add_report()
+  {
+    return $this->_add_arr_value("1");
+  }
+  function set_report($index, $value)
+  {
+    $this->_set_arr_value("1", $index, $value);
+  }
+  function set_all_reports($values)
+  {
+    return $this->_set_arr_values("1", $values);
+  }
+  function remove_last_report()
+  {
+    $this->_remove_last_arr_value("1");
+  }
+  function reports_size()
+  {
+    return $this->_get_arr_size("1");
+  }
+  function get_reports()
+  {
+    return $this->_get_value("1");
+  }
+}
 class TZCommand extends PBMessage
 {
   var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
@@ -1459,6 +1517,9 @@ class TZCommand extends PBMessage
     self::$fields["TZCommand"]["11"] = "TZGetAvailabilityIntervalsCmd";
     $this->values["11"] = "";
     self::$fieldNames["TZCommand"]["11"] = "get_availability_intervals_cmd";
+    self::$fields["TZCommand"]["12"] = "TZGetReportTemplatesCmd";
+    $this->values["12"] = "";
+    self::$fieldNames["TZCommand"]["12"] = "get_report_templates_cmd";
   }
   function client_handle()
   {
@@ -1548,6 +1609,14 @@ class TZCommand extends PBMessage
   {
     return $this->_set_value("11", $value);
   }
+  function get_report_templates_cmd()
+  {
+    return $this->_get_value("12");
+  }
+  function set_get_report_templates_cmd($value)
+  {
+    return $this->_set_value("12", $value);
+  }
 }
 class TZResult extends PBMessage
 {
@@ -1596,6 +1665,9 @@ class TZResult extends PBMessage
     self::$fields["TZResult"]["13"] = "TZGetAvailabilityIntervalsResult";
     $this->values["13"] = "";
     self::$fieldNames["TZResult"]["13"] = "get_availability_intervals_result";
+    self::$fields["TZResult"]["14"] = "TZGetReportTemplatesResult";
+    $this->values["14"] = "";
+    self::$fieldNames["TZResult"]["14"] = "get_report_templates_result";
   }
   function client_handle()
   {
@@ -1740,6 +1812,14 @@ class TZResult extends PBMessage
   function set_get_availability_intervals_result($value)
   {
     return $this->_set_value("13", $value);
+  }
+  function get_report_templates_result()
+  {
+    return $this->_get_value("14");
+  }
+  function set_get_report_templates_result($value)
+  {
+    return $this->_set_value("14", $value);
   }
 }
 class TZRequest extends PBMessage

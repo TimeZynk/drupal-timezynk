@@ -117,6 +117,7 @@ function tzbase_node_info() {
 function tzbase_perm() {
   return array(
     'create tzreport content',
+    'create tzreport content from template',
     'view any tzreport content',
     'view own tzreport content',
     'edit any tzreport content',

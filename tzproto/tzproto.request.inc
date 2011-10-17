@@ -110,6 +110,10 @@ function _tzproto_handle_cmd($cmd, &$result, $protocol_version) {
     $handler = new GetAvailabilityIntervalHandler($protocol_version, tzbase_availability_store());
     $handler->handle($cmd->get_availability_intervals_cmd(), $result);
   }
+  else if ($cmd->get_report_templates_cmd()) {
+    $handler = new GetReportTemplatesHandler($protocol_version, new TZDrupalDBWrapper());
+    $handler->handle($cmd->get_report_templates_cmd(), $result);
+  }
   else {
     throw new TZProtoException('Not implemented', 501);
   }

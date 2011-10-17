@@ -16,6 +16,9 @@ function __tzproto_autoload($class_name) {
     case 'GetAvailabilityIntervalHandler':
       require dirname(__FILE__) . '/includes/GetAvailabilityIntervalHandler.class.inc';
       return TRUE;
+    case 'GetReportTemplatesHandler':
+      require dirname(__FILE__) . '/includes/GetReportTemplatesHandler.class.inc';
+      return TRUE;
     case 'SaveAvailabilityHandler':
       require dirname(__FILE__) . '/includes/SaveAvailabilityHandler.class.inc';
       return TRUE;

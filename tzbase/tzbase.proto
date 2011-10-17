@@ -261,6 +261,14 @@ message TZGetAvailabilityIntervalsResult {
   repeated TZAvailabilityInterval interval = 2;
 }
 
+message TZGetReportTemplatesCmd {
+  optional int32 unused = 1;
+}
+
+message TZGetReportTemplatesResult {
+  repeated TZReport report = 1;
+}
+
 // Generic single RPC command, must be wrapped in a TZRequest
 message TZCommand {
   optional int32 client_handle = 1 [default = 0]; // request id from client for tracking
@@ -279,6 +287,8 @@ message TZCommand {
   optional TZSaveAvailabilityCmd save_availability_cmd = 9;
   optional TZDeleteAvailabilityCmd delete_availability_cmd = 10;
   optional TZGetAvailabilityIntervalsCmd get_availability_intervals_cmd = 11;
+
+  optional TZGetReportTemplatesCmd get_report_templates_cmd = 12;
 }
 
 // Generic single RPC result, must be wrapped in a TZResponse
@@ -303,6 +313,8 @@ message TZResult {
   optional TZGetAvailabilityResult get_availability_result = 11;
   optional TZSaveAvailabilityResult save_availability_result = 12;
   optional TZGetAvailabilityIntervalsResult get_availability_intervals_result = 13;
+
+  optional TZGetReportTemplatesResult get_report_templates_result = 14;
 }
 
 //
