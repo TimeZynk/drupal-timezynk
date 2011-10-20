@@ -732,6 +732,11 @@ class TZAvailabilityInterval extends PBMessage
     self::$fields["TZAvailabilityInterval"]["2"] = "TZTime";
     $this->values["2"] = "";
     self::$fieldNames["TZAvailabilityInterval"]["2"] = "end";
+    self::$fields["TZAvailabilityInterval"]["3"] = "PBBool";
+    $this->values["3"] = "";
+    $this->values["3"] = new PBBool();
+    $this->values["3"]->value = false;
+    self::$fieldNames["TZAvailabilityInterval"]["3"] = "exclusive";
   }
   function start()
   {
@@ -748,6 +753,14 @@ class TZAvailabilityInterval extends PBMessage
   function set_end($value)
   {
     return $this->_set_value("2", $value);
+  }
+  function exclusive()
+  {
+    return $this->_get_value("3");
+  }
+  function set_exclusive($value)
+  {
+    return $this->_set_value("3", $value);
   }
 }
 class TZGetUserCmd extends PBMessage

@@ -21,7 +21,9 @@ function tzbase_availability_settings_form(&$form_state) {
   for ($i = 0; $i < TZBASE_AVAILABILITY_MAX_INTERVALS; $i++) {
     $default_value = '';
     if (!empty($intervals->list[$i])) {
-      $default_value = implode('-', $intervals->list[$i]);
+      $interval = $intervals->list[$i];
+      $default_value = ($interval->exclusive ? 'E' : '') .
+        $interval->begin . '-' . $interval->end;
     }
     $form['intervals']['rows'][$i] = array(
       '#type' => 'textfield',
@@ -44,8 +46,8 @@ function tzbase_availability_settings_form_validate($form, &$form_state) {
     if (empty($row)) {
       continue;
     }
-    if(1 !== preg_match('/^\d{2}:\d{2}-\d{2}:\d{2}$/', $row)) {
-      form_set_error("intervals][rows][$i", 'Enter interval as HH:MM-HH:MM');
+    if(1 !== preg_match('/^E?\d{2}:\d{2}-\d{2}:\d{2}$/', $row)) {
+      form_set_error("intervals][rows][$i", 'Enter interval as [E]HH:MM-HH:MM');
     }
   }
 }
@@ -56,10 +58,14 @@ function tzbase_availability_settings_form_submit($form, &$form_state) {
   $intervals->list = array();
   for ($i = 0; $i < TZBASE_AVAILABILITY_MAX_INTERVALS; $i++) {
     $row = &$form_state['values']['intervals']['rows'][$i];
-    if (empty($row)) {
-      continue;
+    $m = array();
+    if (preg_match('/^(E?)(\d{2}:\d{2})-(\d{2}:\d{2})$/', $row, $m)) {
+      $intervals->list[] = (object)array(
+        'begin' => $m[2],
+        'end' => $m[3],
+        'exclusive' => !empty($m[1]),
+      );
     }
-    $intervals->list[] = explode('-', $row);
   }
   tzbase_availability_store()->setAvailabilityIntervals($intervals);
 }

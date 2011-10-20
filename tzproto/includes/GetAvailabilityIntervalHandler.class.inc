@@ -19,8 +19,9 @@ class GetAvailabilityIntervalHandler extends CommandHandler {
     if (!empty($intervals->enabled) && !empty($intervals->list)) {
       foreach ($intervals->list as $interval) {
         $tzinterval = $intervals_result->add_interval();
-        $tzinterval->set_start($this->hhmm_to_tztime($interval[0]));
-        $tzinterval->set_end($this->hhmm_to_tztime($interval[1]));
+        $tzinterval->set_start($this->hhmm_to_tztime($interval->begin));
+        $tzinterval->set_end($this->hhmm_to_tztime($interval->end));
+        $tzinterval->set_exclusive($interval->exclusive);
       }
     }
     $result->set_get_availability_intervals_result($intervals_result);
