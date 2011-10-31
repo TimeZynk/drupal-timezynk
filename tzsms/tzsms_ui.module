@@ -23,10 +23,11 @@ function tzsms_ui_menu() {
     'access arguments' => array('send sms'),
     'page callback' => 'tzsms_ui_install_sms_ajax',
   );
-  $items['tzsms/send_text_sms_ajax'] = array(
+  $items['api/sms'] = array(
     'type' => MENU_CALLBACK,
+    'access callback' => 'tzapi_authorize',
     'access arguments' => array('send sms'),
-    'page callback' => 'tzsms_ui_text_sms_ajax',
+    'page callback' => 'tzsms_ui_sms_api',
   );
   return $items;
 }
@@ -155,15 +156,18 @@ function tzsms_ui_install_sms_ajax() {
   print theme('status_messages', 'status');
 }
 
-function tzsms_ui_text_sms_ajax() {
-  if (empty($_POST['selected_users']) ||
-      empty($_POST['text'])) {
+function tzsms_ui_sms_api() {
+  $raw_data = file_get_contents('php://input');
+  $req = json_decode($raw_data);
+
+  if (empty($req->recipients) ||
+      empty($req->text)) {
     return;
   }
 
-  $sms_count = tzsms_send_text_sms(array_values($_POST['selected_users']),
-                                   trim($_POST['text']));
+  $sms_count = tzsms_send_text_sms(array_values($req->recipients),
+                                   trim($req->text));
 
-  drupal_set_message(t('Sent @count SMS messages', array('@count' => $sms_count)));
-  print theme('status_messages', 'status');
+  drupal_set_header('Content-Type: application/json; charset=utf-8');
+  print json_encode(array('sent' => intval($sms_count)));
 }

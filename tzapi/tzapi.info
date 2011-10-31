@@ -1,0 +1,4 @@
+name = TimeZynk API
+description = Provides TimeZynk API
+package = TimeZynk
+core = 6.x

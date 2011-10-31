@@ -76,16 +76,16 @@
             width: "450px"
         });
     };
-    
+
     function clearAllCheckBoxes() {
         $('tbody :checked').removeAttr('checked').click();
     }
-    
+
     function sendTextSMS(text, employees, on_success) {
-        $.post('tzsms/send_text_sms_ajax', {
+        $.post('api/sms', JSON.stringify({
             "text": text,
-            "selected_users[]": employees
-        }, on_success);
+            "recipients": employees
+        }), on_success);
     }
-    
+
 })(jQuery);

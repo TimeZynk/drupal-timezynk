@@ -28,10 +28,11 @@ function tzuser_menu() {
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
   );
-  $items['tzuser/overview/ajax'] = array(
-    'page callback' => 'tzuser_overview_ajax',
+  $items['api/users'] = array(
+    'page callback' => 'tzuser_api_list_users',
+    'access callback' => 'tzapi_authorize',
     'access arguments' => array('view employees'),
-    'file' => 'includes/tzuser.overview.inc',
+    'file' => 'includes/api.inc',
     'type' => MENU_CALLBACK,
   );
   $items['tzuser/add'] = array(

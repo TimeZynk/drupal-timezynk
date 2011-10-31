@@ -250,13 +250,17 @@ function xmls_tzstats_get_status($key, $nonce, $timestamp) {
   $date->modify('+1 day');
   $now = $date->format('U');
 
-  $result = db_query('SELECT * FROM {users} WHERE uid > 1 AND status = 1');
+  $result = db_query('SELECT * FROM {users} u INNER JOIN {tzuser} tzu ON tzu.uid = u.uid WHERE u.uid > 1 AND u.status = 1');
   while ($account = db_fetch_object($result)) {
     $status = tzuser_get_user_status($account, $now);
-    $status_code = $status->getStatusCode($now);
     $user_status[] = array(
       'uid' => intval($account->uid, 10),
-      'status' => $status_code
+      'status' => $status->getStatusCode(),
+      'login' => $status->getLastLogin(),
+      'due_count' => $status->getNumberOfDueReports(),
+      'mobile' => empty($account->mobile) ? '' : $account->mobile,
+      'name' => $account->name,
+      'fullname' => $account->fullname,
     );
   }
 

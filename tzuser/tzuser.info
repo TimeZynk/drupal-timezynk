@@ -1,6 +1,7 @@
 name = TimeZynk Base User
 description = Provides TimeZynk user data
 package = TimeZynk
+dependencies[] = tzapi
 dependencies[] = ahah_helper
 dependencies[] = permissions_api
 dependencies[] = libraries

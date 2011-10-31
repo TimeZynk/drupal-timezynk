@@ -3,5 +3,6 @@ description = Provides TimeZynk SMS sending UI
 package = TimeZynk
 core = 6.x
 dependencies[] = tzsms
+dependencies[] = tzapi
 dependencies[] = ahah_helper
 dependencies[] = jquery_ui

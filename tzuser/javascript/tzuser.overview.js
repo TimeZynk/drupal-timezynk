@@ -195,7 +195,7 @@ Drupal.behaviors.TZUserOverview = function(context) {
     }
 
     function updateOverviewData() {
-        var url = 'tzuser/overview/ajax',
+        var url = 'api/users',
             form_elements = $('#tzuser-user-overview fieldset:first :input');
 
         url += '?' + form_elements.serialize();

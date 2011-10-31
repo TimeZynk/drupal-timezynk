@@ -1,0 +1,49 @@
+<?php
+
+define('TZAPI_DEFAULT_USER', 'kFBbVjSwhktevLSNC7Wd');
+define('TZAPI_DEFAULT_KEY', 'tg370J1JVvySh5kgqyupt5cBOwnF2RQYcAV9vVYsCb');
+define('TZAPI_EXPIRE_SECONDS', 15*60);
+
+function tzapi_authorize($permissions = array()) {
+  if (user_access($permissions)) {
+    return TRUE;
+  }
+
+  $auth_string = "";
+  if (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
+    $auth_string = $_SERVER['HTTP_AUTHORIZATION'];
+  }
+
+  if(function_exists('apache_request_headers')) {
+    // We are running PHP as an Apache module, so we can get the Authorization header this way
+    $headers = apache_request_headers();
+    $auth_string = $headers['Authorization'];
+  }
+
+  $m = array();
+  if (!preg_match("/TZ ([^:]+):([^:]+)/", $auth_string, $m)) {
+    return FALSE;
+  }
+
+  if ($m[1] != TZAPI_DEFAULT_USER) {
+    return FALSE;
+  }
+
+  $request_date = strtotime(_tzapi_hdr('HTTP_DATE'));
+  if (!$request_date || $request_date + TZAPI_EXPIRE_SECONDS < time()) {
+    return FALSE;
+  }
+
+  $uri = reset(explode('?', $_SERVER['REQUEST_URI']));
+  $string_to_sign = $_SERVER['REQUEST_METHOD'] . " " . $uri . "\n" .
+    _tzapi_hdr('HTTP_CONTENT_MD5') . "\n" .
+    reset(explode(';', _tzapi_hdr('CONTENT_TYPE'))) . "\n" .
+    _tzapi_hdr('HTTP_DATE');
+
+  $hmac = hash_hmac('sha256', $string_to_sign, TZAPI_DEFAULT_KEY, TRUE);
+  return $hmac == base64_decode($m[2]);
+}
+
+function _tzapi_hdr($key, $default = "") {
+  return empty($_SERVER[$key]) ? $default : $_SERVER[$key];
+}
