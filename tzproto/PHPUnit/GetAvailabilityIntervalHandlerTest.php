@@ -10,11 +10,11 @@ class GetAvailabilityIntervalHandlerTest extends PHPUnit_Framework_TestCase {
     $this->result = new TZResult();
   }
 
-  function testReturnDisabledIntervals() {
+  function testDoNotReturnDisabledIntervals() {
     $intervals = new stdClass();
     $intervals->enabled = false;
     $intervals->list = array(
-      array('12:19', '17:32'),
+      (object)array('begin' => '12:19', 'end' => '17:32'),
     );
 
     $this->store->expects($this->once())
@@ -30,7 +30,7 @@ class GetAvailabilityIntervalHandlerTest extends PHPUnit_Framework_TestCase {
     $intervals = new stdClass();
     $intervals->enabled = true;
     $intervals->list = array(
-      array('12:19', '17:32'),
+      (object)array('begin' => '12:19', 'end' => '17:32'),
     );
 
     $this->store->expects($this->once())
@@ -45,15 +45,34 @@ class GetAvailabilityIntervalHandlerTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(19, $tzinterval->start()->minute());
     $this->assertEquals(17, $tzinterval->end()->hour());
     $this->assertEquals(32, $tzinterval->end()->minute());
+    $this->assertFalse($tzinterval->exclusive());
+  }
+
+  function testReturnExclusiveInterval() {
+    $intervals = new stdClass();
+    $intervals->enabled = true;
+    $intervals->list = array(
+      (object)array('begin' => '12:19', 'end' => '17:32', 'exclusive' => TRUE),
+    );
+
+    $this->store->expects($this->once())
+      ->method('getAvailabilityIntervals')
+      ->will($this->returnValue($intervals));
+
+    $this->handler->handle($this->command, $this->result);
+    $this->assertTrue($this->result->get_availability_intervals_result()->enabled());
+    $this->assertEquals(1, $this->result->get_availability_intervals_result()->intervals_size());
+    $tzinterval =  $this->result->get_availability_intervals_result()->interval(0);
+    $this->assertTrue($tzinterval->exclusive());
   }
 
   function testReturnMultipleIntervals() {
     $intervals = new stdClass();
     $intervals->enabled = true;
     $intervals->list = array(
-      array('12:19', '17:32'),
-      array('08:15', '16:33'),
-      array('21:20', '04:09'),
+      (object)array('begin' => '12:19', 'end' => '17:32'),
+      (object)array('begin' => '08:15', 'end' => '16:33'),
+      (object)array('begin' => '21:20', 'end' => '04:09'),
     );
 
     $this->store->expects($this->once())
@@ -68,5 +87,47 @@ class GetAvailabilityIntervalHandlerTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(20, $tzinterval->start()->minute());
     $this->assertEquals(4, $tzinterval->end()->hour());
     $this->assertEquals(9, $tzinterval->end()->minute());
+  }
+
+  function testReturnsDaysInAdvanceWithIntervalsDisabled() {
+    $intervals = new stdClass();
+    $intervals->enabled = false;
+    $intervals->days_in_advance = 1;
+
+    $this->store->expects($this->once())
+      ->method('getAvailabilityIntervals')
+      ->will($this->returnValue($intervals));
+    
+    $this->handler->handle($this->command, $this->result);
+    $this->assertEquals(1, $this->result->get_availability_intervals_result()->days_in_advance());
+  }
+
+  function testReturnsDaysInAdvanceWithIntervalsEnabled() {
+    $intervals = new stdClass();
+    $intervals->enabled = true;
+    $intervals->list = array(
+      (object)array('begin' => '12:19', 'end' => '17:32'),
+    );
+    $intervals->days_in_advance = 23;
+
+    $this->store->expects($this->once())
+      ->method('getAvailabilityIntervals')
+      ->will($this->returnValue($intervals));
+    
+    $this->handler->handle($this->command, $this->result);
+    $this->assertEquals(23, $this->result->get_availability_intervals_result()->days_in_advance());
+    $this->assertTrue($this->result->get_availability_intervals_result()->enabled());
+  }
+
+  function testStopsNegativeDaysInAdvance() {
+    $intervals = new stdClass();
+    $intervals->days_in_advance = -23;
+
+    $this->store->expects($this->once())
+      ->method('getAvailabilityIntervals')
+      ->will($this->returnValue($intervals));
+    
+    $this->handler->handle($this->command, $this->result);
+    $this->assertEquals(0, $this->result->get_availability_intervals_result()->days_in_advance());
   }
 }

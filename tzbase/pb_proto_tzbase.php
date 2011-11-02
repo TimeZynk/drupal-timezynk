@@ -1393,6 +1393,11 @@ class TZGetAvailabilityIntervalsResult extends PBMessage
     self::$fields["TZGetAvailabilityIntervalsResult"]["2"] = "TZAvailabilityInterval";
     $this->values["2"] = array();
     self::$fieldNames["TZGetAvailabilityIntervalsResult"]["2"] = "interval";
+    self::$fields["TZGetAvailabilityIntervalsResult"]["3"] = "PBInt";
+    $this->values["3"] = "";
+    $this->values["3"] = new PBInt();
+    $this->values["3"]->value = 0;
+    self::$fieldNames["TZGetAvailabilityIntervalsResult"]["3"] = "days_in_advance";
   }
   function enabled()
   {
@@ -1429,6 +1434,14 @@ class TZGetAvailabilityIntervalsResult extends PBMessage
   function get_intervals()
   {
     return $this->_get_value("2");
+  }
+  function days_in_advance()
+  {
+    return $this->_get_value("3");
+  }
+  function set_days_in_advance($value)
+  {
+    return $this->_set_value("3", $value);
   }
 }
 class TZGetReportTemplatesCmd extends PBMessage

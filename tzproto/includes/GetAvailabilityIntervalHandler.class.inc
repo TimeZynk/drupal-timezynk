@@ -16,12 +16,15 @@ class GetAvailabilityIntervalHandler extends CommandHandler {
     $intervals_result = new TZGetAvailabilityIntervalsResult();
 
     $intervals_result->set_enabled(!empty($intervals->enabled));
+    if (!empty($intervals->days_in_advance) && $intervals->days_in_advance > 0) {
+      $intervals_result->set_days_in_advance($intervals->days_in_advance);
+    }
     if (!empty($intervals->enabled) && !empty($intervals->list)) {
       foreach ($intervals->list as $interval) {
         $tzinterval = $intervals_result->add_interval();
         $tzinterval->set_start($this->hhmm_to_tztime($interval->begin));
         $tzinterval->set_end($this->hhmm_to_tztime($interval->end));
-        $tzinterval->set_exclusive($interval->exclusive);
+        $tzinterval->set_exclusive(!empty($interval->exclusive));
       }
     }
     $result->set_get_availability_intervals_result($intervals_result);

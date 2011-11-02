@@ -7,6 +7,13 @@ function tzbase_availability_settings_form(&$form_state) {
 
   $intervals = tzbase_availability_store()->getAvailabilityIntervals();
 
+  $form['days_in_advance'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Days in advance'),
+    '#description' => t('Number of days in advance that availability must be reported'),
+    '#default_value' => isset($intervals->days_in_advance) ? $intervals->days_in_advance : 0,
+  );
+
   $form['intervals'] = array(
     '#type' => 'fieldset',
     '#title' => t('Availability intervals'),
@@ -41,6 +48,9 @@ function tzbase_availability_settings_form(&$form_state) {
 }
 
 function tzbase_availability_settings_form_validate($form, &$form_state) {
+  if (!ctype_digit($form_state['values']['days_in_advance'])) {
+    form_set_error("days_in_advance", 'Days in advance must be specified as a positive integer');
+  }
   for ($i = 0; $i < TZBASE_AVAILABILITY_MAX_INTERVALS; $i++) {
     $row = &$form_state['values']['intervals']['rows'][$i];
     if (empty($row)) {
@@ -55,6 +65,7 @@ function tzbase_availability_settings_form_validate($form, &$form_state) {
 function tzbase_availability_settings_form_submit($form, &$form_state) {
   $intervals = new stdClass();
   $intervals->enabled = !empty($form_state['values']['intervals']['enabled']);
+  $intervals->days_in_advance = intval($form_state['values']['days_in_advance'], 10);
   $intervals->list = array();
   for ($i = 0; $i < TZBASE_AVAILABILITY_MAX_INTERVALS; $i++) {
     $row = &$form_state['values']['intervals']['rows'][$i];

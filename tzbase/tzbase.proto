@@ -260,6 +260,7 @@ message TZGetAvailabilityIntervalsCmd {
 message TZGetAvailabilityIntervalsResult {
   optional bool enabled = 1 [default = false];
   repeated TZAvailabilityInterval interval = 2;
+  optional int32 days_in_advance = 3 [default = 0];
 }
 
 message TZGetReportTemplatesCmd {
