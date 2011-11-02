@@ -1,25 +1,7 @@
 <?php
 
 function tzuser_api_list_users() {
-
-  $date = date_make_date('now');
-
-  // Handle date setting
-  $date_string = "";
-  if (isset($_GET['date']['date'])) {
-    $date_string = $_GET['date']['date'];
-  } else if (isset($_GET['date'])) {
-    $date_string = $_GET['date'];
-  }
-
-  if (!empty($date_string) && preg_match('/\d{4}-\d{2}-\d{2}/', $date_string)) {
-    $date = date_make_date($date_string . 'T00:00:00');
-  } else {
-    $date->setTime(0, 0, 0);
-  }
-
-  // The date is up to and including.
-  $date->modify('+1 day');
+  $date = _tzuser_api_request_date();
 
   // Handle manager
   $manager = 0;
@@ -89,4 +71,28 @@ function tzuser_api_list_users() {
 
   drupal_set_header('Content-Type: application/json; charset=utf-8');
   print json_encode($overview);
+}
+
+function _tzuser_api_request_date() {
+  $date = date_make_date('now');
+
+  // Handle date setting
+  $date_string = "";
+  if (isset($_GET['date'])) {
+    if (is_array($_GET['date']) && !empty($_GET['date']['date'])) {
+      $date_string = $_GET['date']['date'];
+    } else if (is_string($_GET['date'])) {
+      $date_string = $_GET['date'];
+    }
+  }
+
+  if (!empty($date_string) && preg_match('/\d{4}-\d{2}-\d{2}/', $date_string)) {
+    $date = date_make_date($date_string . 'T00:00:00');
+  } else {
+    $date->setTime(0, 0, 0);
+  }
+
+  // The date is up to and including.
+  $date->modify('+1 day');
+  return $date;
 }
