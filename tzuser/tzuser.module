@@ -35,6 +35,13 @@ function tzuser_menu() {
     'file' => 'includes/api.inc',
     'type' => MENU_CALLBACK,
   );
+  $items['api/access'] = array(
+    'page callback' => 'tzuser_api_access',
+    'access callback' => 'tzapi_authorize',
+    'access arguments' => array('access content'),
+    'file' => 'includes/api.inc',
+    'type' => MENU_CALLBACK,
+  );
   $items['tzuser/add'] = array(
     'title' => 'Add employees',
     'access arguments' => array('manage employees'),
@@ -346,6 +353,16 @@ function tzuser_get_user_status($account, $now) {
   drupal_alter('tzuser_status', $status);
 
   return $status;
+}
+
+function tzuser_get_user_status_name($status) {
+  static $status_table = array(
+    TZUserStatus::GREY => 'grey',
+    TZUserStatus::RED => 'red',
+    TZUserStatus::YELLOW => 'yellow',
+    TZUserStatus::GREEN => 'green',
+  );
+  return $status_table[$status];
 }
 
 function tzuser_get_support_log($uid) {

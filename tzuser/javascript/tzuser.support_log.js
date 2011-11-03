@@ -7,8 +7,9 @@
             hash = '#';
         }
 
-        that.attr('href', hash).click(function() {
+        that.attr('href', hash).click(function(event) {
             var uid = uidfn;
+            event.preventDefault();
             if ($.isFunction(uidfn)) {
                 uid = uidfn.call($(this));
             }

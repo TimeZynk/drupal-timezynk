@@ -4,6 +4,7 @@ Drupal.behaviors.TZUserOverview = function(context) {
         data = [],
         selections = {},
         lastClickedCheckboxID = null,
+        permissions = {},
         refreshIntervalId;
 
     function makeFieldComparator(field) {
@@ -39,10 +40,10 @@ Drupal.behaviors.TZUserOverview = function(context) {
         }
         switch (sortBy[0]) {
             case Drupal.t('Status'):
-                comparator = makeFieldComparator('status_value');
+                comparator = makeFieldComparator('status');
                 break;
             case Drupal.t('Username'):
-                comparator = makeFieldComparator('name_value');
+                comparator = makeFieldComparator('username');
                 break;
             case Drupal.t('Full name'):
                 comparator = makeFieldComparator('fullname');
@@ -54,7 +55,7 @@ Drupal.behaviors.TZUserOverview = function(context) {
                 comparator = makeFieldComparator('due_count');
                 break;
             case Drupal.t('Last login'):
-                comparator = makeFieldComparator('login_value');
+                comparator = makeFieldComparator('last_login');
                 break;
             default:
                 comparator = makeFieldComparator('fullname');
@@ -107,17 +108,21 @@ Drupal.behaviors.TZUserOverview = function(context) {
         tableBody.html('');
         var rowCount = 0;
         for (var uid in data) {
-            var row = $('<tr></tr>');
-            row.addClass(rowCount & 1 ? 'odd' : 'even');
+            var user = data[uid],
+                row = $('<tr></tr>').addClass(rowCount & 1 ? 'odd' : 'even'),
+                operations = $('<td class="user_operations"></td>');
 
-            var dataRow = data[uid];
+            $.each([
+                renderCheckbox(user),
+                renderTrafficLight(user),
+                renderUserName(user),
+                '<td>' + user.fullname + '</td>',
+                '<td>' + user.mobile + '</td>',
+                renderDueReports(user),
+                renderLastLogin(user),
+                operations
+            ], function(i, e) { row.append(e); });
 
-            for (var field in dataRow) {
-                if (field.match(/_value/)) {
-                    continue;
-                }
-                row.append('<td>' + dataRow[field] + '</td>');
-            }
             tableBody.append(row);
             rowCount++;
         }
@@ -132,8 +137,66 @@ Drupal.behaviors.TZUserOverview = function(context) {
         tableBody.append(countRow);
 
         bindCheckboxes(tableBody);
-        bindEditLogLinks(tableBody);
+        fillOperations(tableBody);
         $('.ahah-progress').html('');
+    }
+
+    function renderCheckbox(user) {
+        var id = user.id;
+        return '<td><div class="form-item" id="selected_users_' + id + '-wrapper">' +
+            '<input type="checkbox" name="selected_users[' + id + ']" id="selected_users_' + id +
+            '" value="' + id + '" class="form-checkbox"></div></td>';
+    }
+
+    function renderTrafficLight(user) {
+        return '<td><div class="tzuser_status tzuser_status_' + user.status_name + '"></div></td>';
+    }
+
+    function renderUserName(user) {
+        return '<td><a href="/user/' + user.id + '?destination=tzuser">' + user.username + '</a></td>';
+    }
+
+    function renderDueReports(user) {
+        if (user.due_count >= 0) {
+            return '<td><span class="due_reports_count">' + user.due_count + '</span></td>';
+        }
+        return '<td>' + Drupal.t('Unknown') + '</td>';
+    }
+
+    function renderLastLogin(user) {
+        return $.distance_of_time_in_words(user.last_login);
+    }
+
+    function fillOperations(tableBody) {
+        if (typeof(permissions['administer users']) === 'undefined' ||
+            typeof(permissions['administer site configuration']) === 'undefined') {
+            $.getJSON('/api/access', {
+                'permission[0]': 'administer users',
+                'permission[1]': 'administer site configuration'
+            }, function(data) {
+                $.extend(permissions, data);
+                fillOperations(tableBody);
+            });
+            return;
+        }
+        tableBody.find('.user_operations').each(function() {
+            var that = $(this),
+                row = that.parents('tr'),
+                uid = row.find('input.form-checkbox').val();
+
+            if (permissions['administer users']) {
+                that.append('<a href="/user/' + uid + '/edit?destination=tzuser">' + Drupal.t('edit') + '</a>');
+            }
+
+            if (permissions['administer site configuration']) {
+                var link = $('<a href="#">' + Drupal.t('log') + '</a>');
+                link.editSupportLogLink(function() { return uid; });
+                if (that.size()) {
+                    that.append(' | ');
+                }
+                that.append(link);
+            }
+        });
     }
 
     function bindCheckboxes(tableBody) {
@@ -182,15 +245,6 @@ Drupal.behaviors.TZUserOverview = function(context) {
             } else {
                 checkbox.removeAttr('checked');
             }
-        });
-    }
-
-    function bindEditLogLinks(tableBody) {
-        tableBody.find('.edit-log-link').editSupportLogLink(function() {
-            var that = $(this),
-                row = that.parents('tr'),
-                uid = row.find('input.form-checkbox').val();
-            return uid;
         });
     }
 

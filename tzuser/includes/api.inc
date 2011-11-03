@@ -1,7 +1,23 @@
 <?php
 
+function tzuser_api_access() {
+  $access = array();
+  if (isset($_GET['permission'])) {
+    if (is_array($_GET['permission'])) {
+      foreach ($_GET['permission'] as $perm) {
+        $access[$perm] = user_access($perm);
+      }
+    } else {
+      $access[$_GET['permission']] = user_access($_GET['permission']);
+    }
+  }
+
+  drupal_set_header('Content-Type: application/json; charset=utf-8');
+  print json_encode($access);
+}
+
 function tzuser_api_list_users() {
-  $date = _tzuser_api_request_date();
+  $date = _tzuser_api_list_users_request_date();
 
   // Handle manager
   $manager = 0;
@@ -13,7 +29,7 @@ function tzuser_api_list_users() {
   $status_filter = array();
   if (isset($_GET['status'])) {
     if (is_array($_GET['status'])) {
-      foreach ($_GET['status'] as $status => $value) {
+      foreach ($_GET['status'] as $status) {
         $status_filter[$status] = TRUE;
       }
     } else {
@@ -36,36 +52,28 @@ function tzuser_api_list_users() {
       continue;
     }
 
-    $checkbox = array(
-      '#type' => 'checkbox',
-      '#name' => "selected_users[$user_entry->uid]",
-      '#return_value' => $user_entry->uid,
-      '#id' => "selected_users_$user_entry->uid",
-      '#value' => 0,
-      '#parents' => array(''),
-    );
-
     $operations = array();
     if (user_edit_access($user_entry)) {
-      $operations[] = l(t('edit'), "user/$user_entry->uid/edit", array('query' => 'destination=tzuser'));
+      $operations[t('edit')] = url("user/$user_entry->uid/edit", array('query' => 'destination=tzuser'));
     }
     if (user_access('administer site configuration')) {
-      $operations[] = l(t('log'), '', array('fragment' => ' ', 'external' => TRUE, 'attributes' => array('class' => 'edit-log-link')));
+      $operations[t('log')] = url("", array('fragment' => ' ', 'external' => TRUE, 'attributes' => array('class' => 'edit-log-link')));
     }
 
     $overview[] = array(
-      'id_value' => $user_entry->uid,
-      'checkbox' => drupal_render($checkbox),
-      'status' => theme('traffic_light', $status_code),
-      'status_value' => $status_code,
-      'name' => l($user_entry->name, "user/$user_entry->uid", array('query' => 'destination=tzuser')),
-      'name_value' => $user_entry->name,
+      'id' => intval($user_entry->uid),
+      'username' => $user_entry->name,
       'fullname' => $user_entry->fullname,
       'mobile' => empty($user_entry->mobile) ? '' : $user_entry->mobile,
-      'due_count' => theme('due_reports_count', $status->getNumberOfDueReports()),
-      'login' => theme('time_ago', $user_entry->login),
-      'login_value' => $user_entry->login,
-      'operations' => implode(' | ', $operations),
+      'status' => $status_code,
+      'status_name' => tzuser_get_user_status_name($status_code),
+      'due_count' => $status->getNumberOfDueReports(),
+      'last_login' => intval($user_entry->login, 10),
+      'user_agent' => $user_entry->user_agent,
+      'client_version' => $user_entry->version_code,
+      'manager_id' => empty($user_entry->manager) ? NULL : intval($user_entry->manager),
+      'manager_url' => empty($user_entry->manager) ? NULL : url('api/users/' . $user_entry->manager, array('absolute' => TRUE)),
+      'url' => url('api/users/' . $user_entry->uid, array('absolute' => TRUE)),
     );
   }
 
@@ -73,7 +81,7 @@ function tzuser_api_list_users() {
   print json_encode($overview);
 }
 
-function _tzuser_api_request_date() {
+function _tzuser_api_list_users_request_date() {
   $date = date_make_date('now');
 
   // Handle date setting

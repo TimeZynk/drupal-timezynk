@@ -97,7 +97,7 @@ class GetAvailabilityIntervalHandlerTest extends PHPUnit_Framework_TestCase {
     $this->store->expects($this->once())
       ->method('getAvailabilityIntervals')
       ->will($this->returnValue($intervals));
-    
+
     $this->handler->handle($this->command, $this->result);
     $this->assertEquals(1, $this->result->get_availability_intervals_result()->days_in_advance());
   }
@@ -113,7 +113,7 @@ class GetAvailabilityIntervalHandlerTest extends PHPUnit_Framework_TestCase {
     $this->store->expects($this->once())
       ->method('getAvailabilityIntervals')
       ->will($this->returnValue($intervals));
-    
+
     $this->handler->handle($this->command, $this->result);
     $this->assertEquals(23, $this->result->get_availability_intervals_result()->days_in_advance());
     $this->assertTrue($this->result->get_availability_intervals_result()->enabled());
@@ -126,7 +126,7 @@ class GetAvailabilityIntervalHandlerTest extends PHPUnit_Framework_TestCase {
     $this->store->expects($this->once())
       ->method('getAvailabilityIntervals')
       ->will($this->returnValue($intervals));
-    
+
     $this->handler->handle($this->command, $this->result);
     $this->assertEquals(0, $this->result->get_availability_intervals_result()->days_in_advance());
   }
