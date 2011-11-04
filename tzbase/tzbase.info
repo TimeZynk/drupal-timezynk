@@ -3,6 +3,7 @@ description = Provides TimeZynk data types and relations
 package = TimeZynk
 
 dependencies[] = tzuser
+dependencies[] = tzapi
 dependencies[] = libraries
 dependencies[] = date_api
 dependencies[] = date_timezone

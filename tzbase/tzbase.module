@@ -82,6 +82,13 @@ function tzbase_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'includes/tzbase.availability.inc',
   );
+  $items['api/sites'] = array(
+    'page callback' => 'tzbase_api_sites_index',
+    'access callback' => 'tzapi_authorize',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/api.inc',
+    'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 
