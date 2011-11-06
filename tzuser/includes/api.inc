@@ -70,7 +70,7 @@ function tzuser_api_list_users() {
       'due_count' => $status->getNumberOfDueReports(),
       'last_login' => intval($user_entry->login, 10),
       'user_agent' => $user_entry->user_agent,
-      'client_version' => $user_entry->version_code,
+      'client_version' => $user_entry->version_code ? intval($user_entry->version_code, 10) : NULL,
       'manager_id' => empty($user_entry->manager) ? NULL : intval($user_entry->manager),
       'manager_url' => empty($user_entry->manager) ? NULL : url('api/users/' . $user_entry->manager, array('absolute' => TRUE)),
       'url' => url('api/users/' . $user_entry->uid, array('absolute' => TRUE)),

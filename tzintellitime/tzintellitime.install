@@ -66,6 +66,12 @@ function tzintellitime_update_6002() {
   return $ret;
 }
 
+function tzintellitime_update_6003() {
+  $ret = array();
+  db_add_index($ret, 'tzintellitime', 'intellitime_id', array('intellitime_id'));
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
@@ -110,6 +116,7 @@ function tzintellitime_schema() {
     'primary key' => array('vid'),
     'indexes' => array(
       'nid' => array('nid'),
+      'intellitime_id' => array('intellitime_id'),
     ),
   );
   return $schema;
