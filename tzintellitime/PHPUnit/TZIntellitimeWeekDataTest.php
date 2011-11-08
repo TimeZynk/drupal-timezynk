@@ -277,6 +277,153 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
     $this->assertThat($updatedReports[1]->intellitime_id, $this->stringContains('mhbLP96iqH3NYRRYH%2fOlM4hbku5Eii3'));
   }
 
+  function testDeletedNewAndUpdated() {
+    /* Changes an existing report, deletes one report and adds a new report
+     * at the same time. Will need multiple posts to ensure update, first unlock,
+     * then update the changed report, then add the new report and finally update
+     * the new report.
+     */
+    $weekData = $this->loadHTMLFile('intellitime-v9-timereport-two-done.txt');
+    $expectedAction = 'TimeReport/TimeReport.aspx?DateInWeek=2011-01-28';
+
+    $reports = array(
+      createMockReport('mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3', '2011-01-25', '08:05', '15:10', 15, 1, TZFlags::REPORTED),
+      createMockReport('mhbLP96iqH3NYRRYH%2fOlM4hbku5Eii3', '2011-01-26', '08:00', '16:30', 30, 1, TZFlags::DELETED),
+      createMockReport(NULL, '2011-01-26', '08:00', '16:30', 30, 1, TZFlags::REPORTED),
+    );
+    $reports[2]->intellitime_jobid = 6200;
+
+    $updatedReports = $weekData->updateReports($reports, $this->account);
+    $this->assertEquals(3, count($updatedReports));
+    $this->assertEquals(TZFlags::REPORTED, $updatedReports[0]->flags);
+    $this->assertEquals(TZFlags::DELETED, $updatedReports[1]->flags);
+    $this->assertEquals(TZFlags::REPORTED, $updatedReports[2]->flags);
+
+    // First POST, expect a unlock
+    $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
+      rawurlencode('dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb2hhbiBIZWFuZGVyOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjtpPDI+Oz47bDxwPCBbVmlzYSBhbGxhIHVwcGRyYWddIDswPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw0Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwxPjs+PjtsPGk8MD47PjtsPHQ8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxkaXNhYmxlZDtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMztFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMzs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcZTs+Ozs+Oz4+Oz4+Oz4+O3Q8O2w8aTwxMz47aTwxNT47aTwxNz47aTwxOT47aTwyMT47aTwyMz47aTwyNz47aTwyOT47aTwzMz47PjtsPHQ8dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+O3A8bDxpPDE+O2k8Mj47aTwzPjtpPDQ+O2k8NT47aTw2PjtpPDc+Oz47bDxwPG3DpSwgMjQvMDEgOzIwMTEtMDEtMjQ+O3A8dGksIDI1LzAxIDsyMDExLTAxLTI1PjtwPG9uLCAyNi8wMSA7MjAxMS0wMS0yNj47cDx0bywgMjcvMDEgOzIwMTEtMDEtMjc+O3A8ZnIsIDI4LzAxIDsyMDExLTAxLTI4PjtwPGzDtiwgMjkvMDEgOzIwMTEtMDEtMjk+O3A8c8O2LCAzMC8wMSA7MjAxMS0wMS0zMD47Pj47Pjs7Pjt0PHQ8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47PjtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0Pjs+O2w8cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIFRydWNrZsO2cmFyZTs2MjAwPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgTGFnZXJhcmJldGFyZTs1OTgzPjtwPC0tLTstMT47cDxcZTtfQUNfPjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxsPFZpc2libGU7PjtsPG88Zj47Pj47bDxpPDE+Oz47bDx0PDtsPGk8MT47PjtsPHQ8cDxwPGw8VGV4dDs+O2w8XGU7Pj47Pjs7Pjs+Pjs+Pjs+Pjt0PHA8cDxsPFRleHQ7PjtsPFVwcGRhdGVyYTs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDtWaXNpYmxlOz47bDxWZWNrYSBLbGFyO288Zj47Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7VmlzaWJsZTs+O2w8w4RuZHJhIHZlY2thO288dD47Pj47Pjs7Pjs+Pjs+PjtsPE9sZFJvd3NSZXBlYXRlcjpfY3RsMDpDaGVja2JveERheURvbmU7RnVsbERheUNoZWNrQm94Oz4+')
+        . '&DoPost=true&CustOrdersDropDown=0'
+        . '&OldRowsRepeater%3A_ctl0%3ACheckboxDayDone=on&OldRowsRepeater%3A_ctl0%3ADateFromHidden=08%3A00&OldRowsRepeater%3A_ctl0%3ADateToHidden=17%3A00&OldRowsRepeater%3A_ctl0%3ABreakHidden=none&OldRowsRepeater%3A_ctl0%3AOverTimeHidden=none'
+        . '&OldRowsRepeater%3A_ctl1%3ACheckboxDayDone=on&OldRowsRepeater%3A_ctl1%3ADateFromHidden=08%3A00&OldRowsRepeater%3A_ctl1%3ADateToHidden=17%3A00&OldRowsRepeater%3A_ctl1%3ABreakHidden=none&OldRowsRepeater%3A_ctl1%3AOverTimeHidden=none'
+        . '&AddDateDropDown=&AddRowDropDown=&AddTimeFromTextBox=&AddTimeToTextBox=&AddBreakTextBox=&AddExplicitOvertimeTextBox=&AddNoteTextBox=&ChangeButton=%C3%84ndra+vecka';
+    $expectedPost = toPostHash($postString);
+
+    $this->server->expects($this->at(0))
+                 ->method('post')
+                 ->with($expectedAction, $expectedPost)
+                 ->will($this->returnValue($this->readFile('intellitime-v9-timereport-two-open.txt')));
+    $post = $weekData->buildPost($updatedReports);
+    $this->assertInstanceOf('IntellitimeWeekUnlockPost', $post);
+    $weekData = new TZIntellitimeWeekData($post->post());
+    $updatedReports = $weekData->postProcessPost($post, $updatedReports, $this->account);
+
+    // Second POST, expect a post to delete the second report
+    $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
+      rawurlencode('dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb2hhbiBIZWFuZGVyOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjtpPDI+Oz47bDxwPCBbVmlzYSBhbGxhIHVwcGRyYWddIDswPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw0Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwxPjs+PjtsPGk8MD47PjtsPHQ8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxkaXNhYmxlZDtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMztFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMzs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcZTs+Ozs+Oz4+Oz4+Oz4+O3Q8O2w8aTwxMz47aTwxNT47aTwxNz47aTwxOT47aTwyMT47aTwyMz47aTwyNz47aTwyOT47aTwzMz47PjtsPHQ8dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+O3A8bDxpPDE+O2k8Mj47aTwzPjtpPDQ+O2k8NT47aTw2PjtpPDc+Oz47bDxwPG3DpSwgMjQvMDEgOzIwMTEtMDEtMjQ+O3A8dGksIDI1LzAxIDsyMDExLTAxLTI1PjtwPG9uLCAyNi8wMSA7MjAxMS0wMS0yNj47cDx0bywgMjcvMDEgOzIwMTEtMDEtMjc+O3A8ZnIsIDI4LzAxIDsyMDExLTAxLTI4PjtwPGzDtiwgMjkvMDEgOzIwMTEtMDEtMjk+O3A8c8O2LCAzMC8wMSA7MjAxMS0wMS0zMD47Pj47Pjs7Pjt0PHQ8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47PjtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0Pjs+O2w8cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIFRydWNrZsO2cmFyZTs2MjAwPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgTGFnZXJhcmJldGFyZTs1OTgzPjtwPC0tLTstMT47cDxcZTtfQUNfPjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxsPFZpc2libGU7PjtsPG88Zj47Pj47bDxpPDE+Oz47bDx0PDtsPGk8MT47PjtsPHQ8cDxwPGw8VGV4dDs+O2w8XGU7Pj47Pjs7Pjs+Pjs+Pjs+Pjt0PHA8cDxsPFRleHQ7PjtsPFVwcGRhdGVyYTs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDtWaXNpYmxlOz47bDxWZWNrYSBLbGFyO288Zj47Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7VmlzaWJsZTs+O2w8w4RuZHJhIHZlY2thO288dD47Pj47Pjs7Pjs+Pjs+PjtsPE9sZFJvd3NSZXBlYXRlcjpfY3RsMDpDaGVja2JveERheURvbmU7RnVsbERheUNoZWNrQm94Oz4+')
+        . '&DoPost=true&CustOrdersDropDown=0'
+        . '&OldRowsRepeater%3A_ctl0%3ATextboxTimeFrom=08%3A00&OldRowsRepeater%3A_ctl0%3ADateFromHidden=08%3A00&OldRowsRepeater%3A_ctl0%3ATextboxTimeTo=17%3A00&OldRowsRepeater%3A_ctl0%3ADateToHidden=17%3A00&OldRowsRepeater%3A_ctl0%3ATextboxNote=&OldRowsRepeater%3A_ctl0%3ATextboxBreak=60&OldRowsRepeater%3A_ctl0%3ABreakHidden=none&OldRowsRepeater%3A_ctl0%3ATextboxExplicitOvertime=0&OldRowsRepeater%3A_ctl0%3AOverTimeHidden=none'
+        . '&OldRowsRepeater%3A_ctl1%3ACheckBoxDelete=on&OldRowsRepeater%3A_ctl1%3ATextboxTimeFrom=08%3A00&OldRowsRepeater%3A_ctl1%3ADateFromHidden=08%3A00&OldRowsRepeater%3A_ctl1%3ATextboxTimeTo=16%3A30&OldRowsRepeater%3A_ctl1%3ADateToHidden=16%3A30&OldRowsRepeater%3A_ctl1%3ATextboxNote=&OldRowsRepeater%3A_ctl1%3ATextboxBreak=30&OldRowsRepeater%3A_ctl1%3ABreakHidden=none&OldRowsRepeater%3A_ctl1%3ATextboxExplicitOvertime=0&OldRowsRepeater%3A_ctl1%3AOverTimeHidden=none'
+        . '&AddDateDropDown=&AddRowDropDown=&AddTimeFromTextBox=&AddTimeToTextBox=&AddBreakTextBox=&AddExplicitOvertimeTextBox=&AddNoteTextBox=&UpdateButton=Uppdatera';
+    $expectedPost = toPostHash($postString);
+    $this->server->expects($this->at(0))
+                 ->method('post')
+                 ->with($expectedAction, $expectedPost)
+                 ->will($this->returnValue($this->readFile('intellitime-v9-timereport-single-open.txt')));
+    $post = $weekData->buildPost($updatedReports);
+    $this->assertInstanceOf('IntellitimeWeekDeletePost', $post);
+    $weekData = new TZIntellitimeWeekData($post->post());
+    $updatedReports = $weekData->postProcessPost($post, $updatedReports, $this->account);
+
+    // Third POST, expect a post to update the first report
+    $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
+      rawurlencode('dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb2hhbiBIZWFuZGVyOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjtpPDI+Oz47bDxwPCBbVmlzYSBhbGxhIHVwcGRyYWddIDswPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw1Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwxPjs+PjtsPGk8MD47PjtsPHQ8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxcZTtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMztFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMzs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcPG9wdGlvblw+W0tsaWNrYSBow6RyXVw8L29wdGlvblw+Oz47Oz47Pj47Pj47Pj47dDw7bDxpPDEzPjtpPDE1Pjs+O2w8dDx0PDtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0PjtpPDU+O2k8Nj47aTw3Pjs+O2w8cDxtw6UsIDI0LzAxIDsyMDExLTAxLTI0PjtwPHRpLCAyNS8wMSA7MjAxMS0wMS0yNT47cDxvbiwgMjYvMDEgOzIwMTEtMDEtMjY+O3A8dG8sIDI3LzAxIDsyMDExLTAxLTI3PjtwPGZyLCAyOC8wMSA7MjAxMS0wMS0yOD47cDxsw7YsIDI5LzAxIDsyMDExLTAxLTI5PjtwPHPDtiwgMzAvMDEgOzIwMTEtMDEtMzA+Oz4+Oz47Oz47dDx0PDtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0Pjs+O2w8cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIFRydWNrZsO2cmFyZTs2MjAwPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgTGFnZXJhcmJldGFyZTs1OTgzPjtwPC0tLTstMT47cDxcZTtfQUNfPjs+Pjs+Ozs+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8VXBwZGF0ZXJhOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxWZWNrYSBLbGFyOz4+Oz47Oz47dDxwPHA8bDxUZXh0O1Zpc2libGU7PjtsPMOEbmRyYSB2ZWNrYTtvPGY+Oz4+Oz47Oz47Pj47Pj47bDxPbGRSb3dzUmVwZWF0ZXI6X2N0bDA6Q2hlY2tib3hEYXlEb25lO09sZFJvd3NSZXBlYXRlcjpfY3RsMDpDaGVja0JveERlbGV0ZTtGdWxsRGF5Q2hlY2tCb3g7Pj4=')
+        . '&DoPost=true&CustOrdersDropDown=0&OldRowsRepeater%3A_ctl0%3ACheckboxDayDone=on&OldRowsRepeater%3A_ctl0%3ATextboxTimeFrom=08%3A05&OldRowsRepeater%3A_ctl0%3ADateFromHidden=08%3A00&OldRowsRepeater%3A_ctl0%3ATextboxTimeTo=15%3A10&OldRowsRepeater%3A_ctl0%3ADateToHidden=17%3A00&OldRowsRepeater%3A_ctl0%3ATextboxNote=&OldRowsRepeater%3A_ctl0%3ATextboxBreak=15&OldRowsRepeater%3A_ctl0%3ABreakHidden=none&OldRowsRepeater%3A_ctl0%3ATextboxExplicitOvertime=0&OldRowsRepeater%3A_ctl0%3AOverTimeHidden=none&AddDateDropDown=&AddRowDropDown=&AddTimeFromTextBox=&AddTimeToTextBox=&AddBreakTextBox=&AddExplicitOvertimeTextBox=&AddNoteTextBox=&DoneButton=Vecka+Klar';
+    $expectedPost = toPostHash($postString);
+    $this->server->expects($this->at(0))
+                 ->method('post')
+                 ->with($expectedAction, $expectedPost)
+                 ->will($this->returnValue($this->readFile('intellitime-v9-timereport-single-done.txt')));
+    $post = $weekData->buildPost($updatedReports);
+    $this->assertInstanceOf('IntellitimeWeekUpdatePost', $post);
+    $weekData = new TZIntellitimeWeekData($post->post());
+    $updatedReports = $weekData->postProcessPost($post, $updatedReports, $this->account);
+
+    // Fourth POST, insert the new report
+    $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
+      rawurlencode('dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb2hhbiBIZWFuZGVyOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjtpPDI+Oz47bDxwPCBbVmlzYSBhbGxhIHVwcGRyYWddIDswPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw0Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwxPjs+PjtsPGk8MD47PjtsPHQ8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxkaXNhYmxlZDtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMztFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMzs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcZTs+Ozs+Oz4+Oz4+Oz4+O3Q8O2w8aTwxMz47aTwxNT47aTwxNz47aTwxOT47aTwyMT47aTwyMz47aTwyNz47aTwyOT47aTwzMz47PjtsPHQ8dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+O3A8bDxpPDE+O2k8Mj47aTwzPjtpPDQ+O2k8NT47aTw2PjtpPDc+Oz47bDxwPG3DpSwgMjQvMDEgOzIwMTEtMDEtMjQ+O3A8dGksIDI1LzAxIDsyMDExLTAxLTI1PjtwPG9uLCAyNi8wMSA7MjAxMS0wMS0yNj47cDx0bywgMjcvMDEgOzIwMTEtMDEtMjc+O3A8ZnIsIDI4LzAxIDsyMDExLTAxLTI4PjtwPGzDtiwgMjkvMDEgOzIwMTEtMDEtMjk+O3A8c8O2LCAzMC8wMSA7MjAxMS0wMS0zMD47Pj47Pjs7Pjt0PHQ8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47PjtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0Pjs+O2w8cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIFRydWNrZsO2cmFyZTs2MjAwPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgTGFnZXJhcmJldGFyZTs1OTgzPjtwPC0tLTstMT47cDxcZTtfQUNfPjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxsPFZpc2libGU7PjtsPG88Zj47Pj47bDxpPDE+Oz47bDx0PDtsPGk8MT47PjtsPHQ8cDxwPGw8VGV4dDs+O2w8XGU7Pj47Pjs7Pjs+Pjs+Pjs+Pjt0PHA8cDxsPFRleHQ7PjtsPFVwcGRhdGVyYTs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDtWaXNpYmxlOz47bDxWZWNrYSBLbGFyO288Zj47Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7VmlzaWJsZTs+O2w8w4RuZHJhIHZlY2thO288dD47Pj47Pjs7Pjs+Pjs+PjtsPE9sZFJvd3NSZXBlYXRlcjpfY3RsMDpDaGVja2JveERheURvbmU7RnVsbERheUNoZWNrQm94Oz4+')
+        . '&DoPost=true&CustOrdersDropDown=0'
+        . '&OldRowsRepeater%3A_ctl0%3ACheckboxDayDone=on&OldRowsRepeater%3A_ctl0%3ADateFromHidden=08%3A00&OldRowsRepeater%3A_ctl0%3ADateToHidden=17%3A00&OldRowsRepeater%3A_ctl0%3ABreakHidden=none&OldRowsRepeater%3A_ctl0%3AOverTimeHidden=none'
+        . '&AddDateDropDown=2011-01-26&AddRowDropDown=6200&AddTimeFromTextBox=08%3A00&AddTimeToTextBox=16%3A30&AddBreakTextBox=30&AddExplicitOvertimeTextBox=&AddNoteTextBox=&UpdateButton=Uppdatera';
+    $expectedPost = toPostHash($postString);
+    $this->server->expects($this->at(0))
+                 ->method('post')
+                 ->with($expectedAction, $expectedPost)
+                 ->will($this->returnValue(
+                          str_replace(
+                            'mhbLP96iqH3NYRRYH%2fOlM4hbku5Eii3',
+                            'mhbLP96iqH3ANOTHER%2fOlM4hbku5Eii3',
+                            $this->readFile('intellitime-v9-timereport-one-done-one-open.txt')
+                          )));
+    $post = $weekData->buildPost($updatedReports);
+    $this->assertInstanceOf('IntellitimeWeekInsertPost', $post);
+    $weekData = new TZIntellitimeWeekData($post->post());
+    $updatedReports = $weekData->postProcessPost($post, $updatedReports, $this->account);
+    $this->assertThat($updatedReports[2]->intellitime_id, $this->stringContains('mhbLP96iqH3ANOTHER%2fOlM4hbku5Eii3'));
+
+    // Fifth POST, unlock the old report
+    $this->server->expects($this->at(0))
+                 ->method('post')
+                 ->with($expectedAction, $this->anything())
+                 ->will($this->returnValue(
+                          str_replace(
+                            'mhbLP96iqH3NYRRYH%2fOlM4hbku5Eii3',
+                            'mhbLP96iqH3ANOTHER%2fOlM4hbku5Eii3',
+                            $this->readFile('intellitime-v9-timereport-two-open.txt')
+                          )));
+    $post = $weekData->buildPost($updatedReports);
+    $this->assertInstanceOf('IntellitimeWeekUnlockPost', $post);
+    $weekData = new TZIntellitimeWeekData($post->post());
+    $updatedReports = $weekData->postProcessPost($post, $updatedReports, $this->account);
+
+    // Sixth POST, update and lock both reports
+    $postString = '__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=' .
+      rawurlencode('dDwtMzc5NDU5ODQyO3Q8O2w8aTwwPjs+O2w8dDw7bDxpPDA+O2k8Mz47aTw0PjtpPDY+O2k8OT47aTwxMD47aTwxMT47aTwxMj47aTwxMz47PjtsPHQ8O2w8aTwwPjs+O2w8dDw7bDxpPDE+O2k8Mz47aTw3Pjs+O2w8dDxwPHA8bDxJbWFnZVVybDs+O2w8aHR0cDovL2lwd2ViLmludGVsbGlwbGFuLnNlL2t1bmRsb2dvLzQwOTQuanBnOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDxKb2hhbiBIZWFuZGVyOz4+Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8fi9JbWFnZXMvSW1nX0ludGVsbGlwbGFuTG9nb1doaXRlLmdpZjs+Pjs+Ozs+Oz4+Oz4+O3Q8cDxwPGw8VGV4dDs+O2w8NDs+Pjs+Ozs+O3Q8dDw7cDxsPGk8MD47aTwxPjtpPDI+Oz47bDxwPCBbVmlzYSBhbGxhIHVwcGRyYWddIDswPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgVHJ1Y2tmw7ZyYXJlOzYyMDA+O3A8VGVzdGbDtnJldGFnZXQgRWZmZWt0LCBMYWdlcmFyYmV0YXJlOzU5ODM+Oz4+O2w8aTwwPjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTw0Pjs+Pjs7Pjt0PHA8bDxfIUl0ZW1Db3VudDs+O2w8aTwxPjs+PjtsPGk8MD47PjtsPHQ8O2w8aTwzNz47PjtsPHQ8O2w8aTwwPjtpPDE+O2k8Mj47PjtsPHQ8QDxkaXNhYmxlZDtFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMztFeHBlbnNlLmFzcHg/bWhiTFA5NmlxSDNpSDA1UllIJTJmT2xNNGhia3U1RWlpMzs+Ozs+O3Q8cDxsPF8hSXRlbUNvdW50Oz47bDxpPDA+Oz4+Ozs+O3Q8QDxcZTs+Ozs+Oz4+Oz4+Oz4+O3Q8O2w8aTwxMz47aTwxNT47aTwxNz47aTwxOT47aTwyMT47aTwyMz47aTwyNz47aTwyOT47aTwzMz47PjtsPHQ8dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+O3A8bDxpPDE+O2k8Mj47aTwzPjtpPDQ+O2k8NT47aTw2PjtpPDc+Oz47bDxwPG3DpSwgMjQvMDEgOzIwMTEtMDEtMjQ+O3A8dGksIDI1LzAxIDsyMDExLTAxLTI1PjtwPG9uLCAyNi8wMSA7MjAxMS0wMS0yNj47cDx0bywgMjcvMDEgOzIwMTEtMDEtMjc+O3A8ZnIsIDI4LzAxIDsyMDExLTAxLTI4PjtwPGzDtiwgMjkvMDEgOzIwMTEtMDEtMjk+O3A8c8O2LCAzMC8wMSA7MjAxMS0wMS0zMD47Pj47Pjs7Pjt0PHQ8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47PjtwPGw8aTwxPjtpPDI+O2k8Mz47aTw0Pjs+O2w8cDxUZXN0ZsO2cmV0YWdldCBFZmZla3QsIFRydWNrZsO2cmFyZTs2MjAwPjtwPFRlc3Rmw7ZyZXRhZ2V0IEVmZmVrdCwgTGFnZXJhcmJldGFyZTs1OTgzPjtwPC0tLTstMT47cDxcZTtfQUNfPjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxwPGw8QmFja0NvbG9yO18hU0I7PjtsPDI8XGU+O2k8OD47Pj47Pjs7Pjt0PHA8cDxsPEJhY2tDb2xvcjtfIVNCOz47bDwyPFxlPjtpPDg+Oz4+Oz47Oz47dDxwPHA8bDxCYWNrQ29sb3I7XyFTQjs+O2w8MjxcZT47aTw4Pjs+Pjs+Ozs+O3Q8cDxsPFZpc2libGU7PjtsPG88Zj47Pj47bDxpPDE+Oz47bDx0PDtsPGk8MT47PjtsPHQ8cDxwPGw8VGV4dDs+O2w8XGU7Pj47Pjs7Pjs+Pjs+Pjs+Pjt0PHA8cDxsPFRleHQ7PjtsPFVwcGRhdGVyYTs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDtWaXNpYmxlOz47bDxWZWNrYSBLbGFyO288Zj47Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7VmlzaWJsZTs+O2w8w4RuZHJhIHZlY2thO288dD47Pj47Pjs7Pjs+Pjs+PjtsPE9sZFJvd3NSZXBlYXRlcjpfY3RsMDpDaGVja2JveERheURvbmU7RnVsbERheUNoZWNrQm94Oz4+')
+        . '&DoPost=true&CustOrdersDropDown=0&'
+        . 'OldRowsRepeater%3A_ctl0%3ABreakHidden=none&OldRowsRepeater%3A_ctl0%3ACheckboxDayDone=on&OldRowsRepeater%3A_ctl0%3ADateFromHidden=08%3A00&OldRowsRepeater%3A_ctl0%3ADateToHidden=17%3A00&OldRowsRepeater%3A_ctl0%3AOverTimeHidden=none&OldRowsRepeater%3A_ctl0%3ATextboxBreak=15&OldRowsRepeater%3A_ctl0%3ATextboxExplicitOvertime=0&OldRowsRepeater%3A_ctl0%3ATextboxNote=&OldRowsRepeater%3A_ctl0%3ATextboxTimeFrom=08%3A05&OldRowsRepeater%3A_ctl0%3ATextboxTimeTo=15%3A10&'
+        . 'OldRowsRepeater%3A_ctl1%3ABreakHidden=none&OldRowsRepeater%3A_ctl1%3ACheckboxDayDone=on&OldRowsRepeater%3A_ctl1%3ADateFromHidden=08%3A00&OldRowsRepeater%3A_ctl1%3ADateToHidden=16%3A30&OldRowsRepeater%3A_ctl1%3AOverTimeHidden=none&OldRowsRepeater%3A_ctl1%3ATextboxBreak=30&OldRowsRepeater%3A_ctl1%3ATextboxExplicitOvertime=0&OldRowsRepeater%3A_ctl1%3ATextboxNote=&OldRowsRepeater%3A_ctl1%3ATextboxTimeFrom=08%3A00&OldRowsRepeater%3A_ctl1%3ATextboxTimeTo=16%3A30&'
+        . 'AddDateDropDown=&AddRowDropDown=&AddTimeFromTextBox=&AddTimeToTextBox=&AddBreakTextBox=&AddExplicitOvertimeTextBox=&AddNoteTextBox=&DoneButton=Vecka+Klar';
+    $expectedPost = toPostHash($postString);
+    $this->server->expects($this->at(0))
+                 ->method('post')
+                 ->with($expectedAction, $expectedPost)
+                 ->will($this->returnValue(
+                          str_replace(
+                            'mhbLP96iqH3NYRRYH%2fOlM4hbku5Eii3',
+                            'mhbLP96iqH3ANOTHER%2fOlM4hbku5Eii3',
+                            $this->readFile('intellitime-v9-timereport-two-done.txt')
+                          )));
+    $post = $weekData->buildPost($updatedReports);
+    $this->assertInstanceOf('IntellitimeWeekUpdatePost', $post);
+    $weekData = new TZIntellitimeWeekData($post->post());
+    $updatedReports = $weekData->postProcessPost($post, $updatedReports, $this->account);
+
+    // Seventh round, no POST this time
+    $post = $weekData->buildPost($updatedReports);
+    $this->assertNull($post);
+
+    // Run final update and check report states
+    $updatedReports = $weekData->updateReports($updatedReports, $this->account, TRUE);
+    $this->assertEquals(3, count($updatedReports));
+    $this->assertEquals(TZFlags::REPORTED, $updatedReports[0]->flags);
+    $this->assertEquals(0, $updatedReports[0]->intellitime_local_changes);
+    $this->assertEquals(TZFlags::DELETED, $updatedReports[1]->flags);
+    $this->assertEquals(0, $updatedReports[1]->intellitime_local_changes);
+    $this->assertEquals(TZFlags::REPORTED, $updatedReports[2]->flags);
+    $this->assertReportTimes('2011-01-26', '08:00', '16:30', 30, $updatedReports[2]);
+    $this->assertThat($updatedReports[2]->intellitime_id, $this->stringContains('mhbLP96iqH3ANOTHER%2fOlM4hbku5Eii3'));
+    $this->assertEquals(0, $updatedReports[2]->intellitime_local_changes);
+  }
+
   function testV9AdminAbsenceAndRegularReportsCanBeMarkedDoneForWholeWeek() {
     $weekData = $this->loadHTMLFile('intellitime-v9-timereport-one-absence-two-done-one-open.txt');
 

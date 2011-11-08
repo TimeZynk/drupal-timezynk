@@ -26,13 +26,13 @@ class IntellitimeWeekUpdatePost extends IntellitimeWeekPost {
 
     if($this->allReportsDone) {
       if(empty($post['DoneButton'])) {
-        throw new TZIntellitimeInconsistentPost('Done button not found: ' . print_r($post, TRUE), $this->doc->saveXML());
+        throw new TZIntellitimeInconsistentPost('Done button not found: ' . print_r($post, TRUE), strval($this->parser));
       }
       unset($post['UpdateButton']);
       unset($post['ChangeButton']);
     } else {
       if(empty($post['UpdateButton'])) {
-        throw new TZIntellitimeInconsistentPost('Update button not found', $this->doc->saveXML());
+        throw new TZIntellitimeInconsistentPost('Update button not found', strval($this->parser));
       }
       unset($post['DoneButton']);
       unset($post['ChangeButton']);

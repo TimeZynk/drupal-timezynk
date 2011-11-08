@@ -38,6 +38,13 @@ class IntellitimeWeekPage extends IntellitimeAuthenticatedPage {
     return $this->parser->parse_unfinished_weeks();
   }
 
+  public function getDeletePost(array $itreports) {
+    $post = new IntellitimeWeekDeletePost($this->server, $this->getForm());
+    $post->setReports($itreports)
+         ->setParser($this->parser);
+    return $post;
+  }
+
   public function getUpdatePost(array $itreports, $allReportsDone) {
     $post = new IntellitimeWeekUpdatePost($this->server, $this->getForm());
     $post->setReports($itreports)

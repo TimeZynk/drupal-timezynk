@@ -48,6 +48,10 @@ function __tzintellitime_autoload($class_name) {
     case 'IntellitimeSynchronizationDriver':
       require dirname(__FILE__) . '/includes/IntellitimeSynchronizationDriver.class.inc';
       return TRUE;
+    case 'IntellitimeWeekDeletePost':
+    case 'IntellitimeWeekPageDeletedFinal':
+      require dirname(__FILE__) . '/includes/IntellitimeWeekDeletePost.class.inc';
+      return TRUE;
     case 'IntellitimeWeekInsertPost':
       require dirname(__FILE__) . '/includes/IntellitimeWeekInsertPost.class.inc';
       return TRUE;

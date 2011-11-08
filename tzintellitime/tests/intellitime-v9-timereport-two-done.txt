@@ -539,7 +539,7 @@ myWindow.focus();
 										<td id="OldRowsRepeater__ctl1_td17" width="8" class="TimeReportOldRow" bgcolor="#ffffff"><img src="../Images/Trans.gif" width="8" height="15" border="0"></td>
 
 										<td id="OldRowsRepeater__ctl1_td18" width="120" rowspan="2" class="TimeReportOldRow" valign="top" bgcolor="#ffffff">
-											<select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3" disabled class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH3NYRRYH%2fOlM4hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3');">
+											<select id="SelectExpenses" style="CURSOR: wait" name="Expense" size="3" disabled class="TimeReportListBox" style="width: 120px" onclick="OpenExpense(this, 'Expense.aspx?mhbLP96iqH3NYRRYH%2fOlM4hbku5Eii3');" onchange="OpenExpense(this, 'Expense.aspx?mhbLP96iqH3NYRRYH%2fOlM4hbku5Eii3');">
 
 
 											</select>
@@ -702,7 +702,7 @@ myWindow.focus();
 									<table border="0">
 										<tr>
 											<td width="10"><IMG height="5" src="../Images/Trans.gif" width="10" border="0"></td>
-											<td vAlign="middle" align="left" width="30%"><input type="submit" name="UpdateButton" value="Uppdatera" id="UpdateButton" /><input type="submit" name="DoneButton" value="Vecka Klar" id="DoneButton" /></td>
+											<td vAlign="middle" align="left" width="30%"><input type="submit" name="UpdateButton" value="Uppdatera" id="UpdateButton" /><input type="submit" name="ChangeButton" value="Ändra vecka" id="ChangeButton" /></td>
 											<td width="5"><IMG height="30" src="../Images/Trans.gif" width="10" border="0"></td>
 											<td class="SubjectRow" vAlign="middle" align="right" width="30%"><b><span id="Translatedlabel22">Summa timmar:</span></b></td>
 											<td width="5"><IMG height="30" src="../Images/Trans.gif" width="5" border="0"></td>

@@ -302,4 +302,8 @@ class IntellitimeWeekPageParser {
 
     return $break_duration_minutes;
   }
+
+  public function __toString() {
+    return $this->doc->saveXML();
+  }
 }

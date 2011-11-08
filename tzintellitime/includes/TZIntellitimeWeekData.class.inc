@@ -50,20 +50,43 @@ class TZIntellitimeWeekData {
    * @return TZPostData
    */
   function buildPost(array $tzreports) {
-    $allReportsDone = TRUE;
-    $unlockImmutable = FALSE;
-    $needsUpdating = array();
-    $needsUnlocking = array();
-    $needsInserting = array();
-    $seenReportIDs = array();
+    if ($post = $this->buildUnlockPost($tzreports)) {
+      return $post;
+    } else if ($post = $this->buildDeletePost($tzreports)) {
+      return $post;
+    } else if ($post = $this->buildUpdatePost($tzreports)) {
+      return $post;
+    } else if ($post = $this->buildInsertPost($tzreports)) {
+      return $post;
+    } else {
+      return NULL;
+    }
+  }
+
+  function buildInsertPost($tzreports) {
+    $needsInserting = NULL;
     foreach($tzreports as $tzreport) {
       if (empty($tzreport->intellitime_id) &&
           $tzreport->flags < TZFlags::DELETED &&
           !empty($tzreport->intellitime_jobid)) {
-        $needsInserting[] = $tzreport;
-        continue;
+        $needsInserting = $tzreport;
+        break;
       }
+    }
 
+    if ($needsInserting) {
+      $itreport = new TZIntellitimeReport($needsInserting);
+      return $this->page->getInsertPost($needsInserting->nid, $itreport);
+    }
+
+    return NULL;
+  }
+
+  private function buildUpdatePost($tzreports) {
+    $allReportsDone = TRUE;
+    $needsUpdating = array();
+    $seenReportIDs = array();
+    foreach($tzreports as $tzreport) {
       $row = $this->findReportRow($tzreport);
       if(empty($row)) {
         continue;
@@ -76,17 +99,8 @@ class TZIntellitimeWeekData {
       }
 
       $itreport = new TZIntellitimeReport($tzreport);
-
-      if($tzreport->intellitime_local_changes) {
-        $needsUpdating[] = $itreport;
-
-        if($row->state == TZIntellitimeReport::STATE_REPORTED) {
-          $needsUnlocking[] = $itreport;
-          if($row->stateImmutable) {
-            $unlockImmutable = TRUE;
-          }
-        }
-      } else if($this->stateChangedAndCanModify($itreport, $row)) {
+      if ($tzreport->intellitime_local_changes ||
+          $this->stateChangedAndCanModify($itreport, $row)) {
         $needsUpdating[] = $itreport;
       }
     }
@@ -97,22 +111,58 @@ class TZIntellitimeWeekData {
      */
     $allReportsDone = $allReportsDone && $this->checkIfReportRowsDone($seenReportIDs);
 
-    $post = NULL;
+    if (!empty($needsUpdating)) {
+      return $this->page->getUpdatePost($needsUpdating, $allReportsDone);
+    }
+    return NULL;
+  }
+
+  private function buildDeletePost($tzreports) {
+    $needsDeletion = array();
+    foreach($tzreports as $tzreport) {
+      if ($tzreport->flags != TZFlags::DELETED) {
+        continue;
+      }
+
+      $row = $this->findReportRow($tzreport);
+      if(empty($row)) {
+        continue;
+      }
+
+      if ($tzreport->intellitime_local_changes ||
+          $this->stateChangedAndCanModify($itreport, $row)) {
+        $needsDeletion[] = new TZIntellitimeReport($tzreport);
+      }
+    }
+
+    if (!empty($needsDeletion)) {
+      return $this->page->getDeletePost($needsDeletion);
+    }
+    return NULL;
+  }
+
+  private function buildUnlockPost($tzreports) {
+    $unlockImmutable = FALSE;
+    $needsUnlocking = array();
+
+    foreach($tzreports as $tzreport) {
+      $row = $this->findReportRow($tzreport);
+      if (!empty($row) &&
+          $tzreport->intellitime_local_changes &&
+          $row->state == TZIntellitimeReport::STATE_REPORTED) {
+
+        $needsUnlocking[] = new TZIntellitimeReport($tzreport);
+
+        if($row->stateImmutable) {
+          $unlockImmutable = TRUE;
+        }
+      }
+    }
+
     if(!empty($needsUnlocking)) {
-      $post = $this->page->getUnlockPost($needsUnlocking, $unlockImmutable);
+      return $this->page->getUnlockPost($needsUnlocking, $unlockImmutable);
     }
-
-    if (!$post && !empty($needsUpdating)) {
-      $post = $this->page->getUpdatePost($needsUpdating, $allReportsDone);
-    }
-
-    if (!$post && !empty($needsInserting)) {
-      $tzreport = $needsInserting[0];
-      $itreport = new TZIntellitimeReport($tzreport);
-      $post = $this->page->getInsertPost($tzreport->nid, $itreport);
-    }
-
-    return $post;
+    return NULL;
   }
 
   /**
