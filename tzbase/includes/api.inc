@@ -4,11 +4,17 @@
  * List all neighbouring site URLs
  */
 function tzbase_api_sites_index() {
+  $sites_dir = getcwd() . '/sites';
   $files = scandir(getcwd() . '/sites');
-  $sites = array_filter($files, function($f) {
-    return !in_array($f, array('.', '..', 'all', 'default'));
+  $sites = array_filter($files, function($f) use ($sites_dir) {
+    if ($f[0] == '.' ||
+        $f == 'all' ||
+        $f == 'default') {
+      return FALSE;
+    }
+    return is_file("$sites_dir/$f/settings.php");
   });
-  $prefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+  $prefix = !empty($_SERVER['HTTPS']) ? 'https' : 'http';
   $sites = array_map(function($s) use ($prefix) {
     return $prefix . '://' . $s . '/';
   }, $sites);
