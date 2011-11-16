@@ -17,3 +17,12 @@ function tzbase_api_sites_index() {
   drupal_set_header('Content-Type: application/json; charset=utf-8');
   print json_encode($sites);
 }
+
+function tzbase_api_info() {
+  $info = array(
+    'name' => variable_get('site_name'),
+    'url' => url('/', array('absolute' => TRUE))
+  );
+  drupal_set_header('Content-Type: application/json; charset=utf-8');
+  print json_encode($info);
+}
