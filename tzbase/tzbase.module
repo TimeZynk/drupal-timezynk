@@ -5,10 +5,7 @@
 
 require_once dirname(__FILE__) . '/tzbase.autoload.inc';
 
-/**
- * Flag marking that a time report for this job needs a signature at every submission
- */
-define('TZJOB_SIGNATURE_EVERY_POST', 1);
+define('TZBASE_REPORT_CLEANUP_AGE', 180*24*3600);
 
 /**
  * Implementation of hook_help().
@@ -97,6 +94,11 @@ function tzbase_menu() {
     'type' => MENU_CALLBACK,
   );
   return $items;
+}
+
+function tzbase_cron() {
+  /* Clear old deleted reports */
+
 }
 
 /**
