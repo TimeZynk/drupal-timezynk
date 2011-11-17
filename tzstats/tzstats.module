@@ -49,6 +49,13 @@ function tzstats_menu() {
     'file' => 'includes/tzstats.api.inc',
     'type' => MENU_CALLBACK,
   );
+  $items['api/stats/reports'] = array(
+    'page callback' => 'tzstats_api_reports',
+    'access callback' => 'tzapi_authorize',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/tzstats.api.inc',
+    'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 
