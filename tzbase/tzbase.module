@@ -98,7 +98,14 @@ function tzbase_menu() {
 
 function tzbase_cron() {
   /* Clear old deleted reports */
-
+  $cutoff = time() - TZBASE_REPORT_CLEANUP_AGE;
+  $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE t.flags = 255 AND n.changed < %d', $cutoff);
+  $count = 0;
+  while ($entry = db_fetch_object($result)) {
+    node_delete($entry->nid);
+    $count++;
+  }
+  watchdog('tzbase', 'Cleared !count reports older than !date', array('!count' => $count, '!date' => format_date($cutoff, 'small')));
 }
 
 /**
