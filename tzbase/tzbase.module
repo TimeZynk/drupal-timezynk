@@ -105,7 +105,9 @@ function tzbase_cron() {
     node_delete($entry->nid);
     $count++;
   }
-  watchdog('tzbase', 'Cleared !count reports older than !date', array('!count' => $count, '!date' => format_date($cutoff, 'small')));
+  if ($count > 0) {
+    watchdog('tzbase', 'Cleared !count reports older than !date', array('!count' => $count, '!date' => format_date($cutoff, 'small')));
+  }
 }
 
 /**
