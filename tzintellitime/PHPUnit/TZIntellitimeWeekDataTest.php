@@ -850,6 +850,55 @@ class TZIntellitimeWeekDataTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($tzreports, $updatedReports);
   }
 
+  function testDuplicatesKeepsLocalChanges() {
+    $weekData = $this->loadHTMLFile('intellitime-v9-timereport-single-open.txt');
+
+    $reports = array(
+      createMockReport('mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3', '2011-01-25', '08:30', '17:30', 30, 0),
+      createMockReport('mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3', '2011-01-25', '08:30', '17:30', 62, 1),
+    );
+
+    $account = (object)array(
+      'name' => 'Kalle',
+      'uid' => 63,
+    );
+
+    $updatedReports = $weekData->updateReports($reports, $account);
+    $this->assertEquals(2, count($reports));
+    $this->assertEquals(2, count($updatedReports));
+    $this->assertEquals(TZFlags::REPORTED, $updatedReports[0]->flags);
+    $this->assertTrue(FALSE !== strpos($updatedReports[0]->intellitime_id, 'mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3'));
+    $this->assertEquals(62*60, $updatedReports[0]->breakduration);
+    $this->assertEquals(TZFlags::DELETED, $updatedReports[1]->flags);
+    $this->assertEquals(0, $updatedReports[1]->intellitime_local_changes);
+
+    $postData = $weekData->buildPost($updatedReports);
+    $this->assertNotNull($postData);
+  }
+
+  function testDuplicatesWithoutChangesKeepsFirst() {
+    $weekData = $this->loadHTMLFile('intellitime-v9-timereport-single-open.txt');
+
+    $reports = array(
+      createMockReport('mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3', '2011-01-25', '08:30', '17:30', 60, 0),
+      createMockReport('mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3', '2011-01-25', '08:30', '17:30', 61, 0),
+    );
+
+    $account = (object)array(
+      'name' => 'Kalle',
+      'uid' => 63,
+    );
+
+    $updatedReports = $weekData->updateReports($reports, $account);
+    $this->assertEquals(2, count($reports));
+    $this->assertEquals(2, count($updatedReports));
+    $this->assertEquals(TZFlags::CREATED, $updatedReports[0]->flags);
+    $this->assertTrue(FALSE !== strpos($updatedReports[0]->intellitime_id, 'mhbLP96iqH3iH05RYH%2fOlM4hbku5Eii3'));
+    $this->assertEquals(60*60, $updatedReports[0]->breakduration);
+    $this->assertEquals(TZFlags::DELETED, $updatedReports[1]->flags);
+    $this->assertEquals(0, $updatedReports[1]->intellitime_local_changes);
+  }
+
   public function testThrowOnErrorPage() {
     try {
       $weekData = $this->loadHTMLFile('WeekData_ThrowOnErrorPage.txt');

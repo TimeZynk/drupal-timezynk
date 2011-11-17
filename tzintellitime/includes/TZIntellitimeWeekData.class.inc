@@ -312,7 +312,24 @@ class TZIntellitimeWeekData {
         $tzreport->flags = TZFlags::DELETED;
         $tzreport->intellitime_local_changes = 0;
       }
-      $updatedReports[tzintellitime_get_intellitime_id($tzreport)] = $tzreport;
+
+      $intellitime_id = tzintellitime_get_intellitime_id($tzreport);
+      if (empty($updatedReports[$intellitime_id])) {
+        $updatedReports[$intellitime_id] = $tzreport;
+      } else if ($tzreport->intellitime_local_changes) {
+        $prevreport = clone($updatedReports[$intellitime_id]);
+        $updatedReports[$intellitime_id] = $tzreport;
+        $prevreport->flags = TZFlags::DELETED;
+        $prevreport->intellitime_local_changes = 0;
+        unset($prevreport->intellitime_id);
+        $updatedReports[tzintellitime_get_intellitime_id($prevreport)] = $prevreport;
+      } else {
+        $tzreport = clone($tzreport);
+        $tzreport->flags = TZFlags::DELETED;
+        $tzreport->intellitime_local_changes = 0;
+        unset($tzreport->intellitime_id);
+        $updatedReports[tzintellitime_get_intellitime_id($tzreport)] = $tzreport;
+      }
     }
 
     return $updatedReports;
