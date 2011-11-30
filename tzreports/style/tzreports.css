@@ -39,6 +39,11 @@
     background: url('../../tzuser/images/tzuser_status_grey.png') center no-repeat;
 }
 
+.timereports-comment {
+    font-style: italic;
+    color: #9D0000;
+}
+
 tr.timereports-subtotal-row td.timereports-subtotal-field {
     background-color: #EAEAEA;
     font-weight: normal;

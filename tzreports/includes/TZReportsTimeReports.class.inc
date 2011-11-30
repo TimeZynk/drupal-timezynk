@@ -35,7 +35,7 @@ class TZReportsTimeReports {
   function addReport($report) {
     $body = $report->assignment_path;
     if ($this->show_comments && !empty($report->body)) {
-      $body .= '<br/><em>' . check_plain($report->body) . '</em>';
+      $body .= $this->formatComment($report->body);
     }
 
     $row = array(
@@ -86,6 +86,12 @@ class TZReportsTimeReports {
 
     $rows[] = $this->totalRow(t('Total'), $this->total_duration, 'timereports-total');
     return $rows;
+  }
+
+  private function formatComment($comment) {
+    $comment = check_plain($comment);
+    $comment = str_replace("\n", "<br/>", $comment);
+    return '<div class="timereports-comment">' . $comment . '</div>';
   }
 
   private function totalRow($label, $duration, $class = 'timereports-subtotal') {
