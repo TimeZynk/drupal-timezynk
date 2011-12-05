@@ -255,3 +255,12 @@ function tzstats_tzproto_login_failed($username, $user_agent) {
   );
   drupal_write_record('tzstats_failed_login', $record);
 }
+
+function tzstats_invoice_excluded_users() {
+  $list = explode(',', TIMEZYNK_EXCLUDED_USERS);
+  $users = array_map('trim', $list);
+  $users = array_filter($users);
+  $users = array_fill_keys($users, TRUE);
+  $users['1'] = TRUE;
+  return $users;
+}

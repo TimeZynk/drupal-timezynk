@@ -52,6 +52,11 @@ function tzuser_api_list_users() {
   $result = db_query($sql, $sql_args);
 
   $overview = array();
+  $excluded_users = array();
+  if (module_exists('tzstats')) {
+    $excluded_users = tzstats_invoice_excluded_users();
+  }
+
   while($user_entry = db_fetch_object($result)) {
     $status = tzuser_get_user_status($user_entry, $date->format('U'));
     $status_code = $status->getStatusCode();
@@ -79,6 +84,7 @@ function tzuser_api_list_users() {
       ),
       'roles' => tzuser_user_roles($user_entry->uid),
       'created' => intval($user_entry->created),
+      'invoice' => empty($excluded_users[$user_entry->uid]) ? TRUE : FALSE,
     );
   }
 

@@ -53,15 +53,6 @@ function _tzstats_invoice_month($month) {
   return $content;
 }
 
-function tzstats_invoice_excluded_users() {
-  $list = explode(',', TIMEZYNK_EXCLUDED_USERS);
-  $users = array_map('trim', $list);
-  $users = array_filter($users);
-  $users = array_fill_keys($users, TRUE);
-  $users['1'] = TRUE;
-  return $users;
-}
-
 class TZStatsInvoice {
   /**
    * @var DateTime
