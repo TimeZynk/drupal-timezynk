@@ -70,6 +70,13 @@ function tzstats_menu() {
     'file' => 'includes/tzstats.api.inc',
     'type' => MENU_CALLBACK,
   );
+  $items['api/stats/availability'] = array(
+    'page callback' => 'tzstats_api_availability',
+    'access callback' => 'tzapi_authorize',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/tzstats.api.inc',
+    'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 

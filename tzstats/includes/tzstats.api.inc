@@ -26,7 +26,7 @@ function tzstats_api_logins_index() {
       'timestamp' => intval($e->timestamp),
       'user' => array(
         'id' => $e->uid,
-        'url' => url('api/users/' . $e->uid, array('absolute' => TRUE)),
+        'url' => url('api/users/' . $e->uid),
       ),
     );
   }
@@ -65,14 +65,14 @@ function tzstats_api_reports() {
       'timestamp' => intval($entry->timestamp),
       'user' => array(
         'id' => $entry->uid,
-        'url' => url('api/users/' . $entry->uid, array('absolute' => TRUE)),
+        'url' => url('api/users/' . $entry->uid),
       ),
     );
     if (!empty($entry->vid)) {
       $e['report'] = array(
         'start' => intval($entry->begintime),
         'end' => intval($entry->endtime),
-        'url' => url('api/reports/' . $entry->nid . '/' . $entry->vid, array('absolute' => TRUE)),
+        'url' => url('api/reports/' . $entry->nid . '/' . $entry->vid),
       );
     }
     $entries[] = $e;
@@ -96,7 +96,26 @@ function tzstats_api_sms() {
       'timestamp' => intval($e->timestamp),
       'user' => array(
         'id' => $e->uid,
-        'url' => url('api/users/' . $e->uid, array('absolute' => TRUE)),
+        'url' => url('api/users/' . $e->uid),
+      ),
+    );
+  }
+  drupal_set_header('Content-Type: application/json; charset=utf-8');
+  print json_encode($entries);
+}
+
+function tzstats_api_availability() {
+  $interval = _tzstats_interval_params();
+
+  $query = 'SELECT * FROM {tzstats_availability} WHERE timestamp >= %d AND timestamp < %d';
+  $result = db_query($query, $interval[0], $interval[1]);
+  $entries = array();
+  while ($e = db_fetch_object($result)) {
+    $entries[] = array(
+      'timestamp' => intval($e->timestamp),
+      'user' => array(
+        'id' => $e->uid,
+        'url' => url('api/users/' . $e->uid),
       ),
     );
   }
