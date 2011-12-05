@@ -294,13 +294,15 @@ function tzstats_update_6009() {
   return $ret;
 }
 
-/**
- * TZStats database schema
- */
-function tzstats_schema() {
-  /* SMS schema keeps track of sent SMS messages */
-  $schema['tzstats_sms'] = array(
-    'description' => t('Stores statistics on sent SMS messages'),
+function tzstats_update_6010() {
+  $ret = array();
+  db_drop_table($ret, 'tzstats_xmlrpc_nonce');
+  return $ret;
+}
+
+function tzstats_update_6011() {
+  $ret = array();
+  $schema['tzstats_fetched_reports'] = array(
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -311,36 +313,66 @@ function tzstats_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-        'description' => "Sending user's {users}.uid.",
       ),
       'timestamp' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => "Timestamp when this SMS was sent",
+        'default' => 0,
+        'unsigned' => TRUE,
+      ),
+      'count' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'unsigned' => TRUE,
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  db_create_table($ret, 'tzstats_fetched_reports', $schema['tzstats_fetched_reports']);
+  return $ret;
+}
+
+/**
+ * TZStats database schema
+ */
+function tzstats_schema() {
+  /* SMS schema keeps track of sent SMS messages */
+  $schema['tzstats_sms'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
       ),
       'sms_type' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => 'SMS type as defined by the tzsms module',
       ),
       'length' => array(
         'type' => 'int',
         'default' => 0,
-        'description' => 'SMS length in characters',
       ),
       'destination' => array(
         'type' => 'varchar',
         'length' => '32',
         'not null' => TRUE,
         'default' => '',
-        'description' => 'SMS destination phone number',
       ),
     ),
     'primary key' => array('id'),
   );
 
   $schema['tzstats_sync'] = array(
-    'description' => t('Stores statistics on synchronized users'),
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -369,7 +401,6 @@ function tzstats_schema() {
       'timestamp' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => "Timestamp when synchronization was completed",
       ),
     ),
     'primary key' => array('id'),
@@ -377,7 +408,6 @@ function tzstats_schema() {
 
   /* Keep track of user status */
   $schema['tzstats_user'] = array(
-    'description' => t('Stores statistics on user status'),
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -388,17 +418,14 @@ function tzstats_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-        'description' => "{users}.uid.",
       ),
       'timestamp' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => "Timestamp for change",
       ),
       'status' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => 'Status value',
       ),
     ),
     'primary key' => array('id'),
@@ -408,7 +435,6 @@ function tzstats_schema() {
   );
 
   $schema['tzstats_report'] = array(
-    'description' => t('Stores statistics on incoming time reports'),
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -419,26 +445,22 @@ function tzstats_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-        'description' => "{users}.uid.",
       ),
       'timestamp' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => "Timestamp for change",
       ),
       'vid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => '{node_revision}.vid for the report',
       ),
     ),
     'primary key' => array('id'),
   );
 
   $schema['tzstats_login'] = array(
-    'description' => t('Stores statistics on user logins'),
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -449,19 +471,16 @@ function tzstats_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-        'description' => "{users}.uid.",
       ),
       'timestamp' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => "Timestamp for login",
       ),
     ),
     'primary key' => array('id'),
   );
 
   $schema['tzstats_failed_login'] = array(
-    'description' => t('Stores statistics on failed user logins'),
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -473,26 +492,22 @@ function tzstats_schema() {
         'length' => 60,
         'not null' => TRUE,
         'default' => '',
-        'description' => 'Attempted username',
       ),
       'user_agent' => array(
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'default' => '',
-        'description' => 'User agent',
       ),
       'timestamp' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => "Timestamp for attempted login",
       ),
     ),
     'primary key' => array('id'),
   );
 
   $schema['tzstats_availability'] = array(
-    'description' => t('Stores statistics on availability usage'),
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -503,28 +518,41 @@ function tzstats_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-        'description' => "{users}.uid.",
       ),
       'timestamp' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => "Timestamp for usage",
       ),
     ),
     'primary key' => array('id'),
   );
-  
-  $schema['tzstats_xmlrpc_nonce'] = array(
-    'description' => 'Keeps track of used nonce values',
+
+  $schema['tzstats_fetched_reports'] = array(
     'fields' => array(
-      'nonce' => array(
-        'type' => 'char',
-        'length' => 64,
+      'id' => array(
+        'type' => 'serial',
         'not null' => TRUE,
-        'description' => 'SHA256 checksum of used nonce value',
+        'unsigned' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'unsigned' => TRUE,
+      ),
+      'count' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'unsigned' => TRUE,
       ),
     ),
-    'primary key' => array('nonce'),
+    'primary key' => array('id'),
   );
 
   return $schema;

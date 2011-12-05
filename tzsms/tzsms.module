@@ -275,3 +275,18 @@ function tzsms_debug_sms($message) {
   $blacklist[$key] = $now + TZSMS_DEBUG_SMS_BLACKLIST_TIMEOUT;
   variable_set('tzsms_debug_sms_blacklist', $blacklist);
 }
+
+function tzsms_format_type($type) {
+  switch ($type) {
+    case TZSMS_TYPE_USER_SMS:
+      return "user";
+    case TZSMS_TYPE_INSTALL_SMS:
+      return "install";
+    case TZSMS_TYPE_AUTO_REMINDER_SMS:
+      return "reminder";
+    case TZSMS_TYPE_DEBUG_SMS:
+      return "debug";
+    default:
+      return strval($type);
+  }
+}

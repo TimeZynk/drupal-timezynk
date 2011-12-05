@@ -367,6 +367,8 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result, $protocol_version = 0) {
       tzproto_fill_from_node($tzreport, $node, $protocol_version);
     }
   }
+  // Invoke hook to allow modules to collect statistics or billing info
+  module_invoke_all('tzproto_fetched_reports', $user, $reportresult->reports_size());
   $result->set_get_report_result($reportresult);
 }
 

@@ -56,6 +56,20 @@ function tzstats_menu() {
     'file' => 'includes/tzstats.api.inc',
     'type' => MENU_CALLBACK,
   );
+  $items['api/stats/reports/fetched'] = array(
+    'page callback' => 'tzstats_api_fetched_reports',
+    'access callback' => 'tzapi_authorize',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/tzstats.api.inc',
+    'type' => MENU_CALLBACK,
+  );
+  $items['api/stats/sms'] = array(
+    'page callback' => 'tzstats_api_sms',
+    'access callback' => 'tzapi_authorize',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/tzstats.api.inc',
+    'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 
@@ -105,6 +119,15 @@ function tzstats_tzproto_saved_report($report) {
     'vid' => $report->vid,
   );
   drupal_write_record('tzstats_report', $record);
+}
+
+function tzstats_tzproto_fetched_reports($account, $number_of_reports) {
+  $record = array(
+    'uid' => $account->uid,
+    'timestamp' => time(),
+    'count' => $number_of_reports,
+  );
+  drupal_write_record('tzstats_fetched_reports', $record);
 }
 
 function tzstats_user($op, &$edit, &$account, $category = NULL) {
