@@ -2,7 +2,6 @@
 // All timestamps and dates are transferred as seconds since the epoch.
 
 option java_package = "com.timezynk.tzproto";
-option optimize_for = LITE_RUNTIME;
 
 package TZBase;
 
