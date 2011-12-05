@@ -18,6 +18,7 @@ function tzuser_api_access() {
 
 function tzuser_api_list_users() {
   $date = _tzuser_api_list_users_request_date();
+  $single = FALSE;
 
   // Handle manager
   $manager = 0;
@@ -38,26 +39,25 @@ function tzuser_api_list_users() {
   }
 
   $sql = 'SELECT * FROM {users} u INNER JOIN {tzuser} tzu ON tzu.uid = u.uid WHERE u.uid > 1 AND u.status = 1';
-  if (!empty($manager)) {
+  $sql_args = array();
+  if (arg(2)) {
+    $sql .= ' AND tzu.uid = %d';
+    $sql_args[] = arg(2);
+    $single = TRUE;
+  } else if (!empty($manager)) {
     $sql .= ' AND tzu.manager = %d';
+    $sql_args[] = $manager;
   }
-  $result = db_query($sql, $manager);
+
+  $result = db_query($sql, $sql_args);
 
   $overview = array();
   while($user_entry = db_fetch_object($result)) {
     $status = tzuser_get_user_status($user_entry, $date->format('U'));
     $status_code = $status->getStatusCode();
 
-    if (empty($status_filter[$status_code])) {
+    if (!$single && empty($status_filter[$status_code])) {
       continue;
-    }
-
-    $operations = array();
-    if (user_edit_access($user_entry)) {
-      $operations[t('edit')] = url("user/$user_entry->uid/edit", array('query' => 'destination=tzuser'));
-    }
-    if (user_access('administer site configuration')) {
-      $operations[t('log')] = url("", array('fragment' => ' ', 'external' => TRUE, 'attributes' => array('class' => 'edit-log-link')));
     }
 
     $overview[] = array(
@@ -69,11 +69,16 @@ function tzuser_api_list_users() {
       'status_name' => tzuser_get_user_status_name($status_code),
       'due_count' => $status->getNumberOfDueReports(),
       'last_login' => intval($user_entry->login, 10),
+      'url' => url('api/users/' . $user_entry->uid),
+      'email' => $user_entry->mail,
       'user_agent' => $user_entry->user_agent,
       'client_version' => $user_entry->version_code ? intval($user_entry->version_code, 10) : NULL,
-      'manager_id' => empty($user_entry->manager) ? NULL : intval($user_entry->manager),
-      'manager_url' => empty($user_entry->manager) ? NULL : url('api/users/' . $user_entry->manager, array('absolute' => TRUE)),
-      'url' => url('api/users/' . $user_entry->uid, array('absolute' => TRUE)),
+      'manager' => empty($user_entry->manager) ? NULL : array(
+        'id' => intval($user_entry->manager),
+        'url' => url('api/users/' . $user_entry->manager),
+      ),
+      'roles' => tzuser_user_roles($user_entry->uid),
+      'created' => intval($user_entry->created),
     );
   }
 

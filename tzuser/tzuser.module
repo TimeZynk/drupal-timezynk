@@ -621,6 +621,23 @@ function tzuser_manager_role_id() {
   return $manager_role_id;
 }
 
+function tzuser_user_roles($uid) {
+  static $roles = array();
+
+  if (empty($roles)) {
+    $roles = user_roles(TRUE);
+  }
+
+  $users_roles = array();
+  $roles_result = db_query('SELECT rid FROM {users_roles} WHERE uid = %d', $uid);
+  while ($user_role = db_fetch_object($roles_result)) {
+    $users_roles[] = $roles[$user_role->rid];
+  }
+  asort($users_roles);
+
+  return $users_roles;
+}
+
 function _tzuser_generate_fake_email() {
   return uniqid('user', TRUE) . '@' . $_SERVER['HTTP_HOST'];
 }
