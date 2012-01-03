@@ -7,75 +7,127 @@
  * Implementation of hook_menu
  */
 function tzmobile_menu() {
-  $items['tzmobile/reminder'] = array(
-    'page callback' => 'tzmobile_send_reminder',
-    'access callback' => TRUE,
+  $items['mm'] = array(
+    'page callback' => 'tzmobile_manager',
+    'access arguments' => array('create tzreport content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items["api/updates/%"] = array(
+    'page callback' => 'tzmobile_user_updates',
+    'page arguments' => array(2),
+    'access callback' => 'tzapi_authorize',
+    'access arguments' => array('view any tzreport content'),
     'type' => MENU_CALLBACK,
   );
   return $items;
 }
 
-/**
- * Implementation of hook_block
- */
-function tzmobile_block($op = 'list', $delta = 0, $edit = array()) {
-  switch($op) {
-    case 'list':
-      return array(
-        array(
-          'info' => t('TimeZynk Mobile'),
-          'cache' => BLOCK_NO_CACHE /* BLOCK_CACHE_PER_ROLE */,
-          'custom' => FALSE,
-          'region' => 'content',
-        )
-      );
+function tzmobile_theme() {
+  return array(
+    'page' => array(
+      'arguments' => array('content' => NULL, 'show_blocks' => FALSE, 'show_messages' => TRUE),
+      'template' => 'page-mm',
+     ),
+  );
+}
 
-    case 'view':
-      if(user_access('create tzreport content')) {
-        global $user;
-
-        $module_path = drupal_get_path('module', 'tzmobile');
-        $jssettings = array(
-          'base_path' => $module_path,
-          'blockid' => 'tzmobile-0',
-        );
-
-        /* Load jQuery UI datepicker */
-        jquery_ui_add(array('ui.datepicker'));
-        drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/iwebkit/ui.core.css');
-        drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/iwebkit/ui.datepicker.css');
-        drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/iwebkit/ui.theme.css');
-
-        drupal_add_js($module_path . '/ptTimeSelect/src/jquery.ptTimeSelect.js');
-        drupal_add_css($module_path . '/ptTimeSelect/src/jquery.ptTimeSelect.css');
-
-        drupal_add_js(array('tzmobile' => $jssettings), 'setting');
-        drupal_add_js($module_path . '/tzmobile.js');
-        $block['content'] = '<p>' . t('Please enable javascript') . '</p>';
-        $block['subject'] = t('No javascript');
-      }
-      return $block;
+function tzmobile_user_list_alter(&$users) {
+  watchdog('tzmobile', 'altering ' . print_r($users, TRUE));
+  for ($i = 0; $i < count($users); $i++) {
+    $users[$i]['avatar'] = tzmobile_find_avatar($users[$i]['username']);
   }
 }
 
-/**
- * Send an SMS reminder to any user
- */
-function tzmobile_send_reminder($username) {
-  // validate user
-  $uid = db_result(db_query("SELECT uid FROM {users} WHERE name = '%s'", $username));
-  if(!$uid) {
-    drupal_set_header('HTTP/1.1 404 Not Found');
-    watchdog('page not found', check_plain($_GET['q']), NULL, WATCHDOG_WARNING);
-    return;
+function tzmobile_find_avatar($username) {
+  switch ($username) {
+    case "0762556065":
+      return "http://profile.ak.fbcdn.net/hprofile-ak-ash2/274222_666990155_2549068_q.jpg";
+    case "0733623516":
+    case "JohanZhe":
+    case "Johan Heander":
+      return "http://profile.ak.fbcdn.net/hprofile-ak-snc4/49868_100000333840186_5985_q.jpg";
   }
+  return NULL;
+}
 
-  $msg = t('Please remember to send your time report today. Best Regards / TimeZynk');
-  tzsms_send(TZSMS_TYPE_AUTO_REMINDER_SMS, $username, $msg);
+function tzmobile_manager() {
+  global $user;
 
-  drupal_json(array(
-    'username' => $username,
-    'success' => TRUE
-  ));
-  exit();
+  $module_path = drupal_get_path('module', 'tzmobile');
+  $jssettings = array(
+    'base_path' => $module_path,
+    'blockid' => 'tzmobile-0',
+    'uid' => $user->uid,
+    'fullname' => $user->tzuser['fullname'],
+  );
+
+  /* Load jQuery UI datepicker */
+  jquery_ui_add(array('ui.datepicker'));
+  drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/iwebkit/ui.core.css');
+  drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/iwebkit/ui.datepicker.css');
+  drupal_add_css(drupal_get_path('module', 'jquery_ui') . '/jquery.ui/themes/iwebkit/ui.theme.css');
+
+  drupal_add_js($module_path . '/ptTimeSelect/src/jquery.ptTimeSelect.js');
+  drupal_add_css($module_path . '/ptTimeSelect/src/jquery.ptTimeSelect.css');
+  drupal_add_css($module_path . '/tzmobile.css');
+
+  drupal_add_js(array('tzmobile' => $jssettings), 'setting');
+  drupal_add_js($module_path . '/tzmobile.js');
+  return '<div id="block-tzmobile-0"><p>' . t('Please enable javascript') . '</p></div>';
+}
+
+function tzmobile_user_updates($uid) {
+  $now = time();
+
+  $users = _tzmobile_find_managed_users($uid);
+  $query = 'SELECT * FROM {tzstats_report} sr ' .
+    'INNER JOIN {tzreport} tr ON sr.vid = tr.vid ' .
+    'INNER JOIN {node_revisions} n ON sr.vid = n.vid ' .
+    'WHERE sr.uid IN (%s) ' .
+    'ORDER BY sr.id DESC ' .
+    'LIMIT 20';
+  $result = db_query($query, implode(',', array_keys($users)));
+  $updates = array();
+  while ($stat = db_fetch_object($result)) {
+    $account = $users[$stat->uid];
+
+    $begin = tzbase_make_date($stat->begintime);
+    $end = tzbase_make_date($stat->endtime);
+    $date_string = $begin->format('Y-m-d H:i - ') . $end->format('H:i');
+
+    $text = t('Reported @duration on <em>@title</em>',
+      array(
+        '@title' => $stat->title,
+        '@duration' => format_interval($stat->totalduration))) .
+      '<br/>' . $date_string;
+    if (!empty($stat->body)) {
+      $text .= '<br/>&quot;' . $stat->body . '&quot;';
+    }
+    $text .= '<br/><em>' . theme('time_ago', $stat->timestamp) . '</em>';
+
+    $updates[] = array(
+      'user' => array(
+        'id' => $account->uid,
+        'fullname' => $account->tzuser['fullname'],
+        'avatar' => $account->avatar,
+      ),
+      'text' => $text,
+      'timestamp' => $stat->timestamp,
+      'stat' => print_r($stat, TRUE),
+    );
+  }
+  drupal_set_header('Content-Type: application/json; charset=utf-8');
+  print json_encode($updates);
+}
+
+function _tzmobile_find_managed_users($uid) {
+  $query = 'SELECT * FROM {tzuser} WHERE manager = %d';
+  $result = db_query($query, $uid);
+  $users = array();
+  while ($u = db_fetch_object($result)) {
+    $account = user_load($u->uid);
+    $account->avatar = tzmobile_find_avatar($account->name);
+    $users[$u->uid] = $account;
+  }
+  return $users;
 }

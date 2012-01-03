@@ -88,6 +88,8 @@ function tzuser_api_list_users() {
     );
   }
 
+  drupal_alter('user_list', $overview);
+
   drupal_set_header('Content-Type: application/json; charset=utf-8');
   print json_encode($overview);
 }

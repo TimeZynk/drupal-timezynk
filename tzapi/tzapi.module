@@ -17,7 +17,7 @@ function tzapi_authorize($permissions = array()) {
   if(function_exists('apache_request_headers')) {
     // We are running PHP as an Apache module, so we can get the Authorization header this way
     $headers = apache_request_headers();
-    $auth_string = $headers['Authorization'];
+    $auth_string = isset($headers['Authorization']) ? $headers['Authorization'] : "";
   }
 
   $m = array();

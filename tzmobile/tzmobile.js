@@ -48,10 +48,10 @@ Drupal.behaviors.tzmobileBehavior = function(context) {
 	var frame = $('#block-' + Drupal.settings.tzmobile.blockid);
 	if(frame.length > 0) {
 		tzmobile.frame = $(frame.get(0));
-		
+
 		tzmobile_load(encodeURIComponent('tzmobile_main_menu()'), Drupal.t('Home'));
 	}
-	
+
 	// Set datepicker region
     $.datepicker.regional['sv'] = {
     		closeText: 'Stäng',
@@ -65,11 +65,11 @@ Drupal.behaviors.tzmobileBehavior = function(context) {
     		dayNamesShort: ['Sön','Mån','Tis','Ons','Tor','Fre','Lör'],
     		dayNames: ['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag'],
     		dayNamesMin: ['Sö','Må','Ti','On','To','Fr','Lö'],
-            dateFormat: 'yy-mm-dd', 
+            dateFormat: 'yy-mm-dd',
             firstDay: 1,
     		isRTL: false};
     $.datepicker.setDefaults($.datepicker.regional['sv']);
-    
+
     // Preload images
     var images = ['alerticon.png','callicon.png','lisa_alerstam.jpg','mikael_ohlson.jpg',
                   'reporticon.png','sendicon.png','showicon.png','showreportsicon.png',
@@ -85,18 +85,23 @@ function tzmobile_load(path) {
 	path = decodeURIComponent(path);
 	var page = eval(path);
 	tzmobile.frame.empty().append(page.data);
-	
+
 	// Print history
 	tzmobile_update_history(path, page.title);
-	
+
 	// Run callback
 	if(page.callback != null) {
 		page.callback();
 	}
-	
+
 	// TODO: Faster clicking on iPhone by using touchstart, touchmove and touchend
 	// see http://cubiq.org/remove-onclick-delay-on-webkit-for-iphone/9
-	$('a.tzmobile').bind('click', function (event) {
+
+	rebind_links($('body'));
+}
+
+function rebind_links(container) {
+	container.find('a.tzmobile').bind('click', function (event) {
 		event.preventDefault();
 		var link = $(this);
 		tzmobile_load(link.attr('href').substring(1));
@@ -114,20 +119,22 @@ function tzmobile_update_history(path, title) {
 	}
 	tzmobile.history = tzmobile.history.slice(0, i);
 	tzmobile.history.push({"path": path, "title": title});
-	
+
 	// Update topbar
-	var topbar = '<div id="title">' + title + '</div>';
+	var topbar = '<h1 class="ui-title">' + title + '</h1>';
 	var len = tzmobile.history.length;
-	
+
 	if(len > 1) {
 		/* If more than two history items, show cancel button in right corner
 		 * and the previous page in the left corner */
-		topbar += '<div id="rightbutton"><a class="tzmobile" href="#' + 
-			tzmobile.history[0].path + '">' + Drupal.t('Cancel') + 
-			'</a></div><div id="leftnav"><a class="tzmobile" href="#' + 
-			tzmobile.history[len - 2].path + '">' + tzmobile.history[len - 2].title + 
-			'</a></div>';
-		
+		topbar += '<a class="tzmobile ui-btn-left ui-btn-left ui-btn ui-btn-icon-left ui-btn-corner-all ui-shadow ui-btn-up-a" data-icon="delete" href="#' +
+			tzmobile.history[len - 2].path + '">' +
+			'<span class="ui-btn-inner ui-btn-corner-all" aria-hidden="true">' +
+			'<span class="ui-btn-text">' +
+			tzmobile.history[len - 2].title +
+			'</span><span class="ui-icon ui-icon-arrow-l ui-icon-shadow"></span></span>' +
+			'</a>';
+
 		/* Also hide the logo when we have left the main menu */
 		$('#site-logo').slideUp();
 	}
@@ -135,20 +142,26 @@ function tzmobile_update_history(path, title) {
 		/* Show logo again */
 		$('#site-logo').slideDown();
 	}
-	
+
 	// display
 	$('#topbar').html(topbar);
 }
 
 function tzmobile_main_menu() {
-	var items = 
+	var items =
 		[
 		 {
+			 'path': 'tzmobile_updates()',
+			 'name': Drupal.t('Updates'),
+			 'comment': Drupal.t('Live updates from the team'),
+			 'image': 'reporticon.png'
+		 },
+		 /*{
 			 'path': 'tzmobile_report()',
 			 'name': Drupal.t('Assignment'),
 			 'comment': Drupal.t('Create new assignment'),
 			 'image': 'reporticon.png'
-		 },
+		 },*/
 		 {
 			 'path': 'tzmobile_myteam()',
 			 'name': Drupal.t('My team'),
@@ -162,7 +175,7 @@ function tzmobile_main_menu() {
 			 'image': 'showicon.png'
 		 }, */
 		 ];
-	
+
 	return {
 		'data': Drupal.theme('menu', items),
 		'title': Drupal.t('Home')
@@ -170,13 +183,17 @@ function tzmobile_main_menu() {
 
 }
 
+
+
+
+
 function tzmobile_report() {
     // Load default report data
 	tzmobile.report.date = new Date();
 	tzmobile.report.begintime = "8:00";
 	tzmobile.report.endtime = "17:00";
 	tzmobile.report.breakduration = "1:00";
-	
+
 	// Select job
 	return tzmobile_report_select_job(0);
 }
@@ -252,7 +269,7 @@ function tzmobile_report_summary() {
 	content += Drupal.theme('menuitem', submit);
 
 	content += '</ul>';
-	
+
 	return {
 		data: content,
 		title: Drupal.t('Summary')
@@ -270,7 +287,7 @@ function tzmobile_report_hassubjob(jobs, parent) {
 }
 
 function tzmobile_timefield_callback(id, title, nextpath, extra_options) {
-	var time = tzmobile.report[id].split(':'); 
+	var time = tzmobile.report[id].split(':');
 	var opt = {
 		defaultHour: time[0],
 		defaultMinute: time[1],
@@ -283,11 +300,11 @@ function tzmobile_timefield_callback(id, title, nextpath, extra_options) {
 			tzmobile_load(nextpath);
 		}
 	}
-	
+
 	if(extra_options != null) {
 		$.extend(opt, extra_options);
 	}
-			
+
 	return function() {
 		$('#' + id).ptTimeSelect(opt);
 	};
@@ -304,12 +321,39 @@ function tzmobile_time_in_seconds(timestr) {
 	return time;
 }
 
+function tzmobile_updates() {
+	var id = "tzmobile-updates-content",
+		page = {
+			data: $('<div></div>'),
+			title: Drupal.t('Updates')
+		};
+	load_updates(page.data);
+	return page;
+}
+
+function load_updates(container) {
+	var uid = Drupal.settings.tzmobile.uid;
+	$.getJSON('/api/updates/' + uid, function(data, status, jqXHR) {
+		container.append(Drupal.theme('updates', data));
+		rebind_links(container);
+	});
+}
 
 function tzmobile_myteam() {
-	return {
-		data: Drupal.theme('teamlist', tzmobile.team),
+	var page = {
+		data: $('<div></div>'),
 		title: Drupal.t('My team')
 	};
+	append_team_members(page.data);
+	return page;
+}
+
+function append_team_members(container) {
+	var uid = Drupal.settings.tzmobile.uid;
+	$.getJSON('/api/users/?status[-10]=-10&status[0]=0&status[10]=10&status[20]=20&manager=' + uid, function(data, status, jqXHR) {
+		container.append(Drupal.theme('teamlist', data));
+		rebind_links(container);
+	});
 }
 
 function tzmobile_get_user(username) {
@@ -317,19 +361,24 @@ function tzmobile_get_user(username) {
 	for(; i < tzmobile.team.length; i++) {
 		if(tzmobile.team[i].username == username) break;
 	}
-	
+
 	if(i < tzmobile.team.length) {
 		return tzmobile.team[i];
 	}
 	return null;
 }
 
-function tzmobile_show_teammember(username) {
-	var user = tzmobile_get_user(username);
-	return {
-		data: Drupal.theme('teammember', user),
-		title: user.realname
+function tzmobile_show_teammember(uid) {
+	var page = {
+		data: $('<div></div>'),
+		title: Drupal.t('User')
 	};
+	$.getJSON('/api/users/' + uid, function(data, status, jqXHR) {
+		page.data.append(Drupal.theme('teammember', data[0]));
+		rebind_links(page.data);
+		$('#topbar h1').text(data[0].fullname);
+	});
+	return page;
 }
 
 function tzmobile_show_reports(username) {
@@ -365,9 +414,16 @@ Drupal.theme.prototype.reminder = function(date) {
 	return '';
 };
 
+Drupal.theme.prototype.avatar = function (user) {
+	if (user.avatar) {
+		return user.avatar;
+	}
+	return Drupal.settings.tzmobile.base_path + '/images/icon_no_photo_no_border_50x50.png';
+}
+
 Drupal.theme.prototype.teamlist = function(teamlist) {
-	var content = '<ul class="pageitem">';
-	for(var i = 0; i < teamlist.length; i++) {
+	var content = '<ul data-role="listview" class="ui-listview">';
+	for (var i = 0; i < teamlist.length; i++) {
 		content += Drupal.theme('teamitem', teamlist[i]);
 	}
 	content += '</ul>';
@@ -375,41 +431,29 @@ Drupal.theme.prototype.teamlist = function(teamlist) {
 };
 
 Drupal.theme.prototype.teamitem = function(item) {
-	var value = '<li class="store"><a class="tzmobile" href="#tzmobile_show_teammember(\'' + item.username + '\')">';
-	if(item.image != null) {
-		value += '<span class="image" style="background-image: url(' +
-			Drupal.settings.tzmobile.base_path + '/images/' + item.image + ');"></span>';
-	}
-	
-	// Print name
-	value += '<span class="name">' + item.realname + '</span>';
-
-	// Print comment
-	if(item.today != 0) {
-		value += '<span class="comment">' +
-			Drupal.t('Today') + ': ' + Drupal.theme('longtime', item.today);
-	} else {
-		value += '<span class="comment" style="color: red">' +
-			Drupal.t('No time report today');
-	}
-	value += '</span>';
-	
-	// Arrow and close tags
-	value += '<span class="arrow"></span></a></li>';
-	return value;
+	return '<li data-theme="c" class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-btn-up-c"><div class="ui-btn-inner ui-li" aria-hidden="true">' +
+		'<div class="ui-btn-text">' +
+			'<a href="#tzmobile_show_teammember(' + item.id + ')" class="tzmobile ui-link-inherit">' +
+				'<img src="' + Drupal.theme('avatar', item) + '" class="avatar ui-li-thumb">' +
+				'<h3 class="ui-li-heading">' + item.fullname + '</h3>' +
+				'<p class="ui-li-desc">' + (item.due_count > 0 ?
+					(Drupal.t('Late time reports:') + ' ' + item.due_count) :
+					Drupal.t('All time reported')) + '</p>' +
+			'</a>' +
+		'</div>' +
+		'<span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>';
 };
 
 Drupal.theme.prototype.teammember = function(member) {
-	var value = '<ul class="pageitem">';
-	
+	var value = '<ul class="ui-listview">';
+
 	// Header
-	value += '<li class="textbox">';
-	if(member.image != null) {
-		value += '<span class="image" style="background-image: url(' +
-			Drupal.settings.tzmobile.base_path + '/images/' + member.image + ');"></span>';
-	}
-	value += '<span class="header">' + member.realname + '</span>';
-	value += '<p style="font-size: 80%">';
+	value += '<li data-theme="c" class="ui-btn ui-li ui-li-has-thumb ui-btn-up-c">' +
+		'<div class="ui-btn-inner ui-li" aria-hidden="true">' +
+		'<div class="ui-btn-text">';
+	value += '<a class="ui-link-inherit"><img src="' + Drupal.theme('avatar', member) + '" class="avatar ui-li-thumb"/>';
+	value += '<h3 class="ui-li-heading">' + member.fullname + '</h3>';
+	value += '<p class="ui-li-desc">';
 	if(member.today != 0) {
 		value += Drupal.t('Today') + ': ' + Drupal.theme('longtime', member.today) + '<br/>';
 	} else {
@@ -417,30 +461,48 @@ Drupal.theme.prototype.teammember = function(member) {
 	}
 	value += Drupal.t('Week') + ': ' + Drupal.theme('longtime', member.week) + '<br/>' +
 		Drupal.t('Month') + ': ' + Drupal.theme('longtime', member.month) +
-		'</p>';
-	value += '</li>';
-	
+		'</p></a>';
+	value += '</div></div></li>';
+
 	// Reminder
 	if(member.today == 0) {
-		value += '<li class="menu"><a id="reminder" class="noeffect" onclick="tzmobile_send_reminder(\'' + member.username + 
-		'\')"><img src="' + Drupal.settings.tzmobile.base_path + '/images/alerticon.png"/><span class="name">' + 
+		value += '<li class="menu"><a id="reminder" class="noeffect" onclick="tzmobile_send_reminder(\'' + member.username +
+		'\')"><img src="' + Drupal.settings.tzmobile.base_path + '/images/alerticon.png"/><span class="name">' +
 		Drupal.t('Send reminder') + '</span><span class="comment">' +
 		Drupal.theme('reminder', member.reminder) + '</span><span class="arrow"></span></a></li>';
 	}
-	
+
 	// Links
-	value += '<li class="menu"><a class="noeffect" href="tel:' + member.username + 
-		'"><img src="' + Drupal.settings.tzmobile.base_path + '/images/callicon.png"/><span class="name">' + 
-		Drupal.t('Call mobile') +	'</span><span class="arrow"></span></a></li>' +
-		
-		'<li class="menu"><a class="noeffect" href="sms:' + member.username + 
-		'"><img src="' + Drupal.settings.tzmobile.base_path + '/images/smsicon.png"/><span class="name">' + 
-		Drupal.t('Send SMS') +	'</span><span class="arrow"></span></a></li>' +
-		
-		'<li class="menu"><a class="tzmobile noeffect" href="#tzmobile_show_reports(\'' + member.username + 
-		'\')"><img src="' + Drupal.settings.tzmobile.base_path + '/images/showreportsicon.png"/><span class="name">' + 
-		Drupal.t('Show time reports') +	'</span><span class="arrow"></span></a></li>';
-	
+	value += '<li data-theme="c" class="ui-btn ui-li ui-li-has-arrow ui-btn-icon-right ui-li-has-thumb ui-btn-up-c">' +
+		'<div class="ui-btn-inner ui-li" aria-hidden="true">' +
+		'<div class="ui-btn-text">' +
+		'<a class="ui-link-inherit" href="tel:' + member.mobile + '">' +
+		'<img src="' + Drupal.settings.tzmobile.base_path + '/images/callicon.png" class="ui-li-icon"/>' +
+		'<h3 class="ui-li-heading">' + Drupal.t('Call mobile') + '</h3>' +
+		'<p class="ui-li-desc">' + member.mobile + '</p>' +
+		'</a></div>' +
+		'<span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>' +
+
+		'<li data-theme="c" class="ui-btn ui-li ui-li-has-arrow ui-btn-icon-right ui-li-has-thumb ui-btn-up-c">' +
+		'<div class="ui-btn-inner ui-li" aria-hidden="true">' +
+		'<div class="ui-btn-text">' +
+		'<a class="ui-link-inherit" href="sms:' + member.mobile + '">' +
+		'<img src="' + Drupal.settings.tzmobile.base_path + '/images/smsicon.png" class="ui-li-icon"/>' +
+		'<h3 class="ui-li-heading">' + Drupal.t('Send SMS') + '</h3>' +
+		'<p class="ui-li-desc">' + member.mobile + '</p>' +
+		'</a></div>' +
+		'<span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>' +
+
+		'<li data-theme="c" class="ui-btn ui-li ui-li-has-arrow ui-btn-icon-right ui-li-has-thumb ui-btn-up-c">' +
+		'<div class="ui-btn-inner ui-li" aria-hidden="true">' +
+		'<div class="ui-btn-text">' +
+		'<a class="ui-link-inherit" href="#tzmobile_show_reports(' + member.id + ')">' +
+		'<img src="' + Drupal.settings.tzmobile.base_path + '/images/showreportsicon.png" class="ui-li-icon"/>' +
+		'<h3 class="ui-li-heading">' + Drupal.t('Show time reports') + '</h3>' +
+		'<p class="ui-li-desc">' + member.mobile + '</p>' +
+		'</a></div>' +
+		'<span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></div></li>';
+
 	value += '</ul>';
 	return value;
 };
@@ -452,7 +514,7 @@ Drupal.theme.prototype.jobs = function(jobs, parent) {
 	} else {
 		value += Drupal.t('Assignment');
 	}
-	
+
 	var items = [];
 	for(var id in jobs) {
 		if(jobs[id].parent != parent) {
@@ -461,12 +523,12 @@ Drupal.theme.prototype.jobs = function(jobs, parent) {
 		items.push({path: 'tzmobile_report_select_job(' + id + ')',	name: jobs[id].name});
 	}
 	value += Drupal.theme('menu', items);
-	
+
 	return value;
 };
 
 Drupal.theme.prototype.menu = function(items) {
-	var content = '<ul class="pageitem">';
+	var content = '<ul class="ui-listview" data-role="listview">';
 	for(var i = 0; i < items.length; i++) {
 		content += Drupal.theme('menuitem', items[i]);
 	}
@@ -476,15 +538,20 @@ Drupal.theme.prototype.menu = function(items) {
 
 Drupal.theme.prototype.menuitem = function(item) {
 	path = encodeURIComponent(item.path);
-	var content = '<li class="menu"><a class="tzmobile" title="' + item.name + '" href="#' + path + '">';
-	if(item.image != null) {
-		content += '<img src="' + Drupal.settings.tzmobile.base_path + '/images/' + item.image + '"/>';
+	var content = '<li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-li-has-thumb ui-btn-up-c">' +
+		'<div class="ui-btn-inner ui-li" aria-hidden="true">' +
+		'<div class="ui-btn-text">' +
+		'<a class="tzmobile ui-link-inherit" title="' + item.name + '" href="#' + path + '">';
+	if (item.image != null) {
+		content += '<img class="ui-li-icon ui-li-thumb" src="' +
+			Drupal.settings.tzmobile.base_path + '/images/' + item.image + '"/>';
 	}
-	content += '<span class="name">' + item.name + '</span>';
+	content += '<h3 class="ui-li-heading">' + item.name + '</h3>';
 	if(item.comment != null) {
-		content += '<span class="comment">' + item.comment + '</span>';
+		content += '<p class="ui-li-desc">' + item.comment + '</p>';
 	}
-	content += '<span class="arrow"></span></a></li>';
+	content += '<span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span>';
+	content += '<span class="arrow"></span></a></div></li>';
 	return content;
 };
 
@@ -498,7 +565,7 @@ Drupal.theme.prototype.report = function(report) {
 	var content = '<li class="textbox"><span class="header">' +
 		Drupal.t('Assignment') + '</span><div><table width="100%" border="0"><tr/>' +
 		'<td><strong>Jobb:</strong><td style="text-align: right">';
-	
+
 	// Combine job string
 	var jobstr = '';
 	var job = report.job;
@@ -506,7 +573,7 @@ Drupal.theme.prototype.report = function(report) {
 		jobstr = tzmobile.jobs[job].name + (jobstr != '' ? ', ' + jobstr : '');
 		job = tzmobile.jobs[job].parent;
 	}
-	
+
 	// Calculate total work time
 	var beginseconds = tzmobile_time_in_seconds(report.begintime);
 	var endseconds = tzmobile_time_in_seconds(report.endtime);
@@ -514,7 +581,7 @@ Drupal.theme.prototype.report = function(report) {
 		endseconds += 24*3600;
 	}
 	var duration = endseconds - beginseconds - tzmobile_time_in_seconds(report.breakduration);
-	
+
 	content += jobstr + '</td><tr/><td><strong>Datum:</strong></td><td style="text-align: right">' +
 		$.datepicker.formatDate('yy-mm-dd', report.date) + '</td><tr/><td><strong>Från:</strong></td><td style="text-align: right">' +
 		report.begintime + '</td><tr/><td><strong>Till:</strong></td><td style="text-align: right">' +
@@ -522,6 +589,26 @@ Drupal.theme.prototype.report = function(report) {
 		report.breakduration + '</td><tr/><td><strong>Totalt:</strong></td><td style="text-align: right">' +
 		Drupal.theme('longtime', duration) + '</td>';
 	content += '</table></div></li>';
-	
+
 	return content;
 };
+
+Drupal.theme.prototype.updates = function(updates) {
+	var content = '<ul data-role="listview" class="ui-listview">';
+	for (var i = 0; i < updates.length; i++) {
+		content += Drupal.theme('update', updates[i]);
+	}
+	return content;
+}
+
+Drupal.theme.prototype.update = function(update) {
+	return '<li data-theme="c" class="ui-btn ui-btn-icon-right ui-li ui-li-has-thumb ui-btn-up-c"><div class="ui-btn-inner ui-li" aria-hidden="true">' +
+		'<div class="ui-btn-text">' +
+			'<a href="#tzmobile_show_teammember(' + update.user.id + ')" class="tzmobile ui-link-inherit">' +
+				'<img src="' + Drupal.theme('avatar', update.user) + '" class="avatar ui-li-thumb">' +
+				'<h3 class="ui-li-heading">' + update.user.fullname + '</h3>' +
+				'<p class="ui-li-desc">' + update.text + '</p>' +
+			'</a>' +
+		'</div>' +
+		'</div></li>';
+}
