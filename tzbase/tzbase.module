@@ -608,7 +608,7 @@ function tzbase_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     }
   }
 
-  if (is_callable('dmemcache_delete') && $op == 'update') {
+  if ($op == 'update' || $op == 'delete') {
     // Clear memcache entry for node
     dmemcache_delete($node->nid, 'node-cache');
   }
