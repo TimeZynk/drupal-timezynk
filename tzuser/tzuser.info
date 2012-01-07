@@ -6,4 +6,5 @@ dependencies[] = ahah_helper
 dependencies[] = permissions_api
 dependencies[] = libraries
 dependencies[] = date_popup
+dependencies[] = memcache
 core = 6.x

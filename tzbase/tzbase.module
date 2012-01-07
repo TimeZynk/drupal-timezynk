@@ -541,7 +541,7 @@ function tzbase_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       }
 
       if(empty($node->title)) {
-        $job = node_load($node->jobid);
+        $job = tzbase_node_load($node->jobid);
         $node->title = $job->title;
       }
 
@@ -587,7 +587,7 @@ function tzbase_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       }
     }
   } elseif($node->type === 'tzjob') {
-    if($op === 'presave') {
+    if ($op === 'presave') {
       tzbase_include_proto_classes();
 
       if($node->parentid) {
@@ -606,6 +606,11 @@ function tzbase_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         $node->flags = TZJobFlags::ACTIVE;
       }
     }
+  }
+
+  if (is_callable('dmemcache_delete') && $op == 'update') {
+    // Clear memcache entry for node
+    dmemcache_delete($node->nid, 'node-cache');
   }
 }
 
@@ -720,10 +725,6 @@ function tzbase_user($op, &$edit, &$account, $category = NULL) {
     $mapper = tzbase_user_jobs_mapper();
     $mapper->deleteAllByUserID($account->uid);
   }
-}
-
-function tzbase_job_by_jobcode($jobcode) {
-  return node_load(db_result(db_query("SELECT nid FROM {tzjob} WHERE jobcode = '%s'", $jobcode)));
 }
 
 function tzbase_include_proto_classes() {
@@ -942,6 +943,23 @@ function tzbase_http_server_vars() {
     }
   }
   return $vars;
+}
+
+function tzbase_node_load($nid) {
+  if (empty($nid)) {
+    return NULL;
+  }
+
+  $node = dmemcache_get($nid, 'node-cache');
+  if ($node) {
+    return $node;
+  }
+
+  $node = node_load($nid, NULL, TRUE);
+  if ($node) {
+    dmemcache_set($nid, $node, 0, 'node-cache');
+  }
+  return $node;
 }
 
 function format_version_code($version_code) {

@@ -344,7 +344,11 @@ function tzuser_get_user_status($account, $now) {
     return $status;
   }
 
-  $result = db_query('SELECT COUNT(n.vid) AS count FROM {node} n INNER JOIN {tzreport} tzr ON tzr.vid = n.vid WHERE assignedto = %d AND flags < %d AND endtime < %d', $account->uid, TZFlags::REPORTED, $now);
+  $query = 'SELECT COUNT(n.vid) AS count FROM {node} n ' .
+    'INNER JOIN {tzreport} tzr ON tzr.vid = n.vid ' .
+    'WHERE assignedto = %d AND flags < %d AND endtime < %d';
+
+  $result = db_query($query, $account->uid, TZFlags::REPORTED, $now);
   $data = db_fetch_object($result);
   if ($data) {
     $status->setNumberOfDueReports(intval($data->count));

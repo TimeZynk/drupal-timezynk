@@ -18,7 +18,7 @@ class GetReportTemplatesHandler extends CommandHandler {
     $sql = 'SELECT n.nid FROM {node} n INNER JOIN {tzreport} tzr ON n.vid = tzr.vid WHERE tzr.assignedto = %d ORDER BY n.created DESC LIMIT 3';
     $db_result = db_query($sql, $user->uid);
     while($data = db_fetch_object($db_result)) {
-      $node = node_load($data->nid, NULL, TRUE);
+      $node = tzbase_node_load($data->nid);
       $tzreport = $templates_result->add_report();
       tzproto_fill_from_node($tzreport, $node, $this->protocol_version);
     }

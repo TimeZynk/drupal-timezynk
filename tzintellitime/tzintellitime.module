@@ -131,7 +131,7 @@ function tzintellitime_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       case 'load':
         $fields = db_fetch_array(db_query('SELECT * FROM {tzintellitime} WHERE vid = %d', $node->vid));
         if (empty($fields['intellitime_id']) && !empty($node->jobid)) {
-          $job = node_load($node->jobid);
+          $job = tzbase_node_load($node->jobid);
           $fields['intellitime_jobid'] = $job->intellitime_id;
         }
         return $fields;
@@ -306,7 +306,11 @@ function tzintellitime_tzuser_add_user_data_alter(&$user_data) {
  * @return Node if intellitime ID was found, otherwise NULL
  */
 function tzintellitime_node_load_by_intellitime_id($intellitime_id) {
-  return node_load(db_result(db_query("SELECT nid FROM {tzintellitime} WHERE intellitime_id = '%s' ORDER BY vid DESC LIMIT 1", $intellitime_id)), NULL, TRUE);
+  if (empty($intellitime_id)) {
+    return NULL;
+  }
+  $nid = db_result(db_query("SELECT nid FROM {tzintellitime} WHERE intellitime_id = '%s' ORDER BY vid DESC LIMIT 1", $intellitime_id));
+  return tzbase_node_load($nid);
 }
 
 function tzintellitime_get_intellitime_id($tzreport) {

@@ -26,7 +26,7 @@ class CreateReportHandler extends CommandHandler {
 
     // Load node if this is an update
     if($data->id()) {
-      $report = node_load($data->id());
+      $report = tzbase_node_load($data->id());
       if(!node_access('update', $report)) {
         throw new TZProtoException('access denied', 403);
       }

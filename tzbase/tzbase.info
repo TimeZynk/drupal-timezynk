@@ -8,4 +8,6 @@ dependencies[] = libraries
 dependencies[] = date_api
 dependencies[] = date_timezone
 dependencies[] = tzsms
+dependencies[] = memcache
+
 core = 6.x

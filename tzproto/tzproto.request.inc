@@ -218,7 +218,7 @@ function tzproto_handle_get_job_cmd(&$cmd, &$result) {
 
   // Are we looking for a single id?
   if($jobcmd->job_id()) {
-    $node = node_load($jobcmd->job_id());
+    $node = tzbase_node_load($jobcmd->job_id());
     if($node && $node->nid) {
       $tzjob = $jobresult->add_job();
       tzproto_fill_from_node($tzjob, $node);
@@ -264,7 +264,7 @@ function _tzproto_sort_jobs_by_title($a, $b) {
 }
 
 function _tzproto_load_job($id, $filterAwayInactive) {
-  $node = node_load($id, NULL, TRUE);
+  $node = tzbase_node_load($id);
   if (empty($node) || $node->status != 1) {
     return NULL;
   }
@@ -289,7 +289,7 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result, $protocol_version = 0) {
 
   // Are we looking for a single id?
   if($reportcmd->report_id()) {
-    $node = node_load($reportcmd->report_id());
+    $node = tzbase_node_load($reportcmd->report_id());
     if($node && $node->nid) {
       $tzreport = $reportresult->add_report();
       tzproto_fill_from_node($tzreport, $node, $protocol_version);
@@ -362,7 +362,7 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result, $protocol_version = 0) {
     }
 
     while($data = db_fetch_object($db_result)) {
-      $node = node_load($data->nid, NULL, TRUE);
+      $node = tzbase_node_load($data->nid);
       $tzreport = $reportresult->add_report();
       tzproto_fill_from_node($tzreport, $node, $protocol_version);
     }
@@ -436,7 +436,7 @@ function tzproto_create_tzjob_from_protobuf($data) {
 
   // Load node if this is an update
   if($data->id()) {
-    $job = node_load($data->id());
+    $job = tzbase_node_load($data->id());
     if(!node_access('update', $job)) {
       throw new TZProtoException('access denied', 403);
     }

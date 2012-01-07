@@ -32,7 +32,6 @@ function tzmobile_theme() {
 }
 
 function tzmobile_user_list_alter(&$users) {
-  watchdog('tzmobile', 'altering ' . print_r($users, TRUE));
   for ($i = 0; $i < count($users); $i++) {
     $users[$i]['avatar'] = tzmobile_find_avatar($users[$i]['username']);
   }

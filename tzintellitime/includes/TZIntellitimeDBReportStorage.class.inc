@@ -12,7 +12,7 @@ class TZIntellitimeDBReportStorage implements TZIntellitimeReportStorage {
     $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE t.assignedto = %d AND t.begintime >= %d AND t.begintime < %d',
                        $this->account->uid, $from->format('U'), $to->format('U'));
     while($nid = db_result($result)) {
-      $node = node_load($nid, NULL, TRUE);
+      $node = tzbase_node_load($nid);
       if ($node->flags == TZFlags::DELETED && empty($node->intellitime_local_changes)) {
         continue;
       }
