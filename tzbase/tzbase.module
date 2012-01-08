@@ -97,6 +97,13 @@ function tzbase_menu() {
 }
 
 function tzbase_cron() {
+  /* Switch to admin user, see http://drupal.org/node/218104 */
+  global $user;
+  $original_user = $user;
+  $old_state = session_save_session();
+  session_save_session(FALSE);
+  $user = user_load(1);
+
   /* Clear old deleted reports */
   $cutoff = time() - TZBASE_REPORT_CLEANUP_AGE;
   $result = db_query('SELECT n.nid FROM {node} n INNER JOIN {tzreport} t ON n.vid = t.vid WHERE t.flags = 255 AND n.changed < %d', $cutoff);
@@ -105,6 +112,11 @@ function tzbase_cron() {
     node_delete($entry->nid);
     $count++;
   }
+
+  /* Restore original user, probably Anonymous */
+  $user = $original_user;
+  session_save_session($old_state);
+
   if ($count > 0) {
     watchdog('tzbase', 'Cleared !count reports older than !date', array('!count' => $count, '!date' => format_date($cutoff, 'small')));
   }
