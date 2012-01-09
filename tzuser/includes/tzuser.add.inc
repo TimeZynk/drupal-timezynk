@@ -79,7 +79,7 @@ function tzuser_add_users_form(&$form_state) {
   $form['file'] = array(
     '#type' => 'file',
     '#title' => t('Load from file'),
-    '#description' => t('Fill the fields from file (.csv, .xls, .xlsx). Valid headers are "UserId", "MobilePhone", "Password", "BossUserId" and "Email"'),
+    '#description' => t('Fill the fields from file (.csv, .xls, .xlsx). Valid headers are "UserId", "MobilePhone", "FirstName", "Surname", "Password", "BossUserId" and "Email"'),
     '#access' => user_access('bulk add employees'),
   );
 
@@ -120,6 +120,7 @@ function tzuser_add_users_form_validate($form, &$form_state) {
         $seen_numbers[$number] = array(
           'mobile' => $number,
           'username' => trim($form_state['values']['rows'][$rowid]['username']),
+          'fullname' => trim($form_state['values']['rows'][$rowid]['fullname']),
           'password' => trim($form_state['values']['rows'][$rowid]['password']),
           'email' => trim($form_state['values']['rows'][$rowid]['email']),
           'manager' => intval($form_state['values']['rows'][$rowid]['manager']),
@@ -154,6 +155,7 @@ function tzuser_add_users_form_validate($form, &$form_state) {
       return array(
         'mobile' => $row->mobilephone,
         'username' => $row->userid,
+        'fullname' => $row->firstname . " " . $row->surname,
         'password' => $row->password,
         'email' => $row->email,
         'manager' => $manager_user_id,
@@ -219,6 +221,7 @@ function tzuser_add_row_fields($index, $row) {
   $row_fields['index'] = array('#value' => $index + 1);
   $row_fields['number'] = tzuser_add_textfield($row['mobile']);
   $row_fields['username'] = tzuser_add_textfield($row['username']);
+  $row_fields['fullname'] = tzuser_add_restricted_textfield($row['fullname']);
   $row_fields['password'] = tzuser_add_restricted_textfield($row['password']);
   $row_fields['email'] = tzuser_add_restricted_textfield($row['email']);
   $row_fields['manager'] = tzuser_select_manager_field($row['manager']);
@@ -233,6 +236,7 @@ function tzuser_add_ajax() {
   foreach ($users as $u) {
     $account = tzuser_add_user(array(
       'username' => $u->username,
+      'fullname' => $u->fullname,
       'mobile' => $u->mobile,
       'password' => $u->password,
       'manager' => $u->manager,

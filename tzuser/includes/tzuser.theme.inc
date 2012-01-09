@@ -49,6 +49,7 @@ function theme_tzuser_add_users_rows($element) {
         drupal_render($element[$rowid]['index']),
         drupal_render($element[$rowid]['number']),
         drupal_render($element[$rowid]['username']),
+        drupal_render($element[$rowid]['fullname']),
         drupal_render($element[$rowid]['password']),
         drupal_render($element[$rowid]['email']),
         drupal_render($element[$rowid]['manager']),
@@ -67,6 +68,7 @@ function theme_tzuser_add_users_rows($element) {
 
   // Setup headers and output table
   $header = array('', t('Mobile number') . '*', t('Username') . '*');
+  $header[] = user_access('bulk add employees') ? t('Full name') : '';
   $header[] = user_access('bulk add employees') ? t('Password') : '';
   $header[] = user_access('bulk add employees') ? t('Email') : '';
   $header[] = t('Manager');
