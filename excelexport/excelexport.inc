@@ -12,39 +12,60 @@ function excelexport_export() {
 
   $objPHPExcel = new PHPExcel();
 
-  $sql = "SELECT n.nid FROM {node} n INNER JOIN {tzreport} tz ON n.vid = tz.vid WHERE type = 'tzreport' AND status = 1 AND tz.flags != %d ORDER BY tz.begintime";
+  $sql = 'SELECT * FROM {node} n ' .
+    'INNER JOIN {node_revisions} nr ON nr.vid = n.vid ' .
+    'INNER JOIN {tzreport} tz ON n.vid = tz.vid ' .
+    'INNER JOIN {tzuser} tzu ON tz.assignedto = tzu.uid ' .
+    'WHERE tz.flags != %d ORDER BY tz.begintime';
   $db_result = db_query(db_rewrite_sql($sql), TZFlags::DELETED);
 
   /* TODO: look up table header names from db, instead of hardcoding them. */
-  $h = array (t('Id'), t('Subject'), t('Description'), t('Assignment'), t('Assignment description'),
-    t('Start time'), t('End time'), t('Break duration'), t('Total'), t('State'), t('Assigned to'));
+  $h = array (t('Id'), t('Name'), t('Assignment'), t('Comment'), t('Start'), t('End'),
+    t('Break'), t('Total'), t('State'));
 
   $objPHPExcel->setActiveSheetIndex(0);
+  $excelSheet = $objPHPExcel->getActiveSheet();
+
   $row = 1;
   for ($column = 0; $column < count($h); $column++) {
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, (string)($h[$column]));
+    $excelSheet->setCellValueByColumnAndRow($column, $row, (string)($h[$column]));
   }
 
-  while ($data = db_fetch_object($db_result)) {
+  while ($node = db_fetch_object($db_result)) {
     $row++;
     $column = 0;
-    $node = node_load($data->nid);
-    $job = node_load($node->jobid);
-    $assigned_user = user_load($node->assignedto);
+    $job = tzbase_node_load($node->jobid);
 
-    $totalduration = tzbase_compute_total_duration($node);
+    $excelSheet->setCellValueByColumnAndRow($column++, $row, $node->nid);
+    $excelSheet->setCellValueByColumnAndRow($column++, $row, $node->fullname);
+    $excelSheet->setCellValueByColumnAndRow($column++, $row, $job->title);
+    $excelSheet->setCellValueByColumnAndRow($column++, $row, $node->body);
 
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $node->nid);
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $node->title);
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $node->body);
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $job->title);
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $job->body);
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, _excelexport_build_datetime_string($node->begintime));
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, _excelexport_build_datetime_string($node->endtime));
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, _excelexport_format_duration($node->breakduration));
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, _excelexport_format_duration($totalduration));
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, _excelexport_format_flags($node->flags));
-    $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $assigned_user->tzuser['fullname']);
+    $excelSheet->setCellValueByColumnAndRow($column, $row, _excelexport_format_datetime($node->begintime));
+    $excelSheet->getStyleByColumnAndRow($column, $row)
+      ->getNumberFormat()
+      ->setFormatCode('yyyy-mm-dd hh:mm');
+    $column++;
+
+    $excelSheet->setCellValueByColumnAndRow($column, $row, _excelexport_format_datetime($node->endtime));
+    $excelSheet->getStyleByColumnAndRow($column, $row)
+      ->getNumberFormat()
+      ->setFormatCode('yyyy-mm-dd hh:mm');
+    $column++;
+
+    $excelSheet->setCellValueByColumnAndRow($column, $row, _excelexport_format_duration($node->breakduration));
+    $excelSheet->getStyleByColumnAndRow($column, $row)
+      ->getNumberFormat()
+      ->setFormatCode('[h]:mm');
+    $column++;
+
+    $excelSheet->setCellValueByColumnAndRow($column, $row, _excelexport_format_duration($node->totalduration));
+    $excelSheet->getStyleByColumnAndRow($column, $row)
+      ->getNumberFormat()
+      ->setFormatCode('[h]:mm');
+    $column++;
+
+    $excelSheet->setCellValueByColumnAndRow($column++, $row, _excelexport_format_flags($node->flags));
   }
 
   _excelexport_autosize_columns($objPHPExcel, $column);
@@ -64,7 +85,7 @@ function _excelexport_save_to_file($objPHPExcel) {
 function _excelexport_passthru($filename) {
   drupal_set_header('Content-Type: application/vnd.ms-excel');
   drupal_set_header('Content-Disposition: attachment; filename=TimeZynk_Reports_' .
-    tzbase_make_date()->format('Y-m-d') . '.xls');
+    tzbase_make_date()->format('Y-m-d\TH:i:s') . '.xls');
 
   // We flush in order for the temp file to be fully written before we pass its contents on to drupal.
   flush();
@@ -95,12 +116,13 @@ function _excelexport_autosize_columns($php_excel_instance, $max_column = 0) {
  * corrected to be in GMT and not the local timezone.
  * @param $timestamp the UNIX timestamp.
  */
-function _excelexport_build_datetime_string($timestamp) {
-  if (is_numeric($timestamp)) {
-    $date = tzbase_make_date($timestamp);
-    return $date->format('Y-m-d H:i');
-  }
-  return $timestamp;
+function _excelexport_format_datetime($timestamp) {
+  $refdate = tzbase_make_date($timestamp);
+  $refdate->setDate(1900,1,-1);
+  $refdate->setTime(0,0,0);
+  $date = tzbase_make_date($timestamp);
+  return ($date->format('U') - $refdate->format('U')
+          - $refdate->getOffset() + $date->getOffset())/86400;
 }
 
 /**
@@ -108,15 +130,7 @@ function _excelexport_build_datetime_string($timestamp) {
  * @param int $duration in seconds
  */
 function _excelexport_format_duration($duration) {
-  if (is_numeric($duration)) {
-    $h = floor($duration/3600);
-    $duration -= $h*3600;
-    $m = floor($duration/60);
-    $duration -= $m*60;
-    $s = $duration;
-    return sprintf("%d:%02d:%02d", $h, $m, $s);
-  }
-  return $duration;
+  return $duration / 3600 / 24;
 }
 
 /**
