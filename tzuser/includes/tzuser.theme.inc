@@ -68,8 +68,8 @@ function theme_tzuser_add_users_rows($element) {
 
   // Setup headers and output table
   $header = array('', t('Mobile number') . '*', t('Username') . '*');
-  $header[] = user_access('bulk add employees') ? t('Full name') : '';
-  $header[] = user_access('bulk add employees') ? t('Password') : '';
+  $header[] = t('Full name');
+  $header[] = t('Password');
   $header[] = user_access('bulk add employees') ? t('Email') : '';
   $header[] = t('Manager');
   $output .= theme('table', $header, $rows);

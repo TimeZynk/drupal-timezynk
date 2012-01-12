@@ -221,8 +221,8 @@ function tzuser_add_row_fields($index, $row) {
   $row_fields['index'] = array('#value' => $index + 1);
   $row_fields['number'] = tzuser_add_textfield($row['mobile']);
   $row_fields['username'] = tzuser_add_textfield($row['username']);
-  $row_fields['fullname'] = tzuser_add_restricted_textfield($row['fullname']);
-  $row_fields['password'] = tzuser_add_restricted_textfield($row['password']);
+  $row_fields['fullname'] = tzuser_add_textfield($row['fullname']);
+  $row_fields['password'] = tzuser_add_textfield($row['password']);
   $row_fields['email'] = tzuser_add_restricted_textfield($row['email']);
   $row_fields['manager'] = tzuser_select_manager_field($row['manager']);
   return $row_fields;
