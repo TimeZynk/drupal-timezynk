@@ -27,7 +27,7 @@ enum TZJobType {
 }
 
 enum TZConstants {
-  VERSION = 2;
+  VERSION = 3;
 }
 
 message TZTime {
@@ -70,19 +70,27 @@ message TZTimeSpan {
   optional TZTime end = 3;
 }
 
+message TZBreak {
+  optional TZTime start = 1;
+  optional TZTime end = 2;
+  optional TZTime break_duration = 3;
+}
+
 message TZReport {
-  optional int32 id = 1 [default = 0];
-  optional int32 vid = 2 [default = 0];
+  optional int32 numeric_id = 1 [deprecated=true];
+  optional int32 vid = 2 [deprecated=true];
   optional int32 job_id = 3 [default = 0];
   optional string title = 4;
   optional string description = 5;
   optional int32 assigned_to = 6; // user id in drupal
   optional int32 begin_time = 7 [deprecated=true];
   optional int32 end_time = 8 [deprecated=true];
-  optional int32 break_duration = 9; // in seconds
+  optional int32 break_duration = 9 [deprecated=true]; // in seconds
   optional int32 flags = 10; // TZFlags
   optional int32 changed = 11; // epoch timestamp
   optional TZTimeSpan worked_time = 12;
+  optional TZBreak break_time = 13;
+  optional string id = 14;
   optional string signature = 16;
   optional string comments = 17;
   optional int32 travel_duration = 18; // in seconds
