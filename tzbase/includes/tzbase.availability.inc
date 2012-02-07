@@ -108,8 +108,12 @@ function _tzbase_user_entry($uid) {
   $entry->fullname = $account->tzuser['fullname'];
   $entry->mobile = $account->tzuser['mobile'];
   if (!empty($account->tzuser['manager'])) {
-    $manager = _tzbase_user_entry($account->tzuser['manager']);
-    $entry->manager = $manager->fullname;
+    if ($account->tzuser['manager'] == $account->uid) {
+      $entry->manager = $entry->fullname;
+    } else {
+      $manager = _tzbase_user_entry($account->tzuser['manager']);
+      $entry->manager = $manager->fullname;
+    }
   } else {
     $entry->manager = "";
   }
