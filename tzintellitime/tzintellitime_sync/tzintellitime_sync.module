@@ -89,6 +89,15 @@ function tzintellitime_sync_user_operations() {
 }
 
 /**
+ * Implementation of hook_perm()
+ */
+function tzintellitime_sync_perm() {
+  return array(
+    'disable own intelliplan availability sync',
+  );
+}
+
+/**
  * Alter hook for computed TZUserStatus
  * @param  TZUserStatus $status
  */

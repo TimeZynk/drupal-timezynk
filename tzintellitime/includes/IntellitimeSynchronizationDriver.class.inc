@@ -23,7 +23,8 @@ class IntellitimeSynchronizationDriver {
       $result = $this->syncReports($server, $loggers);
 
       if ($result === TZIntellitimeSyncController::SYNC_OK &&
-          user_access('create availability content', $this->account)) {
+          user_access('create availability content', $this->account) &&
+          !user_access('disable own intelliplan availability sync', $this->account)) {
         $this->syncAvailability($server, $loggers);
       }
 
