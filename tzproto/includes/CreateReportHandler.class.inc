@@ -24,9 +24,16 @@ class CreateReportHandler extends CommandHandler {
     $report = new stdClass();
     $original_report = NULL;
 
+    $id = NULL;
+    if ($data->id()) {
+      $id = $data->id();
+    } else if ($data->numeric_id()) {
+      $id = $data->numeric_id();
+    }
+
     // Load node if this is an update
-    if($data->id()) {
-      $report = tzbase_node_load($data->id());
+    if($id) {
+      $report = tzbase_node_load($id);
       if(!node_access('update', $report)) {
         throw new TZProtoException('access denied', 403);
       }
@@ -88,7 +95,17 @@ class CreateReportHandler extends CommandHandler {
         throw new TZProtoException('Report ends before it begins.', 400);
       }
     }
-    $report->breakduration = $data->break_duration();
+
+    $break_time = $data->break_time();
+    $report->breakduration = 0;
+    if (!empty($break_time)) {
+      $duration = $break_time->break_duration();
+      if (!empty($duration)) {
+        $report->breakduration = $duration->hour() * 3600 + $duration->minute() * 60;
+      }
+    } else if ($data->break_duration()) {
+      $report->breakduration = $data->break_duration();
+    }
 
     $report->travelduration = 0;
     $report->travelkm = 0;
@@ -123,7 +140,7 @@ class CreateReportHandler extends CommandHandler {
       // Invoke hook to allow modules to collect statistics or billing info
       module_invoke_all('tzproto_saved_report', $report);
 
-      if($data->id()) {
+      if($id) {
         watchdog('tzproto', 'Created revision !vid of report !nid', array('!vid' => $report->vid, '!nid' => $report->nid),
         WATCHDOG_NOTICE,
         l('View', 'node/' . $report->nid));

@@ -48,13 +48,13 @@ class TZJobType extends PBEnum
 }
 class TZConstants extends PBEnum
 {
-  const VERSION  = 2;
+  const VERSION  = 3;
 
   public function __construct($reader=null)
   {
    	parent::__construct($reader);
  	$this->names = array(
-			2 => "VERSION");
+			3 => "VERSION");
    }
 }
 class TZTime extends PBMessage
@@ -199,6 +199,47 @@ class TZTimeSpan extends PBMessage
     return $this->_set_value("3", $value);
   }
 }
+class TZBreak extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZBreak"]["1"] = "TZTime";
+    $this->values["1"] = "";
+    self::$fieldNames["TZBreak"]["1"] = "start";
+    self::$fields["TZBreak"]["2"] = "TZTime";
+    $this->values["2"] = "";
+    self::$fieldNames["TZBreak"]["2"] = "end";
+    self::$fields["TZBreak"]["3"] = "TZTime";
+    $this->values["3"] = "";
+    self::$fieldNames["TZBreak"]["3"] = "break_duration";
+  }
+  function start()
+  {
+    return $this->_get_value("1");
+  }
+  function set_start($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+  function end()
+  {
+    return $this->_get_value("2");
+  }
+  function set_end($value)
+  {
+    return $this->_set_value("2", $value);
+  }
+  function break_duration()
+  {
+    return $this->_get_value("3");
+  }
+  function set_break_duration($value)
+  {
+    return $this->_set_value("3", $value);
+  }
+}
 class TZReport extends PBMessage
 {
   var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
@@ -207,13 +248,9 @@ class TZReport extends PBMessage
     parent::__construct($reader);
     self::$fields["TZReport"]["1"] = "PBInt";
     $this->values["1"] = "";
-    $this->values["1"] = new PBInt();
-    $this->values["1"]->value = 0;
-    self::$fieldNames["TZReport"]["1"] = "id";
+    self::$fieldNames["TZReport"]["1"] = "numeric_id";
     self::$fields["TZReport"]["2"] = "PBInt";
     $this->values["2"] = "";
-    $this->values["2"] = new PBInt();
-    $this->values["2"]->value = 0;
     self::$fieldNames["TZReport"]["2"] = "vid";
     self::$fields["TZReport"]["3"] = "PBInt";
     $this->values["3"] = "";
@@ -247,6 +284,12 @@ class TZReport extends PBMessage
     self::$fields["TZReport"]["12"] = "TZTimeSpan";
     $this->values["12"] = "";
     self::$fieldNames["TZReport"]["12"] = "worked_time";
+    self::$fields["TZReport"]["13"] = "TZBreak";
+    $this->values["13"] = "";
+    self::$fieldNames["TZReport"]["13"] = "break_time";
+    self::$fields["TZReport"]["14"] = "PBString";
+    $this->values["14"] = "";
+    self::$fieldNames["TZReport"]["14"] = "id";
     self::$fields["TZReport"]["16"] = "PBString";
     $this->values["16"] = "";
     self::$fieldNames["TZReport"]["16"] = "signature";
@@ -275,11 +318,11 @@ class TZReport extends PBMessage
     $this->values["22"]->value = false;
     self::$fieldNames["TZReport"]["22"] = "may_reset";
   }
-  function id()
+  function numeric_id()
   {
     return $this->_get_value("1");
   }
-  function set_id($value)
+  function set_numeric_id($value)
   {
     return $this->_set_value("1", $value);
   }
@@ -370,6 +413,22 @@ class TZReport extends PBMessage
   function set_worked_time($value)
   {
     return $this->_set_value("12", $value);
+  }
+  function break_time()
+  {
+    return $this->_get_value("13");
+  }
+  function set_break_time($value)
+  {
+    return $this->_set_value("13", $value);
+  }
+  function id()
+  {
+    return $this->_get_value("14");
+  }
+  function set_id($value)
+  {
+    return $this->_set_value("14", $value);
   }
   function signature()
   {

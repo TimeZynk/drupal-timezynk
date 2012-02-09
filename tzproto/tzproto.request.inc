@@ -407,6 +407,7 @@ function tzproto_fill_from_node(&$proto, $node, $protocol_version = 0) {
     $proto->set_may_create_report(node_access('create', 'tzreport') && $node->flags == TZJobFlags::ACTIVE);
     $proto->set_may_edit(node_access('update', $node));
   } else if($node->type == 'tzreport') {
+    $proto->set_numeric_id($node->nid);
     $proto->set_vid($node->vid);
     $proto->set_job_id($node->jobid);
     // We changed from epoch timestamps to date+time in version 1.
@@ -419,10 +420,16 @@ function tzproto_fill_from_node(&$proto, $node, $protocol_version = 0) {
       $proto->set_begin_time($node->begintime);
       $proto->set_end_time($node->endtime);
     }
-    $proto->set_break_duration($node->breakduration);
-    $proto->set_signature($node->signature);
-    $proto->set_travel_duration($node->travelduration);
-    $proto->set_travel_km($node->travelkm);
+    if ($protocol_version >= 3) {
+      $tzbreak = new TZBreak();
+      $tzduration = new TZTime();
+      $tzduration->set_hour(floor($node->breakduration / 3600));
+      $tzduration->set_minute(floor(($node->breakduration - $tzduration->hour() * 3600) / 60));
+      $tzbreak->set_break_duration($tzduration);
+      $proto->set_break_time($tzbreak);
+    } else {
+      $proto->set_break_duration($node->breakduration);
+    }
 
     $proto->set_may_edit(node_access('update', $node));
     $proto->set_may_remove(user_access('remove own tzreport content'));
