@@ -63,7 +63,11 @@ class CreateReportHandler extends CommandHandler {
       $report->title = $job->title ? $job->title : 'Time Report from ' . $user->name;
     }
 
-    $report->body = $data->description();
+    if ($data->comments()) {
+      $report->body = $data->comments();
+    } else {
+      $report->body = $data->description();
+    }
 
     // Parse start and finish
     $worked_time = $data->worked_time();

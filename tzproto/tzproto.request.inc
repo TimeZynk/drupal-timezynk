@@ -397,12 +397,12 @@ function tzproto_fill_from_node(&$proto, $node, $protocol_version = 0) {
   $proto->set_id($node->nid);
   $proto->set_flags($node->flags);
   $proto->set_title($node->title);
-  $proto->set_description($node->body);
   $proto->set_changed($node->changed);
 
   if($node->type == 'tzjob') {
     $proto->set_job_type($node->jobtype);
     $proto->set_parent_id($node->parentid);
+    $proto->set_description($node->body);
     $proto->set_may_create_child(node_access('create', $node->type));
     $proto->set_may_create_report(node_access('create', 'tzreport') && $node->flags == TZJobFlags::ACTIVE);
     $proto->set_may_edit(node_access('update', $node));
@@ -427,8 +427,10 @@ function tzproto_fill_from_node(&$proto, $node, $protocol_version = 0) {
       $tzduration->set_minute(floor(($node->breakduration - $tzduration->hour() * 3600) / 60));
       $tzbreak->set_break_duration($tzduration);
       $proto->set_break_time($tzbreak);
+      $proto->set_comments($node->body);
     } else {
       $proto->set_break_duration($node->breakduration);
+      $proto->set_description($node->body);
     }
 
     $proto->set_may_edit(node_access('update', $node));
