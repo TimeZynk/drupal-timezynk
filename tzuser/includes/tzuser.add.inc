@@ -227,34 +227,3 @@ function tzuser_add_row_fields($index, $row) {
   $row_fields['manager'] = tzuser_select_manager_field($row['manager']);
   return $row_fields;
 }
-
-function tzuser_add_ajax() {
-  $result = array();
-  // Read POST data
-  $raw_data = file_get_contents('php://input');
-  $users = json_decode($raw_data);
-  foreach ($users as $u) {
-    $account = tzuser_add_user(array(
-      'username' => $u->username,
-      'fullname' => $u->fullname,
-      'mobile' => $u->mobile,
-      'password' => $u->password,
-      'manager' => $u->manager,
-      'email' => $u->email,
-    ));
-
-    if ($account) {
-      module_invoke_all('tzuser_add_user_notify', $account, $u->password);
-      $result[$u->mobile]['message'] = t('Created employee @username with mobile @number',
-                                             array('@username' => $account->name,
-                                                   '@number' => $account->tzuser['mobile']));
-      watchdog('tzuser', $result[$u->mobile]['message']);
-    } else {
-      $result[$u->mobile]['error'] = t('Failed to add employee @username with mobile @number',
-                                           array('@username' => $u>username,
-                                                 '@number' => $u->mobile));
-      watchdog('tzuser', $result[$u->mobile]['message'], WATCHDOG_WARNING);
-    }
-  }
-  print drupal_json($result);
-}

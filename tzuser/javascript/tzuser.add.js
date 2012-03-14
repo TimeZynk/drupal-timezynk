@@ -8,14 +8,14 @@ $(function() {
 		on_finished: add_users_finished,
 		title: Drupal.t('Adding employees') + '...'
 	});
-	
+
 	function add_users(users, on_success) {
-		$.post('/tzuser/add/ajax', JSON.stringify(users), function(data, textStatus) {
+		$.post('/api/users', JSON.stringify(users), function(data, textStatus) {
 			$.extend(results, data);
 			on_success();
 		}, 'json');
 	}
-	
+
 	function add_users_finished() {
 		var messages = [],
 			errors = [];

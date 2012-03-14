@@ -29,6 +29,7 @@ function tzbase_api_info() {
     'name' => variable_get('site_name'),
     'url' => url('/', array('absolute' => TRUE))
   );
+  drupal_alter('api_info', $info);
   drupal_set_header('Content-Type: application/json; charset=utf-8');
   print json_encode($info);
 }

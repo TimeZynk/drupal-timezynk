@@ -299,6 +299,11 @@ function tzintellitime_tzuser_add_user_data_alter(&$user_data) {
   $user_data['intellitime_user'] = TRUE;
 }
 
+function tzintellitime_api_info_alter(&$info) {
+  if (TZINTELLITIME_BASE_URL) {
+    $info['intellitime_base_url'] = TZINTELLITIME_BASE_URL;
+  }
+}
 
 /**
  * Load a node by searching for the intellitime ID

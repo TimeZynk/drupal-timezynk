@@ -29,9 +29,11 @@ function tzuser_menu() {
     'weight' => -10,
   );
   $items['api/users'] = array(
-    'page callback' => 'tzuser_api_list_users',
+    'page callback' => 'tzuser_api_users',
     'access callback' => 'tzapi_authorize',
-    'access arguments' => array('view employees'),
+    'access arguments' => array(array(
+      'GET' => 'view employees',
+      'POST' => 'manage employees')),
     'file' => 'includes/api.inc',
     'type' => MENU_CALLBACK,
   );
@@ -50,12 +52,6 @@ function tzuser_menu() {
     'file' => 'includes/tzuser.add.inc',
     'type' => MENU_LOCAL_TASK,
     'weight' => -5,
-  );
-  $items['tzuser/add/ajax'] = array(
-    'page callback' => 'tzuser_add_ajax',
-    'access arguments' => array('manage employees'),
-    'file' => 'includes/tzuser.add.inc',
-    'type' => MENU_CALLBACK,
   );
   $items['tzuser/support_log'] = array(
     'title' => 'Support log',

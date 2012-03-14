@@ -16,6 +16,15 @@ function tzuser_api_access() {
   print json_encode($access);
 }
 
+function tzuser_api_users() {
+  switch ($_SERVER['REQUEST_METHOD']) {
+    case 'GET':
+      return tzuser_api_list_users();
+    case 'POST':
+      return tzuser_api_create_user();
+  }
+}
+
 function tzuser_api_list_users() {
   $date = _tzuser_api_list_users_request_date();
   $single = FALSE;
@@ -116,4 +125,39 @@ function _tzuser_api_list_users_request_date() {
   // The date is up to and including.
   $date->modify('+1 day');
   return $date;
+}
+
+function tzuser_api_create_user() {
+  $result = array();
+  // Read POST data
+  $raw_data = file_get_contents('php://input');
+  $users = json_decode($raw_data);
+  if (!is_array($users)) {
+    $users = array($users);
+  }
+
+  foreach ($users as $u) {
+    $account = tzuser_add_user(array(
+      'username' => $u->username,
+      'fullname' => $u->fullname,
+      'mobile' => $u->mobile,
+      'password' => $u->password,
+      'manager' => $u->manager,
+      'email' => $u->email,
+    ));
+
+    if ($account) {
+      module_invoke_all('tzuser_add_user_notify', $account, $u->password);
+      $result[$u->mobile]['message'] = t('Created employee @username with mobile @number',
+                                             array('@username' => $account->name,
+                                                   '@number' => $account->tzuser['mobile']));
+      watchdog('tzuser', $result[$u->mobile]['message']);
+    } else {
+      $result[$u->mobile]['error'] = t('Failed to add employee @username with mobile @number',
+                                           array('@username' => $u>username,
+                                                 '@number' => $u->mobile));
+      watchdog('tzuser', $result[$u->mobile]['message'], WATCHDOG_WARNING);
+    }
+  }
+  print drupal_json($result);
 }

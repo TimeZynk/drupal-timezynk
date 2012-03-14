@@ -4,8 +4,11 @@ define('TZAPI_DEFAULT_USER', 'kFBbVjSwhktevLSNC7Wd');
 define('TZAPI_DEFAULT_KEY', 'tg370J1JVvySh5kgqyupt5cBOwnF2RQYcAV9vVYsCb');
 define('TZAPI_EXPIRE_SECONDS', 15*60);
 
-function tzapi_authorize($permissions = array()) {
-  if (user_access($permissions)) {
+function tzapi_authorize($permission = 'access content') {
+  if (is_array($permission)) {
+    $m = $_SERVER['REQUEST_METHOD'];
+    return !empty($permission[$m]) && user_access($permission[$m]);
+  } else if (user_access($permission)) {
     return TRUE;
   }
 
