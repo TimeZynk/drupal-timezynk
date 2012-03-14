@@ -169,7 +169,7 @@ message TZSyncCmd {
 
 message TZGetReportCmd {
   // Exact report id to fetch, if set we will ignore all other filtering options
-  optional int32 report_id = 1;
+  optional int32 numeric_report_id = 1 [deprecated=true];
 
   // Fetch reports that have changed since timestamp (in epoch)
   optional int32 changed_after = 2 [default = 0];
@@ -191,6 +191,9 @@ message TZGetReportCmd {
 
   // Only return reports within this date range.
   optional TZDateRange date_range = 8;
+
+  // Exact report id to fetch, if set we will ignore all other filtering options
+  optional string report_id = 9;
 }
 message TZGetReportResult {
   // Only returned for ranged queries. (limit > 0)

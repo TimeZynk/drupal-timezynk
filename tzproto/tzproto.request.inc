@@ -288,8 +288,12 @@ function tzproto_handle_get_report_cmd(&$cmd, &$result, $protocol_version = 0) {
   $reportresult = new TZGetReportResult();
 
   // Are we looking for a single id?
-  if($reportcmd->report_id()) {
-    $node = tzbase_node_load($reportcmd->report_id());
+  $report_id = $reportcmd->report_id();
+  if (!$report_id) {
+    $report_id = $reportcmd->numeric_report_id();
+  }
+  if($report_id) {
+    $node = tzbase_node_load($report_id);
     if($node && $node->nid) {
       $tzreport = $reportresult->add_report();
       tzproto_fill_from_node($tzreport, $node, $protocol_version);

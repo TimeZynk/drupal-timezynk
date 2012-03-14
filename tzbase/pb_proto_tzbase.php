@@ -932,7 +932,7 @@ class TZGetReportCmd extends PBMessage
     parent::__construct($reader);
     self::$fields["TZGetReportCmd"]["1"] = "PBInt";
     $this->values["1"] = "";
-    self::$fieldNames["TZGetReportCmd"]["1"] = "report_id";
+    self::$fieldNames["TZGetReportCmd"]["1"] = "numeric_report_id";
     self::$fields["TZGetReportCmd"]["2"] = "PBInt";
     $this->values["2"] = "";
     $this->values["2"] = new PBInt();
@@ -962,12 +962,15 @@ class TZGetReportCmd extends PBMessage
     self::$fields["TZGetReportCmd"]["8"] = "TZDateRange";
     $this->values["8"] = "";
     self::$fieldNames["TZGetReportCmd"]["8"] = "date_range";
+    self::$fields["TZGetReportCmd"]["9"] = "PBString";
+    $this->values["9"] = "";
+    self::$fieldNames["TZGetReportCmd"]["9"] = "report_id";
   }
-  function report_id()
+  function numeric_report_id()
   {
     return $this->_get_value("1");
   }
-  function set_report_id($value)
+  function set_numeric_report_id($value)
   {
     return $this->_set_value("1", $value);
   }
@@ -1030,6 +1033,14 @@ class TZGetReportCmd extends PBMessage
   function set_date_range($value)
   {
     return $this->_set_value("8", $value);
+  }
+  function report_id()
+  {
+    return $this->_get_value("9");
+  }
+  function set_report_id($value)
+  {
+    return $this->_set_value("9", $value);
   }
 }
 class TZGetReportResult extends PBMessage
