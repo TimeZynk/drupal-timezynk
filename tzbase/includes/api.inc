@@ -26,7 +26,7 @@ function tzbase_api_sites_index() {
 
 function tzbase_api_info() {
   $info = array(
-    'name' => variable_get('site_name'),
+    'name' => variable_get('site_name', ''),
     'url' => url('/', array('absolute' => TRUE))
   );
   drupal_alter('api_info', $info);

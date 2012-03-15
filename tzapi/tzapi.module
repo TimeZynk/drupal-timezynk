@@ -5,10 +5,13 @@ define('TZAPI_DEFAULT_KEY', 'tg370J1JVvySh5kgqyupt5cBOwnF2RQYcAV9vVYsCb');
 define('TZAPI_EXPIRE_SECONDS', 15*60);
 
 function tzapi_authorize($permission = 'access content') {
-  if (is_array($permission)) {
+  if (is_object($permission)) {
     $m = $_SERVER['REQUEST_METHOD'];
-    return !empty($permission[$m]) && user_access($permission[$m]);
-  } else if (user_access($permission)) {
+    if (!empty($permission->$m)) {
+      $permission = $permission->$m;
+    }
+  }
+  if (user_access($permission)) {
     return TRUE;
   }
 

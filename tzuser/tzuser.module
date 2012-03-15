@@ -31,7 +31,7 @@ function tzuser_menu() {
   $items['api/users'] = array(
     'page callback' => 'tzuser_api_users',
     'access callback' => 'tzapi_authorize',
-    'access arguments' => array(array(
+    'access arguments' => array((object)array(
       'GET' => 'view employees',
       'POST' => 'manage employees')),
     'file' => 'includes/api.inc',
