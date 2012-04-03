@@ -65,14 +65,6 @@ function tzbase_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'includes/tzbase.userjobs.inc',
   );
-  $items['availability'] = array(
-    'title' => 'Availability',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('tzbase_availability_form'),
-    'access arguments' => array('view any availability content'),
-    'type' => MENU_NORMAL_ITEM,
-    'file' => 'includes/tzbase.availability.inc',
-  );
   $items['availability/data'] = array(
     'page callback' => 'tzbase_availability_data',
     'access arguments' => array('view any availability content'),

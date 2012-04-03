@@ -1,0 +1,8 @@
+name = TimeZynk Availability
+description = Provides TimeZynk availability view
+package = TimeZynk
+
+dependencies[] = tzbase
+dependencies[] = tzsms
+
+core = 6.x

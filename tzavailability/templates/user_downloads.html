@@ -1,0 +1,34 @@
+<div class="container">
+	<div class="pagetitle">
+		<h1><%= t.downloads_heading %></h1>
+	</div>
+	<ul class="sub-menu_tabs">
+		<li>
+			<span><a href="#company/<%= data['company-id'] %>/user/<%= data['id'] %>"><%= t.user_heading %></a></span>
+		</li>
+		<li class="active">
+			<span><a href="#"><%= t.downloads_heading %></a></span>
+		</li>
+	</ul>
+	<div class="main-area container">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#companies"><%= t.companies_heading %></a><span class="divider">/</span>
+			</li>
+			<li>
+				<a href="#company/<%= data['company-id'] %>/users"><%= data['company-id']  %></a><span class="divider">/</span>
+			</li>
+			<li>
+				<a href="#company/<%= data['company-id'] %>/user/<%= data['id'] %>" ><%= data['name']  %></a><span class="divider">/</span>
+			</li>
+			<li class="active">
+				<a href="#company/<%= data['company-id'] %>/user/<%= data['id'] %>/downloads" ><%= t.downloads_heading %></a>
+			</li>
+		</ul>
+		<!-- Main content -->
+		<h1><%= data.name %></h1>
+		<br />
+		<div id="downloads">
+		</div>
+	</div>
+</div>

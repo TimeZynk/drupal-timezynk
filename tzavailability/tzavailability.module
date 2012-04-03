@@ -1,0 +1,36 @@
+<?php
+
+function tzavailability_menu() {
+  $items['availability'] = array(
+    'title' => 'Availability',
+    'page callback' => 'tzavailability_page',
+    'access arguments' => array('view any availability content'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['availability/frame'] = array(
+    'page callback' => 'tzavailability_frame',
+    'access arguments' => array('view any availability content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+function tzavailability_theme() {
+  return array(
+    'availability_frame' => array(
+      'arguments' => array(),
+      'template' => 'availability_frame',
+    ),
+  );
+}
+
+function tzavailability_page() {
+    return '<iframe src="' . url('availability/frame') . '" width="100%" frameborder="0"></iframe>';
+}
+
+function tzavailability_frame() {
+  print theme('availability_frame');
+  exit();
+}

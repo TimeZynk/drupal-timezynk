@@ -1,0 +1,107 @@
+<div class="container">
+	<div class="pagetitle">
+		<h1></h1>
+	</div>
+	<ul class="sub-menu_tabs">
+		<li class="active">
+			<span><a href="#"><%= t.user_heading %></a></span>
+		</li>
+		<li>
+			<span><a href="/<%= location.hash %>/downloads"><%= t.downloads_heading %></a></span>
+		</li>
+	</ul>
+	<div class="main-area container">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#companies"><%= t.companies_heading %></a><span class="divider">/</span>
+			</li>
+			<li>
+				<a href="#company/<%= data['company-id'] %>/users"><%= data['company-id']  %></a><span class="divider">/</span>
+			</li>
+			<li class="active">
+				<a href="#company/<%= data['company-id'] %>/user/<%= data['id'] %>" ><%= data['name']  %></a>
+			</li>
+		</ul>
+		<!-- Main content -->
+		<span class="align-right">
+			<button type="submit" id="delete_btn" class="btn btn-danger">
+				<i class="icon-trash icon-white"></i> <%= t.button_delete %>
+			</button> </span>
+		<h1><%= data.name %></h1>
+		<br />
+		<div class="row">
+			<div class="span6">
+				<form class="form-inline">
+					<table>
+						<tr>
+							<td>
+								<%= t.user_last_login_column %>:
+							</td>
+							<td>
+								<%= new Date(data['last-login']*1000) %>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<%= t.user_first_login_column %>:
+							</td>
+							<td>
+								<%= new Date(data['first-login']*1000) %>
+							</td>
+						</tr>
+						<tr>
+							<td><%= t.user_login_column %>:<br /><br />
+							</td>
+							<td>
+							<%= data['login-names'] %>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="name"><%= t.user_name_column %>:</label></td>
+							<td>
+							<input type="text" id="name" class="model_param" name="name" value="<%= data.name %>"/>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="country-code"><%= t.user_country_code %>:</label></td>
+							<td>
+							<input type="text" id="country-code" class="model_param" name="country-code" value="<%= data['country-code'] %>"/>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="mobile"><%= t.user_mobile_column %>:</label></td>
+							<td>
+							<input type="text" id="mobile" class="model_param" name="mobile" value="<%= data.mobile %>"/>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="email"><%= t.user_email_column %>:</label></td>
+							<td>
+							<input type="text" id="email" class="model_param" name="email" value="<%= data.email %>"/>
+							</td>
+						</tr>
+					</table>
+				</form>
+				<br />
+				<button id="update_user" class="btn btn-primary">
+					<%= t.modal_save_button %>
+				</button>
+			</div>
+			<div class="span6">
+				<div class="well">
+					<h3><%= t.user_send_sms %>:</h3>
+					<textarea id="sms_message"></textarea>
+					<br />
+					<button id="send_message" class="btn btn-primary">
+						<i class="icon-comment icon-white"></i> <%= t.button_send %>
+					</button>
+					<br /><br />
+					<h3><%= t.user_send_install_sms_checkbox %>:</h3>
+					<button id="send_install" class="btn">
+						<i class="icon-share"></i> <%= t.user_install_sms_checkbox %>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

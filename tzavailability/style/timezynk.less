@@ -1,0 +1,200 @@
+/*
+ * TimeZynk ftw!
+ */
+
+body{
+  background-image: url("../img/dark_noise.png");
+  font-family: 'Kameron', Rockwell, Helvetica, sans-serif;
+}
+
+.main-area{
+  background: @white;
+  margin-bottom:40px;
+  padding:20px;
+  .border-radius(4px);
+  .box-shadow(0 2px 3px rgba(0,0,0,.25));
+  background-image: url("../img/light_noise.png");
+}
+
+/*
+ * Useful class styles
+ */
+
+.clear{
+  clear:both;
+}
+
+.align-right{
+  float:right;
+}
+
+.align-left{
+  float:left;
+}
+
+.centered{
+  float:none;
+  margin:0 auto;
+}
+
+.centered-text{
+  text-align:center;
+}
+
+/* Background colors */
+
+.bg_white{
+  background: #ffffff;
+}
+
+.bg_black{
+  background: #000000;
+}
+
+/*
+ * HTML elements
+ */
+
+label{
+  margin-right:10px;
+}
+
+table,
+table tr,
+table td{
+  vertical-align:top;
+}
+
+.add_user_row td{
+  cursor:pointer;
+  background:#eee;
+  color:#888;
+  text-align:center;
+  font-size:1.5em;
+  &:hover{
+    color:#555;
+  }
+}
+
+.pending{
+  background:@infoBackground;
+}
+
+.saved{
+  background:@successBackground;
+}
+
+.error{
+  background: @errorBackground;
+}
+
+tr form{
+  margin:0;
+}
+
+/*
+ * Sub header
+ */
+
+h1.logotype span{
+  display:none;
+}
+
+h1.logotype{
+  display:block;
+  float:left;
+  width: 145px;
+  height:40px;
+  background:url("../img/timezynk_logo.png") center no-repeat;
+}
+
+// Pagetitle
+
+.pagetitle{
+  padding:20px 0;
+  color:#fff;
+  //text-shadow: 1px 1px 1px #555555;
+  //filter: dropshadow(color=#555555, offx=1, offy=1);
+}
+
+.pagetitle h1{
+  color:#fff;
+}
+
+/* Sub menu tabs*/
+
+ul.sub-menu_tabs{
+  float:right;
+  list-style:none;
+  margin-top:-27px;
+}
+
+ul.sub-menu_tabs li{
+  position:relative;
+  display:block;
+  width:190px;
+  height:27px;
+  float:left;
+  background:url("../img/inactive-tab.png") no-repeat;
+  margin-left:-20px;
+  z-index:0;
+}
+
+ul.sub-menu_tabs li.active,
+ul.sub-menu_tabs li.active:hover{
+  background:url("../img/active-tab.png") no-repeat;
+  z-index:1;
+}
+
+ul.sub-menu_tabs li:hover{
+  background:url("../img/hover-tab.png") no-repeat;
+}
+
+ul.sub-menu_tabs li span{
+  display:block;
+  padding:5px 0 0 25px;
+}
+
+/*
+ * Sub-menu collapsed
+ */
+@media (max-width: 768px) {
+
+  .body{
+    padding-top:50px;
+  }
+
+  ul.sub-menu_tabs{
+    float:none;
+    margin-top:auto;
+    margin-left:0;
+    background:@grayLighter;
+    .border-radius(4px);
+    .box-shadow(0 2px 3px rgba(0,0,0,.25));
+    padding:10px 10px 5px 10px;
+  }
+
+  ul.sub-menu_tabs li{
+    width:auto;
+    float:none;
+    background:none;
+    margin:0 0 5px 0;
+    padding:10px 5px 0 10px;
+    .border-radius(4px);
+  }
+
+  ul.sub-menu_tabs li.active,
+  ul.sub-menu_tabs li.active:hover{
+    background:@grayLight;
+    z-index:0;
+  }
+
+  ul.sub-menu_tabs li:hover{
+    background:@white;
+  }
+
+  ul.sub-menu_tabs li span{
+    display:inline;
+    padding:0;
+  }
+}
