@@ -120,6 +120,22 @@ function tzstats_tzsms_send($type, $phonenbr, $length) {
  * Logs the saved report timestamp for billing statistics
  */
 function tzstats_tzproto_saved_report($report) {
+  $today = date_now();
+  $url = parse_url(url('/', array('absolute' => TRUE)));
+
+  $redis = new Redis();
+  $redis->connect('127.0.0.1', 6379, 1);
+  $redis->auth('faepaihapee3oujookugh4lah0mae0eibae2foong6iatoh3cheehait3aek4Pee');
+
+  $today_count = $redis->hIncrBy($today->format('Ymd'), $url['host'], 1);
+
+  $redis->publish('tz-timereports', json_encode(array(
+    'host' => $url['host'],
+    'count' => $today_count,
+  )));
+
+  $redis->zAdd('tz-hosts', intval($today->format('U')), $url['host']);
+
   $record = array(
     'uid' => $report->assignedto,
     'timestamp' => time(),
