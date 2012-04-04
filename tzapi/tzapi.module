@@ -50,6 +50,30 @@ function tzapi_authorize($permission = 'access content') {
   return $hmac == base64_decode($m[2]);
 }
 
+function tzapi_interval_params() {
+  $now = time();
+  $default_length = 24*3600;
+  $interval = array($now - $default_length, $now);
+
+  if (!empty($_GET['timestamp'])) {
+    $interval[1] = intval($_GET['timestamp'], 10);
+  }
+  if (!empty($_GET['to'])) {
+    $interval[1] = intval($_GET['to'], 10);
+  }
+  $interval[0] = $interval[1] - $default_length;
+
+  if (isset($_GET['from'])) {
+    $interval[0] = intval($_GET['from'], 10);
+  }
+
+  if (!empty($_GET['interval'])) {
+    $interval[0] = $interval[1] - intval($_GET['interval'], 10);
+  }
+
+  return $interval;
+}
+
 function _tzapi_hdr($key, $default = "") {
   return empty($_SERVER[$key]) ? $default : $_SERVER[$key];
 }

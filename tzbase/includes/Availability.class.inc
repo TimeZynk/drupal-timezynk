@@ -140,7 +140,7 @@ class Availability {
     $this->local_changes = $record->local_changes != 0;
   }
 
-  private function getFields() {
+  public function getFields() {
     $fields = array();
     if (!empty($this->id)) {
       $fields['id'] = $this->id;

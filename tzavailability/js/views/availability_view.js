@@ -5,34 +5,31 @@ define([
     'collections/users',
     'models/user',
     'template_views/tzview',
-    'views_admin/availability_list',
+    'views/availability_list_view',
     'text!templates/availability.html'
-], function($, _, Backbone, Users, User, TzView,  Availability, template) {
+], function($, _, Backbone, Users, User, TzView, AvailabilityListView, template) {
 
     /*
      * Users view
      */
-    var UsersView = TzView.extend({
+    return TzView.extend({
         tmpl: _.template(template),
 
-        render: function() {
-            var that = this,
-            collection = new Users();
-            console.log("Working");
+        initialize: function() {
+            this.collection = new Users();
+        },
 
-            collection.url = location.origin + '/api/users?status[10]=10&status[20]=20';
-            
+        render: function() {
+            var that = this;
+
             this.content = this.tmpl(this.params);
             $(this.el).append(this.content);
-            
+
             var theFrame = $("iframe", parent.document.body);
 			theFrame.height(700);
 
-            var table = new Availability({
-                collection: collection,
-                columns: [
-                    {title: t.user_name_column, field:"fullname"}
-                ]
+            var table = new AvailabilityListView({
+                collection: this.collection,
             });
 
             $(this.el).find("#availability_container").append(table.render().el);
@@ -40,6 +37,4 @@ define([
             return this;
         }
     });
-
-    return UsersView;
 });

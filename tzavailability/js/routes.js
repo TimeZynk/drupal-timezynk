@@ -4,14 +4,14 @@ define([
   'backbone',
   'models/session',
   'models/user',
-  'views_admin/availability',
+  'views/availability_view',
 ], function (
-	$, 
-	_, 
+	$,
+	_,
 	Backbone,
 	Session,
 	User,
-	Availability
+	AvailabilityView
 	) {
     var session = new Session({}),
         Routes = Backbone.Router.extend({
@@ -22,9 +22,9 @@ define([
         initialize: function() {
         	this.availability();
         },
-        
+
         availability: function(){
-            this.current_view = new Availability();
+            this.current_view = new AvailabilityView();
             $('#main').html(this.current_view.render().el);
         }
     });

@@ -33,3 +33,13 @@ function tzbase_api_info() {
   drupal_set_header('Content-Type: application/json; charset=utf-8');
   print json_encode($info);
 }
+
+function tzbase_availabilities_index() {
+  $interval = tzapi_interval_params();
+  $availability_store = tzbase_availability_store();
+  $avs = $availability_store->findBetween($_GET['user_id'], tzbase_make_date($interval[0]), tzbase_make_date($interval[1]));
+  $avs = array_map(function($av) {
+    return $av->getFields();
+  }, $avs);
+  print json_encode($avs);
+}
