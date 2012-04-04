@@ -121,6 +121,7 @@ function tzstats_tzsms_send($type, $phonenbr, $length) {
  */
 function tzstats_tzproto_saved_report($report) {
   $today = date_now();
+  $timestamp = $today->format('U');
   $url = parse_url(url('/', array('absolute' => TRUE)));
   $host = str_replace('www.', '', $url['host']);
 
@@ -128,18 +129,18 @@ function tzstats_tzproto_saved_report($report) {
   $redis->connect('127.0.0.1', 6379, 1);
   $redis->auth('faepaihapee3oujookugh4lah0mae0eibae2foong6iatoh3cheehait3aek4Pee');
 
-  $today_count = $redis->hIncrBy($today->format('Ymd'), $host, 1);
+  $today_count = $redis->hIncrBy('timereports:' . $today->format('Ymd'), $host, 1);
+  $redis->hSet('timereports:timestamp', $host, $timestamp);
 
-  $redis->publish('tz-timereports', json_encode(array(
-    'host' => $host,
+  $redis->publish('timereports:update', json_encode(array(
+    'id' => $host,
     'count' => $today_count,
+    'timestamp' => $today->format('U'),
   )));
-
-  $redis->zAdd('tz-hosts', intval($today->format('U')), $host);
 
   $record = array(
     'uid' => $report->assignedto,
-    'timestamp' => time(),
+    'timestamp' => $timestamp,
     'vid' => $report->vid,
   );
   drupal_write_record('tzstats_report', $record);
