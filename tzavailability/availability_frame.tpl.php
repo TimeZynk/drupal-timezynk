@@ -20,11 +20,8 @@
   </head>
 
   <body>
-    <div id="navbar" class="navbar navbar-fixed-top"></div>
-    <div  class="container">
-    	<div class="row" id="main">
-
-    	</div>
+    <div  class="container-fluid" id="main">
+    	
     </div>
   </body>
 </html>

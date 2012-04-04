@@ -5,10 +5,9 @@ define([
     'collections/users',
     'models/user',
     'template_views/tzview',
-    'template_views/list_view',
-    'template_views/list_row',
-    'text!templates/all_users.html'
-], function($, _, Backbone, Users, User, TzView, ListView, ListRow, template) {
+    'views_admin/availability_list',
+    'text!templates/availability.html'
+], function($, _, Backbone, Users, User, TzView,  Availability, template) {
 
     /*
      * Users view
@@ -19,23 +18,24 @@ define([
         render: function() {
             var that = this,
             collection = new Users();
+            console.log("Working");
 
-            collection.url = '/users';
+            collection.url = location.origin + '/api/users?status[10]=10&status[20]=20';
             
             this.content = this.tmpl(this.params);
             $(this.el).append(this.content);
+            
+            var theFrame = $("iframe", parent.document.body);
+			theFrame.height(700);
 
-            var table = new ListView({
+            var table = new Availability({
                 collection: collection,
                 columns: [
-                    {title: t.user_name_column, field:"name"},
-                    {title: t.user_mobile_column, field:"mobile"},
-                    {title: t.company_heading, field:"company-id"},
-                    {title: t.user_last_login_column, field:"last-login"}
+                    {title: t.user_name_column, field:"fullname"}
                 ]
             });
 
-            $(this.el).find("#companies_list").append(table.render().el);
+            $(this.el).find("#availability_container").append(table.render().el);
 
             return this;
         }

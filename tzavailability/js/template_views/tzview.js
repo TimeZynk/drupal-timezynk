@@ -2,9 +2,8 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'text!templates/tzview.html',
-    'views_admin/message_view'
-], function($, _, Backbone, template, MessageView) {
+    'text!templates/availability.html',
+], function($, _, Backbone, template) {
     return Backbone.View.extend({
         tmpl: _.template(template),
         params : {
@@ -31,7 +30,7 @@ define([
         },
         displayMessage: function(msg, type, target){
             $(this.el).find(".alert").remove();
-            var alert = new MessageView({
+            /*var alert = new MessageView({
                 className: "alert " + type,
                 message: msg
             });
@@ -41,7 +40,7 @@ define([
                 $(this.el).find("#msg_field").prepend(alert.el);
             } else {
                 $(this.el).find(".main-area").prepend(alert.el);
-            }
+            }*/
         },
 
         clearMessages : function(){

@@ -4,10 +4,9 @@ define([
     'backbone',
     'list',
     'template_views/tzview',
-    'template_views/add_modal',
     'template_views/list_row',
     'text!templates/list.html'
-], function($, _, Backbone, List, TzView, AddModal, ListRow, template) {
+], function($, _, Backbone, List, TzView, ListRow, template) {
 
     /*
      * Generic list
@@ -17,7 +16,6 @@ define([
         tmpl: _.template(template),
         collection : null,
         row : ListRow,
-        add_module: AddModal,
         columns : [],
 
         events : {
