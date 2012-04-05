@@ -332,25 +332,24 @@ function tzuser_validate_phone_number($number) {
  * @param int @now timestamp
  * @return TZUserStatus status
  */
-function tzuser_get_user_status($account, $now) {
+function tzuser_get_user_status($account, $now, $fetch_due_reports = TRUE) {
   tzbase_include_proto_classes();
 
   $status = new TZUserStatus($account->uid, $now, $account->login, TZUSER_OVERVIEW_RED_LIMIT);
-  if($status->getStatusCode() <= TZUserStatus::RED) {
-    return $status;
+
+  if ($fetch_due_reports && $status->getStatusCode() > TZUserStatus::RED) {
+    $query = 'SELECT COUNT(n.vid) AS count FROM {node} n ' .
+      'INNER JOIN {tzreport} tzr ON tzr.vid = n.vid ' .
+      'WHERE assignedto = %d AND flags < %d AND endtime < %d';
+
+    $result = db_query($query, $account->uid, TZFlags::REPORTED, $now);
+    $data = db_fetch_object($result);
+    if ($data) {
+      $status->setNumberOfDueReports(intval($data->count));
+    }
+
+    drupal_alter('tzuser_status', $status);
   }
-
-  $query = 'SELECT COUNT(n.vid) AS count FROM {node} n ' .
-    'INNER JOIN {tzreport} tzr ON tzr.vid = n.vid ' .
-    'WHERE assignedto = %d AND flags < %d AND endtime < %d';
-
-  $result = db_query($query, $account->uid, TZFlags::REPORTED, $now);
-  $data = db_fetch_object($result);
-  if ($data) {
-    $status->setNumberOfDueReports(intval($data->count));
-  }
-
-  drupal_alter('tzuser_status', $status);
 
   return $status;
 }

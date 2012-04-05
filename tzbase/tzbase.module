@@ -957,6 +957,15 @@ function tzbase_http_server_vars() {
   return $vars;
 }
 
+function tzbase_hostname() {
+  static $host = NULL;
+  if ($host == NULL) {
+    $url = parse_url(url('/', array('absolute' => TRUE)));
+    $host = str_replace('www.', '', $url['host']);
+  }
+  return $host;
+}
+
 function tzbase_node_load($nid) {
   if (empty($nid)) {
     return NULL;
