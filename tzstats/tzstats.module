@@ -190,6 +190,7 @@ function tzstats_user($op, &$edit, &$account, $category = NULL) {
           'host' => $host,
           'uid' => $account->uid,
           'first_login' => $account->login,
+          'timestamp' => $account->login,
         )));
       }
 
@@ -210,6 +211,7 @@ function tzstats_user($op, &$edit, &$account, $category = NULL) {
         'host' => $host,
         'uid' => $account->uid,
         'deleted' => $now,
+        'timestamp' => $now,
       )));
       break;
   }
