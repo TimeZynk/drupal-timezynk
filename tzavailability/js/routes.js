@@ -4,7 +4,7 @@ define([
   'backbone',
   'models/session',
   'models/user',
-  'views/availability_view',
+  'views/availability_list_view',
 ], function (
 	$,
 	_,

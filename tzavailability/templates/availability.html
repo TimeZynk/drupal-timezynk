@@ -1,6 +1,6 @@
 <br />
 <div class="row-fluid" >
-	<div class="span3">
+	<div class="span2">
 		<div class="btn-group">
 			<a class="btn btn-primary" href="#">Skicka sms</a>
 			<a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
@@ -11,20 +11,23 @@
 			</ul>
 		</div>
 	</div>
-	<div class="span9">
+	<div class="span5">
+		<h2 id="current_interval">Date</h2>
+	</div>
+	<div class="span5">
 		<span class="align-right">
-			<button class="btn" type="submit">
+			<button class="btn" id="btn_day">
 				Dag
 			</button>
-			<button class="btn btn-inverse" type="submit">
+			<button class="btn" id="btn_week">
 				Vecka
-			</button> 
-		</span> 
+			</button>
+		</span>
 		<span class="align-right">
 			<div class="btn-group">
-				<a class="btn" href="#"><i class="icon-arrow-left"></i></a>
-				<a class="btn" href="#">Denna vecka</a>
-				<a class="btn" href="#"><i class="icon-arrow-right"></i></a>
+				<a class="btn" id="prev_week"><i class="icon-arrow-left"></i></a>
+				<a class="btn" id="curr_week">Denna vecka</a>
+				<a class="btn" id="next_week"><i class="icon-arrow-right"></i></a>
 			</div>
 		</span>
 		<br /><br />
@@ -32,6 +35,15 @@
 </div>
 <div class="row-fluid">
 	<div class="span12" id="availability_container">
-		
+		<span id="msg_field"></span>
+		<!-- <span class="align-right">
+			<form class="form-search">
+				<%= t.search_label %> <input class="search input-medium search-query" type:"text"/>
+			</form>
+		</span> -->
+		<table id="the_list" class="table table-bordered bg_white">
+			<thead><tr></tr></thead>
+			<tbody id="list" class="list"></tbody>
+		</table>
 	</div>
 </div>

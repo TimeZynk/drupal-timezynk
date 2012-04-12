@@ -60,7 +60,7 @@ define([
         addOne : function(row) {
             var r = new this.row({
                 model : row,
-                className : ""
+                className : "plan_row	"
             });
             $(this.el).find("tbody").append(r.render(this.columns).el);
         },
@@ -83,8 +83,7 @@ define([
             var options = {
                 valueNames : cols
             };
-
-            this.the_list = new List(this.el, options);
+            //this.the_list = new List(this.el, options);
         },
         addItem : function() {
 
