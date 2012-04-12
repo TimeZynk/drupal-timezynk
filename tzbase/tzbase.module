@@ -86,6 +86,14 @@ function tzbase_menu() {
     'file' => 'includes/api.inc',
     'type' => MENU_CALLBACK,
   );
+  $items['api/reports'] = array(
+    'page callback' => 'tzbase_reports_index',
+    'access callback' => 'tzapi_authorize',
+    'access arguments' => array('view any tzreport content'),
+    'file' => 'includes/api.inc',
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
