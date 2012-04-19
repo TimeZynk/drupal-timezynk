@@ -114,7 +114,18 @@ th .plan_interval{
   height:30px;
   border-radius:4px;
   border: 2px solid #c6f9b6;
-  background-color: #DFF0D8
+  background-color: #DFF0D8;
+}
+
+.report_slot{
+  top:40px;
+}
+
+.report_slot span{
+  height:5px;
+  background-color: #AAAAAA;
+  border: 1px solid #888888;
+  
 }
 
 .plan_slot:hover{
@@ -129,7 +140,7 @@ th .plan_interval{
   margin:-1px;
 }
 
-.slot_available1 span{
+.slot_availability_false span{
   background-color: #F2DEDE;
   border-color: #EED3D7;
 }
@@ -142,3 +153,46 @@ th .plan_interval{
 .popover{
   z-index:9999;
 }
+
+.popover_availability_false {
+  .popover-inner{ 
+    background: red;
+    background: rgba(255, 0, 0, 0.8);
+  }
+  &.right .arrow{
+    border-right: 5px solid red !important;
+  }
+  &.left .arrow{
+    border-left: 5px solid red !important;
+  }
+  &.top .arrow{
+    border-top: 5px solid red !important;
+  }
+  &.bottom .arrow{
+    border-bottom: 5px solid red !important;
+  }
+}
+.popover_availability_true {
+  .popover-inner{ 
+    background: green;
+    //background: rgba(0, 255, 0, 0.8);
+  }
+  &.right .arrow{
+    border-right: 5px solid green !important;
+  }
+  &.left .arrow{
+    border-left: 5px solid green !important;
+  }
+  &.top .arrow{
+    border-top: 5px solid green !important;
+  }
+  &.bottom .arrow{
+    border-bottom: 5px solid green !important;
+  }
+}
+
+.popover_report{
+  
+}
+
+

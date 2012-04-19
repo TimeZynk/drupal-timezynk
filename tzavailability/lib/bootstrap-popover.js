@@ -41,7 +41,7 @@
       $tip.find('.popover-title')[ $.type(title) == 'object' ? 'append' : 'html' ](title)
       $tip.find('.popover-content > *')[ $.type(content) == 'object' ? 'append' : 'html' ](content)
 
-      $tip.removeClass('fade top bottom left right in')
+      $tip.removeClass('fade top bottom left right in').addClass(this.options.className)
     }
 
   , hasContent: function () {

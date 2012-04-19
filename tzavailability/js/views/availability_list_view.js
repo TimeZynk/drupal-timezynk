@@ -2,18 +2,18 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'lib/bootstrap-tooltip',
-    'lib/bootstrap-popover',
-    'lib/bootstrap-button',
+    'bootstrap-tooltip',
+    'bootstrap-popover',
+    'bootstrap-button',
     'collections/users',
-    'collections/availabilities',
+    'collections/blobs',
     'models/user',
     'template_views/list_view',
     'views/av_list_row',
     'views/sms_popup',
     'text!templates/availability.html',
     'i18n!nls/tzcontrol'
-], function($, _, Backbone, Tooltip, Popover, Buttons, Users, Availabilities, User, ListView, AvListRow, SmsPopup, template, t) {
+], function($, _, Backbone, Tooltip, Popover, Buttons, Users, Blobs, User, ListView, AvListRow, SmsPopup, template, t) {
     /*
      * Availability list view
      */
@@ -53,7 +53,7 @@ define([
             this.collection.bind('reset', this.addAll, this);
             this.collection.bind('reset', this.setupList, this);
             
-            this.slotCollection = new Availabilities();
+            this.blobs = new Blobs();
 			this.resetInterval();
             
             return this;
@@ -187,27 +187,21 @@ define([
 			var st = this.start_time.getEpoch();
 			var end = st + this.total_interval;
 			
-			this.slotCollection.setUrl("?from=" + st +"&to=" + end);
-			this.slotCollection.fetch({
+			this.blobs.setInterval(st, end);
+			this.blobs.fetch({
                 success : function() {
                     that.reload();
                 },
                 error: function(){
-                    console.log("Error timeslots");
+                    console.log("Error reports");
                 }
            	});
 		},
 		
-		addOne : function(model) {			
-			var blobs = new Backbone.Collection();
-			_.each(this.slotCollection.models, function(m){
-				if(m.get("uid") == model.get("id")){
-					blobs.add(m);
-				}
-			});
+		addOne : function(model) {
             var r = new this.row({
                 model : model,
-                slots : blobs,
+                blobs : this.blobs,
                 intervals: this.intervals,
                 total_interval : this.total_interval,
                 start_time: this.start_time.getEpoch()
@@ -215,7 +209,7 @@ define([
             $(this.el).find("tbody").append(r.render(this.columns).el);
             
             var theFrame = $("iframe", parent.document.body);
-			theFrame.height($(this.el).outerHeight()+50);
+			theFrame.height($(this.el).outerHeight()+200);
         },
         
         selectAll : function(e){

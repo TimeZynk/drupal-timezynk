@@ -2,8 +2,8 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'lib/bootstrap-tooltip',
-    'lib/bootstrap-popover',
+    'bootstrap-tooltip',
+    'bootstrap-popover',
     'template_views/list_row',
     'template_views/tz_alert'
 ], function($, _, Backbone, Tooltip, Popover, TZListRow, Alert) {
@@ -29,8 +29,8 @@ define([
             var checkbox = this.make("input", {"type":"checkbox", "class":"row_select"});
             
             var cont = t.user_email_column + ": " + this.model.get("email");
-            cont += "<br />" + t.user_last_login + ": " + new Date(this.model.get("last_login")*1000);
             cont += "<br />" + t.user_mobile_column + ": " + this.model.get("mobile");
+            cont += "<br />" + t.user_last_login + ": " + dateFormat(new Date(this.model.get("last_login")*1000),"yyyy-mm-dd HH:MM:ss");
             
             var container = that.make(
             	"div",
@@ -46,7 +46,7 @@ define([
             var box_td = that.make("td", {"class" : "select"}, checkbox);
             var td = that.make("td", {"class" : "name_field"}, container);
              
-            $(container).popover({placement:"right"});
+            $(container).popover({placement:"right", delay:{show:200, hide:10}});
             $(that.el).append(box_td);
             $(that.el).append(td);
             
@@ -90,18 +90,42 @@ define([
         renderBlobs : function(container){
         	var that =this;
         	var percent = this.total_interval/100;
+        	var info_tmpl =  _.template('<%= title %>:<br/><%= date_str %><br/><%= from_str %> - <%= to_str %>');
         	        	
-        	this.slots.each(function(blob){
+        	this.blobs.each(function(blob) {
+        		if (blob.get('user_id') != that.model.get('id')) {
+        			// Only show this users blobs...
+        			return;
+        		}
+        		
+        		var className = "";
+        		var popoverClassName = "";
+        		
+        		if(blob.get('type') == "availability"){
+        			className = "plan_slot slot_availability_" + blob.get("available");
+        			popoverClassName = "popover_" + blob.get('type') + "_" + blob.get("available");
+        		} else {
+        			className = "plan_slot report_slot";
+        			popoverClassName = "popover_" + blob.get('type');
+        		}
+        		
+        		var start_date = new Date(blob.get('start_time')*1000);
+        		var end_date = new Date(blob.get('end_time')*1000);
         		
         		var td = that.make("a", {
-	            	"class" : "plan_slot slot_available" + blob.get("availability_type"),
+	            	"class" : className,
 	            	"rel" : "popover",
-	            	"data-content" : new Date(blob.get("start_time")*1000),
+	            	"data-content" : info_tmpl({
+	            		title: blob.get('title'),
+	            		date_str: dateFormat(start_date, 'yyyy-mm-dd'),
+	            		from_str: dateFormat(start_date, 'HH:MM'),
+	            		to_str: dateFormat(end_date, 'HH:MM')
+	            	}),
 	            	"title" : that.model.get("fullname")
 	            },"<span></span>");
 	            
-	            var left = (blob.get("start_time") - that.start_time)/percent;
-	            var width = (blob.get("end_time") - blob.get("start_time"))/percent;
+	            var left = (blob.get('start_time') - that.start_time)/percent;
+	            var width = (blob.get('end_time') - blob.get('start_time'))/percent;
 	            
 	            if(width + left > 100){
 	            	width = 100 - left;
@@ -113,18 +137,17 @@ define([
 	            }
 	            
 	            $(td).css({
-	            	top:5,
 	            	left: left + "%",
 	            	width: width + "%"
 	            });
 	            $(container).append(td);
 	            
-	            if(left+(width/2) > 70){
-	            	$(td).popover({placement:"left"});
-	            } else if(left+(width/2) < 20){
-	            	$(td).popover({placement:"right"});
-	            }{
-	            	$(td).popover({placement:"top"});
+	            if(left+(width/2) >= 70){
+	            	$(td).popover({placement:"left", className : popoverClassName, delay:{show:200, hide:10}});
+	            } else if (left+(width) <= 30){
+	            	$(td).popover({placement:"right", className : popoverClassName, delay:{show:200, hide:10}});
+	            } else {
+	            	$(td).popover({placement:"bottom", className : popoverClassName, delay:{show:200, hide:10}});
 	            }
         	});
         },

@@ -21,10 +21,12 @@ require.config({
         jquery: '../lib/jquery-1.7.1',
         underscore: '../lib/underscore', // https://github.com/amdjs
         backbone: '../lib/backbone', // https://github.com/amdjs
-        tooltip: 'lib/bootstrap-tooltip',
-        popover: 'lib/bootstrap-popover',
+        "bootstrap-tooltip": '../lib/bootstrap-tooltip',
+        "bootstrap-popover": '../lib/bootstrap-popover',
+        "bootstrap-button": '../lib/bootstrap-button',
         list: '../lib/list',
         json2: '../lib/json2',
+        date_format:'../lib/date.format',
 
         // Require.js plugins
         text: '../lib/require/text',
@@ -41,11 +43,14 @@ require.config({
 // Let's kick off the application
 
 require([
+	'jquery',
     'json2',
-    'routes',
     'i18n!nls/tzcontrol',
-    'date_utils'
-], function(json2, routes, t, date_utils) {
-    window.t = t;
-    routes.initialize();
+    'date_utils',
+    'date_format',
+], function($, json2, t) {
+	window.t = t;
+	require(['bootstrap-tooltip', 'routes'], function(bt, routes) {
+		routes.initialize();
+	});
 });
