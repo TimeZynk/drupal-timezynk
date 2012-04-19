@@ -3,8 +3,7 @@ define([
     'underscore',
     'backbone',
     'text!templates/tz_alert.html',
-    'template_views/message_view',
-], function($, _, Backbone, template, MessageView) {
+], function($, _, Backbone, template) {
     return Backbone.View.extend({
         tmpl: _.template(template),
 

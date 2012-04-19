@@ -4,8 +4,9 @@ define([
     'backbone',
     'lib/bootstrap-tooltip',
     'lib/bootstrap-popover',
-    'template_views/list_row'
-], function($, _, Backbone, Tooltip, Popover, TZListRow) {
+    'template_views/list_row',
+    'template_views/tz_alert'
+], function($, _, Backbone, Tooltip, Popover, TZListRow, Alert) {
      /*
      * Generic list row
      */
@@ -14,7 +15,7 @@ define([
         className: "plan_row",
         
         events : {
-        	"click .name_field a" : "displayInfo"
+        	"send .select" : "sendSMS"
         },
         
         initialize : function(obj) {
@@ -24,8 +25,29 @@ define([
         render : function(cols) {
             this.columns = cols;
             var that = this;
-            var container = that.make("div", {"class" : "name_field_container"}, "<a>" + this.model.get('fullname') + "</a>");
+            
+            var checkbox = this.make("input", {"type":"checkbox", "class":"row_select"});
+            
+            var cont = t.user_email_column + ": " + this.model.get("email");
+            cont += "<br />" + t.user_last_login + ": " + new Date(this.model.get("last_login")*1000);
+            cont += "<br />" + t.user_mobile_column + ": " + this.model.get("mobile");
+            
+            var container = that.make(
+            	"div",
+            	{
+            		"class" : "name_field_container",
+	            	"rel" : "popover",
+	            	"data-content" : cont,
+	            	"title" : this.model.get("fullname")
+            	},
+            	this.model.get('fullname')
+            );
+            
+            var box_td = that.make("td", {"class" : "select"}, checkbox);
             var td = that.make("td", {"class" : "name_field"}, container);
+             
+            $(container).popover({placement:"right"});
+            $(that.el).append(box_td);
             $(that.el).append(td);
             
             that.renderIntervals();
@@ -107,8 +129,24 @@ define([
         	});
         },
         
-        displayInfo : function(){
+        sendSMS : function(e, message){
+        	var user = this.model;
+        	var that = this;
+        	sms = new Backbone.Model();
+        	sms.url = location.origin + '/api/sms';
+        	var a = new Alert();
         	
+            sms.save({
+                recipients: [user.get('id')],
+                text: message
+            }, {
+                success: function(m, msg) {
+                	$("#msg_area").html(a.alert("info", t.success, t.message_sent).el);
+                },
+                error: function(m, msg){
+                	$("#msg_area").html(a.alert("danger", t.failure, t.message_failed).el);
+                }
+            });
         }
     });
 });

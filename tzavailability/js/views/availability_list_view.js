@@ -4,14 +4,16 @@ define([
     'backbone',
     'lib/bootstrap-tooltip',
     'lib/bootstrap-popover',
+    'lib/bootstrap-button',
     'collections/users',
     'collections/availabilities',
     'models/user',
     'template_views/list_view',
     'views/av_list_row',
+    'views/sms_popup',
     'text!templates/availability.html',
     'i18n!nls/tzcontrol'
-], function($, _, Backbone, Tooltip, Popover, Users, Availabilities, User, ListView, AvListRow, template, t) {
+], function($, _, Backbone, Tooltip, Popover, Buttons, Users, Availabilities, User, ListView, AvListRow, SmsPopup, template, t) {
     /*
      * Availability list view
      */
@@ -29,7 +31,9 @@ define([
         	"click #next_week" : "nextInterval",
         	"click #curr_week" : "resetInterval",
         	"click #btn_day" : "dayView",
-        	"click #btn_week" : "weekView"
+        	"click #btn_week" : "weekView",
+        	'click input[name="select-all"]' : 'selectAll',
+        	'click #send_message' : "composeSMS"
         },
         
         initialize : function(obj) {
@@ -68,6 +72,14 @@ define([
                 $(that.el).find("thead tr").append(th);
             });
             
+            var checkbox = this.make("input", {
+                "type" : "checkbox",
+                "class" : "row_select",
+                "name" : "select-all"
+            });
+            
+            var th_box = this.make("th", {}, checkbox);
+            
             var th = this.make("th", {
                 "class" : "plan_intervals"
             });
@@ -100,7 +112,7 @@ define([
         	};
         	
         	$(th).append(blobs);
-        	
+        	$(that.el).find("thead tr").prepend(th_box);
         	$(that.el).find("thead tr").append(th);
         },
         
@@ -206,6 +218,33 @@ define([
 			theFrame.height($(this.el).outerHeight()+50);
         },
         
+        selectAll : function(e){
+        	$(this.el).find('input.row_select').attr('checked', $(e.target).is(':checked'));
+        },
+        
+        composeSMS : function(){
+        	var popup = new SmsPopup();
+        	$(this.el).find("#composer").append(popup.render().el);
+        	$(this.el).find("#send_message").button('loading');
+        	
+        	popup.on('send', this.sendMessage, this);
+        	popup.on('cancel', this.cancelMessage, this);
+        	
+        	var theFrame = $("iframe", parent.document.body);
+			theFrame.height($(this.el).outerHeight()+200);
+        },
+        
+        sendMessage : function(message){
+        	console.log(message);
+        	$(this.el).find("#send_message").button('reset');
+        	$(this.el).find("tbody").children(".plan_row").children('.select').children(':checked').each(function() {
+				$(this).parent('.select').trigger("send", message);
+			});
+        },
+        
+        cancelMessage : function(){
+        	$(this.el).find("#send_message").button('reset');
+        }
     });
 
     return AvailabilityListView;
