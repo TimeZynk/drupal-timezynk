@@ -622,8 +622,10 @@ function tzbase_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   }
 
   if ($op == 'update' || $op == 'delete') {
-    // Clear memcache entry for node
-    dmemcache_delete($node->nid, 'node-cache');
+    if (function_exists('dmemcache_delete')) {
+      // Clear memcache entry for node
+      dmemcache_delete($node->nid, 'node-cache');
+    }
   }
 }
 
@@ -972,13 +974,15 @@ function tzbase_node_load($nid) {
     return NULL;
   }
 
-  $node = dmemcache_get($nid, 'node-cache');
-  if ($node) {
-    return $node;
+  if (function_exists('dmemcache_get')) {
+    $node = dmemcache_get($nid, 'node-cache');
+    if ($node) {
+      return $node;
+    }
   }
 
   $node = node_load($nid, NULL, TRUE);
-  if ($node) {
+  if ($node && function_exists('dmemcache_set')) {
     dmemcache_set($nid, $node, 0, 'node-cache');
   }
   return $node;
