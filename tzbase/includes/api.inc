@@ -37,7 +37,16 @@ function tzbase_api_info() {
 function tzbase_availabilities_index() {
   $interval = tzapi_interval_params();
   $availability_store = tzbase_availability_store();
-  $avs = $availability_store->findBetween($_GET['user_id'], tzbase_make_date($interval[0]), tzbase_make_date($interval[1]));
+
+  $user_id = 0;
+  if (!empty($_GET['user_id'])) {
+    $user_id = $_GET['user_id'];
+  }
+  $avs = $availability_store->findBetween(
+    $user_id,
+    tzbase_make_date($interval[0]),
+    tzbase_make_date($interval[1])
+  );
   $avs = array_map(function($av) {
     return $av->getFields();
   }, $avs);
