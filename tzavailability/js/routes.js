@@ -2,19 +2,10 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'models/session',
   'models/user',
   'views/availability_list_view',
-], function (
-	$,
-	_,
-	Backbone,
-	Session,
-	User,
-	AvailabilityView
-	) {
-    var session = new Session({}),
-        Routes = Backbone.Router.extend({
+], function ($, _, Backbone, User, AvailabilityView) {
+    var Routes = Backbone.Router.extend({
         routes: {
             "*actions" : "availability"
         },

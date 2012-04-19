@@ -1,17 +1,17 @@
 <br />
 <div class="row-fluid">
 	<div class="span12" id="composer">
-		
+
 	</div>
 </div>
 <div class="row-fluid">
 	<div class="span12" id="msg_area">
-		
+
 	</div>
 </div>
 <div class="row-fluid">
 	<div class="span2">
-		<button class="btn btn-primary" data-toggle="button" id="send_message" data-loading-text="Skicka sms">Skicka sms</button>
+		<button class="btn btn-primary" data-toggle="button" id="send_message" data-loading-text="<%= t.user_send_sms %>"><%= t.user_send_sms %></button>
 	</div>
 	<div class="span5">
 		<h2 id="current_interval">Date</h2>
@@ -19,16 +19,16 @@
 	<div class="span5">
 		<span class="align-right">
 			<button class="btn" id="btn_day">
-				Dag
+				<%= t.calendar_day %>
 			</button>
 			<button class="btn" id="btn_week">
-				Vecka
+				<%= t.calendar_week %>
 			</button>
 		</span>
 		<span class="align-right">
 			<div class="btn-group">
 				<a class="btn" id="prev_week"><i class="icon-arrow-left"></i></a>
-				<a class="btn" id="curr_week">Denna vecka</a>
+				<a class="btn" id="curr_week"><%= t.calendar_current_week %></a>
 				<a class="btn" id="next_week"><i class="icon-arrow-right"></i></a>
 			</div>
 		</span>
@@ -38,11 +38,6 @@
 <div class="row-fluid">
 	<div class="span12" id="availability_container">
 		<span id="msg_field"></span>
-		<!-- <span class="align-right">
-			<form class="form-search">
-				<%= t.search_label %> <input class="search input-medium search-query" type:"text"/>
-			</form>
-		</span> -->
 		<table id="the_list" class="table table-bordered bg_white">
 			<thead><tr></tr></thead>
 			<tbody id="list" class="list"></tbody>
