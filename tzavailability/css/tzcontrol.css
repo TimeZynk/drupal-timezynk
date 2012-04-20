@@ -6782,6 +6782,7 @@ body {
 }
 .align-right {
   float: right;
+  margin-left: 5px;
 }
 .align-left {
   float: left;
@@ -6852,6 +6853,7 @@ th .plan_interval a {
 .plan_slot {
   position: absolute;
   border-radius: 4px;
+  top: 4px;
 }
 .plan_slot span {
   display: block;

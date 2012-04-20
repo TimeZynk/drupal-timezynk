@@ -11,9 +11,10 @@ define([
     'template_views/list_view',
     'views/av_list_row',
     'views/sms_popup',
+    'views/manager_dropdown',
     'text!templates/availability.html',
     'i18n!nls/tzcontrol'
-], function($, _, Backbone, Tooltip, Popover, Buttons, Users, Blobs, User, ListView, AvListRow, SmsPopup, template, t) {
+], function($, _, Backbone, Tooltip, Popover, Buttons, Users, Blobs, User, ListView, AvListRow, SmsPopup, ManagerSelect, template, t) {
     /*
      * Availability list view
      */
@@ -41,13 +42,15 @@ define([
             $.extend(this, obj);
             this.collection = new Users();
         },
+        
         render : function() {
             this.content = this.tmpl(this.params);
             $(this.el).append(this.content);
-
-            var theFrame = $("iframe", parent.document.body);
-			theFrame.height(400);
-
+            
+            var managers = new ManagerSelect();
+            $(this.el).find("#filters").append(managers.render().el);
+            managers.bind("filter", this.filterCollection, this);
+            
             this.collection.bind('add', this.addOne, this);
             this.collection.bind('add', this.setupList, this);
             this.collection.bind('reset', this.addAll, this);
@@ -240,6 +243,10 @@ define([
 			theFrame.height($(this.el).outerHeight()+200);
 
             this.setupList();
+        },
+        
+        filterCollection : function(manager){
+        	this.collection.getManager(manager);
         },
 
         selectAll : function(e){

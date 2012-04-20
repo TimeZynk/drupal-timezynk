@@ -26,6 +26,7 @@ define({
         user_available : "Available",
         user_unavailable : "Unavailable",
         user_reported: 'Reported',
+        managers_all: 'All managers',
         sms_composer_header : 'Write message',
         message_sent : "Message successfully sent.",
         message_failed : "Failed to send message, please check the number",

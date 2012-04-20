@@ -25,6 +25,7 @@ define({
         user_available : "Tillgänglig",
         user_unavailable : "Ej tillgänglig",
         user_reported: 'Rapporterad',
+        managers_all: 'Alla chefer',
         sms_composer_header : 'Skriv meddelande',
         message_sent : "Meddelandet har skickats.",
         message_failed : "Kunde inte skicka meddelandet.",

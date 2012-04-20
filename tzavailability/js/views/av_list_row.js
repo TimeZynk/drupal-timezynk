@@ -15,7 +15,8 @@ define([
         className: "plan_row",
 
         events : {
-        	"send .select" : "sendSMS"
+        	"send .select" : "sendSMS",
+        	"click .slot_availability_true span" : "selectRow"
         },
 
         initialize : function(obj) {
@@ -174,6 +175,12 @@ define([
                 	$("#msg_area").html(a.alert("danger", t.failure, t.message_failed).el);
                 }
             });
+        },
+        
+        selectRow : function(){
+        	console.log("Click");
+        	var checkbox = $(this.el).find('input.row_select');
+        	checkbox.attr('checked', !checkbox.attr('checked'));
         }
     });
 });
