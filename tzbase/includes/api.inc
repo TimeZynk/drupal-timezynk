@@ -47,17 +47,21 @@ function tzbase_availabilities_index() {
     tzbase_make_date($interval[0]),
     tzbase_make_date($interval[1])
   );
-  $avs = array_map(function($av) {
-    return $av->getFields();
-  }, $avs);
+
   drupal_set_header('Content-Type: application/json; charset=utf-8');
-  print json_encode($avs);
+  print "[";
+  $first = TRUE;
+  foreach($avs as $av) {
+    if (!$first) { print ","; } $first = FALSE;
+    print json_encode($av->getFields());
+  }
+  print "]";
 }
 
 function tzbase_reports_index() {
   $interval = tzapi_interval_params();
 
-  $query = 'SELECT * FROM {node} n ' .
+  $query = 'SELECT n.nid,rev.title,rev.body,tzr.* FROM {node} n ' .
       'INNER JOIN {node_revisions} rev ON n.vid = rev.vid ' .
       'INNER JOIN {tzreport} tzr ON n.vid = tzr.vid ' .
       'WHERE tzr.flags != 255';
@@ -74,18 +78,13 @@ function tzbase_reports_index() {
     $query_args[] = $_GET['user_id'];
   }
 
-  $query .= ' ORDER BY tzr.begintime';
   $result = db_query($query, $query_args);
 
   drupal_set_header('Content-Type: application/json; charset=utf-8');
   print "[";
   $first = TRUE;
   while ($report = db_fetch_object($result)) {
-    if (!$first) {
-      print ",";
-    }
-    $first = FALSE;
-    $report->assignment_path = theme('assignment_path', $report->jobid);
+    if (!$first) { print ","; } $first = FALSE;
     print json_encode($report);
   }
   print "]";
