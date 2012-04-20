@@ -62,6 +62,7 @@ define([
             });
         	var blobs = this.make("div",{"class":"slot_container"});
         	var even = false;
+        	var cols = [];
         	for(var i=0; i<this.intervals; i++){
         		if(even){
         			var sp = that.make("div", {
@@ -79,19 +80,21 @@ define([
                 	width: 100/this.intervals + "%"
                 });{}
 
-                $(blobs).append(sp);
+                cols.push(sp);
         	};
+        	
+        	this.renderBlobs(blobs);
+        	$(blobs).append(cols);
         	$(td).append(blobs);
         	$(this.el).append(td);
-
-        	this.renderBlobs(blobs);
         },
 
         renderBlobs : function(container){
         	var that =this;
         	var percent = this.total_interval/100;
         	var info_tmpl =  _.template('<%= title %>:<br/><%= date_str %><br/><%= from_str %> - <%= to_str %>');
-
+			var all_blobs = [];
+			
         	this.blobs.each(function(blob) {
         		if (blob.get('user_id') != that.model.get('id')) {
         			// Only show this users blobs...
@@ -140,7 +143,7 @@ define([
 	            	left: left + "%",
 	            	width: width + "%"
 	            });
-	            $(container).append(td);
+	            all_blobs.push(td);
 
 	            if(left+(width/2) >= 70){
 	            	$(td).popover({placement:"left", className : popoverClassName, delay:{show:200, hide:10}});
@@ -150,6 +153,7 @@ define([
 	            	$(td).popover({placement:"bottom", className : popoverClassName, delay:{show:200, hide:10}});
 	            }
         	});
+        	$(container).append(all_blobs);
         },
 
         sendSMS : function(e, message){

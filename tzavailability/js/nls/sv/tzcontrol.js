@@ -1,5 +1,12 @@
 define({
-
+		weekday1 : 'Måndag',
+		weekday2 : 'Tisdag',
+		weekday3 : 'Onsdag',
+		weekday4 : 'Torsdag',
+		weekday5 : 'Fredag',
+		weekday6 : 'Lördag',
+		weekday0 : 'Söndag',
+		
         button_send: 'Skicka',
         button_cancel: 'Avbryt',
         button_delete: 'Ta bort',
@@ -9,6 +16,7 @@ define({
         search_label: 'Sök',
         modal_send_button: 'Spara',
         modal_cancel_button: 'Avbryt',
+        user_name_column : 'Namn',
         user_mobile_column: 'Mobil',
         user_email_column: 'E-post',
         user_last_login: "Senaste inloggning",

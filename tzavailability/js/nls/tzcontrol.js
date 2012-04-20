@@ -1,5 +1,13 @@
 define({
     root: {
+    	weekday1 : 'Monday',
+		weekday2 : 'Tuesday',
+		weekday3 : 'Wednesday',
+		weekday4 : 'Thursday',
+		weekday5 : 'Friday',
+		weekday6 : 'Saturday',
+		weekday0 : 'Sunday',
+		
         button_send: 'Send',
         button_cancel: 'Cancel',
         button_delete: 'Delete',
@@ -9,6 +17,7 @@ define({
         search_label: 'Search',
         modal_send_button: 'Send',
         modal_cancel_button: 'Cancel',
+        user_name_column : 'Name',
         user_mobile_column: 'Mobile',
         user_email_column: 'E-mail',
         user_last_login: "Last login",

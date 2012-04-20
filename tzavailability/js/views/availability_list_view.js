@@ -30,7 +30,7 @@ define([
         	"click #prev_week" : "prevInterval",
         	"click #next_week" : "nextInterval",
         	"click #curr_week" : "resetInterval",
-        	"click #btn_day" : "dayView",
+        	"click .btn_day" : "dayView",
         	"click #btn_week" : "weekView",
         	'click input[name="select-all"]' : 'selectAll',
         	'click #send_message' : "composeSMS"
@@ -63,14 +63,17 @@ define([
         	var that = this;
         	var even = false;
         	$(that.el).find("thead tr").empty();
-
+        	
+        	var cols = [];
         	_.each(this.columns, function(col) {
                 var th = that.make("th", {
                     "class" : "sort",
                     "data-sort" : col.title
                 }, col.title);
-                $(that.el).find("thead tr").append(th);
+                cols.push(th);
             });
+            
+            $(that.el).find("thead tr").append(cols);
 
             var checkbox = this.make("input", {
                 "type" : "checkbox",
@@ -84,13 +87,12 @@ define([
                 "class" : "plan_intervals"
             });
             var blobs = this.make("div",{"class":"slot_container"});
+            var blob_array = [];
             var date = this.start_time.getEpoch();
             var incr = this.total_interval/this.intervals;
 
         	for(var i=0; i<this.intervals; i++){
-
         		var rend = that.getIntervalLabel(date);
-
         		if(even){
         			var sp = that.make("div", {
 	                    "class" : "plan_interval"
@@ -100,16 +102,15 @@ define([
 	                    "class" : "plan_interval_odd"
 	                },rend);
         		}
-
         		even = !even;
         		date += incr;
 
                 $(sp).css({
                 	width: 100/this.intervals + "%"
                 });
-
-                $(blobs).append(sp);
+                blob_array.push(sp);
         	};
+        	$(blobs).append(blob_array);
 
         	$(th).append(blobs);
         	$(that.el).find("thead tr").prepend(th_box);
@@ -119,22 +120,28 @@ define([
         reload:function(){
         	var that = this;
         	this.renderHead();
-            this.collection.fetch({
-                success : function() {
-                    that.addAll();
-                },
-                error: function(){
-                    console.log("Error list");
-                }
-            });
+        	if (this.collection.length) {
+        		this.addAll();
+        	} else {
+	            this.collection.fetch({
+	                success : function() {
+	                },
+	                error: function(){
+	                    console.log("Error list");
+	                }
+	            });
+	        }
         },
 
 		getIntervalLabel : function(date){
-			var label = new Date(date*1000);
+			var label_date = new Date(date*1000);
+			var label = "";
 			if(this.total_interval > 86400){
-				label = label.getDate() + "/" + label.getMonth();
+				label = "<a class='btn_day' data-toggle=" + label_date.getEpoch() + " >" + 
+				t["weekday"+label_date.getDay()] + " " +
+				label_date.getDate() + "/" + label_date.getMonth() + "</a>";
 			} else {
-				label = label.getHours() + ":00";
+				label = label_date.getHours() + ":00";
 			}
 			return label;
 		},
@@ -152,9 +159,19 @@ define([
 			this.renderInterval(0);
 		},
 
-		dayView : function() {
+		dayView : function(e) {
+			console.log("day");
+			var day = $(e.target).attr("data-toggle");
+			if(day && day != ""){
+				//Switch to specifc day
+				this.start_time = new Date(day*1000);
+			} else if(this.start_time.getEpoch() < new Date().getEpoch() && (this.start_time.getEpoch() + this.total_interval) > new Date().getEpoch()){
+				//Switch to today instead of monday if it is this week
+				this.start_time = new Date();
+			}
 			this.total_interval = 24*3600;
 			this.intervals = 24;
+			
 			this.renderInterval(0);
 			$(this.el).find("#curr_week").html("Idag");
 		},
@@ -177,7 +194,7 @@ define([
 			} else if(this.total_interval >= 86400) {
 				//Longer than one day, start at 00:00
 				this.start_time = this.start_time.addSeconds(change).toStartOfDay();
-				interval_label = this.start_time.getDate() + "/" + this.start_time.getMonth();
+				interval_label = t["weekday"+ this.start_time.getDay()] + " " + this.start_time.getDate() + "/" + this.start_time.getMonth();
 			} else {
 				//Shorter than a day, don´t adjust starttime...
 				this.start_time = this.start_time.addSeconds(change)
@@ -206,10 +223,23 @@ define([
                 total_interval : this.total_interval,
                 start_time: this.start_time.getEpoch()
             });
-            $(this.el).find("tbody").append(r.render(this.columns).el);
+            return r.render(this.columns).el;
+        },
+        
+        addAll : function() {
+            $(this.el).find("tbody").empty();
+            var that = this;
+            var rows = [];
+            this.collection.each(function(row) {
+                rows.push(that.addOne(row));
+            });
+            
+            $(this.el).find("tbody").append(rows);
 
             var theFrame = $("iframe", parent.document.body);
 			theFrame.height($(this.el).outerHeight()+200);
+
+            this.setupList();
         },
 
         selectAll : function(e){
