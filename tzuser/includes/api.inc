@@ -161,3 +161,18 @@ function tzuser_api_create_user() {
   }
   print drupal_json($result);
 }
+
+function tzuser_api_list_managers() {
+  $managers = array();
+  $result = db_query('SELECT * FROM {users_roles} role ' .
+    'INNER JOIN {tzuser} tz ON role.uid = tz.uid ' .
+    'WHERE rid = %d ORDER BY tz.fullname', tzuser_manager_role_id());
+  while ($entry = db_fetch_object($result)) {
+    $managers[] = array(
+      'user_id' => $entry->uid,
+      'fullname' => $entry->fullname
+    );
+  }
+  drupal_set_header('Content-Type: application/json; charset=utf-8');
+  print json_encode($managers);
+}

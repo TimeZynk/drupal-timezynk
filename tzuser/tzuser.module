@@ -37,6 +37,13 @@ function tzuser_menu() {
     'file' => 'includes/api.inc',
     'type' => MENU_CALLBACK,
   );
+  $items['api/managers'] = array(
+    'page callback' => 'tzuser_api_list_managers',
+    'access callback' => 'tzapi_authorize',
+    'access arguments' => array('manage employees'),
+    'file' => 'includes/api.inc',
+    'type' => MENU_CALLBACK,
+  );
   $items['api/access'] = array(
     'page callback' => 'tzuser_api_access',
     'access callback' => 'tzapi_authorize',
