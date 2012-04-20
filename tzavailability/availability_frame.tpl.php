@@ -12,8 +12,10 @@
     <![endif]-->
 
     <base href="/<?php print drupal_get_path('module', 'tzavailability') ?>/"/>
-    <script data-main="js/main" src="lib/require/require.js"></script>
-    <link rel="stylesheet" href="css/tzcontrol.css">
+    <script
+      data-main="/<?php print drupal_get_path('module', 'tzavailability') ?>/js/main"
+      src="/<?php print drupal_get_path('module', 'tzavailability') ?>/lib/require/require.js"></script>
+    <link rel="stylesheet" href="/<?php print drupal_get_path('module', 'tzavailability') ?>/css/tzcontrol.css">
   </head>
 
   <body>

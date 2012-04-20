@@ -4,6 +4,6 @@ define([
 ], function(_, Backbone) {
     return Backbone.Model.extend({
     	model_type : "report",
-        urlRoot: location.origin + '/api/reports',
+        urlRoot: location.protocol + '//' + location.host + '/api/reports',
     });
 });

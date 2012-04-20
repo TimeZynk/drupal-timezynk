@@ -7,7 +7,7 @@ define([
   'models/report',
   'collections/reports'
 ], function(_, Backbone, Blob, Availability, Availabilities, Report, Reports) {
-	
+
 	function blobFromReport(r) {
 		var reported = (parseInt(r.flags,10) > 1);
 		return new Blob({
@@ -20,7 +20,7 @@ define([
 			reported: reported
 		});
 	}
-	
+
 	function blobFromAvailability(a) {
 		var available = (a.availability_type === "0");
 		return new Blob({
@@ -33,21 +33,21 @@ define([
 			available: available
 		});
 	}
-	
+
     return Backbone.Collection.extend({
         url: "",
         model: Blob,
-        
+
         initialize: function() {
         	this.availabilities = new Availabilities();
         	this.reports = new Reports();
         },
-        
+
         setInterval: function(from, to) {
         	this.availabilities.setUrl("?from=" + from +"&to=" + to);
 			this.reports.setUrl("?from=" + from +"&to=" + to);
         },
-        
+
         fetch: function(options) {
         	var that = this;
         	this.reset([], {silent: true});
@@ -70,9 +70,9 @@ define([
         		error: options.error
         	})
         },
-        
+
         setUrl : function(newUrl){
-        	this.baseUrl = location.origin + '/api/availabilities';
+        	this.baseUrl = location.protocol + '//' + location.host + '/api/availabilities';
         	this.url = this.baseUrl + newUrl;
         	return this.url;
         }

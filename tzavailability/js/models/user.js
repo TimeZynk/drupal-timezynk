@@ -4,7 +4,7 @@ define([
   'collections/availabilities'
 ], function(_, Backbone, Availabilities) {
     return Backbone.Model.extend({
-        urlRoot: location.origin + '/api/users',
+        urlRoot: location.protocol + '//' + location.host + '/api/users',
 
         availabilities: function() {
             var avs = new Availabilities();

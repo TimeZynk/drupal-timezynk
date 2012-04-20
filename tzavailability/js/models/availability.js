@@ -4,6 +4,6 @@ define([
 ], function(_, Backbone) {
     return Backbone.Model.extend({
     	model_type : "availability",
-        urlRoot: location.origin + '/api/availabilities',
+        urlRoot: location.protocol + '//' + location.host + '/api/availabilities',
     });
 });

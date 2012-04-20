@@ -5,9 +5,9 @@ define([
     return Backbone.Collection.extend({
         url: "",
         model: Report,
-        
+
         setUrl : function(newUrl){
-        	this.baseUrl = location.origin + '/api/reports';
+        	this.baseUrl = location.protocol + '//' + location.host + '/api/reports';
         	this.url = this.baseUrl + newUrl;
         	return this.url;
         }

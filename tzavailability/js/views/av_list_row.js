@@ -156,7 +156,7 @@ define([
         	var user = this.model;
         	var that = this;
         	sms = new Backbone.Model();
-        	sms.url = location.origin + '/api/sms';
+        	sms.url = location.protocol + '//' + location.host + '/api/sms';
         	var a = new Alert();
 
             sms.save({
