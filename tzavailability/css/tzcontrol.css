@@ -6800,7 +6800,7 @@ body {
 table,
 table tr,
 table td {
-  vertical-align: top;
+  vertical-align: middle !important;
 }
 /*
  * Plan-app

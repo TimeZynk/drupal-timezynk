@@ -12,6 +12,13 @@
     <![endif]-->
 
     <base href="/<?php print drupal_get_path('module', 'tzavailability') ?>/"/>
+    <script type="application/javascript">
+    	var current_drupal_user = <?php 
+    		global $user; 
+    		$account = clone($user); 
+    		unset($account->pass); 
+    		print json_encode($account); ?>;
+    </script>
     <script
       data-main="/<?php print drupal_get_path('module', 'tzavailability') ?>/js/main"
       src="/<?php print drupal_get_path('module', 'tzavailability') ?>/lib/require/require.js"></script>

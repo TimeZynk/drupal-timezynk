@@ -46,6 +46,7 @@ define([
         setInterval: function(from, to) {
             this.availabilities.setUrl("?from=" + from +"&to=" + to);
             this.reports.setUrl("?from=" + from +"&to=" + to);
+            return this;
         },
 
         fetch: function(options) {

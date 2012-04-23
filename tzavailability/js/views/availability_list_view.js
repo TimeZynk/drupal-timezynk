@@ -8,13 +8,14 @@ define([
     'collections/users',
     'collections/blobs',
     'models/user',
+    'functions/users_filters',
     'template_views/list_view',
     'views/av_list_row',
     'views/sms_popup',
     'views/manager_dropdown',
     'text!templates/availability.html',
     'i18n!nls/tzcontrol'
-], function($, _, Backbone, Tooltip, Popover, Buttons, Users, Blobs, User, ListView, AvListRow, SmsPopup, ManagerSelect, template, t) {
+], function($, _, Backbone, Tooltip, Popover, Buttons, Users, Blobs, User, usersFilters, ListView, AvListRow, SmsPopup, ManagerSelect, template, t) {
     /*
      * Availability list view
      */
@@ -62,12 +63,29 @@ define([
             return this;
         },
 
-        renderHead : function(){
-        	var that = this;
-        	var even = false;
-        	$(that.el).find("thead tr").empty();
+        renderHead : function(){        	
+        	var cols = this.renderHeadColumns();
+        	var intervals = this.renderHeadIntervalColumns();
+            
+            var blobs = this.make("div",{"class":"slot_container"}, intervals);
+            var th = this.make("th", {"class" : "plan_intervals"}, blobs);
         	
+        	$(this.el).find("thead tr").html(cols);
+        	$(this.el).find("thead tr").append(th);
+        },
+        
+        renderHeadColumns : function(){
         	var cols = [];
+        	var that = this;
+        	
+            var checkbox = this.make("input", {
+                "type" : "checkbox",
+                "class" : "row_select",
+                "name" : "select-all"
+            });
+
+            cols.push(this.make("th", {}, checkbox));
+        	
         	_.each(this.columns, function(col) {
                 var th = that.make("th", {
                     "class" : "sort",
@@ -76,48 +94,28 @@ define([
                 cols.push(th);
             });
             
-            $(that.el).find("thead tr").append(cols);
-
-            var checkbox = this.make("input", {
-                "type" : "checkbox",
-                "class" : "row_select",
-                "name" : "select-all"
-            });
-
-            var th_box = this.make("th", {}, checkbox);
-
-            var th = this.make("th", {
-                "class" : "plan_intervals"
-            });
-            var blobs = this.make("div",{"class":"slot_container"});
-            var blob_array = [];
+        	return cols;
+        },
+        
+        renderHeadIntervalColumns : function(){
+        	var that = this;
+        	var even = false;
+        	var intervalCols = [];
             var date = this.start_time.getEpoch();
             var incr = this.total_interval/this.intervals;
-
-        	for(var i=0; i<this.intervals; i++){
+        	
+            for(var i=0; i<this.intervals; i++){
         		var rend = that.getIntervalLabel(date);
-        		if(even){
-        			var sp = that.make("div", {
-	                    "class" : "plan_interval"
-	                },rend);
-        		} else{
-        			var sp = that.make("div", {
-	                    "class" : "plan_interval_odd"
-	                },rend);
-        		}
-        		even = !even;
+    			var sp = that.make("div", {
+                    "class" : "plan_interval"
+                },rend);
         		date += incr;
-
                 $(sp).css({
                 	width: 100/this.intervals + "%"
                 });
-                blob_array.push(sp);
+                intervalCols.push(sp);
         	};
-        	$(blobs).append(blob_array);
-
-        	$(th).append(blobs);
-        	$(that.el).find("thead tr").prepend(th_box);
-        	$(that.el).find("thead tr").append(th);
+        	return intervalCols;
         },
 
         reload:function(){
@@ -150,16 +148,16 @@ define([
 		},
 
 		nextInterval : function() {
-			this.renderInterval(this.total_interval);
+			this.updateInterval(this.total_interval);
 		},
 
 		prevInterval : function() {
-			this.renderInterval(-this.total_interval);
+			this.updateInterval(-this.total_interval);
 		},
 
 		resetInterval : function() {
 			this.start_time = new Date();
-			this.renderInterval(0);
+			this.updateInterval(0);
 		},
 
 		dayView : function(e) {
@@ -175,35 +173,40 @@ define([
 			this.total_interval = 24*3600;
 			this.intervals = 24;
 			
-			this.renderInterval(0);
+			this.updateInterval(0);
 			$(this.el).find("#curr_week").html("Idag");
 		},
 
 		weekView : function() {
 			this.total_interval = 7*24*3600;
 			this.intervals = 7;
-			this.renderInterval(0);
+			this.updateInterval(0);
 			$(this.el).find("#curr_week").html("Denna vecka");
 		},
 
-		renderInterval : function(change) {
-			var that = this;
-
+		updateInterval : function(change) {
 			var interval_label = "Default";
+			
 			if(this.total_interval >= 604800) {
-				//Longer than a week, start on monday
+				//If the total interval is at least a week long, start on most recent monday
 				this.start_time = this.start_time.addSeconds(change).firstDayOfWeek().toStartOfDay();
 				interval_label = t.calendar_week + ": " + this.start_time.getWeek();
 			} else if(this.total_interval >= 86400) {
-				//Longer than one day, start at 00:00
+				//If total interval is at least a whole day long, start time at 0:00 at the current date
 				this.start_time = this.start_time.addSeconds(change).toStartOfDay();
 				interval_label = t["weekday"+ this.start_time.getDay()] + " " + this.start_time.getDate() + "/" + this.start_time.getMonth();
 			} else {
-				//Shorter than a day, don´t adjust starttime...
+				//Shorter than a day, start on current time
 				this.start_time = this.start_time.addSeconds(change)
 			}
+			
 			$(this.el).find("#current_interval").html(interval_label);
-
+			
+			this.fetchBlobs();
+		},
+		
+		fetchBlobs : function(){	
+			var that = this;
 			var st = this.start_time.getEpoch();
 			var end = st + this.total_interval;
 
@@ -246,7 +249,7 @@ define([
         },
         
         filterCollection : function(manager){
-        	this.collection.getManager(manager);
+        	this.collection.setFilter(usersFilters.ManagerFilter(manager)).fetch();
         },
 
         selectAll : function(e){

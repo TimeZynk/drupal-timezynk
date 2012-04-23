@@ -43,7 +43,7 @@ define([
     			"option",
     			{
     				"class":"filter_option", 
-    				"value": "reset"
+    				"value": null
     			},
     			t.managers_all
     		)
