@@ -155,7 +155,7 @@ function tzstats_tzproto_saved_report($report) {
 
   $record = array(
     'uid' => $report->assignedto,
-    'timestamp' => $timestamp,
+    'timestamp' => time(),
     'vid' => $report->vid,
   );
   drupal_write_record('tzstats_report', $record);
@@ -281,7 +281,7 @@ function tzstats_record_user_status() {
   // Save current status
   $result = db_query('SELECT * FROM {users} WHERE uid > 1 AND status = 1');
   while ($account = db_fetch_object($result)) {
-    $status = tzuser_get_user_status($account, $now, false);
+    $status = tzuser_get_user_status($account, $now);
     $status_code = $status->getStatusCode();
 
     $redis->sAdd('users:all', $host . ':' . $account->uid);
