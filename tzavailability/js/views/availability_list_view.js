@@ -140,7 +140,7 @@ define([
 			if(this.total_interval > 86400){
 				label = "<a class='btn_day' data-toggle=" + label_date.getEpoch() + " >" + 
 				t["weekday"+label_date.getDay()] + " " +
-				label_date.getDate() + "/" + label_date.getMonth() + "</a>";
+				label_date.getDate() + "/" + (label_date.getMonth() + 1) + "</a>";
 			} else {
 				label = label_date.getHours() + ":00";
 			}
