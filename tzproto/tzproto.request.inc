@@ -23,7 +23,8 @@ function tzproto_request() {
   // Read POST data
   $raw_data = file_get_contents('php://input');
   if(!$raw_data) {
-    tzproto_error(t('No input data'), 405);
+    watchdog('tzproto', 'Empty POST', array(), WATCHDOG_WARNING);
+    drupal_set_header('HTTP/1.1 405 No input data');
     die();
   }
 
@@ -44,7 +45,7 @@ function tzproto_request() {
   $response->set_timestamp(time());
 
   // Authenticate user
-  if(0 == tzproto_login($req)) {
+  if(tzproto_login($req)) {
     for ($i = 0; $i < $req->commands_size(); $i++) {
       $cmd = $req->command($i);
 
@@ -58,6 +59,18 @@ function tzproto_request() {
         $result->set_error_code($e->getCode());
         $result->set_error_msg($e->getMessage());
       }
+    }
+  } else {
+    watchdog('tzproto', 'Mobile login failed for @username',
+      array('@username' => $req->username()), WATCHDOG_WARNING);
+    if ($protocol_version >= 4) {
+      $error = new TZError();
+      $error->set_code(401);
+      $error->set_msg('Wrong username or password');
+      $response->set_error($error);
+    } else {
+      drupal_set_header('HTTP/1.1 401 Wrong username or password');
+      die();
     }
   }
 
@@ -153,10 +166,10 @@ function tzproto_login($req) {
   drupal_execute('user_login', $form_state);
 
   if ($user->uid) {
-    return 0;
+    return $user;
   }
   module_invoke_all('tzproto_login_failed', $req->username(), $_SERVER['HTTP_USER_AGENT']);
-  return tzproto_error(t('Wrong username or password.'), 401);
+  return FALSE;
 }
 
 /**
@@ -171,17 +184,6 @@ function tzproto_logout() {
   $null = NULL;
   user_module_invoke('logout', $null, $user);
   $user = drupal_anonymous_user();
-}
-
-/**
- * Set the error condition
- * @param $message HTTP status message
- * @param $status HTTP error code
- */
-function tzproto_error($message, $status) {
-  watchdog('tzproto', 'Error !code: @error', array('!code' => $status, '@error' => $message), WATCHDOG_WARNING);
-  drupal_set_header('HTTP/1.1 ' . (int)$status . ' ' . check_plain($message));
-  return 1;
 }
 
 /**

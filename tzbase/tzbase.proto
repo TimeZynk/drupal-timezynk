@@ -27,7 +27,7 @@ enum TZJobType {
 }
 
 enum TZConstants {
-  VERSION = 3;
+  VERSION = 4;
 }
 
 message TZTime {
@@ -303,6 +303,12 @@ message TZCommand {
   optional TZGetReportTemplatesCmd get_report_templates_cmd = 12;
 }
 
+message TZError {
+  optional int32 code = 1;
+  optional string msg = 2;
+  optional string description = 3;
+}
+
 // Generic single RPC result, must be wrapped in a TZResponse
 message TZResult {
   optional int32 client_handle = 1 [default = 0]; // same as for TZCommand
@@ -344,4 +350,5 @@ message TZRequest {
 message TZResponse {
   repeated TZResult result = 1;
   optional int32 timestamp = 2;
+  optional TZError error = 3;
 }

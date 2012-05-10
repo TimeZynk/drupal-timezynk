@@ -48,13 +48,13 @@ class TZJobType extends PBEnum
 }
 class TZConstants extends PBEnum
 {
-  const VERSION  = 3;
+  const VERSION  = 4;
 
   public function __construct($reader=null)
   {
    	parent::__construct($reader);
  	$this->names = array(
-			3 => "VERSION");
+			4 => "VERSION");
    }
 }
 class TZTime extends PBMessage
@@ -1714,6 +1714,47 @@ class TZCommand extends PBMessage
     return $this->_set_value("12", $value);
   }
 }
+class TZError extends PBMessage
+{
+  var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
+  public function __construct($reader=null)
+  {
+    parent::__construct($reader);
+    self::$fields["TZError"]["1"] = "PBInt";
+    $this->values["1"] = "";
+    self::$fieldNames["TZError"]["1"] = "code";
+    self::$fields["TZError"]["2"] = "PBString";
+    $this->values["2"] = "";
+    self::$fieldNames["TZError"]["2"] = "msg";
+    self::$fields["TZError"]["3"] = "PBString";
+    $this->values["3"] = "";
+    self::$fieldNames["TZError"]["3"] = "description";
+  }
+  function code()
+  {
+    return $this->_get_value("1");
+  }
+  function set_code($value)
+  {
+    return $this->_set_value("1", $value);
+  }
+  function msg()
+  {
+    return $this->_get_value("2");
+  }
+  function set_msg($value)
+  {
+    return $this->_set_value("2", $value);
+  }
+  function description()
+  {
+    return $this->_get_value("3");
+  }
+  function set_description($value)
+  {
+    return $this->_set_value("3", $value);
+  }
+}
 class TZResult extends PBMessage
 {
   var $wired_type = PBMessage::WIRED_LENGTH_DELIMITED;
@@ -1991,6 +2032,9 @@ class TZResponse extends PBMessage
     self::$fields["TZResponse"]["2"] = "PBInt";
     $this->values["2"] = "";
     self::$fieldNames["TZResponse"]["2"] = "timestamp";
+    self::$fields["TZResponse"]["3"] = "TZError";
+    $this->values["3"] = "";
+    self::$fieldNames["TZResponse"]["3"] = "error";
   }
   function result($offset)
   {
@@ -2027,6 +2071,14 @@ class TZResponse extends PBMessage
   function set_timestamp($value)
   {
     return $this->_set_value("2", $value);
+  }
+  function error()
+  {
+    return $this->_get_value("3");
+  }
+  function set_error($value)
+  {
+    return $this->_set_value("3", $value);
   }
 }
 ?>
