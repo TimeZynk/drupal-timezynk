@@ -5,12 +5,12 @@
 # Generated from files:
 #  excelexport/excelexport.inc: n/a
 #  tzbase/tzbase.module: n/a
+#  tzbase/includes/tzbase.availability.inc: n/a
+#  tzreports/includes/TZReportsTimeReports.class.inc: n/a
 #  tzbase/includes/tzbase.userjobs.inc: n/a
 #  tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc: n/a
 #  tzmobile/tzmobile.js: n/a
-#  tzreports/includes/TZReportsTimeReports.class.inc: n/a
 #  tzreports/includes/tzreports.timereports.inc: n/a
-#  tzbase/includes/views/tzbase.views.inc: n/a
 #  tzuser/javascript/tzuser.overview.js: n/a
 #  tzreports/includes/tzreports.views_default.inc: n/a
 #  tzuser/includes/tzuser.theme.inc: n/a
@@ -20,6 +20,7 @@
 #  excelexport/excelexport.info: n/a
 #  jadmaker/jadmaker.info: n/a
 #  tzapi/tzapi.info: n/a
+#  tzavailability/tzavailability.info: n/a
 #  tzbase/tzbase.info: n/a
 #  tzintellitime/tzintellitime.info: n/a
 #  tzintellitime/tzintellitime_mock/tzintellitime_mock.info: n/a
@@ -38,10 +39,11 @@
 #  jadmaker/jadmaker.install: n/a
 #  timezynk_basic_feature/timezynk_basic_feature.info: n/a
 #  timezynk_intelliplan_feature/timezynk_intelliplan_feature.info: n/a
+#  tzavailability/tzavailability.module: n/a
 #  tzbase/tzbase.drush.inc: n/a
 #  tzproto/tzproto.request.inc: n/a
 #  tzproto/includes/CreateReportHandler.class.inc: n/a
-#  tzbase/includes/tzbase.availability.inc: n/a
+#  tzbase/includes/views/tzbase.views.inc: n/a
 #  tzreports/tzreports.module: n/a
 #  tzuser/includes/tzuser.overview.inc: n/a
 #  tzbase/PHPUnit/TZUserJobMappingTest.php: n/a
@@ -88,6 +90,7 @@
 #  tzstats/includes/tzstats.failed_login.inc: n/a
 #  tzstats/includes/tzstats.pricing.inc: n/a
 #  tzuser/includes/tzuser.add.inc: n/a
+#  tzuser/includes/api.inc: n/a
 #  tzuser/includes/tzuser_handler_filter_user_name.inc: n/a
 #  tzuser/javascript/tzuser.add.js: n/a
 #
@@ -95,7 +98,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2012-01-09 11:36+0100\n"
+"POT-Creation-Date: 2012-06-11 17:44+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -104,79 +107,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: excelexport/excelexport.inc:19
+#: excelexport/excelexport.inc:23
 msgid "Id"
 msgstr ""
 
-#: excelexport/excelexport.inc:19 tzbase/tzbase.module:144
-msgid "Subject"
+#: excelexport/excelexport.inc:23 tzbase/tzbase.module:654 tzbase/includes/tzbase.availability.inc:49 tzreports/includes/TZReportsTimeReports.class.inc:20
+msgid "Name"
 msgstr ""
 
-#: excelexport/excelexport.inc:19 tzbase/tzbase.module:135;146
-msgid "Description"
-msgstr ""
-
-#: excelexport/excelexport.inc:19 tzbase/tzbase.module:654 tzbase/includes/tzbase.userjobs.inc:87 tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:214 tzmobile/tzmobile.js:0;0;0;0 tzreports/includes/TZReportsTimeReports.class.inc:21 tzreports/includes/tzreports.timereports.inc:126
+#: excelexport/excelexport.inc:23 tzbase/tzbase.module:657 tzbase/includes/tzbase.userjobs.inc:87 tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:214 tzmobile/tzmobile.js:0;0;0;0 tzreports/includes/TZReportsTimeReports.class.inc:21 tzreports/includes/tzreports.timereports.inc:126
 msgid "Assignment"
 msgstr ""
 
-#: excelexport/excelexport.inc:19
-msgid "Assignment description"
+#: excelexport/excelexport.inc:23
+msgid "Comment"
 msgstr ""
 
-#: excelexport/excelexport.inc:20 tzbase/tzbase.module:349 tzbase/includes/views/tzbase.views.inc:63
-msgid "Start time"
+#: excelexport/excelexport.inc:23 tzbase/tzbase.module:659 tzmobile/tzmobile.js:0;0 tzreports/includes/TZReportsTimeReports.class.inc:23
+msgid "Start"
 msgstr ""
 
-#: excelexport/excelexport.inc:20 tzbase/tzbase.module:363 tzbase/includes/views/tzbase.views.inc:83
-msgid "End time"
+#: excelexport/excelexport.inc:23 tzbase/tzbase.module:660 tzmobile/tzmobile.js:0;0 tzreports/includes/TZReportsTimeReports.class.inc:24
+msgid "End"
 msgstr ""
 
-#: excelexport/excelexport.inc:20 tzbase/tzbase.module:373 tzbase/includes/views/tzbase.views.inc:94 tzmobile/tzmobile.js:0
-msgid "Break duration"
+#: excelexport/excelexport.inc:24 tzbase/tzbase.module:661 tzmobile/tzmobile.js:0 tzreports/includes/TZReportsTimeReports.class.inc:25
+msgid "Break"
 msgstr ""
 
-#: excelexport/excelexport.inc:20 tzbase/tzbase.module:659 tzreports/includes/TZReportsTimeReports.class.inc:26;87 tzuser/javascript/tzuser.overview.js:0
+#: excelexport/excelexport.inc:24 tzbase/tzbase.module:662 tzreports/includes/TZReportsTimeReports.class.inc:26;87 tzuser/javascript/tzuser.overview.js:0
 msgid "Total"
 msgstr ""
 
-#: excelexport/excelexport.inc:20 tzreports/includes/tzreports.views_default.inc:662
+#: excelexport/excelexport.inc:24 tzreports/includes/tzreports.views_default.inc:662
 msgid "State"
 msgstr ""
 
-#: excelexport/excelexport.inc:20
-msgid "Assigned to"
-msgstr ""
-
-#: excelexport/excelexport.inc:128
+#: excelexport/excelexport.inc:142
 msgid "New"
 msgstr ""
 
-#: excelexport/excelexport.inc:131
+#: excelexport/excelexport.inc:145
 msgid "Signed in"
 msgstr ""
 
-#: excelexport/excelexport.inc:134
+#: excelexport/excelexport.inc:148
 msgid "Reported"
 msgstr ""
 
-#: excelexport/excelexport.inc:137
+#: excelexport/excelexport.inc:151
 msgid "Approved"
 msgstr ""
 
-#: excelexport/excelexport.inc:140
+#: excelexport/excelexport.inc:154
 msgid "Locked"
 msgstr ""
 
-#: excelexport/excelexport.inc:142 tzuser/includes/tzuser.theme.inc:107 tzuser/javascript/tzuser.overview.js:0
+#: excelexport/excelexport.inc:156 tzuser/includes/tzuser.theme.inc:107 tzuser/javascript/tzuser.overview.js:0
 msgid "Unknown"
 msgstr ""
 
-#: excelexport/excelexport.inc:81
+#: excelexport/excelexport.inc:102
 msgid "Excel export"
 msgstr ""
 
-#: excelexport/excelexport.inc:81
+#: excelexport/excelexport.inc:102
 msgid "Could not autosize columns, no such instance of PHPExcel"
 msgstr ""
 
@@ -208,23 +203,23 @@ msgstr ""
 msgid "Exports time reports to excel"
 msgstr ""
 
-#: excelexport/excelexport.info:0 jadmaker/jadmaker.info:0 tzapi/tzapi.info:0 tzbase/tzbase.module:36 tzbase/tzbase.info:0 tzintellitime/tzintellitime.info:0 tzintellitime/tzintellitime_mock/tzintellitime_mock.info:0 tzintellitime/tzintellitime_sync/tzintellitime_sync.info:0 tzmobile/tzmobile.info:0 tzproto/tzproto.info:0 tzreminder/tzreminder.info:0 tzreports/tzreports.info:0 tzsms/tzsms.info:0 tzsms/tzsms_ui.info:0 tzstats/tzstats.info:0 tzuser/tzuser.info:0
+#: excelexport/excelexport.info:0 jadmaker/jadmaker.info:0 tzapi/tzapi.info:0 tzavailability/tzavailability.info:0 tzbase/tzbase.module:36 tzbase/tzbase.info:0 tzintellitime/tzintellitime.info:0 tzintellitime/tzintellitime_mock/tzintellitime_mock.info:0 tzintellitime/tzintellitime_sync/tzintellitime_sync.info:0 tzmobile/tzmobile.info:0 tzproto/tzproto.info:0 tzreminder/tzreminder.info:0 tzreports/tzreports.info:0 tzsms/tzsms.info:0 tzsms/tzsms_ui.info:0 tzstats/tzstats.info:0 tzuser/tzuser.info:0
 msgid "TimeZynk"
 msgstr ""
 
-#: jadmaker/jadmaker.inc:39;177;192
+#: jadmaker/jadmaker.inc:43;182;197
 msgid "jadmaker"
 msgstr ""
 
-#: jadmaker/jadmaker.inc:39
+#: jadmaker/jadmaker.inc:43
 msgid "File not found: \"@path\""
 msgstr ""
 
-#: jadmaker/jadmaker.inc:177
+#: jadmaker/jadmaker.inc:182
 msgid "Error @error when opening \"@path\""
 msgstr ""
 
-#: jadmaker/jadmaker.inc:192
+#: jadmaker/jadmaker.inc:197
 msgid "Error when reading manifest from \"@path\""
 msgstr ""
 
@@ -249,18 +244,26 @@ msgid "JAD Download ID"
 msgstr ""
 
 #: jadmaker/jadmaker.views.inc:25
-msgid "Download Timestamp"
+msgid "Path ID"
 msgstr ""
 
 #: jadmaker/jadmaker.views.inc:26
-msgid "Date and time for JAD download"
+msgid "JAD Path ID"
+msgstr ""
+
+#: jadmaker/jadmaker.views.inc:40
+msgid "Download Timestamp"
 msgstr ""
 
 #: jadmaker/jadmaker.views.inc:41
+msgid "Date and time for JAD download"
+msgstr ""
+
+#: jadmaker/jadmaker.views.inc:56
 msgid "HTTP Variables"
 msgstr ""
 
-#: jadmaker/jadmaker.views.inc:42
+#: jadmaker/jadmaker.views.inc:57
 msgid "HTTP variables sent from client"
 msgstr ""
 
@@ -268,11 +271,7 @@ msgstr ""
 msgid "Generates jad files while taking the visiting mobile phone to account. Requires browscap."
 msgstr ""
 
-#: jadmaker/jadmaker.module:26
-msgid "Jad Maker"
-msgstr ""
-
-#: jadmaker/jadmaker.install:23;58
+#: jadmaker/jadmaker.install:33;68
 msgid "Stores information about downloads from jadmaker"
 msgstr ""
 
@@ -308,7 +307,19 @@ msgstr ""
 msgid "Provides TimeZynk API"
 msgstr ""
 
-#: tzbase/tzbase.drush.inc:81 tzproto/tzproto.request.inc:182;468;474 tzproto/includes/CreateReportHandler.class.inc:127;136
+#: tzavailability/tzavailability.module:5 tzbase/tzbase.module:44 tzbase/includes/tzbase.availability.inc:53
+msgid "Availability"
+msgstr ""
+
+#: tzavailability/tzavailability.info:0
+msgid "TimeZynk Availability"
+msgstr ""
+
+#: tzavailability/tzavailability.info:0
+msgid "Provides TimeZynk availability view"
+msgstr ""
+
+#: tzbase/tzbase.drush.inc:81 tzproto/tzproto.request.inc:26;64;483;489 tzproto/includes/CreateReportHandler.class.inc:148;157
 msgid "tzproto"
 msgstr ""
 
@@ -320,219 +331,223 @@ msgstr ""
 msgid "Provides TimeZynk data types and relations"
 msgstr ""
 
-#: tzbase/tzbase.module:131 tzbase/includes/views/tzbase.views.inc:14
+#: tzbase/tzbase.module:132 tzbase/includes/views/tzbase.views.inc:14
 msgid "Time Report"
 msgstr ""
 
-#: tzbase/tzbase.module:133
+#: tzbase/tzbase.module:134
 msgid "A time report for a specific project"
 msgstr ""
 
-#: tzbase/tzbase.module:137 tzreports/includes/tzreports.timereports.inc:164
+#: tzbase/tzbase.module:136;147
+msgid "Description"
+msgstr ""
+
+#: tzbase/tzbase.module:138 tzreports/includes/tzreports.timereports.inc:164
 msgid "Comments"
 msgstr ""
 
-#: tzbase/tzbase.module:140 tzbase/includes/views/tzbase.views.inc:134
+#: tzbase/tzbase.module:141 tzbase/includes/views/tzbase.views.inc:134
 msgid "Job"
 msgstr ""
 
-#: tzbase/tzbase.module:142
+#: tzbase/tzbase.module:143
 msgid "A job that you can report time on"
 msgstr ""
 
-#: tzbase/tzbase.module:271
+#: tzbase/tzbase.module:145
+msgid "Subject"
+msgstr ""
+
+#: tzbase/tzbase.module:272
 msgid "-- No jobs available --"
 msgstr ""
 
-#: tzbase/tzbase.module:278;655 tzbase/includes/tzbase.availability.inc:17;52 tzmobile/tzmobile.js:0 tzreports/includes/TZReportsTimeReports.class.inc:22
+#: tzbase/tzbase.module:279;658 tzbase/includes/tzbase.availability.inc:17;52 tzmobile/tzmobile.js:0 tzreports/includes/TZReportsTimeReports.class.inc:22
 msgid "Date"
 msgstr ""
 
-#: tzbase/tzbase.module:306
+#: tzbase/tzbase.module:307
 msgid "Select job"
 msgstr ""
 
-#: tzbase/tzbase.module:309
+#: tzbase/tzbase.module:310
 msgid "Select the job that this time report concerns"
 msgstr ""
 
-#: tzbase/tzbase.module:326
+#: tzbase/tzbase.module:327
 msgid "Assigned to user"
 msgstr ""
 
-#: tzbase/tzbase.module:336
+#: tzbase/tzbase.module:337
 msgid "Time"
 msgstr ""
 
-#: tzbase/tzbase.module:383
+#: tzbase/tzbase.module:350 tzbase/includes/views/tzbase.views.inc:63
+msgid "Start time"
+msgstr ""
+
+#: tzbase/tzbase.module:364 tzbase/includes/views/tzbase.views.inc:83
+msgid "End time"
+msgstr ""
+
+#: tzbase/tzbase.module:374 tzbase/includes/views/tzbase.views.inc:94 tzmobile/tzmobile.js:0
+msgid "Break duration"
+msgstr ""
+
+#: tzbase/tzbase.module:384
 msgid "Travel information"
 msgstr ""
 
-#: tzbase/tzbase.module:390
+#: tzbase/tzbase.module:391
 msgid "Travel time"
 msgstr ""
 
-#: tzbase/tzbase.module:399
+#: tzbase/tzbase.module:400
 msgid "Travel length (km)"
 msgstr ""
 
-#: tzbase/tzbase.module:421
+#: tzbase/tzbase.module:422
 msgid "Report status"
 msgstr ""
 
-#: tzbase/tzbase.module:430
+#: tzbase/tzbase.module:431
 msgid "Signature"
 msgstr ""
 
-#: tzbase/tzbase.module:461
+#: tzbase/tzbase.module:462
 msgid "Administrative assignment code"
 msgstr ""
 
-#: tzbase/tzbase.module:468
+#: tzbase/tzbase.module:469
 msgid "Top level assignment"
 msgstr ""
 
-#: tzbase/tzbase.module:482
+#: tzbase/tzbase.module:483
 msgid "Parent job"
 msgstr ""
 
-#: tzbase/tzbase.module:503
+#: tzbase/tzbase.module:504
 msgid "Assignment active"
 msgstr ""
 
-#: tzbase/tzbase.module:504
+#: tzbase/tzbase.module:505
 msgid "Check if this assignment is active and can be used for time reporting"
 msgstr ""
 
-#: tzbase/tzbase.module:511
+#: tzbase/tzbase.module:512
 msgid "Allow reports to overlap"
 msgstr ""
 
-#: tzbase/tzbase.module:512
+#: tzbase/tzbase.module:513
 msgid "Allow reports on this assignment to overlap other reports"
 msgstr ""
 
-#: tzbase/tzbase.module:519
+#: tzbase/tzbase.module:520
 msgid "Assignment type"
 msgstr ""
 
-#: tzbase/tzbase.module:521
+#: tzbase/tzbase.module:522
 msgid "Presence"
 msgstr ""
 
-#: tzbase/tzbase.module:522;858 tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:215
+#: tzbase/tzbase.module:523;861 tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:215
 msgid "Absence"
 msgstr ""
 
-#: tzbase/tzbase.module:640 tzmobile/tzmobile.js:0;0
+#: tzbase/tzbase.module:643 tzmobile/tzmobile.js:0;0
 msgid "Home"
 msgstr ""
 
-#: tzbase/tzbase.module:641 tzreports/tzreports.module:14
+#: tzbase/tzbase.module:644 tzreports/tzreports.module:14
 msgid "Time Reports"
 msgstr ""
 
-#: tzbase/tzbase.module:651 tzbase/includes/tzbase.availability.inc:49 tzreports/includes/TZReportsTimeReports.class.inc:20
-msgid "Name"
-msgstr ""
-
-#: tzbase/tzbase.module:656 tzmobile/tzmobile.js:0;0 tzreports/includes/TZReportsTimeReports.class.inc:23
-msgid "Start"
-msgstr ""
-
-#: tzbase/tzbase.module:657 tzmobile/tzmobile.js:0;0 tzreports/includes/TZReportsTimeReports.class.inc:24
-msgid "End"
-msgstr ""
-
-#: tzbase/tzbase.module:658 tzmobile/tzmobile.js:0 tzreports/includes/TZReportsTimeReports.class.inc:25
-msgid "Break"
-msgstr ""
-
-#: tzbase/tzbase.module:660 tzuser/includes/tzuser.overview.inc:8 tzuser/javascript/tzuser.overview.js:0
+#: tzbase/tzbase.module:663 tzuser/includes/tzuser.overview.inc:8 tzuser/javascript/tzuser.overview.js:0
 msgid "Status"
 msgstr ""
 
-#: tzbase/tzbase.module:121;580
+#: tzbase/tzbase.module:122;581
 msgid "tzbase"
 msgstr ""
 
-#: tzbase/tzbase.module:121
+#: tzbase/tzbase.module:122
 msgid "Cleared !count reports older than !date"
 msgstr ""
 
-#: tzbase/tzbase.module:580
+#: tzbase/tzbase.module:581
 msgid "Report (nid: @id, vid: @vid) missing begintime or endtime in tzbase_nodeapi"
 msgstr ""
 
-#: tzbase/tzbase.module:156
+#: tzbase/tzbase.module:157
 msgid "create tzreport content"
 msgstr ""
 
-#: tzbase/tzbase.module:157
+#: tzbase/tzbase.module:158
 msgid "create tzreport content from template"
 msgstr ""
 
-#: tzbase/tzbase.module:158
+#: tzbase/tzbase.module:159
 msgid "view any tzreport content"
 msgstr ""
 
-#: tzbase/tzbase.module:159
+#: tzbase/tzbase.module:160
 msgid "view own tzreport content"
 msgstr ""
 
-#: tzbase/tzbase.module:160
+#: tzbase/tzbase.module:161
 msgid "edit any tzreport content"
 msgstr ""
 
-#: tzbase/tzbase.module:161
+#: tzbase/tzbase.module:162
 msgid "edit own tzreport content"
 msgstr ""
 
-#: tzbase/tzbase.module:162
+#: tzbase/tzbase.module:163
 msgid "remove own tzreport content"
 msgstr ""
 
-#: tzbase/tzbase.module:163
+#: tzbase/tzbase.module:164
 msgid "create tzreport on any tzjob"
 msgstr ""
 
-#: tzbase/tzbase.module:165
+#: tzbase/tzbase.module:166
 msgid "create tzjob content"
 msgstr ""
 
-#: tzbase/tzbase.module:166
+#: tzbase/tzbase.module:167
 msgid "view any tzjob content"
 msgstr ""
 
-#: tzbase/tzbase.module:167
+#: tzbase/tzbase.module:168
 msgid "view own tzjob content"
 msgstr ""
 
-#: tzbase/tzbase.module:168
+#: tzbase/tzbase.module:169
 msgid "edit any tzjob content"
 msgstr ""
 
-#: tzbase/tzbase.module:169
+#: tzbase/tzbase.module:170
 msgid "edit own tzjob content"
 msgstr ""
 
-#: tzbase/tzbase.module:171
+#: tzbase/tzbase.module:172
 msgid "create availability content"
 msgstr ""
 
-#: tzbase/tzbase.module:172
+#: tzbase/tzbase.module:173
 msgid "view any availability content"
 msgstr ""
 
-#: tzbase/tzbase.module:173
+#: tzbase/tzbase.module:174
 msgid "view own availability content"
 msgstr ""
 
-#: tzbase/tzbase.module:174
+#: tzbase/tzbase.module:175
 msgid "remove own availability content"
 msgstr ""
 
-#: tzbase/tzbase.module:176
+#: tzbase/tzbase.module:177
 msgid "manage user job mappings"
 msgstr ""
 
@@ -546,10 +561,6 @@ msgstr ""
 
 #: tzbase/tzbase.module:37
 msgid "Configure TimeZynk modules."
-msgstr ""
-
-#: tzbase/tzbase.module:44;69 tzbase/includes/tzbase.availability.inc:53
-msgid "Availability"
 msgstr ""
 
 #: tzbase/tzbase.module:45
@@ -636,7 +647,7 @@ msgstr ""
 msgid "Mobile"
 msgstr ""
 
-#: tzbase/includes/tzbase.availability.inc:51 tzuser/tzuser.module:474;568 tzuser/includes/tzuser.theme.inc:74
+#: tzbase/includes/tzbase.availability.inc:51 tzuser/tzuser.module:477;571 tzuser/includes/tzuser.theme.inc:74
 msgid "Manager"
 msgstr ""
 
@@ -868,7 +879,7 @@ msgstr ""
 msgid "Invalid username or password for %name."
 msgstr ""
 
-#: tzintellitime/tzintellitime.module:218 tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc:98 tzintellitime/tzintellitime_sync/tzintellitime_sync.module:171
+#: tzintellitime/tzintellitime.module:218 tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc:99 tzintellitime/tzintellitime_sync/tzintellitime_sync.module:180
 msgid "tzintellitime"
 msgstr ""
 
@@ -912,7 +923,7 @@ msgstr ""
 msgid "Provides TimeZynk intellitime integration"
 msgstr ""
 
-#: tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc:98
+#: tzintellitime/includes/IntellitimeSynchronizationDriver.class.inc:99
 msgid "@message, @name (@uid), last sync @interval ago, session created @age ago"
 msgstr ""
 
@@ -976,7 +987,7 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/tzuser.module:457;554 tzuser/includes/tzuser.overview.inc:10 tzuser/includes/tzuser.theme.inc:71 tzuser/javascript/tzuser.overview.js:0;0
+#: tzintellitime/tzintellitime_mock/tzintellitime_mock.admin.inc:166 tzuser/tzuser.module:460;557 tzuser/includes/tzuser.overview.inc:10 tzuser/includes/tzuser.theme.inc:71 tzuser/javascript/tzuser.overview.js:0;0
 msgid "Full name"
 msgstr ""
 
@@ -1080,8 +1091,12 @@ msgstr ""
 msgid "Synchronize user with Intelliplan"
 msgstr ""
 
-#: tzintellitime/tzintellitime_sync/tzintellitime_sync.module:171
+#: tzintellitime/tzintellitime_sync/tzintellitime_sync.module:180
 msgid "Tried to start synchronization for illegal user id \"@uid\""
+msgstr ""
+
+#: tzintellitime/tzintellitime_sync/tzintellitime_sync.module:96
+msgid "disable own intelliplan availability sync"
 msgstr ""
 
 #: tzintellitime/tzintellitime_sync/tzintellitime_sync.module:69
@@ -1228,27 +1243,23 @@ msgstr ""
 msgid "minutes"
 msgstr ""
 
-#: tzproto/tzproto.request.inc:26
-msgid "No input data"
-msgstr ""
-
-#: tzproto/tzproto.request.inc:152
+#: tzproto/tzproto.request.inc:165
 msgid "Log in"
 msgstr ""
 
-#: tzproto/tzproto.request.inc:159
-msgid "Wrong username or password."
+#: tzproto/tzproto.request.inc:26
+msgid "Empty POST"
 msgstr ""
 
-#: tzproto/tzproto.request.inc:182
-msgid "Error !code: @error"
+#: tzproto/tzproto.request.inc:64
+msgid "Mobile login failed for @username"
 msgstr ""
 
-#: tzproto/tzproto.request.inc:468
+#: tzproto/tzproto.request.inc:483
 msgid "Updated job !nid"
 msgstr ""
 
-#: tzproto/tzproto.request.inc:474
+#: tzproto/tzproto.request.inc:489
 msgid "Inserted job !nid"
 msgstr ""
 
@@ -1264,11 +1275,11 @@ msgstr ""
 msgid "Communicates using Protocol Buffer messages"
 msgstr ""
 
-#: tzproto/includes/CreateReportHandler.class.inc:127
+#: tzproto/includes/CreateReportHandler.class.inc:148
 msgid "Created revision !vid of report !nid"
 msgstr ""
 
-#: tzproto/includes/CreateReportHandler.class.inc:136
+#: tzproto/includes/CreateReportHandler.class.inc:157
 msgid "Inserted report !nid"
 msgstr ""
 
@@ -1408,7 +1419,7 @@ msgstr ""
 msgid "Provides TimeZynk reports"
 msgstr ""
 
-#: tzreports/includes/TZReportsTimeReports.class.inc:50 tzuser/includes/support_log.inc:32 tzuser/includes/tzuser.overview.inc:72 tzuser/javascript/tzuser.overview.js:0
+#: tzreports/includes/TZReportsTimeReports.class.inc:50 tzuser/includes/support_log.inc:32 tzuser/includes/tzuser.overview.inc:80 tzuser/javascript/tzuser.overview.js:0
 msgid "edit"
 msgstr ""
 
@@ -1456,27 +1467,27 @@ msgstr ""
 msgid "Send new TimeZynk installation SMS"
 msgstr ""
 
-#: tzsms/tzsms.module:151
+#: tzsms/tzsms.module:145
 msgid "Your mobile phone number or e-mail address"
 msgstr ""
 
-#: tzsms/tzsms.module:152
+#: tzsms/tzsms.module:146
 msgid "Send new password over SMS"
 msgstr ""
 
-#: tzsms/tzsms.module:163
+#: tzsms/tzsms.module:157
 msgid "New password has been sent to you over SMS"
 msgstr ""
 
-#: tzsms/tzsms.module:232
+#: tzsms/tzsms.module:230
 msgid "Welcome to mobile time reporting! Visit !url to install, then login using \"!username\" as username and \"!password\" as password."
 msgstr ""
 
-#: tzsms/tzsms.module:246
+#: tzsms/tzsms.module:244
 msgid "Welcome to mobile time reporting! Visit !url to install, then login using \"!username\" as username."
 msgstr ""
 
-#: tzsms/tzsms.module:80;97;100;162;204 tzsms/includes/tzsms_ui.send.inc:55
+#: tzsms/tzsms.module:80;97;100;156;202 tzsms/includes/tzsms_ui.send.inc:55
 msgid "tzsms"
 msgstr ""
 
@@ -1492,11 +1503,11 @@ msgstr ""
 msgid "Message successfully sent with id: \"@id\""
 msgstr ""
 
-#: tzsms/tzsms.module:162
+#: tzsms/tzsms.module:156
 msgid "Requested new password over SMS"
 msgstr ""
 
-#: tzsms/tzsms.module:204
+#: tzsms/tzsms.module:202
 msgid "Sending SMS to !nbr"
 msgstr ""
 
@@ -1684,19 +1695,19 @@ msgstr ""
 msgid "Hi! We are waiting for some of your time reports, please fill them in."
 msgstr ""
 
-#: tzstats/tzstats.module:151;190;215
+#: tzstats/tzstats.module:221;260;309
 msgid "tzstats"
 msgstr ""
 
-#: tzstats/tzstats.module:151
+#: tzstats/tzstats.module:221
 msgid "Synchronized !successful/!count users in !seconds seconds using @module"
 msgstr ""
 
-#: tzstats/tzstats.module:190
+#: tzstats/tzstats.module:260
 msgid "Recording user stats"
 msgstr ""
 
-#: tzstats/tzstats.module:215
+#: tzstats/tzstats.module:309
 msgid "Cleared !count rows from tzsync_stats"
 msgstr ""
 
@@ -1892,79 +1903,79 @@ msgstr ""
 msgid "Destination mobile number"
 msgstr ""
 
-#: tzuser/tzuser.module:465;561 tzuser/includes/tzuser.theme.inc:70
+#: tzuser/tzuser.module:468;564 tzuser/includes/tzuser.theme.inc:70
 msgid "Mobile number"
 msgstr ""
 
-#: tzuser/tzuser.module:481;574
+#: tzuser/tzuser.module:484;577
 msgid "Log level"
 msgstr ""
 
-#: tzuser/tzuser.module:488
+#: tzuser/tzuser.module:491
 msgid "User agent"
 msgstr ""
 
-#: tzuser/tzuser.module:495
+#: tzuser/tzuser.module:498
 msgid "TimeZynk version"
 msgstr ""
 
-#: tzuser/tzuser.module:502 tzuser/includes/support_log.inc:24 tzuser/includes/tzuser.overview.inc:13 tzuser/javascript/tzuser.overview.js:0
+#: tzuser/tzuser.module:505 tzuser/includes/support_log.inc:24 tzuser/includes/tzuser.overview.inc:14 tzuser/javascript/tzuser.overview.js:0
 msgid "Last login"
 msgstr ""
 
-#: tzuser/tzuser.module:508;587;61
+#: tzuser/tzuser.module:511;590;65
 msgid "Support log"
 msgstr ""
 
-#: tzuser/tzuser.module:517
+#: tzuser/tzuser.module:520
 msgid "Last update @date"
 msgstr ""
 
-#: tzuser/tzuser.module:534 tzuser/includes/tzuser.add.inc:116
+#: tzuser/tzuser.module:537 tzuser/includes/tzuser.add.inc:116
 msgid "Please enter a valid mobile number"
 msgstr ""
 
-#: tzuser/tzuser.module:548
+#: tzuser/tzuser.module:551
 msgid "TimeZynk Information"
 msgstr ""
 
-#: tzuser/tzuser.module:555
+#: tzuser/tzuser.module:558
 msgid "The users full name"
 msgstr ""
 
-#: tzuser/tzuser.module:562
+#: tzuser/tzuser.module:565
 msgid "The users mobile number without country code"
 msgstr ""
 
-#: tzuser/tzuser.module:569
+#: tzuser/tzuser.module:572
 msgid "Select employees manager"
 msgstr ""
 
-#: tzuser/tzuser.module:575
+#: tzuser/tzuser.module:578
 msgid "Current logging level for this user"
 msgstr ""
 
-#: tzuser/tzuser.module:578
+#: tzuser/tzuser.module:581
 msgid "No extra logging"
 msgstr ""
 
-#: tzuser/tzuser.module:579
+#: tzuser/tzuser.module:582
 msgid "Medium logging"
 msgstr ""
 
-#: tzuser/tzuser.module:580
+#: tzuser/tzuser.module:583
 msgid "Verbose logging"
 msgstr ""
 
-#: tzuser/tzuser.module:79
+#: tzuser/tzuser.module:83
 msgid "view employees"
 msgstr ""
 
-#: tzuser/tzuser.module:79
+#: tzuser/tzuser.module:83
 msgid "manage employees"
 msgstr ""
 
-#: tzuser/tzuser.module:79
+#: tzuser/tzuser.module:83
 msgid "bulk add employees"
 msgstr ""
 
@@ -1972,7 +1983,7 @@ msgstr ""
 msgid "Employee overview"
 msgstr ""
 
-#: tzuser/tzuser.module:46 tzuser/includes/tzuser.add.inc:88;179
+#: tzuser/tzuser.module:56 tzuser/includes/tzuser.add.inc:88;179
 msgid "Add employees"
 msgstr ""
 
@@ -1982,6 +1993,14 @@ msgstr ""
 
 #: tzuser/tzuser.info:0
 msgid "Provides TimeZynk user data"
+msgstr ""
+
+#: tzuser/includes/api.inc:153
+msgid "Created employee @username with mobile @number"
+msgstr ""
+
+#: tzuser/includes/api.inc:158
+msgid "Failed to add employee @username with mobile @number"
 msgstr ""
 
 #: tzuser/includes/support_log.inc:26
@@ -2036,64 +2055,64 @@ msgstr ""
 msgid "Unknown manager \"@manager\""
 msgstr ""
 
-#: tzuser/includes/tzuser.add.inc:248
-msgid "Created employee @username with mobile @number"
-msgstr ""
-
-#: tzuser/includes/tzuser.add.inc:253
-msgid "Failed to add employee @username with mobile @number"
-msgstr ""
-
 #: tzuser/includes/tzuser.overview.inc:12 tzuser/javascript/tzuser.overview.js:0
 msgid "Due reports"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:33
-msgid "Employees with all time reported"
+#: tzuser/includes/tzuser.overview.inc:13 tzuser/javascript/tzuser.overview.js:0
+msgid "Created"
 msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:34
-msgid "Employees that have or might have late reports"
+msgid "Employees with all time reported"
 msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:35
-msgid "Employees inactive for more than @redlimit"
+msgid "Employees that have or might have late reports"
 msgstr ""
 
 #: tzuser/includes/tzuser.overview.inc:36
+msgid "Employees inactive for more than @redlimit"
+msgstr ""
+
+#: tzuser/includes/tzuser.overview.inc:37
 msgid "Employees who have never logged in"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:41
+#: tzuser/includes/tzuser.overview.inc:42
 msgid "Show status"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:42
+#: tzuser/includes/tzuser.overview.inc:43
 msgid "Select which statuses you want to show"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:48
+#: tzuser/includes/tzuser.overview.inc:49
 msgid "Show with manager"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:49
+#: tzuser/includes/tzuser.overview.inc:50
 msgid "Select which managers employees to show"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:50
+#: tzuser/includes/tzuser.overview.inc:51
 msgid "All"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:55
+#: tzuser/includes/tzuser.overview.inc:56
 msgid "Show status until"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:56
+#: tzuser/includes/tzuser.overview.inc:57
 msgid "Show the status until and including date"
 msgstr ""
 
-#: tzuser/includes/tzuser.overview.inc:64
+#: tzuser/includes/tzuser.overview.inc:65
 msgid "<strong>Tip:</strong> Hold the SHIFT key to select many employees"
+msgstr ""
+
+#: tzuser/includes/tzuser.overview.inc:71
+msgid "Delete user"
 msgstr ""
 
 #: tzuser/includes/tzuser.theme.inc:18

@@ -33,7 +33,8 @@ function tzuser_menu() {
     'access callback' => 'tzapi_authorize',
     'access arguments' => array((object)array(
       'GET' => 'view employees',
-      'POST' => 'manage employees')),
+      'POST' => 'manage employees',
+      'DELETE' => 'administer site configuration')),
     'file' => 'includes/api.inc',
     'type' => MENU_CALLBACK,
   );

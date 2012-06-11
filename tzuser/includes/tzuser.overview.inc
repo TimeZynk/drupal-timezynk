@@ -10,6 +10,7 @@ function tzuser_user_overview_headers() {
     t('Full name'),
     t('Mobile'),
     t('Due reports'),
+    t('Created'),
     t('Last login'),
     array(),
   );
@@ -63,6 +64,13 @@ function tzuser_user_overview(&$form_state) {
   $form['info'] = array(
     '#value' => t('<strong>Tip:</strong> Hold the SHIFT key to select many employees'),
     '#suffix' => '<br/>',
+  );
+
+  $form['delete_user'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete user'),
+    '#access' => user_access('administer site configuration'),
+    '#weight' => 20,
   );
 
   return $form;

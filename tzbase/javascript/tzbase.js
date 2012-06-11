@@ -27,4 +27,21 @@
 			return Drupal.formatPlural(Math.floor(seconds), '1 sec', '@count sec');
 		}
 	}
+
+	$.format_short_date = function(timestamp) {
+		var d = new Date(timestamp * 1000)
+			s = d.getFullYear() + '-';
+
+		if (d.getMonth() < 9) {
+			s += '0';
+		}
+		s += (d.getMonth() + 1) + '-';
+
+		if (d.getDate() < 10) {
+			s += '0';
+		}
+		s += d.getDate();
+
+		return s;
+	};
 })(jQuery);

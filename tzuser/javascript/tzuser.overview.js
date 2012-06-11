@@ -54,6 +54,9 @@ Drupal.behaviors.TZUserOverview = function(context) {
             case Drupal.t('Due reports'):
                 comparator = makeFieldComparator('due_count');
                 break;
+            case Drupal.t('Created'):
+                comparator = makeFieldComparator('created');
+                break;
             case Drupal.t('Last login'):
                 comparator = makeFieldComparator('last_login');
                 break;
@@ -119,6 +122,7 @@ Drupal.behaviors.TZUserOverview = function(context) {
                 '<td>' + user.fullname + '</td>',
                 '<td>' + user.mobile + '</td>',
                 renderDueReports(user),
+                renderCreated(user),
                 renderLastLogin(user),
                 operations
             ], function(i, e) { row.append(e); });
@@ -131,7 +135,7 @@ Drupal.behaviors.TZUserOverview = function(context) {
         var countRow = $('<tr>' +
             '<td>&nbsp;</td><td>' + Drupal.t('Total') + '</td>' +
             '<td>' + rowCount + '</td>' +
-            '<td colspan="5">&nbsp;</td>' +
+            '<td colspan="6">&nbsp;</td>' +
             '</tr>');
         countRow.addClass('tzuser-overview-count-row');
         tableBody.append(countRow);
@@ -164,7 +168,11 @@ Drupal.behaviors.TZUserOverview = function(context) {
     }
 
     function renderLastLogin(user) {
-        return $.distance_of_time_in_words(user.last_login);
+        return '<td>' + $.distance_of_time_in_words(user.last_login) + '</td>';
+    }
+
+    function renderCreated(user) {
+        return '<td>' + $.format_short_date(user.created) + '</td>';
     }
 
     function fillOperations(tableBody) {
@@ -282,6 +290,42 @@ Drupal.behaviors.TZUserOverview = function(context) {
         updateOverviewData();
         refreshIntervalId = setInterval(updateOverviewData, refreshInterval);
     }
+
+    function selectedEmployees() {
+        var employee_map = {},
+            employees = [],
+            key;
+
+        $('table td .form-item :checked').each(function(index, element) {
+            employee_map[$(element).val()] = $(element).val();
+        });
+        for (key in employee_map) {
+            employees.push(key);
+        }
+        return employees;
+    }
+
+    function deleteUsers(employees, on_success) {
+        console.log('/api/users/' + employees[0]);
+        $.ajax({
+            url: '/api/users/' + employees[0],
+            type: "DELETE",
+            success: on_success
+        });
+    }
+
+    $('#edit-delete-user').click(function(event) {
+        var employees = selectedEmployees();
+        console.log(employees);
+        event.preventDefault();
+        if (employees.length > 0) {
+            $.runWithProgressBar(employees, {
+                chunk_size: 1,
+                on_process: deleteUsers,
+                on_finished: startOverviewRefreshCycle
+            });
+        }
+    });
 
     connectFilters();
     updateSortBy(window.location.hash);

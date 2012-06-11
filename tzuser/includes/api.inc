@@ -22,6 +22,8 @@ function tzuser_api_users() {
       return tzuser_api_list_users();
     case 'POST':
       return tzuser_api_create_user();
+    case 'DELETE':
+      return tzuser_api_delete_user();
   }
 }
 
@@ -160,6 +162,20 @@ function tzuser_api_create_user() {
     }
   }
   print drupal_json($result);
+}
+
+function tzuser_api_delete_user() {
+  $account = user_load(array('uid' => (int) arg(2)));
+  if (!$account) {
+    drupal_not_found();
+    return;
+  }
+
+  if ($account->status == 1) {
+    user_save($account, array('status' => 0));
+  }
+
+  print drupal_json(array('deleted' => $uid));
 }
 
 function tzuser_api_list_managers() {
