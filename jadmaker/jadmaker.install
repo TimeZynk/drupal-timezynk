@@ -14,6 +14,16 @@ function jadmaker_uninstall() {
   drupal_uninstall_schema('jadmaker');
 }
 
+function jadmaker_update_6001() {
+  $ret = array();
+  db_add_field($ret, 'jadmaker', 'pathid', array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => FALSE,
+  ));
+  return $ret;
+}
+
 /**
  * First upgrade, from no DB table to single DB table
  */
@@ -73,6 +83,11 @@ function jadmaker_schema() {
         'type' => 'blob',
         'size' => 'normal',
         'not null' => TRUE,
+      ),
+      'pathid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
       ),
     ),
     'primary key' => array('download_id'),

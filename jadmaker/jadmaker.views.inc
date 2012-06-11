@@ -21,6 +21,21 @@ function jadmaker_views_data() {
     ),
   );
 
+  $data['jadmaker']['pathid'] = array(
+    'title' => t('Path ID'),
+    'help' => t('JAD Path ID'),
+
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'relationship' => array(
+      'handler' => 'views_handler_relationship',
+      'base' => 'users',
+      'base field' => 'uid',
+    )
+  );
+
   $data['jadmaker']['timestamp'] = array(
     'title' => t('Download Timestamp'),
     'help' => t('Date and time for JAD download'),
@@ -45,6 +60,8 @@ function jadmaker_views_data() {
       'handler' => 'jadmaker_handler_field_http',
       'click sortable' => FALSE,
     ),
+
+
   );
 
   return $data;

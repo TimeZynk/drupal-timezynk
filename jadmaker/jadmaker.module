@@ -23,8 +23,15 @@ function jadmaker_menu() {
 
   //this is added for this current tutorial.
   $items['tz.jad'] = array(
-    'title' => 'Jad Maker',
     'page callback' => 'jadmaker_create_jad',
+    'access callback' => TRUE,
+    'file' => 'jadmaker.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['t/%'] = array(
+    'page callback' => 'jadmaker_create_jad',
+    'page arguments' => array(1),
     'access callback' => TRUE,
     'file' => 'jadmaker.inc',
     'type' => MENU_CALLBACK,
