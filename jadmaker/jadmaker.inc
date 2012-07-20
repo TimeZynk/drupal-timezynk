@@ -5,14 +5,10 @@ define('ANDROID_MARKET_URL', 'https://market.android.com/details?id=');
 /**
  * Generate a JAD file
  */
-function jadmaker_create_jad($pathid = NULL) {
+function jadmaker_create_jad() {
   $ua = $_SERVER['HTTP_USER_AGENT'];
 
-  if ($pathid) {
-    $pathid = base_convert($pathid, 36, 10);
-  }
-
-  jadmaker_store_download_stats($pathid);
+  jadmaker_store_download_stats();
 
   // Redirect iPhone and iPad
   if (FALSE !== strpos($ua, 'iPhone') ||
@@ -61,7 +57,7 @@ function jadmaker_create_jad($pathid = NULL) {
   }
 }
 
-function jadmaker_store_download_stats($pathid) {
+function jadmaker_store_download_stats() {
   $vars = array();
   foreach($_SERVER as $key => $value) {
     if(substr($key, 0, 5) === 'HTTP_') {
@@ -71,7 +67,6 @@ function jadmaker_store_download_stats($pathid) {
   $entry = array(
     'timestamp' => time(),
     'http_data' => gzcompress(serialize($vars)),
-    'pathid' => $pathid,
   );
   drupal_write_record('jadmaker', $entry);
 }

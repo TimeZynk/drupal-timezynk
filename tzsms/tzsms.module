@@ -107,9 +107,12 @@ function tzsms_set_country_code($number, $country_code) {
 }
 
 function tzsms_tzuser_add_user_notify($account, $password = '') {
-  if (!empty($account->tzuser['mobile'])) {
-    tzsms_send_new_user_sms($account, $password);
-  }
+  if (!empty($account->tzuser['mobile']))
+  tzsms_send_new_user_sms(
+      $account->tzuser['mobile'],
+      $account->tzuser['mobile'],
+      $password
+  );
 }
 
 
@@ -134,7 +137,10 @@ function tzsms_form_user_register_alter(&$form, &$form_state) {
  * @param $form_state form state with current values
  */
 function tzsms_form_user_register_submit($form, &$form_state) {
-  tzsms_send_new_user_sms((object)$form_state['values'], $password);
+  $mobile = $form_state['values']['tzuser']['mobile'];
+  $username = $form_state['values']['name'];
+  $password = $form_state['values']['pass'];
+  tzsms_send_new_user_sms($mobile, $username, $password);
 }
 
 
@@ -169,7 +175,7 @@ function tzsms_reset_pw_and_send_install_sms($users) {
     $new_pass = genpass_generate();
     $user = user_save($user, array('pass' => $new_pass));
     if($user && !empty($user->tzuser['mobile'])) {
-      tzsms_send_new_user_sms($user, $new_pass);
+      tzsms_send_new_user_sms($user->tzuser['mobile'], $user->tzuser['mobile'], $new_pass);
     }
   }
 }
@@ -181,13 +187,9 @@ function tzsms_send_install_sms($users) {
   foreach($users as $uid) {
     $user = user_load($uid);
     if($user && !empty($user->tzuser['mobile'])) {
-      tzsms_send_new_user_sms($user);
+      tzsms_send_new_user_sms($user->tzuser['mobile'], $user->tzuser['mobile']);
     }
   }
-}
-
-function tzsms_install_sms_url($account) {
-  return url('t/' . base_convert($account->uid, 10, 36) ,  array('absolute' => TRUE));
 }
 
 /**
@@ -198,24 +200,24 @@ function tzsms_install_sms_url($account) {
  * @param $username username to substitute in the install SMS template
  * @param $password password to substitute in the install SMS template
  */
-function tzsms_send_new_user_sms($account, $password = NULL) {
-  watchdog('tzsms', 'Sending SMS to !nbr', array('!nbr' => $account->tzuser['mobile']));
+function tzsms_send_new_user_sms($phonenbr, $username, $password = NULL) {
+  watchdog('tzsms', 'Sending SMS to !nbr', array('!nbr' => $phonenbr));
   $msg = '';
   if($password) {
     $msg = tzsms_install_sms_template(array(
-    	  '!url' => tzsms_install_sms_url($account),
-        '!username' => $account->tzuser['mobile'],
+    	'!url' => url('tz.jad',  array('absolute' => TRUE)),
+        '!username' => $username,
         '!password' => $password
       )
     );
   } else {
     $msg = tzsms_install_sms_no_password_template(array(
-        '!url' => tzsms_install_sms_url($account),
-        '!username' => $account->tzuser['mobile']
+        '!url' => url('tz.jad',  array('absolute' => TRUE)),
+        '!username' => $username
       )
     );
   }
-  tzsms_send(TZSMS_TYPE_INSTALL_SMS, $account->tzuser['mobile'], $msg);
+  tzsms_send(TZSMS_TYPE_INSTALL_SMS, $phonenbr, $msg);
 }
 
 /**
