@@ -74,6 +74,25 @@ function tzapi_interval_params() {
   return $interval;
 }
 
+function tzapi_db_print_json($result, $fn = NULL) {
+  drupal_set_header('Content-Type: application/json; charset=utf-8');
+  echo "[";
+  $first = TRUE;
+  while ($e = db_fetch_object($result)) {
+    if (!$first) {
+      echo ",";
+    }
+    $first = FALSE;
+
+    if ($fn) {
+      $e = $fn($e);
+    }
+
+    echo json_encode($e);
+  }
+  echo "]";
+}
+
 function _tzapi_hdr($key, $default = "") {
   return empty($_SERVER[$key]) ? $default : $_SERVER[$key];
 }

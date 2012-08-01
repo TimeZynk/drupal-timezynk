@@ -80,12 +80,5 @@ function tzbase_reports_index() {
 
   $result = db_query($query, $query_args);
 
-  drupal_set_header('Content-Type: application/json; charset=utf-8');
-  print "[";
-  $first = TRUE;
-  while ($report = db_fetch_object($result)) {
-    if (!$first) { print ","; } $first = FALSE;
-    print json_encode($report);
-  }
-  print "]";
+  tzapi_db_print_json($result);
 }
