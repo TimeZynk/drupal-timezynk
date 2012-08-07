@@ -100,6 +100,9 @@ class TZIntellitimeSyncController {
         continue;
       }
     }
+
+    $this->userJobsMappingPolicy->removeExpiredMappings();
+
     return $status;
   }
 

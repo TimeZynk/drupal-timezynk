@@ -65,8 +65,22 @@ class TZUserJobsMapper {
 
   public function deleteAllByUserId($uid) {
     if (empty($uid)) {
-      throw new InvalidArgumentException('must supply jobid');
+      throw new InvalidArgumentException('must supply user id');
     }
     $this->dbWrapper->query('DELETE FROM {tzusers_tzjobs} WHERE uid = %d', $uid);
+  }
+
+  public function deleteAllByUserIdAndJobId($uid, $jobid) {
+    if (empty($uid) || empty($jobid)) {
+      throw new InvalidArgumentException('must supply user id and jobid');
+    }
+    $this->dbWrapper->query('DELETE FROM {tzusers_tzjobs} WHERE uid = %d AND jobid = %d', $uid, $jobid);
+  }
+
+  public function deleteExpired($cutoff) {
+    if (empty($cutoff)) {
+      throw new InvalidArgumentException('must supply cutoff');
+    }
+    $this->dbWrapper->query('DELETE FROM {tzusers_tzjobs} WHERE end_time < %d', $cutoff);
   }
 }

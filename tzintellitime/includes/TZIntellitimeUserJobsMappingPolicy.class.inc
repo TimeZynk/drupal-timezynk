@@ -7,10 +7,12 @@ class TZIntellitimeUserJobsMappingPolicy {
   private $mapper;
   private $account;
   private $mappings;
+  private $seen_jobids;
 
   function __construct($mapper, $account) {
     $this->mapper = $mapper;
     $this->account = $account;
+    $this->seen_jobids = array();
   }
 
   /**
@@ -39,6 +41,7 @@ class TZIntellitimeUserJobsMappingPolicy {
         $mapping->save();
         $this->mappings[$jobid][] = $mapping;
       }
+      $this->seen_jobids[$jobid] = TRUE;
     }
 
     foreach ($this->mappings as $jobid => $mappings) {
@@ -51,6 +54,19 @@ class TZIntellitimeUserJobsMappingPolicy {
              unset($this->mappings[$jobid][$index]);
           }
         }
+      }
+    }
+  }
+
+  public function removeExpiredMappings() {
+    if (!$this->mappings) {
+      $this->loadMappings();
+    }
+
+    foreach ($this->mappings as $jobid => $mappings) {
+      if (!$this->seen_jobids[$jobid]) {
+        $this->mapper->deleteAllByUserIdAndJobId($this->account->uid, $jobid);
+        unset($this->mappings[$jobid]);
       }
     }
   }

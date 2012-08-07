@@ -6,6 +6,7 @@
 require_once dirname(__FILE__) . '/tzbase.autoload.inc';
 
 define('TZBASE_REPORT_CLEANUP_AGE', 180*24*3600);
+define('TZBASE_USER_JOBS_CLEANUP_AGE', 60*24*3600);
 
 /**
  * Implementation of hook_help().
@@ -113,6 +114,10 @@ function tzbase_cron() {
     node_delete($entry->nid);
     $count++;
   }
+
+  /* Clear old user jobs mappings */
+  $mapper = tzbase_user_jobs_mapper();
+  $mapper->deleteExpired(time() - TZBASE_USER_JOBS_CLEANUP_AGE);
 
   /* Restore original user, probably Anonymous */
   $user = $original_user;
