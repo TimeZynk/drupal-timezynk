@@ -1,14 +1,14 @@
 Drupal.behaviors.TZSMSUserOverview = function(context) {
     function selectedEmployees() {
         var employee_map = {},
-        	employees = [],
-        	key;
-        
+            employees = [],
+            key;
+
         $('table td .form-item :checked').each(function(index, element) {
-        	employee_map[$(element).val()] = $(element).val();
+            employee_map[$(element).val()] = $(element).val();
         });
         for (key in employee_map) {
-        	employees.push(key);
+            employees.push(key);
         }
         return employees;
     }
@@ -18,7 +18,7 @@ Drupal.behaviors.TZSMSUserOverview = function(context) {
             "selected_users[]": employees
         }, on_success);
     }
-    
+
     function clearAllCheckBoxes() {
         $('tbody :checked').removeAttr('checked').click();
     }
@@ -30,16 +30,16 @@ Drupal.behaviors.TZSMSUserOverview = function(context) {
 
         if (employees.length > 0) {
             $.runWithProgressBar(employees, {
-            	chunk_size: 5, 
-            	on_process: sendInstallSMS,
-            	on_finished: clearAllCheckBoxes
+                chunk_size: 5,
+                on_process: sendInstallSMS,
+                on_finished: clearAllCheckBoxes
             });
         }
     });
 
     $('#edit-send-reminder-sms').click(function(event) {
         event.preventDefault();
-        $.showTextSMSDialog(Drupal.t('Hi! We are waiting for some of your time reports, please fill them in.'), selectedEmployees);
+        $.showTextSMSDialog(Drupal.settings.tzsms_ui.tzsms_reminder_sms_template, selectedEmployees);
     });
 
     $('#edit-send-text-sms').click(function(event) {

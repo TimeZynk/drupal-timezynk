@@ -248,6 +248,12 @@ function tzsms_install_sms_no_password_template($variables = array()) {
   }
 }
 
+function tzsms_reminder_sms_template() {
+  return variable_get('tzsms_reminder_sms_template',
+    t('Hi! We are waiting for some of your time reports, please fill them in.'));
+}
+
+
 function tzsms_debug_sms($message) {
   $validated_mobile = tzuser_validate_phone_number(TZSMS_DEBUG_SMS_RECEIVER);
   if (empty($validated_mobile)) {

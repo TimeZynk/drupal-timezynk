@@ -27,15 +27,20 @@ function tzsms_admin_settings($form_state) {
     ),
     'tzsms_install_sms_template' => array(
       '#type' => 'textarea',
-      '#title' => t('The content of the SMS'),
+      '#title' => t('Install SMS template'),
       '#default_value' => variable_get('tzsms_install_sms_template', tzsms_install_sms_template()),
       '#description' => t('The available variables are: !url, !username and !password'),
     ),
     'tzsms_install_sms_no_password_template' => array(
       '#type' => 'textarea',
-      '#title' => t('The content of the SMS when keeping the same password'),
+      '#title' => t('Install SMS template when keeping the same password'),
       '#default_value' => variable_get('tzsms_install_sms_no_password_template', tzsms_install_sms_no_password_template()),
       '#description' => t('The available variables are: !url and !username'),
+    ),
+    'tzsms_reminder_sms_template' => array(
+      '#type' => 'textarea',
+      '#title' => t('Reminder SMS text'),
+      '#default_value' => variable_get('tzsms_reminder_sms_template', tzsms_reminder_sms_template()),
     ),
     'tzsms_debug_sms_receiver' => array(
       '#type' => 'textfield',
