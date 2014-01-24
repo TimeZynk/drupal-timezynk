@@ -12,12 +12,53 @@ function excelexport_export() {
 
   $objPHPExcel = new PHPExcel();
 
-  $sql = 'SELECT * FROM {node} n ' .
-    'INNER JOIN {node_revisions} nr ON nr.vid = n.vid ' .
-    'INNER JOIN {tzreport} tz ON n.vid = tz.vid ' .
-    'INNER JOIN {tzuser} tzu ON tz.assignedto = tzu.uid ' .
-    'WHERE tz.flags != %d ORDER BY tz.begintime';
-  $db_result = db_query(db_rewrite_sql($sql), TZFlags::DELETED);
+  $query = 'SELECT * FROM {node} n ' .
+      'INNER JOIN {node_revisions} rev ON n.vid = rev.vid ' .
+      'INNER JOIN {tzreport} tzr ON n.vid = tzr.vid ' .
+      'INNER JOIN {tzuser} tzu ON tzr.assignedto = tzu.uid ' .
+      'WHERE tzr.flags != 255';
+  $query_args = array();
+
+  if (!empty($_GET['start_date']['date'])) {
+    $date = date_make_date($_GET['start_date']['date'] . 'T00:00:00');
+    $query .= ' AND tzr.begintime >= %d';
+    $query_args[] = $date->format('U');
+  }
+
+  if (!empty($_GET['end_date']['date'])) {
+    $date = date_make_date($_GET['end_date']['date'] . 'T23:59:59');
+    $query .= ' AND tzr.begintime <= %d';
+    $query_args[] = $date->format('U');
+  }
+
+  if (!empty($_GET['users'])) {
+    $query .= ' AND(';
+    $users_query = array();
+    foreach ($_GET['users'] as $uid) {
+      $users_query[] = 'tzr.assignedto = %d';
+      $query_args[] = $uid;
+    }
+    $query .= implode(' OR ', $users_query) . ')';
+  }
+
+  if (!empty($_GET['assignment'])) {
+    $assignment_trail = explode(':', $_GET['assignment']);
+    $top_assignment = end($assignment_trail);
+    if (!empty($top_assignment) && ctype_digit($top_assignment)) {
+      $children = tzbase_children_for_jobid($top_assignment);
+      $query .= ' AND (';
+      $jobid_query = array();
+      foreach ($children as $jobid) {
+        $jobid_query[] = 'tzr.jobid = %d';
+        $query_args[] = $jobid;
+      }
+      $query .= implode(' OR ', $jobid_query) . ')';
+    }
+  }
+
+  $query .= ' ORDER BY tzr.begintime';
+  $result = db_query(db_rewrite_sql($query), $query_args);
+
 
   /* TODO: look up table header names from db, instead of hardcoding them. */
   $h = array (t('Id'), t('Name'), t('Assignment'), t('Comment'), t('Start'), t('End'),
@@ -31,7 +72,7 @@ function excelexport_export() {
     $excelSheet->setCellValueByColumnAndRow($column, $row, (string)($h[$column]));
   }
 
-  while ($node = db_fetch_object($db_result)) {
+  while ($node = db_fetch_object($result)) {
     $row++;
     $column = 0;
     $job = tzbase_node_load($node->jobid);

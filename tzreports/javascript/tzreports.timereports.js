@@ -8,6 +8,8 @@ Drupal.behaviors.TZReportsTimeReports = function(context) {
         var formdata = $('#tzreports-timereports').serialize();
         $('.ahah-progress').html('<div class="throbber"></div>');
         $.post('timereports/all/ajax', formdata, showTimeReports);
+	var excelLink = $('.tabs.primary li a[href^=/timereports/xls]');
+	excelLink.attr('href', '/timereports/xls?' + formdata);
     }
 
     function bindHandlers() {

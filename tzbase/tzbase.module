@@ -119,6 +119,12 @@ function tzbase_cron() {
   $mapper = tzbase_user_jobs_mapper();
   $mapper->deleteExpired(time() - TZBASE_USER_JOBS_CLEANUP_AGE);
 
+
+  /* Clear old availability */
+  watchdog('tzbase', 'Removing availability older than ' . $cutoff);
+  db_query('DELETE FROM {tzavailability} WHERE end_time < %d AND local_changes = 0', $cutoff);
+  db_query('DELETE FROM {tzstats_availability} WHERE timestamp < %d', $cutoff);
+
   /* Restore original user, probably Anonymous */
   $user = $original_user;
   session_save_session($old_state);
