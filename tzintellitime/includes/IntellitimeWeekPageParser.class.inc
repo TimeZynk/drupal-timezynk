@@ -17,9 +17,9 @@ class IntellitimeWeekPageParser {
   /**
    * Find and return the control prefix for a report. Each report uses
    * a naming scheme for the related form elements that look like
-   * OldRowsRepeater:_ctlX:<form element name>.
+   * OldRowsRepeater$ctlXX$<form element name>.
    *
-   * @return the OldRowsRepeater:_ctlX: prefix for the matching row.
+   * @return the OldRowsRepeater$ctlXX$ prefix for the matching row.
    * @throws TZIntellitimeReportRowNotFound if report is not found in the DOM
    */
   public function find_report_control_prefix($report) {
@@ -111,9 +111,9 @@ class IntellitimeWeekPageParser {
 
   private function get_row_control_prefix($row) {
     $first_input = $row->xpath('*/input[1]');
-    $name_segment = explode(':', (string) $first_input[0]['name']);
+    $name_segment = explode('$', (string) $first_input[0]['name']);
     array_pop($name_segment);
-    $control_prefix = implode(':', $name_segment) . ':';
+    $control_prefix = implode('$', $name_segment) . '$';
 
     return $control_prefix;
   }

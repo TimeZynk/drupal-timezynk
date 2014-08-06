@@ -54,7 +54,7 @@ class IntellitimeAvailabilityPage extends IntellitimeAuthenticatedPage {
   }
 
   private function parseCheckboxListsToAvailabilities() {
-    $checkboxlists = $this->doc->xpath('//table[@class="AvailabilityCheckBoxList"]');
+    $checkboxlists = $this->doc->xpath('//*[@class="AvailabilityCheckBoxList"]');
     if (empty($checkboxlists)) {
       return array();
     }
@@ -74,25 +74,25 @@ class IntellitimeAvailabilityPage extends IntellitimeAuthenticatedPage {
     $day = new IntellitimeAvailability();
     $day->setFormId($prefix);
 
-    $labelId = str_replace(':', '_', $prefix) . '_LabelAvailabilityShortDate';
+    $labelId = str_replace('$', '_', $prefix) . '_LabelAvailabilityShortDate';
     $dateLabel = $this->doc->xpath('//span[@id="' . $labelId . '"]');
     $date = date_make_date((string)$dateLabel[0] . 'T00:00:00');
     $day->setDate($date);
 
-    $day->setDay(!empty($formValues[$prefix . ':AvailabilityCheckBoxList:0']));
-    $day->setEvening(!empty($formValues[$prefix . ':AvailabilityCheckBoxList:1']));
-    $day->setNight(!empty($formValues[$prefix . ':AvailabilityCheckBoxList:2']));
+    $day->setDay(!empty($formValues[$prefix . '$AvailabilityCheckBoxList$0']));
+    $day->setEvening(!empty($formValues[$prefix . '$AvailabilityCheckBoxList$1']));
+    $day->setNight(!empty($formValues[$prefix . '$AvailabilityCheckBoxList$2']));
 
     return $day;
   }
 
   private function findDayPrefix($checkboxlist) {
     $prefix = "";
-    $inputs = $checkboxlist->xpath('*//input');
+    $inputs = $checkboxlist->xpath('.//input[@type="checkbox"]');
     if ($inputs) {
-      $input_name_segments = explode(':', $inputs[0]['name']);
+      $input_name_segments = explode('$', $inputs[0]['name']);
       $form_id_segments = array_slice($input_name_segments, 0, -2);
-      $prefix = implode(':', $form_id_segments);
+      $prefix = implode('$', $form_id_segments);
     }
     return $prefix;
   }

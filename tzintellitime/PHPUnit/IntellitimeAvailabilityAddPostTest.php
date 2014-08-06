@@ -35,7 +35,7 @@ class IntellitimeAvailabilityAddPostTest extends PHPUnit_Framework_TestCase {
       'keep_field' => 'magic value',
     );
     $expectedPostData = $originalFormValues;
-    $expectedPostData['__EVENTTARGET'] = 'm_availabilityCalendar:ThisMonth';
+    $expectedPostData['__EVENTTARGET'] = 'm_availabilityCalendar$ThisMonth';
     $expectedPostData['__EVENTARGUMENT'] = '4212'; // Days since 2000-01-01
 
     $this->form->expects($this->once())

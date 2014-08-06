@@ -28,6 +28,13 @@ class IntellitimeAvailabilityUpdatePost extends IntellitimePost {
   protected function getPostData() {
     $data = $this->form->getFormValues();
 
+    // Clear delete images
+    foreach($data as $key => $value) {
+      if (FALSE !== strpos($key, 'ImageButton')) {
+        unset($data[$key]);
+      }
+    }
+
     $this->clearAllCheckboxes($data);
 
     foreach ($this->availabilities as $a) {
@@ -47,7 +54,7 @@ class IntellitimeAvailabilityUpdatePost extends IntellitimePost {
 
   private function clearAllCheckboxes(&$data) {
     foreach ($data as $key => $value) {
-      if (preg_match('/:AvailabilityCheckBoxList:\d$/', $key)) {
+      if (preg_match('/\$AvailabilityCheckBoxList\$\d$/', $key)) {
         unset($data[$key]);
       }
     }
@@ -55,13 +62,13 @@ class IntellitimeAvailabilityUpdatePost extends IntellitimePost {
 
   private function markAvailabilityCheckboxes(&$data, $a) {
     if ($a->isAvailableDuringDay()) {
-      $data[$a->getFormId() . ':AvailabilityCheckBoxList:0'] = 'on';
+      $data[$a->getFormId() . '$AvailabilityCheckBoxList$0'] = 'on';
     }
     if ($a->isAvailableDuringEvening()) {
-      $data[$a->getFormId() . ':AvailabilityCheckBoxList:1'] = 'on';
+      $data[$a->getFormId() . '$AvailabilityCheckBoxList$1'] = 'on';
     }
     if ($a->isAvailableDuringNight()) {
-      $data[$a->getFormId() . ':AvailabilityCheckBoxList:2'] = 'on';
+      $data[$a->getFormId() . '$AvailabilityCheckBoxList$2'] = 'on';
     }
   }
 }
