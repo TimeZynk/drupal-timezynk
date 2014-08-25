@@ -9,7 +9,7 @@ class IntellitimeAvailabilityAddPost extends IntellitimePost {
     }
     parent::__construct($server, $form);
     $this->availability = $availability;
-    watchdog('tzdebug', 'Creating Add Post');
+    // watchdog('tzdebug', 'Creating Add Post');
   }
 
   protected function getPostData() {
@@ -33,7 +33,7 @@ class IntellitimeAvailabilityAddPost extends IntellitimePost {
       $data['__EVENTTARGET'] = 'm_availabilityCalendar$NextMonth';
     }
     $data['__EVENTARGUMENT'] =  round(intval($date->format('U'), 10)  / 86400);
-    watchdog('tzdebug_data', 'Add Post Data: ' . print_r($data, TRUE));
+    // watchdog('tzdebug_data', 'Add Post Data: ' . print_r($data, TRUE));
     return $data;
   }
 
