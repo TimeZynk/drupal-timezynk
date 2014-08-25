@@ -25,7 +25,8 @@ class IntellitimeAvailabilityAddPost extends IntellitimePost {
     $date = $this->availability->getDate();
     $date->setTime(12,0);
     $date->modify('-' . $this->epoch2000_01_01_1200 . ' seconds');
-    $currentMonth = (new DateTime())->format('m');
+    $currentDate = new DateTime();
+    $currentMonth = $currentDate->format('m');
     if ($date->format('m') == $currentMonth) {
       $data['__EVENTTARGET'] = 'm_availabilityCalendar$ThisMonth';
     } else {
