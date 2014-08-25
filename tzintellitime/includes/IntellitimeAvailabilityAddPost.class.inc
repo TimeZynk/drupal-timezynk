@@ -9,6 +9,7 @@ class IntellitimeAvailabilityAddPost extends IntellitimePost {
     }
     parent::__construct($server, $form);
     $this->availability = $availability;
+    watchdog('tzdebug', 'Creating Add Post');
   }
 
   protected function getPostData() {
@@ -26,6 +27,7 @@ class IntellitimeAvailabilityAddPost extends IntellitimePost {
     $date->setTime(12,0);
     $date->modify('-' . $this->epoch2000_01_01_1200 . ' seconds');
     $data['__EVENTARGUMENT'] =  round(intval($date->format('U'), 10)  / 86400);
+    watchdog('tzdebug_data', 'Add Post Data: ' . print_r($data, TRUE));
     return $data;
   }
 

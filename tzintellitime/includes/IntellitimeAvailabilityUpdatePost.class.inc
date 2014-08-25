@@ -23,6 +23,7 @@ class IntellitimeAvailabilityUpdatePost extends IntellitimePost {
     }
     parent::__construct($server, $form);
     $this->availabilities = $availabilities;
+    watchdog('tzdebug', 'Creating Update Post');
   }
 
   protected function getPostData() {
@@ -40,6 +41,8 @@ class IntellitimeAvailabilityUpdatePost extends IntellitimePost {
     foreach ($this->availabilities as $a) {
       $this->markAvailabilityCheckboxes($data, $a);
     }
+
+    watchdog('tzdebug_data', 'Update Post Data: ' . print_r($data, TRUE));
 
     return $data;
   }
