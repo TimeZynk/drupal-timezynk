@@ -17,8 +17,16 @@ abstract class IntellitimePost {
   }
 
   public function post() {
-    $html = $this->server->post($this->getAction(), $this->getPostData());
-    return $this->createPage($html, $this->server);
+    $data = $this->getPostData();
+    $html = $this->server->post($this->getAction(), $data);
+    $page = NULL;
+    try {
+      $page = $this->createPage($html, $this->server);
+    } catch (TZIntellitimeServerException $e) {
+      watchdog('intellitime_post', 'Error page after POST: ' . $e->getMessage() . "\nPOST data: " . print_r($data, TRUE));
+      throw $e;
+    }
+    return $page;
   }
 
   protected function getAction() {
