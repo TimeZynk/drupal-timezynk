@@ -22,10 +22,15 @@ class IntellitimeAvailabilityAddPost extends IntellitimePost {
       }
     }
 
-    $data['__EVENTTARGET'] = 'm_availabilityCalendar$ThisMonth';
     $date = $this->availability->getDate();
     $date->setTime(12,0);
     $date->modify('-' . $this->epoch2000_01_01_1200 . ' seconds');
+    $currentMonth = (new DateTime())->format('m');
+    if ($date->format('m') == $currentMonth) {
+      $data['__EVENTTARGET'] = 'm_availabilityCalendar$ThisMonth';
+    } else {
+      $data['__EVENTTARGET'] = 'm_availabilityCalendar$NextMonth';
+    }
     $data['__EVENTARGUMENT'] =  round(intval($date->format('U'), 10)  / 86400);
     watchdog('tzdebug_data', 'Add Post Data: ' . print_r($data, TRUE));
     return $data;
