@@ -115,35 +115,7 @@ function tzstats_tzsms_send($type, $phonenbr, $length) {
   drupal_write_record('tzstats_sms', $record);
 }
 
-function tzstats_open_redis() {
-  static $redis = NULL;
-  if ($redis == NULL) {
-    $redis = new Redis();
-    $redis->connect('127.0.0.1', 6379, 1);
-    $redis->auth('faepaihapee3oujookugh4lah0mae0eibae2foong6iatoh3cheehait3aek4Pee');
-  }
-  return $redis;
-}
-
 function tzstats_record_redis_report_stats($date, $broadcast = TRUE) {
-  $timestamp = $date->format('U');
-  $Ymd = $date->format('Ymd');
-  $host = tzbase_hostname();
-
-  $redis = tzstats_open_redis();
-  $redis->hSet('timereports:timestamp', $host, $timestamp);
-  $date_count = $redis->hIncrBy('timereports:' . $Ymd, $host, 1);
-  $redis->incr('timereports:' . $Ymd . ':total'); // Day totals
-  $redis->incr('timereports:' . $date->format('Ym') . ':total'); // Month totals
-  $redis->incr('timereports:' . $date->format('o\WW') . ':total'); // Week totals
-
-  if ($broadcast) {
-    $redis->publish('timereports:update', json_encode(array(
-      'id' => $host,
-      'count' => $date_count,
-      'timestamp' => $date->format('U'),
-    )));
-  }
 }
 
 /**
@@ -151,8 +123,6 @@ function tzstats_record_redis_report_stats($date, $broadcast = TRUE) {
  * Logs the saved report timestamp for billing statistics
  */
 function tzstats_tzproto_saved_report($report) {
-  tzstats_record_redis_report_stats(date_now());
-
   $record = array(
     'uid' => $report->assignedto,
     'timestamp' => time(),
@@ -171,48 +141,13 @@ function tzstats_tzproto_fetched_reports($account, $number_of_reports) {
 }
 
 function tzstats_user($op, &$edit, &$account, $category = NULL) {
-  $host = tzbase_hostname();
   switch ($op) {
-    case 'insert':
-      $redis = tzstats_open_redis();
-      $redis->sAdd('users:all', $host . ':' . $account->uid);
-      $redis->sAdd('users:' . $host . ':all', $account->uid);
-      $redis->setnx('users:' . $host . ':' . $account->uid . ':created', time());
-      break;
-
     case 'login':
-      $redis = tzstats_open_redis();
-      $first_login = $redis->setnx('users:' . $host . ':' . $account->uid . ':first_login', $account->login);
-      $redis->set('users:' . $host . ':' . $account->uid . ':last_login', $account->login);
-
-      if ($first_login) {
-        $redis->publish('users:first_login', json_encode(array(
-          'host' => $host,
-          'uid' => $account->uid,
-          'first_login' => $account->login,
-          'timestamp' => $account->login,
-        )));
-      }
-
       $record = array(
         'uid' => $account->uid,
         'timestamp' => time(),
       );
       drupal_write_record('tzstats_login', $record);
-      break;
-
-    case 'delete':
-      $now = time();
-      $redis = tzstats_open_redis();
-      $redis->sMove('users:all', 'users:deleted', $host . ':' . $account->uid);
-      $redis->sMove('users:' . $host . ':all', 'users:' . $host . ':deleted', $account->uid);
-      $redis->set('users:' . $host . ':' . $account->uid . ':deleted', $now);
-      $redis->publish('users:deleted', json_encode(array(
-        'host' => $host,
-        'uid' => $account->uid,
-        'deleted' => $now,
-        'timestamp' => $now,
-      )));
       break;
   }
 }
@@ -275,19 +210,12 @@ function tzstats_views_api() {
 
 function tzstats_record_user_status() {
   $now = time();
-  $redis = tzstats_open_redis();
-  $host = tzbase_hostname();
 
   // Save current status
   $result = db_query('SELECT * FROM {users} WHERE uid > 1 AND status = 1');
   while ($account = db_fetch_object($result)) {
     $status = tzuser_get_user_status($account, $now);
     $status_code = $status->getStatusCode();
-
-    $redis->sAdd('users:all', $host . ':' . $account->uid);
-    $redis->sAdd('users:' . $host . ':all', $account->uid);
-    $redis->set('users:' . $host . ':' . $account->uid . ':last_login', $account->login);
-    $redis->set('users:' . $host . ':' . $account->uid . ':created', $account->created);
 
     $entry = array(
       'status' => $status_code,
