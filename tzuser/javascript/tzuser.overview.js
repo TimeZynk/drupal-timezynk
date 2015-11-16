@@ -5,7 +5,7 @@ Drupal.behaviors.TZUserOverview = function(context) {
         selections = {},
         lastClickedCheckboxID = null,
         permissions = {},
-        refreshIntervalId;
+        previousReq, previousUrl, refreshIntervalId;
 
     function makeFieldComparator(field) {
         return function(a, b) {
@@ -262,15 +262,27 @@ Drupal.behaviors.TZUserOverview = function(context) {
 
         url += '?' + form_elements.serialize();
 
+        if (previousReq && previousReq.readyState !== 4) {
+            if (url !== previousUrl) {
+                previousReq.abort();
+            } else {
+                return;
+            }
+        }
+
         $('.ahah-progress').html('<div class="throbber"></div>');
-        $.ajax({
+        previousUrl = url;
+        previousReq = $.ajax({
             url: url,
             dataType: 'json',
             success: function (jsonData) {
                 data = jsonData;
                 renderOverviewTable();
             },
-            error: function () {
+            error: function (xhr, textStatus) {
+                if (textStatus === 'timeout' || textStatus === 'abort') {
+                    return;
+                }
                 window.location.reload();
             }
         });

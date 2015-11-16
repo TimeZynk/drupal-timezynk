@@ -68,8 +68,19 @@ function tzuser_api_list_users() {
     $excluded_users = tzstats_invoice_excluded_users();
   }
 
+  $now = $date->format('U');
+
   while($user_entry = db_fetch_object($result)) {
-    $status = tzuser_get_user_status($user_entry, $date->format('U'));
+
+    $cache_key = 'tzuser_status:' . $user_entry->uid . ':status';
+    $cache = cache_get($cache_key);
+    $status = NULL;
+    if ($cache && ($now < $cache->expire)) {
+      $status = $cache->data;
+    } else {
+      $status = tzuser_get_user_status($user_entry, $now);
+      cache_set($cache_key, $status, 'cache', $now + 300);
+    }
     $status_code = $status->getStatusCode();
 
     if (!$single && empty($status_filter[$status_code])) {
@@ -83,6 +94,7 @@ function tzuser_api_list_users() {
       'mobile' => empty($user_entry->mobile) ? '' : $user_entry->mobile,
       'status' => $status_code,
       'status_name' => tzuser_get_user_status_name($status_code),
+      'status_cached' => $cache ? $cache->expire : FALSE,
       'due_count' => $status->getNumberOfDueReports(),
       'last_login' => intval($user_entry->login, 10),
       'url' => url('api/users/' . $user_entry->uid),
@@ -93,7 +105,8 @@ function tzuser_api_list_users() {
         'id' => intval($user_entry->manager),
         'url' => url('api/users/' . $user_entry->manager),
       ),
-      'roles' => tzuser_user_roles($user_entry->uid),
+      'roles' => array(),
+      //'roles' => tzuser_user_roles($user_entry->uid),
       'created' => intval($user_entry->created),
       'invoice' => empty($excluded_users[$user_entry->uid]) ? TRUE : FALSE,
     );
