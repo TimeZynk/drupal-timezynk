@@ -12,6 +12,7 @@ class TZCurl {
   private $last_effective_url = NULL;
   private $cookiejar = NULL;
   private $cookiejar_created = NULL;
+  private $valid_session = FALSE;
 
   public function __construct($uid = NULL) {
     $this->uid = $uid;
@@ -23,6 +24,7 @@ class TZCurl {
     if ($session) {
       $this->last_effective_url = $session->last_effective_url;
       $this->cookiejar_created = $session->created;
+      $this->valid_session = TRUE;
       file_put_contents($this->cookiejar, $session->cookiejar);
     } else {
       $this->last_effective_url = '';
@@ -77,13 +79,19 @@ class TZCurl {
 
     if ($this->cookiejar !== NULL) {
       $cookiejar = file_get_contents($this->cookiejar);
-      drupal_write_record('tzintellitime_session', array(
+      $record = array(
         'uid' => $this->uid,
         'last_effective_url' => $this->last_effective_url,
         'cookiejar' => $cookiejar,
         'changed' => time(),
         'created' => $this->cookiejar_created,
-      ), 'uid');
+      );
+      if ($this->valid_session) {
+        drupal_write_record('tzintellitime_session', $record, 'uid');
+      } else {
+        drupal_write_record('tzintellitime_session', $record);
+        $this->valid_session = TRUE;
+      }
       unlink($this->cookiejar);
       $this->cookiejar = NULL;
     }

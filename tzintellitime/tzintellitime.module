@@ -42,11 +42,10 @@ function tzintellitime_user($op, &$edit, &$account, $category = NULL) {
       $session_data = $account->intellitime_session_data;
       $location = 'window.location="' . $session_data['last_effective_url'] . '";';
 
-      $account->content['intellitime']['session'] = array(
+      $account->content['intellitime']['last_effective_url'] = array(
         '#type' => 'user_profile_item',
-        '#title' => t('Intelliplan session'),
-        '#description' => t('Paste into firebug console of empty window'),
-        '#value' => '<textarea cols="80" rows="5">' . $location . '</textarea>'
+        '#title' => 'Last effective url',
+        '#value' => $session_data['last_effective_url']
       );
       $account->content['intellitime']['session_age'] = array(
         '#type' => 'user_profile_item',
