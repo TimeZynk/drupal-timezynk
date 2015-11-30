@@ -14,7 +14,7 @@ class IntellitimeSynchronizationDriver {
     }
 
     try {
-      $curl = new TZCurl($this->account->intellitime_session_data);
+      $curl = new TZCurl($this->account->uid);
       $server = new IntellitimeServer($curl);
 
       $loggers = new TZCompositeLogger();
@@ -28,22 +28,25 @@ class IntellitimeSynchronizationDriver {
         $this->syncAvailability($server, $loggers);
       }
 
-      $curl->close();  // Make sure curl writes its session to disk
+      $curl->close(); // Make sure curl writes its session to disk
+
     } catch (InvalidArgumentException $e) {
       $this->warning('Caught InvalidArgumentException');
       $result = TZIntellitimeSyncController::AUTH_FAILURE;
     }
 
     if(TZIntellitimeSyncController::SYNC_OK === $result) {
+      $curl->persistSession(); // Save session to DB
       $this->account = user_save($this->account, array('intellitime_last_sync' => time()));
     } elseif(TZIntellitimeSyncController::AUTH_FAILURE === $result) {
       // Failed authentication, unschedule user
       $this->warning('Expired session', $this->account);
-      TZCurl::destroySessionData($this->account->intellitime_session_data);
+      TZCurl::destroySessionData($this->account->uid);
       user_save($this->account, array('intellitime_session_data' => NULL, 'intellitime_active' => 0));
     } else {
       // Hopefully a temporary failure, log
       $this->warning('Failed to synchronize', $this->account);
+      $curl->persistSession(); // Save session to DB
     }
 
     return $result;

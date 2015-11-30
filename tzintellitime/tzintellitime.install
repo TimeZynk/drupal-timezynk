@@ -72,6 +72,43 @@ function tzintellitime_update_6003() {
   return $ret;
 }
 
+function tzintellitime_update_6004() {
+  $ret = array();
+
+  $schema['tzintellitime_session'] = array(
+    'description' => 'Store user sessions',
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'cookiejar' => array(
+        'type' => 'blob'
+      ),
+      'last_effective_url' => array(
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+      ),
+      'created' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'changed' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('uid')
+  );
+
+  db_create_table($ret, 'tzintellitime_session', $schema['tzintellitime_session']);
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
@@ -119,5 +156,37 @@ function tzintellitime_schema() {
       'intellitime_id' => array('intellitime_id'),
     ),
   );
+
+  $schema['tzintellitime_session'] = array(
+    'description' => 'Store user sessions',
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'cookiejar' => array(
+        'type' => 'blob'
+      ),
+      'last_effective_url' => array(
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+      ),
+      'created' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'changed' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('uid')
+  );
+
   return $schema;
 }
+

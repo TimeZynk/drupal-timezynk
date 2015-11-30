@@ -2,6 +2,7 @@
 
 define('TZINTELLITIME_BASE_URL', variable_get('tzintellitime_base_url', ''));
 define('TZINTELLITIME_SESSION_LIFETIME', 3600);
+define('TZINTELLITIME_SESSION_CLEANUP', 24*3600);
 
 require_once(dirname(__FILE__) . '/tzintellitime.autoload.inc');
 
@@ -39,32 +40,13 @@ function tzintellitime_user($op, &$edit, &$account, $category = NULL) {
 
     if (tzintellitime_is_authenticated($account)) {
       $session_data = $account->intellitime_session_data;
-
-      $cookiejar = fopen($session_data['cookiejar'], 'r');
-      $cookies = "";
-      /**
-       * The cookie file is a TAB-separated file in the following format:
-       * <0:domain> <1:unknown boolean> <2:path>  <3:unknown boolean> <4:expiry>  <5:key> <6:value>
-       *
-       * It starts with a bunch of empty or commented lines, so filter that first.
-       */
-      while (($row = fgetcsv($cookiejar, 0, "\t")) !== FALSE) {
-        if (count($row) < 7) {
-          // Comment or invalid row, skip
-          continue;
-        }
-        $cookies .= 'document.cookie="' . $row[5] . '=' . $row[6] .
-            '; domain=' . $row[0] . '; path=' . $row[2] . '"; ';
-      }
-      fclose($cookiejar);
-
       $location = 'window.location="' . $session_data['last_effective_url'] . '";';
 
       $account->content['intellitime']['session'] = array(
         '#type' => 'user_profile_item',
         '#title' => t('Intelliplan session'),
         '#description' => t('Paste into firebug console of empty window'),
-        '#value' => '<textarea cols="80" rows="5">' . $cookies . $location . '</textarea>'
+        '#value' => '<textarea cols="80" rows="5">' . $location . '</textarea>'
       );
       $account->content['intellitime']['session_age'] = array(
         '#type' => 'user_profile_item',
@@ -83,6 +65,20 @@ function tzintellitime_user($op, &$edit, &$account, $category = NULL) {
         '#value' => (empty($account->intellitime_active) ? 'Inactive: ' : 'Active: ') .
                     format_date($account->intellitime_last_sync, 'small'),
       );
+    }
+  }
+}
+
+/**
+ * Implementation of hook_cron
+ */
+function tzintellitime_cron() {
+  $cutoff = time() - TZINTELLITIME_SESSION_CLEANUP;
+  db_query("DELETE FROM {tzintellitime_session} WHERE changed < %d", $cutoff);
+  foreach(glob(file_directory_temp . '/tzcurl*') as $filename) {
+    $ctime = filectime($filename);
+    if ($ctime < $cutoff) {
+      unlink($filename);
     }
   }
 }
@@ -263,11 +259,9 @@ function tzintellitime_session_needs_refresh($account) {
  */
 function tzintellitime_server_auth($account, $username, $password) {
   // new user or existing user with expired cookie-jar.
-  if(isset($account->intellitime_session_data)) {
-    TZCurl::destroySessionData($account->intellitime_session_data);
-  }
+  TZCurl::destroySessionData($account->uid);
 
-  $curl = new TZCurl();
+  $curl = new TZCurl($account->uid);
 
   try {
     $server = new IntellitimeServer($curl);
@@ -285,12 +279,15 @@ function tzintellitime_server_auth($account, $username, $password) {
       ),
     ));
 
+    $curl->close();
+    $curl->persistSession();
+
     return $account;
 
   } catch (TZIntellitimeServerException $e) {
     // Make sure curl writes session to disk before it is destroyed, instead of after
     $curl->close();
-    TZCurl::destroySessionData($curl->getSessionData());
+    TZCurl::destroySessionData($account->uid);
     throw $e;
   }
 }
@@ -334,8 +331,7 @@ function tzintellitime_get_intellitime_id($tzreport) {
  */
 function tzintellitime_is_authenticated($account) {
   return ($account && !empty($account->intellitime_user) &&
-    isset($account->intellitime_session_data) &&
-    TZCurl::isValidSessionData($account->intellitime_session_data)
+    TZCurl::hasValidSessionData($account->uid)
   );
 }
 

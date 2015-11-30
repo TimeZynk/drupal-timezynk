@@ -8,30 +8,25 @@ class TZCurl {
    */
   private $handle = NULL;
 
-  /**
-   * An array containing the cookiejar file path and
-   * the last known effective URL.
-   * Fields are referenced as $session_data['cookiejar']
-   * and $session_data['last_effective_url']
-   * @var Array
-   */
-  private $session_data = NULL;
+  private $uid = NULL;
+  private $last_effective_url = NULL;
+  private $cookiejar = NULL;
+  private $cookiejar_created = NULL;
 
-  public function __construct($session_data = NULL) {
+  public function __construct($uid = NULL) {
+    $this->uid = $uid;
     $this->handle = curl_init();
+    $this->cookiejar = tempnam(file_directory_temp(), 'tzcurl');
 
     // Resume session if session data is available, otherwise initialize new
-    if($session_data) {
-      if(!is_file($session_data['cookiejar']) || !(filesize($session_data['cookiejar']) > 0)) {
-        throw new InvalidArgumentException('session_data contained invalid cookie jar');
-      }
-      $this->session_data = $session_data;
+    $session = db_fetch_object(db_query("SELECT * FROM {tzintellitime_session} WHERE uid = %d", $uid));
+    if ($session) {
+      $this->last_effective_url = $session->last_effective_url;
+      $this->cookiejar_created = $session->created;
+      file_put_contents($this->cookiejar, $session->cookiejar);
     } else {
-      $this->session_data = array(
-        'cookiejar' => tempnam(file_directory_temp(), 'tzcurl'),
-        'created' => time(),
-        'last_effective_url' => '',
-      );
+      $this->last_effective_url = '';
+      $this->cookiejar_created = time();
     }
 
     $this->setupDefaultCurlOptions();
@@ -43,6 +38,10 @@ class TZCurl {
    */
   public function __destruct() {
     $this->close();
+    if ($this->cookiejar !== NULL) {
+      unlink($this->cookiejar);
+      $this->cookiejar = NULL;
+    }
   }
 
   public function close() {
@@ -68,8 +67,26 @@ class TZCurl {
       throw new TZNetworkFailureException($error_msg);
     }
 
-    $this->session_data['last_effective_url'] = curl_getinfo($this->handle, CURLINFO_EFFECTIVE_URL);
+    $this->last_effective_url = curl_getinfo($this->handle, CURLINFO_EFFECTIVE_URL);
+
     return $output;
+  }
+
+  public function persistSession() {
+    $this->close(); // Make sure curl writes its session to disk
+
+    if ($this->cookiejar !== NULL) {
+      $cookiejar = file_get_contents($this->cookiejar);
+      drupal_write_record('tzintellitime_session', array(
+        'uid' => $this->uid,
+        'last_effective_url' => $this->last_effective_url,
+        'cookiejar' => $cookiejar,
+        'changed' => time(),
+        'created' => $this->cookiejar_created,
+      ), 'uid');
+      unlink($this->cookiejar);
+      $this->cookiejar = NULL;
+    }
   }
 
   /**
@@ -77,11 +94,14 @@ class TZCurl {
    * @return string
    */
   public function getLastEffectiveURL() {
-    return $this->session_data['last_effective_url'];
+    return $this->last_effective_url;
   }
 
   public function getSessionData() {
-    return $this->session_data;
+    return array(
+      'last_effective_url' => $this->last_effective_url,
+      'created' => $this->cookiejar_created,
+    );
   }
 
   /**
@@ -89,23 +109,17 @@ class TZCurl {
    * @param Array $sessionData
    * @return TRUE if session data could be valid, else FALSE
    */
-  public static function isValidSessionData($sessionData) {
-    return isset($sessionData['cookiejar']) &&
-      file_exists($sessionData['cookiejar']) &&
-      isset($sessionData['last_effective_url']) &&
-      strlen($sessionData['last_effective_url']);
+  public static function hasValidSessionData($uid) {
+    $info = db_fetch_object(db_query("SELECT LENGTH(last_effective_url) AS url_length, LENGTH(cookiejar) AS cookie_size FROM {tzintellitime_session} WHERE uid = %d LIMIT 1", $uid));
+    return $info->url_length > 0 && $info->cookie_size > 0;
   }
 
   /**
    * Destroy session data and free associated resources
    * @param Array $sessionData
    */
-  public static function destroySessionData(&$sessionData) {
-    if(isset($sessionData['cookiejar']) && file_exists($sessionData['cookiejar'])) {
-      unlink($sessionData['cookiejar']);
-      unset($sessionData['cookiejar']);
-    }
-    unset($sessionData['last_effective_url']);
+  public static function destroySessionData($uid) {
+    db_query("DELETE FROM {tzintellitime_session} WHERE uid = %d", $uid);
   }
 
   private function setupCurlOptionsForRequest($url, $postData = NULL) {
@@ -142,8 +156,8 @@ class TZCurl {
 
     $curl_opts = array(
       CURLOPT_USERAGENT => $user_agent,
-      CURLOPT_COOKIEFILE => $this->session_data['cookiejar'],
-      CURLOPT_COOKIEJAR => $this->session_data['cookiejar'],
+      CURLOPT_COOKIEFILE => $this->cookiejar,
+      CURLOPT_COOKIEJAR => $this->cookiejar,
       CURLOPT_RETURNTRANSFER => TRUE,
       CURLOPT_BINARYTRANSFER => TRUE,
       CURLOPT_FAILONERROR => TRUE,
