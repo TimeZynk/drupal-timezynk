@@ -109,6 +109,30 @@ function tzintellitime_update_6004() {
   return $ret;
 }
 
+function tzintellitime_update_6005() {
+  $ret = array();
+  $result = db_query("SELECT uid, data FROM {users} WHERE uid > 1 AND status = 1");
+  while ($account = db_fetch_object($result)) {
+    $account = drupal_unpack($account);
+    if (isset($account->intellitime_session_data)) {
+      $session = $account->intellitime_session_data;
+      $cookiejar = $session['cookiejar'];
+      $cookies = file_get_contents($cookiejar);
+      if ($cookies) {
+        db_query(
+          "INSERT INTO {tzintellitime_session} (uid, cookiejar, last_effective_url, created, changed) VALUES (%d, %b, '%s', %d, %d)",
+          $account->uid,
+          $cookies,
+          $session['last_effective_url'],
+          $session['created'],
+          time()
+        );
+      }
+    }
+  }
+  return $ret;
+}
+
 /**
  * Implementation of hook_schema()
  */
