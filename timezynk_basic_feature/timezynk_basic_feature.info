@@ -1,5 +1,4 @@
 core = "6.x"
-dependencies[] = "backup_migrate"
 dependencies[] = "content"
 dependencies[] = "date_api"
 dependencies[] = "date_popup"
