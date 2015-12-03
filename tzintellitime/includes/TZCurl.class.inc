@@ -85,7 +85,8 @@ class TZCurl {
         'created' => $this->cookiejar_created,
       );
 
-      if ($this->hasValidSessionData($this->uid)) {
+      $numSessions = db_result(db_query('SELECT COUNT(*) FROM {tzintellitime_session} WHERE uid = %d', $this->uid));
+      if ($numSessions > 0) {
         drupal_write_record('tzintellitime_session', $record, 'uid');
       } else {
         drupal_write_record('tzintellitime_session', $record);
@@ -118,7 +119,7 @@ class TZCurl {
    */
   public static function hasValidSessionData($uid) {
     $info = db_fetch_object(db_query("SELECT LENGTH(last_effective_url) AS url_length, LENGTH(cookiejar) AS cookie_size FROM {tzintellitime_session} WHERE uid = %d LIMIT 1", $uid));
-    return $info->url_length > 0 && $info->cookie_size > 0;
+    return $info && $info->url_length > 0 && $info->cookie_size > 0;
   }
 
   /**
