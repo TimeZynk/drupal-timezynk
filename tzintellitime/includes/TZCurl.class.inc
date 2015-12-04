@@ -77,22 +77,22 @@ class TZCurl {
 
     if ($this->cookiejar !== NULL) {
       $cookiejar = file_get_contents($this->cookiejar);
-      $record = array(
-        'uid' => $this->uid,
-        'last_effective_url' => $this->last_effective_url,
-        'cookiejar' => $cookiejar,
-        'changed' => time(),
-        'created' => $this->cookiejar_created,
+
+      $result = db_query(
+        'INSERT INTO {tzintellitime_session} (uid, last_effective_url, changed, created, cookiejar)
+                VALUES (%d, \'%s\', %d, %d, %b)
+                ON DUPLICATE KEY
+                UPDATE last_effective_url=VALUES(last_effective_url),
+                       changed=VALUES(changed),
+                       cookiejar=VALUES(cookiejar);',
+        $this->uid, $this->last_effective_url, time(), $this->cookiejar_created, $cookiejar
       );
 
-      db_query(
-      'INSERT INTO {tzintellitime_session} (uid, last_effective_url, changed, created, cookiejar)
-              VALUES (%d, \'%s\', %d, %d, %b)
-              ON DUPLICATE KEY
-              UPDATE last_effective_url=VALUES(last_effective_url),
-                     changed=VALUES(changed),
-                     cookiejar=VALUES(cookiejar);'
-      );
+      if (!$result) {
+        watchdog('tzintellitime', 'Failed to save session for @uid',
+          array('@user' => $this->uid),
+          WATCHDOG_WARNING);
+      }
 
       unlink($this->cookiejar);
       $this->cookiejar = NULL;
