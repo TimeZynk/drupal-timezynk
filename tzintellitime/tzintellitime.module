@@ -265,6 +265,7 @@ function tzintellitime_server_auth($account, $username, $password) {
   try {
     $server = new IntellitimeServer($curl);
     $fullname = IntellitimeLoginPage::login($server, TZINTELLITIME_BASE_URL, $username, $password);
+    $curl->closeAndPersistSession();
 
     $account = tzuser_add_user(array(
       'username' => $username,
@@ -277,9 +278,6 @@ function tzintellitime_server_auth($account, $username, $password) {
          'intellitime_session_data' => $curl->getSessionData(),
       ),
     ));
-
-    $curl->close();
-    $curl->persistSession();
 
     return $account;
 

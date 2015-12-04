@@ -36,7 +36,7 @@ class IntellitimeSynchronizationDriver {
     }
 
     if(TZIntellitimeSyncController::SYNC_OK === $result) {
-      $curl->persistSession(); // Save session to DB
+      $curl->closeAndPersistSession(); // Save session to DB
       $this->account = user_save($this->account, array('intellitime_last_sync' => time()));
     } elseif(TZIntellitimeSyncController::AUTH_FAILURE === $result) {
       // Failed authentication, unschedule user
@@ -46,7 +46,7 @@ class IntellitimeSynchronizationDriver {
     } else {
       // Hopefully a temporary failure, log
       $this->warning('Failed to synchronize', $this->account);
-      $curl->persistSession(); // Save session to DB
+      $curl->closeAndPersistSession(); // Save session to DB
     }
 
     return $result;

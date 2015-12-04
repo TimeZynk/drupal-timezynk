@@ -72,7 +72,7 @@ class TZCurl {
     return $output;
   }
 
-  public function persistSession() {
+  public function closeAndPersistSession() {
     $this->close(); // Make sure curl writes its session to disk
 
     if ($this->cookiejar !== NULL) {
@@ -85,12 +85,14 @@ class TZCurl {
         'created' => $this->cookiejar_created,
       );
 
-      $numSessions = db_result(db_query('SELECT COUNT(*) FROM {tzintellitime_session} WHERE uid = %d', $this->uid));
-      if ($numSessions > 0) {
-        drupal_write_record('tzintellitime_session', $record, 'uid');
-      } else {
-        drupal_write_record('tzintellitime_session', $record);
-      }
+      db_query(
+      'INSERT INTO {tzintellitime_session} (uid, last_effective_url, changed, created, cookiejar)
+              VALUES (%d, \'%s\', %d, %d, %b)
+              ON DUPLICATE KEY
+              UPDATE last_effective_url=VALUES(last_effective_url),
+                     changed=VALUES(changed),
+                     cookiejar=VALUES(cookiejar);'
+      );
 
       unlink($this->cookiejar);
       $this->cookiejar = NULL;
