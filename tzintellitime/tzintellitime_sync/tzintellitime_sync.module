@@ -205,5 +205,5 @@ function tzintellitime_sync_synchronize_user($uid) {
   }
 
   lock_release($lock);
-  return;
+  return $result;
 }
