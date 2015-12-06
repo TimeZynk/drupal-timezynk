@@ -23,6 +23,9 @@ define('TZINTELLITIME_SYNC_INITIAL_SYNC', variable_get('tzintellitime_sync_initi
 
 define('TZINTELLITIME_SYNC_ABSENCE_PARENT_JOB_ID', 'TimeZynkIntellitimeSyncAbsenceParent');
 
+define('TZINTELLITIME_SYNC_LOCK_TIMEOUT', 120);
+
+
 /**
  * Implementation of hook_user, annotates the user object with additional synchronization information
  */
@@ -181,6 +184,26 @@ function tzintellitime_sync_synchronize_user($uid) {
     return;
   }
 
-  $driver = new IntellitimeSynchronizationDriver($account);
-  return $driver->synchronize();
+  $lock = "tzintellitime_sync_synchronize_user_$uid";
+  if (!lock_acquire($lock, TZINTELLITIME_SYNC_LOCK_TIMEOUT)) {
+    watchdog(
+      'tzintellitime',
+      'Synchronization locked, uid = @uid',
+      array('@uid' => $uid),
+      WATCHDOG_NOTICE,
+      theme('username', $account)
+    );
+    return;
+  }
+
+  try {
+    $driver = new IntellitimeSynchronizationDriver($account);
+    $result = $driver->synchronize();
+  } catch (Exception $e) {
+    lock_release($lock);
+    throw($e);
+  }
+
+  lock_release($lock);
+  return;
 }

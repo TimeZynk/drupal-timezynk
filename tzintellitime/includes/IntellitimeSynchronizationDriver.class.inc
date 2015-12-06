@@ -6,6 +6,8 @@ class IntellitimeSynchronizationDriver {
   }
 
   function synchronize() {
+    $curl = NULL;
+
     if(!tzintellitime_is_authenticated($this->account)) {
       // User not found or not intellitime user
       $this->warning('No session available', $this->account);
@@ -41,6 +43,7 @@ class IntellitimeSynchronizationDriver {
     } elseif(TZIntellitimeSyncController::AUTH_FAILURE === $result) {
       // Failed authentication, unschedule user
       $this->warning('Expired session', $this->account);
+      $curl->close();
       TZCurl::destroySessionData($this->account->uid);
       user_save($this->account, array('intellitime_session_data' => NULL, 'intellitime_active' => 0));
     } else {
