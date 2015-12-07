@@ -195,7 +195,7 @@ function tzintellitime_sync_synchronize_user($uid) {
         array(
           '@uid' => $uid,
           '@name' => $account->name,
-          '@interval' => format_interval(time() - $account->intellitime_last_sync),
+          '@interval' => format_interval(time() - $last_sync),
         ),
         WATCHDOG_NOTICE,
         theme('username', $account)
