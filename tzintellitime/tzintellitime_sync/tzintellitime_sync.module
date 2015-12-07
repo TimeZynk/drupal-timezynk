@@ -23,7 +23,7 @@ define('TZINTELLITIME_SYNC_INITIAL_SYNC', variable_get('tzintellitime_sync_initi
 
 define('TZINTELLITIME_SYNC_ABSENCE_PARENT_JOB_ID', 'TimeZynkIntellitimeSyncAbsenceParent');
 
-define('TZINTELLITIME_SYNC_LOCK_TIMEOUT', 120);
+define('TZINTELLITIME_SYNC_LOCK_TIMEOUT', 300);
 
 
 /**
@@ -177,11 +177,30 @@ function tzintellitime_sync_synchronize_users() {
 }
 
 function tzintellitime_sync_synchronize_user($uid) {
+  $sync_limit = time() + 60 - TZINTELLITIME_SYNC_INTERVAL_MINUTES*60;
+
   // Load user account
   $account = user_load(array('uid' => $uid));
   if(!$account) {
     watchdog('tzintellitime', 'Tried to start synchronization for illegal user id "@uid"', array('@uid' => $uid), WATCHDOG_WARNING);
     return;
+  }
+
+  if (!empty($account->intellitime_last_sync)) {
+    $last_sync = $account->intellitime_last_sync;
+    if ($last_sync > $sync_limit) {
+      watchdog(
+        'tzintellitime',
+        'Skipping sync for @name (@uid), last sync @interval ago',
+        array(
+          '@uid' => $uid,
+          '@name' => $account->name,
+          '@interval' => format_interval(time() - $this->account->intellitime_last_sync),
+        ),
+        WATCHDOG_NOTICE,
+        theme('username', $account)
+      );
+    }
   }
 
   $lock = "tzintellitime_sync_synchronize_user_$uid";

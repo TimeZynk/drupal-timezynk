@@ -55,7 +55,6 @@ function tzintellitime_user($op, &$edit, &$account, $category = NULL) {
       );
     }
 
-
     if (!empty($account->intellitime_last_sync)) {
       $account->content['intellitime']['last_sync'] = array(
         '#type' => 'user_profile_item',
