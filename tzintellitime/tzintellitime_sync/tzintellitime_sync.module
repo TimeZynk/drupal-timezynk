@@ -200,6 +200,7 @@ function tzintellitime_sync_synchronize_user($uid) {
         WATCHDOG_NOTICE,
         theme('username', $account)
       );
+      return;
     }
   }
 
