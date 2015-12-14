@@ -25,6 +25,12 @@ function tzintellitime_sync_admin_settings() {
     '#description' => t('Enter 0 for only the current week, 1 for the current week and previous week, and so on.'),
     '#default_value' => TZINTELLITIME_SYNC_WEEKS_BACKWARD,
   );
+  $form['tzintellitime_sync_full_sync_probability'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Probability for a full synchronization',
+    '#description' => 'As a decimal number between 0 and 1. At 0 it will never do a full sync and at 1 it will always do a full sync.',
+    '#default_value' => TZINTELLITIME_SYNC_FULL_SYNC_PROBABILITY,
+  );
   $form['tzintellitime_sync_initial_sync'] = array(
     '#type' => 'radios',
     '#title' => t('Initial synchronization'),

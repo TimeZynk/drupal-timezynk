@@ -89,6 +89,9 @@ function __tzintellitime_autoload($class_name) {
     case 'TZIntellitimeLogger':
       require dirname(__FILE__) . '/includes/TZIntellitimeLogger.class.inc';
       return TRUE;
+    case 'TZIntellitimeMinimalSyncPolicy':
+      require dirname(__FILE__) . '/includes/TZIntellitimeMinimalSyncPolicy.class.inc';
+      return TRUE;
     case 'TZIntellitimeReport':
       require dirname(__FILE__) . '/includes/TZIntellitimeReport.class.inc';
       return TRUE;

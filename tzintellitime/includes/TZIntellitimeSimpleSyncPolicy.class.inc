@@ -62,7 +62,7 @@ class TZIntellitimeSimpleSyncPolicy implements TZIntellitimeSyncPolicy {
     return $weekDate;
   }
 
-  private function addWeek($dateTime) {
+  protected function addWeek($dateTime) {
     $key = $dateTime->format('o\WW');
     if(!isset($this->weekStatus[$key])) {
       $this->weekStatus[$key] = TZIntellitimeSimpleSyncPolicy::PENDING;
@@ -83,7 +83,7 @@ class TZIntellitimeSimpleSyncPolicy implements TZIntellitimeSyncPolicy {
   /**
    * Add weeks where we have updated reports as pending for sync.
    */
-  private function addUpdatedWeeks() {
+  protected function addUpdatedWeeks() {
     $query = db_query('SELECT begintime FROM {tzreport} tzreport INNER JOIN {tzintellitime} tzintellitime ON tzreport.vid = tzintellitime.vid WHERE tzreport.assignedto = %d AND tzintellitime.intellitime_local_changes > 0', $this->account->uid);
     while($time = db_result($query)) {
       $this->addWeek(tzbase_make_date($time));
