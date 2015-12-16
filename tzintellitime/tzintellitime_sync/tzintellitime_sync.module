@@ -4,7 +4,6 @@ define('TZINTELLITIME_SYNC_INTERVAL_MINUTES', variable_get('tzintellitime_sync_i
 define('TZINTELLITIME_SYNC_USERS_PER_THREAD', variable_get('tzintellitime_sync_users_per_thread', 15));
 define('TZINTELLITIME_SYNC_WEEKS_FORWARD', variable_get('tzintellitime_sync_weeks_forward', 2));
 define('TZINTELLITIME_SYNC_WEEKS_BACKWARD', variable_get('tzintellitime_sync_weeks_backward', 2));
-define('TZINTELLITIME_SYNC_FULL_SYNC_PROBABILITY', variable_get('tzintellitime_sync_full_sync_probability', 0.2));
 
 define('TZINTELLITIME_SYNC_AVAILABILITY_DAY', variable_get('tzintellitime_sync_availability_day', '08:00-17:00'));
 define('TZINTELLITIME_SYNC_AVAILABILITY_EVENING', variable_get('tzintellitime_sync_availability_evening', '17:00-23:00'));

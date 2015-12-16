@@ -55,29 +55,14 @@ class IntellitimeSynchronizationDriver {
     return $result;
   }
 
-  private function createSyncPolicy() {
-    $nbr = mt_rand();
-    $limit = mt_getrandmax() * TZINTELLITIME_SYNC_FULL_SYNC_PROBABILITY;
-    if ($nbr <= $limit) {
-      $this->log('Full synchronization selected');
-      return new TZIntellitimeSimpleSyncPolicy(
-        $this->account,
-        tzbase_make_date(),
-        TZINTELLITIME_SYNC_WEEKS_FORWARD,
-        TZINTELLITIME_SYNC_WEEKS_BACKWARD
-      );
-    } else {
-      $this->log('Minimal synchronization selected');
-      return new TZIntellitimeMinimalSyncPolicy(
-        $this->account,
-        tzbase_make_date()
-      );
-    }
-  }
-
   private function syncReports($server, $loggers) {
     // SyncPolicy starting today
-    $syncPolicy = $this->createSyncPolicy();
+    $syncPolicy = new TZIntellitimeSimpleSyncPolicy(
+      $this->account,
+      tzbase_make_date(),
+      TZINTELLITIME_SYNC_WEEKS_FORWARD,
+      TZINTELLITIME_SYNC_WEEKS_BACKWARD
+    );
     $weekDataFactory = new TZIntellitimeWeekDataFactory($server);
     $weekFactory = new TZIntellitimeWeekFactory($weekDataFactory, $this->account);
     $reportStorage = new TZIntellitimeDBReportStorage($this->account);
