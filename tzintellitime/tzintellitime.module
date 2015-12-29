@@ -365,7 +365,7 @@ function tzintellitime_prometheus_metrics_alter(&$client) {
     'subsystem' => 'session',
     'name' => 'created_ago',
     'help' => 'Number of seconds since the session was created',
-    'buckets' => [3600,21600,43200,86400,172800]
+    'buckets' => [3600,21600,43200,57600,72000,86400]
   ));
 
   $result = db_query('SELECT created,changed FROM {tzintellitime_session}');
@@ -379,6 +379,4 @@ function tzintellitime_prometheus_metrics_alter(&$client) {
     $session_updated_ago->observe([], $changed);
     $session_created_ago->observe([], $created);
   }
-
-  $active_sessions->set([], $num_sessions);
 }
