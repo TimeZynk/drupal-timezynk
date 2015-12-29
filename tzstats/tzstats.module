@@ -286,3 +286,24 @@ function tzstats_invoice_excluded_users() {
   $users['1'] = TRUE;
   return $users;
 }
+
+/**
+  * Alter hook for prometheus metrics
+  */
+function tzstats_prometheus_metrics_alter(&$client) {
+  $seconds_per_user = $client->newHistogram(array(
+    'namespace' => 'tzstats',
+    'subsystem' => 'sync',
+    'name' => 'seconds_per_user',
+    'help' => 'Number of seconds spent per user',
+    'buckets' => [1,2,4,8,16,32,64,128,256]
+  ));
+  $result = db_query('SELECT * FROM {tzstats_sync} ORDER BY id DESC LIMIT 100');
+  while ($stats = db_fetch_object($result)) {
+    $successful = $stats->successful;
+    if ($successful > 0) {
+      $avg = $stats->seconds / $successful;
+      $seconds_per_user->observe([], $avg);
+    }
+  }
+}

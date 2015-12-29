@@ -113,7 +113,7 @@ function tzintellitime_sync_tzuser_status_alter(&$status) {
   }
 
   // Green user, get intellitime info to perform extra checks
-  $result = db_query('SELECT * FROM tzintellitime_sync WHERE uid = %d', $status->getUid());
+  $result = db_query('SELECT * FROM {tzintellitime_sync} WHERE uid = %d', $status->getUid());
   $sync_info = db_fetch_object($result);
   if(!empty($sync_info)) {
     $status = new TZIntellitimeUserStatus($status, $sync_info);

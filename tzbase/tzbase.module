@@ -94,6 +94,11 @@ function tzbase_menu() {
     'file' => 'includes/api.inc',
     'type' => MENU_CALLBACK,
   );
+  $items['metrics'] = array(
+    'page callback' => 'tzbase_prometheus_metrics',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
 
   return $items;
 }
@@ -1006,6 +1011,18 @@ function format_version_code($version_code) {
     $version_code >>= 8;
   }
   return implode('.', array_reverse($version));
+}
+
+function tzbase_prometheus_metrics() {
+  // Find and include the Prometheus library
+  $prometheus_path = libraries_get_path('prometheus-php');
+  require_once ($prometheus_path . '/src/Client.php');
+  $client = new Prometheus\Client();
+
+  drupal_alter('prometheus_metrics', $client);
+  drupal_set_header('Content-Type: text/plain; version=0.0.4');
+
+  print $client->serialize();
 }
 
 function _tzbase_calculate_correct_endtime($begin_datetime, $end_datetime) {
