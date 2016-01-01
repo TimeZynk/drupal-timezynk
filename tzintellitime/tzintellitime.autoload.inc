@@ -107,6 +107,9 @@ function __tzintellitime_autoload($class_name) {
     case 'TZIntellitimeSyncPolicy':
       require dirname(__FILE__) . '/includes/TZIntellitimeSyncPolicy.class.inc';
       return TRUE;
+    case 'TZIntellitimeSyncStatus':
+      require dirname(__FILE__) . '/includes/TZIntellitimeSyncStatus.class.inc';
+      return TRUE;
     case 'TZIntellitimeUserJobsMappingPolicy':
       require dirname(__FILE__) . '/includes/TZIntellitimeUserJobsMappingPolicy.class.inc';
       return TRUE;

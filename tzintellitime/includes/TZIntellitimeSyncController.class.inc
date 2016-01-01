@@ -4,11 +4,6 @@
  * Controller class for handling data synchronization between intellitime and timezynk
  */
 class TZIntellitimeSyncController {
-  const SYNC_OK = 0;
-  const PENDING = 1;
-  const NETWORK_FAILURE = 2;
-  const AUTH_FAILURE = 3;
-
   /**
    * @var TZIntellitimeSyncPolicy
    */
@@ -53,7 +48,7 @@ class TZIntellitimeSyncController {
    * @return SYNC_OK on success, and NETWORK_FAILURE or AUTH_FAILURE respectively on error.
    */
   function synchronize() {
-    $status = TZIntellitimeSyncController::SYNC_OK;
+    $status = TZIntellitimeSyncStatus::SYNC_OK;
     while($weekDate = $this->syncPolicy->getNextWeekToSync()) {
       list($monday, $sunday) = tzintellitime_week_span($weekDate);
       $tzReports = $this->reportStorage->getTZReports($monday, $sunday);
@@ -79,24 +74,24 @@ class TZIntellitimeSyncController {
       } catch (TZIntellitimeErrorPageException $e) {
         // An error caused by our sync code is business critical.
         $this->logException('Error page when syncing', $weekDate, $e, TZIntellitimeLogger::CRITICAL);
-        $status = TZIntellitimeSyncController::NETWORK_FAILURE;
+        $status = TZIntellitimeSyncStatus::NETWORK_FAILURE;
         continue;
       } catch (TZNetworkFailureException $e) {
         $this->logException('Network failure', $weekDate, $e, TZIntellitimeLogger::NOTICE);
-        $status = TZIntellitimeSyncController::NETWORK_FAILURE;
+        $status = TZIntellitimeSyncStatus::NETWORK_FAILURE;
         continue;
       } catch (TZIntellitimeInconsistentPost $e) {
         // Inconsistent posts require immediate operator intervention.
         $this->logException('Inconsistent post', $weekDate, $e, TZIntellitimeLogger::ALERT);
-        $status = TZIntellitimeSyncController::NETWORK_FAILURE;
+        $status = TZIntellitimeSyncStatus::NETWORK_FAILURE;
         continue;
       } catch (TZAuthenticationFailureException $e) {
         $this->logException('Session expired', $weekDate, $e, TZIntellitimeLogger::INFO);
-        $status = TZIntellitimeSyncController::AUTH_FAILURE;
+        $status = TZIntellitimeSyncStatus::AUTH_FAILURE;
         break;
       } catch (TZIntellitimeServerException $e) {
         $this->logException('Server exception', $weekDate, $e, TZIntellitimeLogger::ALERT);
-        $status = TZIntellitimeSyncController::NETWORK_FAILURE;
+        $status = TZIntellitimeSyncStatus::NETWORK_FAILURE;
         continue;
       }
     }

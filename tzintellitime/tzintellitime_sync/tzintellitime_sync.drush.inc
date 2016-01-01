@@ -68,7 +68,7 @@ function tzintellitime_sync_drush_sync($users) {
       $uid = intval($user, 10);
       $count++;
       $result = tzintellitime_sync_synchronize_user($uid);
-      if($result === TZIntellitimeSyncController::SYNC_OK) {
+      if($result === TZIntellitimeSyncStatus::SYNC_OK) {
         $successful++;
       }
     }

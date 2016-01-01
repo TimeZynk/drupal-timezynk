@@ -12,7 +12,7 @@ class IntellitimeSynchronizationDriver {
       // User not found or not intellitime user
       $this->warning('No session available', $this->account);
       user_save($this->account, array('intellitime_active' => 0));
-      return TZIntellitimeSyncController::AUTH_FAILURE;
+      return TZIntellitimeSyncStatus::AUTH_FAILURE;
     }
 
     try {
@@ -24,7 +24,7 @@ class IntellitimeSynchronizationDriver {
       $loggers->add(new TZSmsLogger());
       $result = $this->syncReports($server, $loggers);
 
-      if ($result === TZIntellitimeSyncController::SYNC_OK &&
+      if ($result === TZIntellitimeSyncStatus::SYNC_OK &&
           user_access('create availability content', $this->account) &&
           !user_access('disable own intelliplan availability sync', $this->account)) {
         $this->syncAvailability($server, $loggers);
@@ -34,13 +34,13 @@ class IntellitimeSynchronizationDriver {
 
     } catch (InvalidArgumentException $e) {
       $this->warning('Caught InvalidArgumentException');
-      $result = TZIntellitimeSyncController::AUTH_FAILURE;
+      $result = TZIntellitimeSyncStatus::AUTH_FAILURE;
     }
 
-    if(TZIntellitimeSyncController::SYNC_OK === $result) {
+    if(TZIntellitimeSyncStatus::SYNC_OK === $result) {
       $curl->closeAndPersistSession(); // Save session to DB
       $this->account = user_save($this->account, array('intellitime_last_sync' => time()));
-    } elseif(TZIntellitimeSyncController::AUTH_FAILURE === $result) {
+    } elseif(TZIntellitimeSyncStatus::AUTH_FAILURE === $result) {
       // Failed authentication, unschedule user
       $this->warning('Expired session', $this->account);
       $curl->close();

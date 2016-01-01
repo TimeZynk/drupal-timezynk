@@ -50,7 +50,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
       ->method('resolveMapping');
 
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::SYNC_OK, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::SYNC_OK, $status);
   }
 
   public function testRegisteredLoggerReceivesLogMessages() {
@@ -154,7 +154,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
     $this->setupTestFixture($testDescription);
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::SYNC_OK, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::SYNC_OK, $status);
   }
 
   public function testSyncSingleWeekWithPreviousReportsNoUpdatesNeeded() {
@@ -171,7 +171,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
     $this->setupTestFixture($testDescription);
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::SYNC_OK, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::SYNC_OK, $status);
   }
 
   public function testSyncSingleWeekWithPreviousReportsUpdatesNeeded() {
@@ -188,7 +188,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
     $this->setupTestFixture($testDescription);
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::SYNC_OK, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::SYNC_OK, $status);
   }
 
   public function testSyncSingleWeekWithPreviousReportsInvalidNID() {
@@ -206,7 +206,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
 
     $this->setupTestFixture($testDescription);
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::SYNC_OK, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::SYNC_OK, $status);
   }
 
   public function testSyncTwoWeeks() {
@@ -303,7 +303,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->with($mappedReports);
 
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::SYNC_OK, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::SYNC_OK, $status);
 
   }
 
@@ -336,7 +336,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->will($this->returnValue($expectedWeek));
 
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::AUTH_FAILURE, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::AUTH_FAILURE, $status);
   }
 
   public function testReactToReturnedAuthException() {
@@ -403,7 +403,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->will($this->returnValue($expectedWeek));
 
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::AUTH_FAILURE, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::AUTH_FAILURE, $status);
   }
 
   public function testReactToReturnedNetException() {
@@ -471,7 +471,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->will($this->returnValue($expectedWeek));
 
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::NETWORK_FAILURE, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::NETWORK_FAILURE, $status);
   }
 
   public function testCatchNetworkFailureException() {
@@ -507,7 +507,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->will($this->returnValue($expectedWeek));
 
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::NETWORK_FAILURE, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::NETWORK_FAILURE, $status);
   }
 
   public function testSyncUpdatesUnfinishedWeeksInfo() {
@@ -580,7 +580,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->with($mappedReports);
 
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::SYNC_OK, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::SYNC_OK, $status);
   }
 
   public function testSyncReturnsNull() {
@@ -621,7 +621,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->method('storeTZReports');
 
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::NETWORK_FAILURE, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::NETWORK_FAILURE, $status);
   }
 
   public function testCatchErrorPageException() {
@@ -657,7 +657,7 @@ class TZIntellitimeSyncControllerTest extends PHPUnit_Framework_TestCase {
         ->will($this->returnValue($expectedWeek));
 
     $status = $this->syncController->synchronize();
-    $this->assertEquals(TZIntellitimeSyncController::NETWORK_FAILURE, $status);
+    $this->assertEquals(TZIntellitimeSyncStatus::NETWORK_FAILURE, $status);
   }
 
   private function setupTestFixture($testDescriptions) {
