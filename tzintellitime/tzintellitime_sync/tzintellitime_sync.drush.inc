@@ -39,17 +39,7 @@ function tzintellitime_sync_drush_partition() {
     $users[] = $uid;
   }
 
-  $number_of_partitions = ceil(count($users) / TZINTELLITIME_SYNC_USERS_PER_THREAD);
-  $partitions = array();
-  $i = 0;
-  while ($uid = array_shift($users)) {
-    $partitions[$i][] = $uid;
-    $i++;
-    if($i == $number_of_partitions) {
-      $i = 0;
-    }
-  }
-
+  $partitions = array_chunk($users, TZINTELLITIME_SYNC_USERS_PER_THREAD);
   $partition_string = array();
   foreach($partitions as $partition) {
     $partition_string[] = implode(',', $partition);
@@ -59,23 +49,23 @@ function tzintellitime_sync_drush_partition() {
 
 function tzintellitime_sync_drush_sync($users) {
   $user_list = explode(',', $users);
-  $before = microtime(TRUE);
-  $successful = 0;
-  $count = 0;
+  $stats = array();
   foreach($user_list as $user) {
+    $before = microtime(TRUE);
     $user = trim($user);
     if(ctype_digit($user)) {
       $uid = intval($user, 10);
-      $count++;
       $result = tzintellitime_sync_synchronize_user($uid);
-      if($result === TZIntellitimeSyncStatus::SYNC_OK) {
-        $successful++;
-      }
+      $after = microtime(TRUE);
+
+      $result = isset($result) ? $result : array();
+      $result['uid'] = $uid;
+      $result['time'] = $after - $before;
+      $stats[] = $result;
     }
   }
-  $after = microtime(TRUE);
 
-  module_invoke_all('synchronized_multiple_users', 'tzintellitime', $count, $successful, $before, $after);
+  module_invoke_all('synchronized_multiple_users', $stats);
 }
 
 function tzintellitime_sync_drush_set_all_active($activate) {

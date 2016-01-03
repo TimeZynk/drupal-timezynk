@@ -23,24 +23,27 @@ class IntellitimeSynchronizationDriver {
       $loggers->add(new TZWatchdogLogger());
       $loggers->add(new TZSmsLogger());
       $result = $this->syncReports($server, $loggers);
+      $status = isset($result) ? $result['status'] : TZIntellitimeSyncStatus::NETWORK_FAILURE;
 
-      if ($result === TZIntellitimeSyncStatus::SYNC_OK &&
+      if ($status === TZIntellitimeSyncStatus::SYNC_OK &&
           user_access('create availability content', $this->account) &&
           !user_access('disable own intelliplan availability sync', $this->account)) {
-        $this->syncAvailability($server, $loggers);
+        $result['avIter'] = $this->syncAvailability($server, $loggers);
       }
 
       $curl->close(); // Make sure curl writes its session to disk
 
     } catch (InvalidArgumentException $e) {
       $this->warning('Caught InvalidArgumentException');
-      $result = TZIntellitimeSyncStatus::AUTH_FAILURE;
+      return array(
+        'status' => TZIntellitimeSyncStatus::AUTH_FAILURE,
+      );
     }
 
-    if(TZIntellitimeSyncStatus::SYNC_OK === $result) {
+    if(TZIntellitimeSyncStatus::SYNC_OK === $status) {
       $curl->closeAndPersistSession(); // Save session to DB
       $this->account = user_save($this->account, array('intellitime_last_sync' => time()));
-    } elseif(TZIntellitimeSyncStatus::AUTH_FAILURE === $result) {
+    } elseif(TZIntellitimeSyncStatus::AUTH_FAILURE === $status) {
       // Failed authentication, unschedule user
       $this->warning('Expired session', $this->account);
       $curl->close();
@@ -79,10 +82,11 @@ class IntellitimeSynchronizationDriver {
     $controller = new IntellitimeAvailabilitySyncController($this->account, $availabilityStore, $intellitimeAvailabilityFactory, $server);
     $controller->registerLogger($loggers);
     try {
-      $controller->synchronize();
+      return $controller->synchronize();
     } catch (TZIntellitimeServerException $e) {
       $this->warning('Error page while syncing availability: ' . $e->getMessage());
     }
+    return 0;
   }
 
   private function createIntellitimeAvailabilityFactory($availabilityStore) {

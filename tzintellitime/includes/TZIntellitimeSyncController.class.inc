@@ -48,6 +48,7 @@ class TZIntellitimeSyncController {
    * @return SYNC_OK on success, and NETWORK_FAILURE or AUTH_FAILURE respectively on error.
    */
   function synchronize() {
+    $numWeeks = 0;
     $status = TZIntellitimeSyncStatus::SYNC_OK;
     while($weekDate = $this->syncPolicy->getNextWeekToSync()) {
       list($monday, $sunday) = tzintellitime_week_span($weekDate);
@@ -56,6 +57,7 @@ class TZIntellitimeSyncController {
 
       try {
         $syncResult = $week->sync();
+        $numWeeks += 1;
 
         if(empty($syncResult)) {
           throw new TZNetworkFailureException("No sync results returned for " . $weekDate->format("o\WW"));
@@ -98,7 +100,10 @@ class TZIntellitimeSyncController {
 
     $this->userJobsMappingPolicy->removeExpiredMappings();
 
-    return $status;
+    return array(
+      'status' => $status,
+      'weeks' => $numWeeks,
+    );
   }
 
   function registerLogger($logger) {

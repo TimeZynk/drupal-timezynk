@@ -51,6 +51,7 @@ class IntellitimeAvailabilitySyncController {
     }
     $availabilities = $this->mergeStrategy->mergeToAvailabilities($availabilities, $page->getAvailableDays());
     $this->storeAvailabilities($availabilities);
+    return 100 - $maxIterations;
   }
 
   function registerLogger($logger) {

@@ -152,20 +152,17 @@ function tzstats_user($op, &$edit, &$account, $category = NULL) {
   }
 }
 
-function tzstats_synchronized_multiple_users($module, $count, $successful, $before, $after) {
-  watchdog('tzstats', 'Synchronized !successful/!count users in !seconds seconds using @module',
-    array(
-      '@module' => $module,
-      '!successful' => $successful,
-      '!count' => $count,
-      '!seconds' => ($after - $before),
-    )
-  );
+function tzstats_synchronized_multiple_users($stats) {
+  // watchdog('tzstats', 'Synchronized !successful/!count users in !seconds seconds using @module',
+  //   array(
+  //     '@module' => $module,
+  //     '!successful' => $successful,
+  //     '!count' => $count,
+  //     '!seconds' => ($after - $before),
+  //   )
+  // );
   $record = array(
-    'module' => $module,
-    'count' => $count,
-    'successful' => $successful,
-    'seconds' => ($after - $before),
+    'stats' => json_encode($stats),
     'timestamp' => time(),
   );
   drupal_write_record('tzstats_sync', $record);
@@ -298,12 +295,31 @@ function tzstats_prometheus_metrics_alter(&$client) {
     'help' => 'Number of seconds spent per user',
     'buckets' => [1,2,4,8,16,32,64,128,256]
   ));
+  $weeks = $client->newHistogram(array(
+    'namespace' => 'tzstats',
+    'subsystem' => 'sync',
+    'name' => 'weeks',
+    'help' => 'Number synchronized weeks',
+    'buckets' => [4,5,6,7,8,9,10,15,20,30]
+  ));
+  $avIter = $client->newHistogram(array(
+    'namespace' => 'tzstats',
+    'subsystem' => 'sync',
+    'name' => 'availability_iterations',
+    'help' => 'Number iterations for availability synchronization',
+    'buckets' => [1,2,4,8,16,32,64]
+  ));
   $result = db_query('SELECT * FROM {tzstats_sync} ORDER BY id DESC LIMIT 100');
-  while ($stats = db_fetch_object($result)) {
-    $successful = $stats->successful;
-    if ($successful > 0) {
-      $avg = $stats->seconds / $successful;
-      $seconds_per_user->observe([], $avg);
+  while ($obj = db_fetch_object($result)) {
+    if ($obj->stats) {
+      $stats = json_decode($obj->stats);
+      foreach ($stats as $s) {
+        if (isset($s->status) && $s->status === 0) {
+          $seconds_per_user->observe([], $s->time);
+          $weeks->observe([], $s->weeks);
+          $avIter->observe([], $s->avIter ?: 0);
+        }
+      }
     }
   }
 }

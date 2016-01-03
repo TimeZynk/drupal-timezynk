@@ -333,6 +333,18 @@ function tzstats_update_6011() {
   return $ret;
 }
 
+function tzstats_update_6012() {
+  $ret = array();
+  db_add_field($ret, 'tzstats_sync', 'stats',
+    array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'default' => NULL,
+    )
+  );
+  return $ret;
+}
+
 /**
  * TZStats database schema
  */
@@ -401,6 +413,11 @@ function tzstats_schema() {
       'timestamp' => array(
         'type' => 'int',
         'not null' => TRUE,
+      ),
+      'stats' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'default' => NULL,
       ),
     ),
     'primary key' => array('id'),

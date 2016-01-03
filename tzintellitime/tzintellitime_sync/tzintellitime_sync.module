@@ -183,7 +183,7 @@ function tzintellitime_sync_synchronize_user($uid) {
   $account = user_load(array('uid' => $uid));
   if(!$account) {
     watchdog('tzintellitime', 'Tried to start synchronization for illegal user id "@uid"', array('@uid' => $uid), WATCHDOG_WARNING);
-    return TZIntellitimeSyncStatus::AUTH_FAILURE;
+    return array('status' => TZIntellitimeSyncStatus::AUTH_FAILURE);
   }
 
   if (!empty($account->intellitime_last_sync)) {
@@ -200,7 +200,7 @@ function tzintellitime_sync_synchronize_user($uid) {
         WATCHDOG_NOTICE,
         theme('username', $account)
       );
-      return TZIntellitimeSyncStatus::POSTPONED;
+      return array('status' => TZIntellitimeSyncStatus::POSTPONED);
     }
   }
 
@@ -213,7 +213,7 @@ function tzintellitime_sync_synchronize_user($uid) {
       WATCHDOG_NOTICE,
       theme('username', $account)
     );
-    return TZIntellitimeSyncStatus::LOCKED;
+    return array('status' => TZIntellitimeSyncStatus::LOCKED);
   }
 
   try {

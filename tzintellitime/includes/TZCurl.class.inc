@@ -161,7 +161,7 @@ class TZCurl {
     if (preg_match('/simpletest\d+/', $db_prefix, $matches)) {
       $user_agent = drupal_generate_test_ua($matches[0]);
     } else {
-      $user_agent = "TimeZynk/1.0";
+      $user_agent = "TZMobile/1.1";
     }
 
     $curl_opts = array(
