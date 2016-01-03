@@ -307,7 +307,7 @@ function tzstats_prometheus_metrics_alter(&$client) {
     'subsystem' => 'sync',
     'name' => 'availability_iterations',
     'help' => 'Number iterations for availability synchronization',
-    'buckets' => [1,2,4,8,16,32,64]
+    'buckets' => [0,1,2,4,100]
   ));
   $result = db_query('SELECT * FROM {tzstats_sync} ORDER BY id DESC LIMIT 100');
   while ($obj = db_fetch_object($result)) {
