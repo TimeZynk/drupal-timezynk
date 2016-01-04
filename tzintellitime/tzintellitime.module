@@ -357,7 +357,7 @@ function tzintellitime_prometheus_metrics_alter(&$client) {
     'subsystem' => 'session',
     'name' => 'updated_ago',
     'help' => 'Number of seconds since the session was last updated',
-    'buckets' => [500,600,700,800,900,1800,3600]
+    'buckets' => range(0,1800,100)
   ));
 
   $session_created_ago = $client->newHistogram(array(
@@ -365,7 +365,7 @@ function tzintellitime_prometheus_metrics_alter(&$client) {
     'subsystem' => 'session',
     'name' => 'created_ago',
     'help' => 'Number of seconds since the session was created',
-    'buckets' => [3600,21600,43200,57600,72000,86400]
+    'buckets' => range(0,25*3600,3600)
   ));
 
   $result = db_query('SELECT created,changed FROM {tzintellitime_session}');
