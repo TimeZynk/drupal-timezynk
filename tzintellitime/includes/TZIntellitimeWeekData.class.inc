@@ -321,13 +321,13 @@ class TZIntellitimeWeekData {
         $updatedReports[$intellitime_id] = $tzreport;
         $prevreport->flags = TZFlags::DELETED;
         $prevreport->intellitime_local_changes = 0;
-        $prevreport->intellitime_id = "DUPLICATE&PREV_NID=" . $tzreport->nid;
+        $prevreport->intellitime_id = "DUPLICATE&PREV_NID=" . $tzreport->nid . '&NID=' . $prevreport->nid;
         $updatedReports[tzintellitime_get_intellitime_id($prevreport)] = $prevreport;
       } else {
         $tzreport = clone($tzreport);
         $tzreport->flags = TZFlags::DELETED;
         $tzreport->intellitime_local_changes = 0;
-        $tzreport->intellitime_id = "DUPLICATE&PREV_NID=" . $updatedReports[$intellitime_id]->nid;
+        $tzreport->intellitime_id = "DUPLICATE&PREV_NID=" . $updatedReports[$intellitime_id]->nid . '&NID=' . $tzreport->nid;
         $updatedReports[tzintellitime_get_intellitime_id($tzreport)] = $tzreport;
       }
     }

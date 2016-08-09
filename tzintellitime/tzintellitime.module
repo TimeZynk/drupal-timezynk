@@ -322,7 +322,7 @@ function tzintellitime_get_intellitime_id($tzreport) {
     return $id[2];
   }
 
-  return (string)$intellitime_id . '&NID=' . $tzreport->nid;
+  return (string)$intellitime_id;
 }
 
 /**
