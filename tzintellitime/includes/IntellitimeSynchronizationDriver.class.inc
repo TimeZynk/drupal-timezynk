@@ -12,7 +12,9 @@ class IntellitimeSynchronizationDriver {
       // User not found or not intellitime user
       $this->warning('No session available', $this->account);
       user_save($this->account, array('intellitime_active' => 0));
-      return TZIntellitimeSyncStatus::AUTH_FAILURE;
+      return array(
+        'status' => TZIntellitimeSyncStatus::AUTH_FAILURE,
+      );
     }
 
     try {
