@@ -312,11 +312,17 @@ function tzintellitime_node_load_by_intellitime_id($intellitime_id) {
 }
 
 function tzintellitime_get_intellitime_id($tzreport) {
-  if (empty($tzreport->intellitime_id)) {
-    return 'NEW_NODE_WITH_NID_' . $tzreport->nid;
+  $intellitime_id = $tzreport->intellitime_id;
+  if (empty($intellitime_id)) {
+    return 'NEW_NODE&NID=' . $tzreport->nid;
   }
+
   $id = @unserialize($tzreport->intellitime_id);
-  return $id[2];
+  if (is_array($id) && !empty($id[2])) {
+    return $id[2];
+  }
+
+  return (string)$intellitime_id . '&NID=' . $tzreport->nid;
 }
 
 /**
