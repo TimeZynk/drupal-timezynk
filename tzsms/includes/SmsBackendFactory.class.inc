@@ -26,7 +26,7 @@ class SmsBackendFactory {
       case 'beepsend':
       default:
         $httpHelper = new DrupalHttpHelper();
-        return new BeepSend(TZSMS_BEEPSEND_USERNAME, TZSMS_BEEPSEND_PASSWORD, $httpHelper);
+        return new BeepSend(TZSMS_BEEPSEND_TOKEN, $httpHelper);
     }
   }
 

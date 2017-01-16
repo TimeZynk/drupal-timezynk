@@ -29,8 +29,7 @@ define('TZSMS_DEFAULT_COUNTRY_CODE', variable_get('tzsms_default_country_code', 
 define('TZSMS_DEFAULT_SENDER', variable_get('tzsms_default_sender', 'TimeZynk'));
 define('TZSMS_BACKEND', variable_get('tzsms_backend', 'beepsend'));
 
-define('TZSMS_BEEPSEND_USERNAME', 'TimeZynk01');
-define('TZSMS_BEEPSEND_PASSWORD', 'HanUzEg');
+define('TZSMS_BEEPSEND_TOKEN', variable_get('tzsms_beepsend_token', 'Please configure beepsend token'));
 
 define('TZSMS_DEBUG_SMS_RECEIVER', variable_get('tzsms_debug_sms_receiver', '0733623516'));
 define('TZSMS_DEBUG_SMS_BLACKLIST_TIMEOUT', (12 * 3600));

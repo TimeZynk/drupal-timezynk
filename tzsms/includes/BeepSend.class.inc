@@ -1,17 +1,23 @@
 <?php
 
 interface HttpHelper {
-  function get($url);
+  function post($apiToken, $url, $data);
 }
 
 class DrupalHttpHelper implements HttpHelper {
-  function get($url) {
-    return drupal_http_request($url);
+  function post($apiToken, $url, $data) {
+    $headers = array();
+    $headers['Content-Type'] = 'application/json';
+    $headers['Authorization'] = 'Token ' . $apiToken;
+    if (!is_string($data)) {
+      $data = json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+    return drupal_http_request($url, $headers, 'POST', $data);
   }
 }
 
 class LogOnlyHttpHelper implements HttpHelper {
-  function get($url) {
+  function post($apiToken, $url, $data) {
     watchdog('LogHttp', 'Requesting SMS URL: "@url"', array('@url' => $url));
     return (object)array(
       'code' => 200,
@@ -21,32 +27,27 @@ class LogOnlyHttpHelper implements HttpHelper {
 }
 
 class BeepSend implements SmsBackend {
-  private $gatewayUrl = 'https://connect.beepsend.com/gateway.php';
+  private $gatewayUrl = 'https://api.beepsend.com/2/send/';
   private $httpHelper;
-  private $username;
-  private $password;
+  private $apiToken;
 
-  function __construct($username, $password, $httpHelper) {
-    if (empty($username) || empty($password) || empty($httpHelper)) {
+  function __construct($apiToken, $httpHelper) {
+    if (empty($apiToken) || empty($httpHelper)) {
       throw new InvalidArgumentException('All arguments must be specified');
     }
 
-    $this->username = $username;
-    $this->password = $password;
+    $this->apiToken = $apiToken;
     $this->httpHelper = $httpHelper;
   }
 
   function send($from, $to, $message) {
     $params = array();
-    $params['user'] = $this->username;
-    $params['pass'] = $this->password;
     $params['to'] = $to;
     $params['from'] = $from;
-    $params['message'] = utf8_decode($message);
+    $params['body'] = $message;
+    $params['encoding'] = 'UTF-8';
 
-    $requestUrl = $this->gatewayUrl . '?' . http_build_query($params, NULL, '&');
-
-    $httpResult = $this->httpHelper->get($requestUrl);
+    $httpResult = $this->httpHelper->post($this->apiToken, $this->gatewayUrl, $params);
 
     if (!empty($httpResult->error)) {
       throw new SmsBackendException($httpResult->error);

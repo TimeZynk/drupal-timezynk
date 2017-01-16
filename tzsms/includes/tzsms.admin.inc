@@ -13,6 +13,12 @@ function tzsms_admin_settings($form_state) {
       '#default_value' => TZSMS_BACKEND,
       '#options' => SmsBackendFactory::all_backends(),
     ),
+    'tzsms_beepsend_token' => array(
+      '#type' => 'textfield',
+      '#title' => t('Beepsend API token'),
+      '#default_value' => TZSMS_DEFAULT_COUNTRY_CODE,
+      '#description' => t('API token for Beepsend API access'),
+    ),
     'tzsms_default_country_code' => array(
       '#type' => 'textfield',
       '#title' => t('Default country code for this site'),
