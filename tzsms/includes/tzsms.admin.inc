@@ -14,9 +14,9 @@ function tzsms_admin_settings($form_state) {
       '#options' => SmsBackendFactory::all_backends(),
     ),
     'tzsms_beepsend_token' => array(
-      '#type' => 'textfield',
+      '#type' => 'password',
       '#title' => t('Beepsend API token'),
-      '#default_value' => TZSMS_DEFAULT_COUNTRY_CODE,
+      '#default_value' => TZSMS_BEEPSEND_TOKEN,
       '#description' => t('API token for Beepsend API access'),
     ),
     'tzsms_default_country_code' => array(
